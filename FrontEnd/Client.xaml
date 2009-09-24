@@ -1,0 +1,19 @@
+﻿<Window x:Class="FrontEnd.Window1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Window1" Height="366" Width="632" Loaded="Window_Loaded" KeyDown="Window_KeyDown">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="222*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Canvas Name="MyCanvas" Grid.Row="1" Grid.ColumnSpan="2">
+        </Canvas>
+        <Button Grid.Row="0" Click="Button_Click">Add</Button>
+        <Button Grid.Column="1" Click="Button_Click_1">Move</Button>
+    </Grid>
+</Window>
