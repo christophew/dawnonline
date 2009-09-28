@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Simulation
+namespace DawnOnline.Simulation
 {
     public interface ICreature
     {
         bool Alive { get; }
 
-        void WalkForward();
+        bool IsTired { get; }
+
+        void Rest();
+        void WalkForward(); 
+        void RunForward();
         void TurnLeft();
         void TurnRight();
 

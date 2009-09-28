@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 
-namespace Simulation.UnitTests
+namespace DawnOnline.Simulation.UnitTests
 {
     [TestFixture]
     public class EnvironmentTest
@@ -13,7 +13,7 @@ namespace Simulation.UnitTests
         public void Test_Add()
         {
             var environment = SimulationFactory.CreateEnvironment();
-            var myCritter = SimulationFactory.CreateCreature();
+            var myCritter = SimulationFactory.CreatePredator();
 
             environment.AddCreature(myCritter, new Coordinate {X=10, Y=20}, 0);
 
@@ -30,7 +30,7 @@ namespace Simulation.UnitTests
         public void Test_Kill()
         {
             var environment = SimulationFactory.CreateEnvironment();
-            var myCritter = SimulationFactory.CreateCreature();
+            var myCritter = SimulationFactory.CreatePredator();
             environment.AddCreature(myCritter, new Coordinate { X = 10, Y = 20 }, 0);
 
             Assert.IsTrue(myCritter.Alive);

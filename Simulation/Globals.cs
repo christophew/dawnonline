@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Simulation
+namespace DawnOnline.Simulation
 {
     static class Globals
     {

@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Simulation;
+using DawnOnline.Simulation;
 
 namespace FrontEnd
 {
@@ -32,9 +26,18 @@ namespace FrontEnd
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 50; i++)
             {
-                AddCreature();
+                _environment.AddCreature(SimulationFactory.CreatePredator(),
+                                 new Coordinate { X = _randomize.Next(MaxX), Y = _randomize.Next(MaxY) },
+                                 _randomize.Next(6));
+            }
+
+            for (int i = 0; i < 50; i++)
+            {
+                _environment.AddCreature(SimulationFactory.CreateRabbit(),
+                                 new Coordinate { X = _randomize.Next(MaxX), Y = _randomize.Next(MaxY) },
+                                 _randomize.Next(6));
             }
         }
 
@@ -60,13 +63,6 @@ namespace FrontEnd
             }
         }
 
-        private void AddCreature()
-        {
-            _environment.AddCreature(SimulationFactory.CreateCreature(),
-                             new Coordinate {X = _randomize.Next(MaxX), Y = _randomize.Next(MaxY)},
-                             _randomize.Next(6));
-        }
-
         private void DrawCreature(ICreature creature)
         {
             var placement = creature.Place;
@@ -88,7 +84,7 @@ namespace FrontEnd
                 newEllipse.Fill = color;
                 newEllipse.SetValue(Canvas.LeftProperty, placement.Position.X - placement.Form.Radius/2.0);
                 newEllipse.SetValue(Canvas.TopProperty, placement.Position.Y - placement.Form.Radius/2.0);
-                newEllipse.Stroke = Brushes.Black;
+                newEllipse.Stroke = creature.IsTired ? Brushes.Blue : Brushes.Black;
 
                 MyCanvas.Children.Add(newEllipse);
             }

@@ -1,42 +1,83 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
+using DawnOnline.Simulation.Brains;
+using DawnOnline.Simulation.Statistics;
 
-namespace Simulation
+namespace DawnOnline.Simulation
 {
     class Creature : ICreature
     {
-        private IForm _body = SimulationFactory.CreateCircle(15);
-        private double _walkingDistance = 5;
-        private double _turningAngle = 0.2;
+        private IForm _body; 
         private Placement _place = new Placement();
-        private bool _alive = true;
-        private int _visionAccuracyPercent = 75;
-        private double _visionRadius = 40;
+        private CharacterSheet _characterSheet = new CharacterSheet();
+        private AbstractBrain _brain;
 
-        public Creature()
+        internal AbstractBrain Brain 
+        { 
+            get { return _brain; }
+            set
+            {
+                _brain = value;
+                _brain.MyCreature = this;
+            }
+        }
+
+        internal CharacterSheet Statistics { get { return _characterSheet; } }
+
+        internal bool _alive = true;
+
+
+        public Creature(double bodyRadius)
         {
+            _body = SimulationFactory.CreateCircle(bodyRadius);
             _place.Form = _body;
+        }
+
+        public bool IsTired
+        {
+            get
+            {
+                return !Statistics.Fatigue.CanIncrease((int) Statistics.FatigueCost);
+            }
+        }
+
+        public void Rest()
+        {
+            Statistics.Fatigue.Decrease((int)Statistics.FatigueRecovery);
         }
 
         public void WalkForward()
         {
             Debug.Assert(MyEnvironment != null);
 
-            _place.Position.X += Math.Cos(_place.Angle) * WalkingDistance;
-            _place.Position.Y += Math.Sin(_place.Angle) * WalkingDistance;
+            _place.Position.X += Math.Cos(_place.Angle) * Statistics.WalkingDistance;
+            _place.Position.Y += Math.Sin(_place.Angle) * Statistics.WalkingDistance;
+        }
+
+        public void RunForward()
+        {
+            Debug.Assert(MyEnvironment != null);
+
+            if (IsTired)
+            {
+                WalkForward();
+                return;
+            }
+
+            _place.Position.X += Math.Cos(_place.Angle) * Statistics.RunningDistance;
+            _place.Position.Y += Math.Sin(_place.Angle) * Statistics.RunningDistance;
+
+            Statistics.Fatigue.Increase((int)Statistics.FatigueCost);
         }
 
         public void TurnLeft()
         {
-            _place.Angle -= _turningAngle;
+            _place.Angle -= Statistics.TurningAngle;
         }
 
         public void TurnRight()
         {
-            _place.Angle += _turningAngle;
+            _place.Angle += Statistics.TurningAngle;
         }
 
         public void SetPosition(Coordinate position, double angle)
@@ -55,25 +96,7 @@ namespace Simulation
             set { _alive = value; }
         }
 
-        public double TurningAngle
-        {
-            get { return _turningAngle; }
-            set { _turningAngle = value; }
-        }
-
-        public double WalkingDistance
-        {
-            get { return _walkingDistance; }
-            set { _walkingDistance = value; }
-        }
-
-        public double VisionRadius
-        {
-            get { return _visionRadius; }
-            set { _visionRadius = value; }
-        }
-
-        public bool HasBrain { get; set; }
+        public bool HasBrain { get { return Brain != null; } }
 
         public void Move()
         {
@@ -82,30 +105,7 @@ namespace Simulation
             if (!HasBrain)
                 return;
 
-            if ((Globals.Radomizer.Next(100) < _visionAccuracyPercent) && SeesACreatureForward())
-            {
-                WalkForward();
-                return;
-            }
-            if ((Globals.Radomizer.Next(100) < _visionAccuracyPercent) && SeesACreatureLeft())
-            {
-                TurnLeft();
-                return;
-            }
-            if ((Globals.Radomizer.Next(100) < _visionAccuracyPercent) && SeesACreatureRight())
-            {
-                TurnRight();
-                return;
-            }
-
-            int randomAction = Globals.Radomizer.Next(3);
-
-            if (randomAction == 0)
-                WalkForward();
-            if (randomAction == 1)
-                TurnLeft();
-            if (randomAction == 2)
-                TurnRight();
+            Brain.DoSomething();
         }
 
         public ICreature Attack()
@@ -142,7 +142,7 @@ namespace Simulation
 
         public bool SeesACreatureForward()
         {
-            double forwardRadius = _visionRadius;
+            double forwardRadius = Statistics.VisionRadius;
 
             var visionCenter = new Coordinate
             {
@@ -157,22 +157,22 @@ namespace Simulation
         {
             var visionCenter = new Coordinate
             {
-                X = _place.Position.X + Math.Cos(_place.Angle - Math.PI / 3.0) * _visionRadius,
-                Y = _place.Position.Y + Math.Sin(_place.Angle - Math.PI / 3.0) * _visionRadius
+                X = _place.Position.X + Math.Cos(_place.Angle - Math.PI / 3.0) * Statistics.VisionRadius,
+                Y = _place.Position.Y + Math.Sin(_place.Angle - Math.PI / 3.0) * Statistics.VisionRadius
             };
 
-            return FindCreatureInCircle(visionCenter, _visionRadius) != null;
+            return FindCreatureInCircle(visionCenter, Statistics.VisionRadius) != null;
         }
 
         public bool SeesACreatureRight()
         {
             var visionCenter = new Coordinate
             {
-                X = _place.Position.X + Math.Cos(_place.Angle + Math.PI / 3.0) * _visionRadius,
-                Y = _place.Position.Y + Math.Sin(_place.Angle + Math.PI / 3.0) * _visionRadius
+                X = _place.Position.X + Math.Cos(_place.Angle + Math.PI / 3.0) * Statistics.VisionRadius,
+                Y = _place.Position.Y + Math.Sin(_place.Angle + Math.PI / 3.0) * Statistics.VisionRadius
             };
 
-            return FindCreatureInCircle(visionCenter, _visionRadius) != null;
+            return FindCreatureInCircle(visionCenter, Statistics.VisionRadius) != null;
         }
     }
 }
