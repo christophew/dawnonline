@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 
-namespace Simulation
+namespace DawnOnline.Simulation
 {
     class Environment : IEnvironment
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 
-namespace Simulation.UnitTests
+namespace DawnOnline.Simulation.UnitTests
 {
     [TestFixture]
     public class CreatureTest
@@ -13,9 +13,9 @@ namespace Simulation.UnitTests
         public void Test_Walk()
         {
             var environment = SimulationFactory.CreateEnvironment();
-            var critter = new Creature();
+            var critter = new Creature(15);
 
-            critter.WalkingDistance = 10;
+            critter.Statistics.WalkingDistance = 10;
 
             environment.AddCreature(critter, new Coordinate { X = 10, Y = 20 }, 0);
 
@@ -32,9 +32,9 @@ namespace Simulation.UnitTests
         public void Test_Attack()
         {
             var environment = SimulationFactory.CreateEnvironment();
-            var critter1 = new Creature();
+            var critter1 = new Creature(15);
             environment.AddCreature(critter1, new Coordinate { X = 0, Y = 0 }, 0);
-            var critter2 = new Creature();
+            var critter2 = new Creature(15);
             environment.AddCreature(critter2, new Coordinate { X = critter1.Body.Radius / 2, Y = 0 }, 0);
 
             Assert.AreEqual(critter2, critter1.Attack());
@@ -44,9 +44,9 @@ namespace Simulation.UnitTests
         public void Test_Attack2()
         {
             var environment = SimulationFactory.CreateEnvironment();
-            var critter1 = new Creature();
+            var critter1 = new Creature(15);
             environment.AddCreature(critter1, new Coordinate { X = 0, Y = 0 }, 0);
-            var critter2 = new Creature();
+            var critter2 = new Creature(15);
             environment.AddCreature(critter2, new Coordinate { X = 0, Y = critter1.Body.Radius - 1 }, 0);
 
             Assert.AreEqual(critter2, critter1.Attack());
@@ -56,9 +56,9 @@ namespace Simulation.UnitTests
         public void Test_NoAttack()
         {
             var environment = SimulationFactory.CreateEnvironment();
-            var critter1 = new Creature();
+            var critter1 = new Creature(15);
             environment.AddCreature(critter1, new Coordinate { X = 0, Y = 0 }, 0);
-            var critter2 = new Creature();
+            var critter2 = new Creature(15);
             environment.AddCreature(critter2, new Coordinate { X = critter1.Body.Radius + 1, Y = 0 }, 0);
 
             Assert.IsNull(critter1.Attack());

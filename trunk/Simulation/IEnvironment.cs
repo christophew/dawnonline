@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Simulation
+namespace DawnOnline.Simulation
 {
     public interface IEnvironment
     {
