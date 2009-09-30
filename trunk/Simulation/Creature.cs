@@ -65,10 +65,7 @@ namespace DawnOnline.Simulation
                                                 (float)(Math.Sin(_place.Angle) * Statistics.WalkingDistance));
 
             var realTranslation = TryMove(originalTranslation);
-
-            _place.Position.X += realTranslation.X;
-            _place.Position.Y += realTranslation.Y;
-            (_place.Form.Shape as Polygon).Offset(realTranslation);
+            _place.OffsetPosition(new Coordinate(realTranslation), 0.0);
         }
 
         public void RunForward()
@@ -85,10 +82,7 @@ namespace DawnOnline.Simulation
                                                  (float)(Math.Sin(_place.Angle)*Statistics.RunningDistance));
 
             var realTranslation = TryMove(originalTranslation);
-
-            _place.Position.X += realTranslation.X;
-            _place.Position.Y += realTranslation.Y;
-            (_place.Form.Shape as Polygon).Offset(realTranslation);
+            _place.OffsetPosition(new Coordinate(realTranslation), 0.0);
 
             Statistics.Fatigue.Increase((int)Statistics.FatigueCost);
         }
@@ -105,7 +99,7 @@ namespace DawnOnline.Simulation
 
                 if (collitionResult.WillIntersect)
                 {
-                    return velocity + collitionResult.MinimumTranslationVector;
+                    velocity = velocity + collitionResult.MinimumTranslationVector;
                 }
             }
 

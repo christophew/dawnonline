@@ -17,7 +17,7 @@ namespace DawnOnline.Simulation
             Debug.Assert(myCreature != null);
 
             myCreature.MyEnvironment = this;
-            (myCreature.Place as Placement).SetPosition(origin, angle);
+            (myCreature.Place as Placement).OffsetPosition(origin, angle);
             _creatures.Add(creature);
         }
 
@@ -51,7 +51,7 @@ namespace DawnOnline.Simulation
         {
             var myObstacle = obstacle as Placement;
 
-            myObstacle.SetPosition(origin, 0.0);
+            myObstacle.OffsetPosition(origin, 0.0);
             _obstacles.Add(obstacle);
         }
 

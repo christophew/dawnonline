@@ -10,6 +10,11 @@ namespace DawnOnline.Simulation
     {
         #region IPlacement Members
 
+        public Placement()
+        {
+            Position = new Coordinate();
+        }
+
         public IForm Form
         {
             get; set;
@@ -25,10 +30,11 @@ namespace DawnOnline.Simulation
             get; set;
         }
 
-        public void SetPosition(Coordinate position, double angle)
+        public void OffsetPosition(Coordinate position, double angle)
         {
-            Position = position;
-            Angle = angle;
+            Position.X += position.X;
+            Position.Y += position.Y;
+            Angle += angle;
 
             (Form.Shape as Polygon).Offset((float)position.X, (float)position.Y);
         }
