@@ -75,6 +75,7 @@
     <Compile Include="Tools\MathTools.cs" />
     <Compile Include="UnitTests\CreatureTest.cs" />
     <Compile Include="UnitTests\EnvironmentTest.cs" />
+    <Compile Include="UnitTests\EyeTest.cs" />
     <Compile Include="UnitTests\MathToolsTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

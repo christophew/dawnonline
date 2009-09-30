@@ -14,6 +14,7 @@ namespace DawnOnline.Simulation.Statistics
         internal double VisionDistance { get; set; }
         internal double FatigueCost { get; set; }
         internal double FatigueRecovery { get; set; }
+        internal double MeleeRange { get; set; }
 
         // Monitors
         internal Monitor Fatigue { get; private set; }
@@ -29,6 +30,7 @@ namespace DawnOnline.Simulation.Statistics
             VisionDistance = 100;
             FatigueCost = 15;
             FatigueRecovery = 30;
+            MeleeRange = 15;
         }
     }
 }

@@ -163,7 +163,7 @@ namespace DawnOnline.Simulation
         {
             Debug.Assert(Alive);
 
-            return FindCreatureInCircle(_place.Position, _place.Form.Radius);
+            return FindCreatureInCircle(_place.Position, _characterSheet.MeleeRange);
         }
 
         private static bool IsInCircle(Creature enemy, Coordinate position, double radius)
