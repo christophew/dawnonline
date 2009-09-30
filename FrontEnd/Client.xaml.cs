@@ -23,9 +23,10 @@ namespace FrontEnd
         {
             InitializeComponent();
 
-            var obstacle1 = SimulationFactory.CreateObstacleBox(300, 20);
-
-            _environment.AddObstacle(obstacle1, new Coordinate {X = 500, Y = 300});
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(1000, 20), new Coordinate { X = 500, Y = 0 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(1000, 20), new Coordinate { X = 500, Y = 800 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(20, 1000), new Coordinate { X = 0, Y = 500 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(20, 1000), new Coordinate { X = 1000, Y = 500 });
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
