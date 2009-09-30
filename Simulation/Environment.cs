@@ -9,6 +9,7 @@ namespace DawnOnline.Simulation
     class Environment : IEnvironment
     {
         List<ICreature> _creatures = new List<ICreature>();
+        List<IPlacement> _obstacles = new List<IPlacement>();
 
         public void AddCreature(ICreature creature, Coordinate origin, double angle)
         {
@@ -16,7 +17,7 @@ namespace DawnOnline.Simulation
             Debug.Assert(myCreature != null);
 
             myCreature.MyEnvironment = this;
-            myCreature.SetPosition(origin, angle);
+            (myCreature.Place as Placement).SetPosition(origin, angle);
             _creatures.Add(creature);
         }
 
@@ -44,6 +45,19 @@ namespace DawnOnline.Simulation
         public IList<ICreature> GetCreatures()
         {
             return _creatures;
+        }
+
+        public void AddObstacle(IPlacement obstacle, Coordinate origin)
+        {
+            var myObstacle = obstacle as Placement;
+
+            myObstacle.SetPosition(origin, 0.0);
+            _obstacles.Add(obstacle);
+        }
+
+        public IList<IPlacement> GetObstacles()
+        {
+            return _obstacles;
         }
 
     }

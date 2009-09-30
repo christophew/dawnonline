@@ -11,5 +11,8 @@ namespace DawnOnline.Simulation
         void KillCreature(ICreature creature);
 
         IList<ICreature> GetCreatures();
+
+        void AddObstacle(IPlacement obstacle, Coordinate origin);
+        IList<IPlacement> GetObstacles();
     }
 }
