@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DawnOnline.Simulation.Collision;
+using DawnOnline.Simulation.Senses;
 
 namespace DawnOnline.Simulation
 {
@@ -24,7 +26,8 @@ namespace DawnOnline.Simulation
         bool SeesACreatureLeft();
         bool SeesACreatureRight();
 
-
         IPlacement Place { get; }
+
+        IList<IEye> Eyes { get; }
     }
 }

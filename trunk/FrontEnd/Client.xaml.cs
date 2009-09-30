@@ -6,14 +6,15 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using DawnOnline.Simulation;
+using DawnOnline.Simulation.Collision;
 
 namespace FrontEnd
 {
     public partial class Window1 : Window
     {
         private readonly IEnvironment _environment = SimulationFactory.CreateEnvironment();
-        private const int MaxX = 1000;
-        private const int MaxY = 1000;
+        private const int MaxX = 1500;
+        private const int MaxY = 800;
         private ICreature _avatar = SimulationFactory.CreateAvatar();
         private DateTime _lastMove = DateTime.Now;
 
@@ -22,11 +23,6 @@ namespace FrontEnd
         public Window1()
         {
             InitializeComponent();
-
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(1000, 20), new Coordinate { X = 500, Y = 0 });
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(1000, 20), new Coordinate { X = 500, Y = 800 });
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(20, 1000), new Coordinate { X = 0, Y = 500 });
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(20, 1000), new Coordinate { X = 1000, Y = 500 });
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -63,16 +59,20 @@ namespace FrontEnd
                 current.Move();
 
                 var killed = current.Attack();
-                if (killed != null)
+                if ((killed != null) && (killed != _avatar))
                     _environment.KillCreature(killed);
             }
         }
 
         private void DrawObstacle(IPlacement obstacle)
         {
-            for (int i = 0; i < obstacle.Form.Shape.Points.Count; i++)
+            DrawPolygon(obstacle.Form.Shape);
+        }
+
+        private void DrawPolygon(IPolygon polygon)
+        {
+            for (int i = 0; i < polygon.Points.Count; i++)
             {
-                var polygon = obstacle.Form.Shape;
                 DawnOnline.Simulation.Collision.Vector p1 = polygon.Points[i];
                 DawnOnline.Simulation.Collision.Vector p2;
                 if (i + 1 >= polygon.Points.Count)
@@ -141,6 +141,18 @@ namespace FrontEnd
 					DrawLine(p1, p2);
 				}
 			}
+
+            // LineOfSight
+            {
+                foreach (var eye in creature.Eyes)
+                {
+                    var lineOfSight = eye.GetCurrentLineOfSight();
+                    if (lineOfSight != null)
+                    {
+                        DrawPolygon(lineOfSight);
+                    }
+                }
+            }
         }
 
         private void DrawLine(DawnOnline.Simulation.Collision.Vector p1, DawnOnline.Simulation.Collision.Vector p2)
@@ -177,6 +189,8 @@ namespace FrontEnd
             _environment.AddCreature(_avatar,
                                      new Coordinate { X = _randomize.Next(MaxX), Y = _randomize.Next(MaxY) }, 0);
 
+            BuildWorld();
+
             {
                 var dt = new System.Windows.Threading.DispatcherTimer();
                 dt.Interval = new TimeSpan(0, 0, 0, 0, 100);
@@ -190,6 +204,22 @@ namespace FrontEnd
                 dt.Tick += MoveCreatures;
                 dt.Start();
             }
+        }
+
+        private void BuildWorld()
+        {
+            // World boundaries
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, -20), new Coordinate { X = 0, Y = 0 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, 20), new Coordinate { X = 0, Y = MaxY });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(-20, MaxY), new Coordinate { X = 0, Y = 0 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(20, MaxY), new Coordinate { X = MaxX, Y = 0 });
+
+            // Some obstacles
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(300, 10), new Coordinate { X = 500, Y = 400 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, 100), new Coordinate { X = 500, Y = 400 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, -100), new Coordinate { X = 800, Y = 400 });
+
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 30), new Coordinate { X = 700, Y = 100 });
         }
 
         void UpdateClient(object sender, EventArgs e)
