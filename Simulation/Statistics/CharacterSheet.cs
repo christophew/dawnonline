@@ -11,7 +11,7 @@ namespace DawnOnline.Simulation.Statistics
         internal double RunningDistance { get { return WalkingDistance*2.0; } }
         internal double TurningAngle { get; set; }
         internal int VisionAccuracyPercent { get; set; }
-        internal double VisionRadius { get; set; }
+        internal double VisionDistance { get; set; }
         internal double FatigueCost { get; set; }
         internal double FatigueRecovery { get; set; }
 
@@ -26,7 +26,7 @@ namespace DawnOnline.Simulation.Statistics
             WalkingDistance = 1;
             TurningAngle = 0.01;
             VisionAccuracyPercent = 70;
-            VisionRadius = 40;
+            VisionDistance = 100;
             FatigueCost = 15;
             FatigueRecovery = 30;
         }

@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using DawnOnline.Simulation.Brains;
 using DawnOnline.Simulation.Statistics;
 using DawnOnline.Simulation.Collision;
+using DawnOnline.Simulation.Tools;
+using DawnOnline.Simulation.Senses;
 
 namespace DawnOnline.Simulation
 {
@@ -23,7 +26,6 @@ namespace DawnOnline.Simulation
 
         public bool HasBrain { get { return Brain != null; } }
 
-
         internal AbstractBrain Brain 
         { 
             get { return _brain; }
@@ -34,6 +36,15 @@ namespace DawnOnline.Simulation
             }
         }
 
+        private Eye _forwardEye;
+        private Eye _leftEye;
+        private Eye _rightEye;
+
+        public IList<IEye> Eyes
+        {
+            get { return new List<IEye> {_forwardEye, _leftEye, _rightEye}; }
+        }
+
         internal CharacterSheet Statistics { get { return _characterSheet; } }
 
         internal bool _alive = true;
@@ -42,6 +53,28 @@ namespace DawnOnline.Simulation
         public Creature(double bodyRadius)
         {
             _place.Form = SimulationFactory.CreateCircle(bodyRadius);
+        }
+
+        public void InitializeSenses()
+        {
+            _forwardEye = new Eye(this)
+            {
+                Angle = 0.0,
+                VisionAngle = MathTools.ConvertToRadials(30),
+                VisionDistance = _characterSheet.VisionDistance
+            };
+            _leftEye = new Eye(this)
+            {
+                Angle = -MathTools.ConvertToRadials(60),
+                VisionAngle = MathTools.ConvertToRadials(30),
+                VisionDistance = _characterSheet.VisionDistance
+            };
+            _rightEye = new Eye(this)
+            {
+                Angle = MathTools.ConvertToRadials(60),
+                VisionAngle = MathTools.ConvertToRadials(30),
+                VisionDistance = _characterSheet.VisionDistance
+            };
         }
 
         public bool IsTired
@@ -135,12 +168,7 @@ namespace DawnOnline.Simulation
 
         private static bool IsInCircle(Creature enemy, Coordinate position, double radius)
         {
-            double deltaX = position.X - enemy.Place.Position.X;
-            double deltaY = position.Y - enemy.Place.Position.Y;
-
-            double distance2 = deltaX*deltaX + deltaY*deltaY;
-
-            return distance2 < radius * radius;
+            return MathTools.GetDistance2(position, enemy.Place.Position) < radius * radius;
         }
 
         private Creature FindCreatureInCircle(Coordinate center, double radius)
@@ -160,37 +188,17 @@ namespace DawnOnline.Simulation
 
         public bool SeesACreatureForward()
         {
-            double forwardRadius = Statistics.VisionRadius;
-
-            var visionCenter = new Coordinate
-            {
-                X = _place.Position.X + Math.Cos(_place.Angle) * (forwardRadius + 10),
-                Y = _place.Position.Y + Math.Sin(_place.Angle) * (forwardRadius + 10)
-            };
-
-            return FindCreatureInCircle(visionCenter, forwardRadius) != null;
+            return _forwardEye.SeesACreature();
         }
 
         public bool SeesACreatureLeft()
         {
-            var visionCenter = new Coordinate
-            {
-                X = _place.Position.X + Math.Cos(_place.Angle - Math.PI / 3.0) * Statistics.VisionRadius,
-                Y = _place.Position.Y + Math.Sin(_place.Angle - Math.PI / 3.0) * Statistics.VisionRadius
-            };
-
-            return FindCreatureInCircle(visionCenter, Statistics.VisionRadius) != null;
+            return _leftEye.SeesACreature();
         }
 
         public bool SeesACreatureRight()
         {
-            var visionCenter = new Coordinate
-            {
-                X = _place.Position.X + Math.Cos(_place.Angle + Math.PI / 3.0) * Statistics.VisionRadius,
-                Y = _place.Position.Y + Math.Sin(_place.Angle + Math.PI / 3.0) * Statistics.VisionRadius
-            };
-
-            return FindCreatureInCircle(visionCenter, Statistics.VisionRadius) != null;
+            return _rightEye.SeesACreature();
         }
     }
 }

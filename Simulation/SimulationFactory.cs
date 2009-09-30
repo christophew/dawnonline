@@ -31,17 +31,15 @@ namespace DawnOnline.Simulation
         {
             double radius = Math.Max(deltaX, deltaY);
 
-            float halfDeltaX = (float)(deltaX / 2.0);
-            float halfDeltaY = (float)(deltaY / 2.0);
             Polygon box = new Polygon();
-            box.Points.Add(new Vector(halfDeltaX, halfDeltaY));
-            box.Points.Add(new Vector(-halfDeltaX, halfDeltaY));
-            box.Points.Add(new Vector(-halfDeltaX, -halfDeltaY));
-            box.Points.Add(new Vector(halfDeltaX, -halfDeltaY));
+            box.Points.Add(new Vector(0, 0));
+            box.Points.Add(new Vector((float)deltaX, 0));
+            box.Points.Add(new Vector((float)deltaX, (float)deltaY));
+            box.Points.Add(new Vector(0, (float)deltaY));
             box.BuildEdges();
 
             var form = new Form { Radius = radius, Shape = box };
-            var placement = new Placement {Form = form};
+            var placement = new Placement { Form = form };
 
             return placement;
         }
@@ -53,6 +51,7 @@ namespace DawnOnline.Simulation
 
             critter.Statistics.WalkingDistance = 5;
             critter.Statistics.TurningAngle = 0.2;
+            critter.InitializeSenses();
 
             return critter;
         }
@@ -64,6 +63,7 @@ namespace DawnOnline.Simulation
 
             critter.Statistics.WalkingDistance = 4;
             critter.Statistics.TurningAngle = 0.35;
+            critter.InitializeSenses();
 
             return critter;
         }
@@ -74,6 +74,7 @@ namespace DawnOnline.Simulation
 
             avatar.Statistics.WalkingDistance = 6;
             avatar.Statistics.TurningAngle = 0.35;
+            avatar.InitializeSenses();
 
             return avatar;
         }
