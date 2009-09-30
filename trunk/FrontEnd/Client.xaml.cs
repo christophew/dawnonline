@@ -14,7 +14,7 @@ namespace FrontEnd
     {
         private readonly IEnvironment _environment = SimulationFactory.CreateEnvironment();
         private const int MaxX = 1500;
-        private const int MaxY = 800;
+        private const int MaxY = 900;
         private ICreature _avatar = SimulationFactory.CreateAvatar();
         private DateTime _lastMove = DateTime.Now;
 
@@ -146,7 +146,7 @@ namespace FrontEnd
             {
                 foreach (var eye in creature.Eyes)
                 {
-                    var lineOfSight = eye.GetCurrentLineOfSight();
+                    var lineOfSight = eye.GetLineOfSight();
                     if (lineOfSight != null)
                     {
                         DrawPolygon(lineOfSight);
@@ -219,7 +219,10 @@ namespace FrontEnd
             _environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, 100), new Coordinate { X = 500, Y = 400 });
             _environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, -100), new Coordinate { X = 800, Y = 400 });
 
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, -100), new Coordinate { X = 900, Y = 400 });
+
             _environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 30), new Coordinate { X = 700, Y = 100 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(70, 30), new Coordinate { X = 200, Y = 700 });
         }
 
         void UpdateClient(object sender, EventArgs e)

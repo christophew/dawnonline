@@ -35,7 +35,7 @@ namespace DawnOnline.Simulation.UnitTests
             var critter1 = new Creature(15);
             environment.AddCreature(critter1, new Coordinate { X = 0, Y = 0 }, 0);
             var critter2 = new Creature(15);
-            environment.AddCreature(critter2, new Coordinate { X = critter1.Place.Form.Radius / 2, Y = 0 }, 0);
+            environment.AddCreature(critter2, new Coordinate { X = critter1.Statistics.MeleeRange / 2, Y = 0 }, 0);
 
             Assert.AreEqual(critter2, critter1.Attack());
         }
@@ -47,7 +47,7 @@ namespace DawnOnline.Simulation.UnitTests
             var critter1 = new Creature(15);
             environment.AddCreature(critter1, new Coordinate { X = 0, Y = 0 }, 0);
             var critter2 = new Creature(15);
-            environment.AddCreature(critter2, new Coordinate { X = 0, Y = critter1.Place.Form.Radius - 1 }, 0);
+            environment.AddCreature(critter2, new Coordinate { X = 0, Y = critter1.Statistics.MeleeRange - 1 }, 0);
 
             Assert.AreEqual(critter2, critter1.Attack());
         }
@@ -59,7 +59,7 @@ namespace DawnOnline.Simulation.UnitTests
             var critter1 = new Creature(15);
             environment.AddCreature(critter1, new Coordinate { X = 0, Y = 0 }, 0);
             var critter2 = new Creature(15);
-            environment.AddCreature(critter2, new Coordinate { X = critter1.Place.Form.Radius + 1, Y = 0 }, 0);
+            environment.AddCreature(critter2, new Coordinate { X = critter1.Statistics.MeleeRange + 1, Y = 0 }, 0);
 
             Assert.IsNull(critter1.Attack());
         }
