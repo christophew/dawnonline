@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using DawnOnline.Simulation.Collision;
 
 namespace DawnOnline.Simulation
 {
     public interface IForm
     {
-        Guid Id { get; }
         double Radius { get; }
+
+        IPolygon Shape { get; }
     }
 }

@@ -22,6 +22,10 @@ namespace FrontEnd
         public Window1()
         {
             InitializeComponent();
+
+            var obstacle1 = SimulationFactory.CreateObstacleBox(300, 20);
+
+            _environment.AddObstacle(obstacle1, new Coordinate {X = 500, Y = 300});
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -63,6 +67,25 @@ namespace FrontEnd
             }
         }
 
+        private void DrawObstacle(IPlacement obstacle)
+        {
+            for (int i = 0; i < obstacle.Form.Shape.Points.Count; i++)
+            {
+                var polygon = obstacle.Form.Shape;
+                DawnOnline.Simulation.Collision.Vector p1 = polygon.Points[i];
+                DawnOnline.Simulation.Collision.Vector p2;
+                if (i + 1 >= polygon.Points.Count)
+                {
+                    p2 = polygon.Points[0];
+                }
+                else
+                {
+                    p2 = polygon.Points[i + 1];
+                }
+                DrawLine(p1, p2);
+            }
+        }
+
         private void DrawCreature(ICreature creature)
         {
             var placement = creature.Place;
@@ -101,6 +124,34 @@ namespace FrontEnd
                 MyCanvas.Children.Add(newLine);
             }
 
+            // Shape
+            {
+				for (int i = 0; i < creature.Place.Form.Shape.Points.Count; i++) 
+                {
+                    var polygon = creature.Place.Form.Shape;
+					DawnOnline.Simulation.Collision.Vector p1 = polygon.Points[i];
+                    DawnOnline.Simulation.Collision.Vector p2;
+					if (i + 1 >= polygon.Points.Count) 
+                    {
+						p2 = polygon.Points[0];
+					} else {
+						p2 = polygon.Points[i + 1];
+					}
+					DrawLine(p1, p2);
+				}
+			}
+        }
+
+        private void DrawLine(DawnOnline.Simulation.Collision.Vector p1, DawnOnline.Simulation.Collision.Vector p2)
+        {
+            var newLine = new Line();
+            newLine.X1 = p1.X;
+            newLine.Y1 = p1.Y;
+            newLine.X2 = p2.X;
+            newLine.Y2 = p2.Y;
+            newLine.Stroke = Brushes.Black;
+
+            MyCanvas.Children.Add(newLine);
         }
 
         private void DrawAll()
@@ -111,6 +162,12 @@ namespace FrontEnd
             foreach (var current in creatures)
             {
                 DrawCreature(current);
+            }
+
+            var obstacles = _environment.GetObstacles();
+            foreach (var current in obstacles)
+            {
+                DrawObstacle(current);
             }
         }
 

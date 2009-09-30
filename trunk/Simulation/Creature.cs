@@ -2,15 +2,27 @@
 using System.Diagnostics;
 using DawnOnline.Simulation.Brains;
 using DawnOnline.Simulation.Statistics;
+using DawnOnline.Simulation.Collision;
 
 namespace DawnOnline.Simulation
 {
     class Creature : ICreature
     {
-        private IForm _body; 
         private Placement _place = new Placement();
         private CharacterSheet _characterSheet = new CharacterSheet();
         private AbstractBrain _brain;
+
+        public Environment MyEnvironment { get; set; }
+        public IPlacement Place { get { return _place; } }
+
+        public bool Alive
+        {
+            get { return _alive; }
+            set { _alive = value; }
+        }
+
+        public bool HasBrain { get { return Brain != null; } }
+
 
         internal AbstractBrain Brain 
         { 
@@ -29,8 +41,7 @@ namespace DawnOnline.Simulation
 
         public Creature(double bodyRadius)
         {
-            _body = SimulationFactory.CreateCircle(bodyRadius);
-            _place.Form = _body;
+            _place.Form = SimulationFactory.CreateCircle(bodyRadius);
         }
 
         public bool IsTired
@@ -50,8 +61,14 @@ namespace DawnOnline.Simulation
         {
             Debug.Assert(MyEnvironment != null);
 
-            _place.Position.X += Math.Cos(_place.Angle) * Statistics.WalkingDistance;
-            _place.Position.Y += Math.Sin(_place.Angle) * Statistics.WalkingDistance;
+            var originalTranslation = new Vector((float)(Math.Cos(_place.Angle) * Statistics.WalkingDistance),
+                                                (float)(Math.Sin(_place.Angle) * Statistics.WalkingDistance));
+
+            var realTranslation = TryMove(originalTranslation);
+
+            _place.Position.X += realTranslation.X;
+            _place.Position.Y += realTranslation.Y;
+            (_place.Form.Shape as Polygon).Offset(realTranslation);
         }
 
         public void RunForward()
@@ -64,10 +81,35 @@ namespace DawnOnline.Simulation
                 return;
             }
 
-            _place.Position.X += Math.Cos(_place.Angle) * Statistics.RunningDistance;
-            _place.Position.Y += Math.Sin(_place.Angle) * Statistics.RunningDistance;
+            var originalTranslation = new Vector((float)(Math.Cos(_place.Angle)*Statistics.RunningDistance),
+                                                 (float)(Math.Sin(_place.Angle)*Statistics.RunningDistance));
+
+            var realTranslation = TryMove(originalTranslation);
+
+            _place.Position.X += realTranslation.X;
+            _place.Position.Y += realTranslation.Y;
+            (_place.Form.Shape as Polygon).Offset(realTranslation);
 
             Statistics.Fatigue.Increase((int)Statistics.FatigueCost);
+        }
+
+        private Vector TryMove(Vector velocity)
+        {
+            foreach (var obstacle in MyEnvironment.GetObstacles())
+            {
+                //if (polygon == player) continue;
+
+                Polygon obstaclePolygon = obstacle.Form.Shape as Polygon;
+
+                PolygonCollisionResult collitionResult = CollisionDetection.PolygonCollision(Place.Form.Shape as Polygon, obstaclePolygon, velocity);
+
+                if (collitionResult.WillIntersect)
+                {
+                    return velocity + collitionResult.MinimumTranslationVector;
+                }
+            }
+
+            return velocity;
         }
 
         public void TurnLeft()
@@ -79,24 +121,6 @@ namespace DawnOnline.Simulation
         {
             _place.Angle += Statistics.TurningAngle;
         }
-
-        public void SetPosition(Coordinate position, double angle)
-        {
-            _place.Position = position;
-            _place.Angle = angle;
-        }
-
-        public Environment MyEnvironment { get; set; }
-        public IForm Body { get { return _body; } }
-        public IPlacement Place { get { return _place; } }
-
-        public bool Alive
-        { 
-            get { return _alive; }
-            set { _alive = value; }
-        }
-
-        public bool HasBrain { get { return Brain != null; } }
 
         public void Move()
         {
@@ -112,7 +136,7 @@ namespace DawnOnline.Simulation
         {
             Debug.Assert(Alive);
 
-            return FindCreatureInCircle(_place.Position, _body.Radius);
+            return FindCreatureInCircle(_place.Position, _place.Form.Radius);
         }
 
         private static bool IsInCircle(Creature enemy, Coordinate position, double radius)
