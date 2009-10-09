@@ -169,7 +169,7 @@ namespace DawnOnline.Simulation
 
             int necessaryFood = Globals.Radomizer.Next(3);
 
-            if (Specy == CreatureType.Plant) necessaryFood = 0;
+            if (Specy == CreatureType.Plant) necessaryFood = 1;
 
             if (!_characterSheet.Hunger.CanIncrease(necessaryFood))
             {
@@ -258,6 +258,8 @@ namespace DawnOnline.Simulation
             return _rightEye.SeesACreature(specy);
         }
 
+        private int _timeToReproduceMax = 100;
+        private int _timeToReproduceMin = 50;
         private int _timeToReproduce = Globals.Radomizer.Next(50, 100);
 
         public bool TryReproduce()
@@ -272,7 +274,8 @@ namespace DawnOnline.Simulation
 
             //_characterSheet.ReproductionEnergy -= _characterSheet.ReproductionThreshold;
             //_characterSheet.ReproductionThreshold = (int)(_characterSheet.ReproductionThreshold * 1.5);
-            _timeToReproduce = Globals.Radomizer.Next(50, 100);
+            _timeToReproduceMax *= 2;
+            _timeToReproduce = Globals.Radomizer.Next(_timeToReproduceMin, _timeToReproduceMax);
 
             return true;
         }

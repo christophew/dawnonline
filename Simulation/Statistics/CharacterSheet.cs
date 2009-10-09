@@ -26,7 +26,7 @@ namespace DawnOnline.Simulation.Statistics
         internal CharacterSheet()
         {
             Fatigue = new Monitor();
-            Hunger = new Monitor();
+            Hunger = new Monitor(200);
 
             // Defaults
             WalkingDistance = 1;
