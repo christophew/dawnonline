@@ -7,8 +7,19 @@ using DawnOnline.Simulation.Senses;
 
 namespace DawnOnline.Simulation
 {
+    public enum CreatureType
+    {
+        Unknown,
+        Avatar,
+        Predator,
+        Rabbit,
+        Plant
+    }
+
     public interface ICreature
     {
+        CreatureType Specy { get; }
+
         bool Alive { get; }
 
         bool IsTired { get; }

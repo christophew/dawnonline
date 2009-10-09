@@ -15,6 +15,7 @@ namespace DawnOnline.Simulation.Statistics
         internal double FatigueCost { get; set; }
         internal double FatigueRecovery { get; set; }
         internal double MeleeRange { get; set; }
+        internal int MaxAge { get; set; }
 
         // Monitors
         internal Monitor Fatigue { get; private set; }
@@ -31,6 +32,7 @@ namespace DawnOnline.Simulation.Statistics
             FatigueCost = 15;
             FatigueRecovery = 30;
             MeleeRange = 15;
+            MaxAge = Int32.MaxValue;
         }
 
         #region ICloneable Members

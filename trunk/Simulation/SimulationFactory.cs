@@ -44,11 +44,30 @@ namespace DawnOnline.Simulation
             return placement;
         }
 
+        public static ICreature CreateCreature(CreatureType specy)
+        {
+            switch (specy)
+            {
+                case CreatureType.Plant:
+                    return CreatePlant();
+                case CreatureType.Predator:
+                    return CreatePredator();
+                case CreatureType.Rabbit:
+                    return CreateRabbit();
+            }
+
+            throw new ArgumentOutOfRangeException();
+        }
+
         public static ICreature CreatePredator()
         {
             var critter = new Creature(15);
             critter.Brain = new PredatorBrain();
 
+            critter.Specy = CreatureType.Predator;
+            critter.FoodSpecy = CreatureType.Rabbit;
+
+            critter.Statistics.MaxAge = Globals.Radomizer.Next(100, 150);
             critter.Statistics.WalkingDistance = 5;
             critter.Statistics.TurningAngle = 0.2;
             critter.InitializeSenses();
@@ -61,8 +80,28 @@ namespace DawnOnline.Simulation
             var critter = new Creature(10);
             critter.Brain = new RabbitBrain();
 
+            critter.Specy = CreatureType.Rabbit;
+            critter.FoodSpecy = CreatureType.Plant;
+
+            critter.Statistics.MaxAge = Globals.Radomizer.Next(100, 300);
             critter.Statistics.WalkingDistance = 4;
             critter.Statistics.TurningAngle = 0.35;
+            critter.InitializeSenses();
+
+            return critter;
+        }
+
+        public static ICreature CreatePlant()
+        {
+            var critter = new Creature(12);
+            critter.Brain = new PlantBrain();
+
+            critter.Specy = CreatureType.Plant;
+            //critter.FoodSpecy = CreatureType.Predator; // instead: killing creatures can produce plants
+
+            critter.Statistics.MaxAge = Globals.Radomizer.Next(50, 200);
+            critter.Statistics.WalkingDistance = 0;
+            critter.Statistics.TurningAngle = 0;
             critter.InitializeSenses();
 
             return critter;
@@ -72,6 +111,7 @@ namespace DawnOnline.Simulation
         {
             var avatar = new Creature(15);
 
+            avatar.Specy = CreatureType.Avatar;
             avatar.Statistics.WalkingDistance = 6;
             avatar.Statistics.TurningAngle = 0.35;
             avatar.InitializeSenses();

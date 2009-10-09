@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using DawnOnline.Simulation.Collision;
 
 namespace DawnOnline.Simulation
 {
@@ -18,7 +19,27 @@ namespace DawnOnline.Simulation
 
             myCreature.MyEnvironment = this;
             (myCreature.Place as Placement).OffsetPosition(origin, angle);
-            _creatures.Add(creature);
+
+            if (!IntersectsWithObstacles(myCreature))
+                _creatures.Add(creature);
+        }
+
+        private bool IntersectsWithObstacles(Creature creature)
+        {
+            foreach (var current in _obstacles)
+            {
+                Polygon obstaclePolygon = current.Form.Shape as Polygon;
+                PolygonCollisionResult collitionResult = CollisionDetection.PolygonCollision(creature.Place.Form.Shape as Polygon,
+                                                                                             obstaclePolygon,
+                                                                                             new Vector());
+
+                if (collitionResult.Intersect)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public void KillCreature(ICreature creature)

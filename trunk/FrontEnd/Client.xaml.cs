@@ -25,15 +25,8 @@ namespace FrontEnd
             InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void AddRabbits_Click(object sender, RoutedEventArgs e)
         {
-            for (int i = 0; i < 50; i++)
-            {
-                _environment.AddCreature(SimulationFactory.CreatePredator(),
-                                 new Coordinate { X = _randomize.Next(MaxX), Y = _randomize.Next(MaxY) },
-                                 _randomize.Next(6));
-            }
-
             for (int i = 0; i < 50; i++)
             {
                 _environment.AddCreature(SimulationFactory.CreateRabbit(),
@@ -41,6 +34,27 @@ namespace FrontEnd
                                  _randomize.Next(6));
             }
         }
+
+        private void AddPlants_Click(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < 50; i++)
+            {
+                _environment.AddCreature(SimulationFactory.CreatePlant(),
+                                 new Coordinate { X = _randomize.Next(MaxX), Y = _randomize.Next(MaxY) },
+                                 _randomize.Next(6));
+            }
+        }
+
+        private void AddPredators_Click(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < 50; i++)
+            {
+                _environment.AddCreature(SimulationFactory.CreatePredator(),
+                                 new Coordinate { X = _randomize.Next(MaxX), Y = _randomize.Next(MaxY) },
+                                 _randomize.Next(6));
+            }
+        }
+
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
@@ -51,6 +65,10 @@ namespace FrontEnd
         {
             var creatures = new List<ICreature>(_environment.GetCreatures());
 
+            int nrOfPlants = 0;
+            int nrOfRabbits = 0;
+            int nrOfPredators = 0;
+
             foreach (var current in creatures)
             {
                 if (!current.Alive)
@@ -58,10 +76,31 @@ namespace FrontEnd
 
                 current.Move();
 
+                // Died of old age..
+                if (!current.Alive)
+                    continue;
+
                 var killed = current.Attack();
                 if ((killed != null) && (killed != _avatar))
                     _environment.KillCreature(killed);
+
+                if (current.Specy == CreatureType.Plant) nrOfPlants++;
+                if (current.Specy == CreatureType.Rabbit) nrOfRabbits++;
+                if (current.Specy == CreatureType.Predator) nrOfPredators++;
+
+                // TEST: grow on organic waste
+                if ((killed != null) && (killed.Specy != CreatureType.Plant))
+                {
+                    if (_randomize.Next(5) == 0)
+                    {
+                        var plant = SimulationFactory.CreatePlant();
+                        _environment.AddCreature(plant, killed.Place.Position, 0);
+                    }
+                }
+
             }
+
+            Info.Content = string.Format("Plant: {0}; Rabbits: {1}; Predators:{2}", nrOfPlants, nrOfRabbits, nrOfPredators);
         }
 
         private void DrawObstacle(IPlacement obstacle)
@@ -95,12 +134,15 @@ namespace FrontEnd
             {
                 var color = creature.Equals(_avatar) ? Brushes.Blue : Brushes.Red;
 
-                if (creature.SeesACreatureLeft())
-                    color = Brushes.LightGray;
-                if (creature.SeesACreatureRight())
-                    color = Brushes.LightGray;
-                if (creature.SeesACreatureForward())
-                    color = Brushes.Gray;
+                //if (creature.SeesACreatureLeft())
+                //    color = Brushes.LightGray;
+                //if (creature.SeesACreatureRight())
+                //    color = Brushes.LightGray;
+                //if (creature.SeesACreatureForward())
+                //    color = Brushes.Gray;
+
+                if (creature.Specy == CreatureType.Rabbit) color = Brushes.WhiteSmoke;
+                if (creature.Specy == CreatureType.Plant) color = Brushes.Green;
 
                 var newEllipse = new Ellipse();
                 newEllipse.Height = placement.Form.Radius;
@@ -114,6 +156,7 @@ namespace FrontEnd
             }
 
             // Direction
+            if (creature.Specy != CreatureType.Plant)
             {
                 var newLine = new Line();
                 newLine.X1 = placement.Position.X;
@@ -126,33 +169,33 @@ namespace FrontEnd
             }
 
             // Shape
-            {
-				for (int i = 0; i < creature.Place.Form.Shape.Points.Count; i++) 
-                {
-                    var polygon = creature.Place.Form.Shape;
-					DawnOnline.Simulation.Collision.Vector p1 = polygon.Points[i];
-                    DawnOnline.Simulation.Collision.Vector p2;
-					if (i + 1 >= polygon.Points.Count) 
-                    {
-						p2 = polygon.Points[0];
-					} else {
-						p2 = polygon.Points[i + 1];
-					}
-					DrawLine(p1, p2);
-				}
-			}
+            //{
+            //    for (int i = 0; i < creature.Place.Form.Shape.Points.Count; i++) 
+            //    {
+            //        var polygon = creature.Place.Form.Shape;
+            //        DawnOnline.Simulation.Collision.Vector p1 = polygon.Points[i];
+            //        DawnOnline.Simulation.Collision.Vector p2;
+            //        if (i + 1 >= polygon.Points.Count) 
+            //        {
+            //            p2 = polygon.Points[0];
+            //        } else {
+            //            p2 = polygon.Points[i + 1];
+            //        }
+            //        DrawLine(p1, p2);
+            //    }
+            //}
 
             // LineOfSight
-            {
-                foreach (var eye in creature.Eyes)
-                {
-                    var lineOfSight = eye.GetLineOfSight();
-                    if (lineOfSight != null)
-                    {
-                        DrawPolygon(lineOfSight);
-                    }
-                }
-            }
+            //{
+            //    foreach (var eye in creature.Eyes)
+            //    {
+            //        var lineOfSight = eye.GetLineOfSight();
+            //        if (lineOfSight != null)
+            //        {
+            //            DrawPolygon(lineOfSight);
+            //        }
+            //    }
+            //}
         }
 
         private void DrawLine(DawnOnline.Simulation.Collision.Vector p1, DawnOnline.Simulation.Collision.Vector p2)
@@ -193,7 +236,7 @@ namespace FrontEnd
 
             {
                 var dt = new System.Windows.Threading.DispatcherTimer();
-                dt.Interval = new TimeSpan(0, 0, 0, 0, 100);
+                dt.Interval = new TimeSpan(0, 0, 0, 0, 250);
                 dt.Tick += UpdateClient;
                 dt.Start();
             }
@@ -217,12 +260,26 @@ namespace FrontEnd
             // Some obstacles
             _environment.AddObstacle(SimulationFactory.CreateObstacleBox(300, 10), new Coordinate { X = 500, Y = 400 });
             _environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, 100), new Coordinate { X = 500, Y = 400 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(300, 10), new Coordinate { X = 100, Y = 100 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, 300), new Coordinate { X = 100, Y = 100 });
             _environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, -100), new Coordinate { X = 800, Y = 400 });
 
             _environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, -100), new Coordinate { X = 900, Y = 400 });
 
             _environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 30), new Coordinate { X = 700, Y = 100 });
             _environment.AddObstacle(SimulationFactory.CreateObstacleBox(70, 30), new Coordinate { X = 200, Y = 700 });
+
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(-300, 10), new Coordinate { X = 1400, Y = 800 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, -300), new Coordinate { X = 1400, Y = 800 });
+
+
+
+            // Squares
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 100), new Coordinate { X = 600, Y = 50 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 100), new Coordinate { X = 1200, Y = 3 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 100), new Coordinate { X = 20, Y = 600 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 100), new Coordinate { X = 300, Y = 700 });
+
         }
 
         void UpdateClient(object sender, EventArgs e)

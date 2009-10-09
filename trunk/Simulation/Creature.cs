@@ -15,6 +15,12 @@ namespace DawnOnline.Simulation
         private CharacterSheet _characterSheet = new CharacterSheet();
         private AbstractBrain _brain;
 
+        public CreatureType Specy { get; set; }
+        public CreatureType FoodSpecy { get; set; }
+        public int Age { get; private set; }
+        private int _reproductionEnergy = 0;
+        private int _reproductionThreshold = 100;
+
         public Environment MyEnvironment { get; set; }
         public IPlacement Place { get { return _place; } }
 
@@ -24,7 +30,6 @@ namespace DawnOnline.Simulation
             set { _alive = value; }
         }
 
-        private int _reproductionEnergy { get; set; }
 
         public bool HasBrain { get { return Brain != null; } }
 
@@ -158,17 +163,37 @@ namespace DawnOnline.Simulation
             if (!HasBrain)
                 return;
 
+            if (Age++ > _characterSheet.MaxAge)
+            {
+                MyEnvironment.KillCreature(this);
+                return;
+            }
+
             Brain.DoSomething();
 
-            // TESTING
-            _reproductionEnergy++;
+            // TESTING: 
+            if (Specy == CreatureType.Plant)
+            {
+                _reproductionEnergy += Globals.Radomizer.Next(5);
+            }
         }
 
         public ICreature Attack()
         {
             Debug.Assert(Alive);
 
-            return FindCreatureInCircle(_place.Position, _characterSheet.MeleeRange);
+            var enemy = FindFoodInCircle(_place.Position, _characterSheet.MeleeRange);
+
+
+            // TESTING: assume he also hit, kills and eats his target
+            if (Specy != CreatureType.Plant)
+            {
+                if (enemy != null)
+                    _reproductionEnergy += 75;
+            }
+            
+
+            return enemy;
         }
 
         private static bool IsInCircle(Creature enemy, Coordinate position, double radius)
@@ -176,12 +201,14 @@ namespace DawnOnline.Simulation
             return MathTools.GetDistance2(position, enemy.Place.Position) < radius * radius;
         }
 
-        private Creature FindCreatureInCircle(Coordinate center, double radius)
+        private Creature FindFoodInCircle(Coordinate center, double radius)
         {
             var creatures = MyEnvironment.GetCreatures();
             foreach (Creature current in creatures)
             {
                 if (current.Equals(this))
+                    continue;
+                if (current.Specy != FoodSpecy)
                     continue;
 
                 if (IsInCircle(current, center, radius))
@@ -206,20 +233,36 @@ namespace DawnOnline.Simulation
             return _rightEye.SeesACreature();
         }
 
-        public void TryReproduce()
+        public bool SeesACreatureForward(CreatureType specy)
         {
-            if (_reproductionEnergy < 40)
-                return;
+            return _forwardEye.SeesACreature(specy);
+        }
+
+        public bool SeesACreatureLeft(CreatureType specy)
+        {
+            return _leftEye.SeesACreature(specy);
+        }
+
+        public bool SeesACreatureRight(CreatureType specy)
+        {
+            return _rightEye.SeesACreature(specy);
+        }
+
+        public bool TryReproduce()
+        {
+            if (_reproductionEnergy < _reproductionThreshold)
+                return false;
 
 
-            var child = new Creature(_place.Form.Radius);
-            child.Brain = this.Brain.Clone() as AbstractBrain;
-            child._characterSheet = this._characterSheet.Clone() as CharacterSheet;
-            child.InitializeSenses();
+            ICreature child = SimulationFactory.CreateCreature(Specy);
 
-            MyEnvironment.AddCreature(child, MathTools.OffsetCoordinate(_place.Position, _place.Angle + Math.PI, _place.Form.Radius + 5), _place.Angle + Math.PI);
+            MyEnvironment.AddCreature(child, MathTools.OffsetCoordinate(_place.Position, _place.Angle + Math.PI, _place.Form.Radius + 5), Globals.Radomizer.Next(7));
 
-            _reproductionEnergy = 0;
+            _reproductionEnergy -= _reproductionThreshold;
+            //_reproductionThreshold = (int)(_reproductionThreshold*1.5);
+
+
+            return true;
         }
 
 
