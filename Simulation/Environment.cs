@@ -20,16 +20,16 @@ namespace DawnOnline.Simulation
             myCreature.MyEnvironment = this;
             (myCreature.Place as Placement).OffsetPosition(origin, angle);
 
-            if (!IntersectsWithObstacles(myCreature))
+            if (!IntersectsWithObstacles(myCreature.Place))
                 _creatures.Add(creature);
         }
 
-        private bool IntersectsWithObstacles(Creature creature)
+        private bool IntersectsWithObstacles(IPlacement place)
         {
             foreach (var current in _obstacles)
             {
                 Polygon obstaclePolygon = current.Form.Shape as Polygon;
-                PolygonCollisionResult collitionResult = CollisionDetection.PolygonCollision(creature.Place.Form.Shape as Polygon,
+                PolygonCollisionResult collitionResult = CollisionDetection.PolygonCollision(place.Form.Shape as Polygon,
                                                                                              obstaclePolygon,
                                                                                              new Vector());
 
@@ -51,29 +51,22 @@ namespace DawnOnline.Simulation
             _creatures.Remove(creature);
         }
 
-        //public IList<IPlacement> GetPlacements()
-        //{
-        //    var placements = new List<IPlacement>();
-
-        //    foreach (Creature current in _creatures)
-        //    {
-        //        placements.Add(current.Place);
-        //    }
-
-        //    return placements;
-        //}
-
         public IList<ICreature> GetCreatures()
         {
             return _creatures;
         }
 
-        public void AddObstacle(IPlacement obstacle, Coordinate origin)
+        public bool AddObstacle(IPlacement obstacle, Coordinate origin)
         {
             var myObstacle = obstacle as Placement;
 
             myObstacle.OffsetPosition(origin, 0.0);
+
+            if (IntersectsWithObstacles(obstacle))
+                return false;
+
             _obstacles.Add(obstacle);
+            return true;
         }
 
         public IList<IPlacement> GetObstacles()

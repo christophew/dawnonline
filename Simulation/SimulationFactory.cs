@@ -67,7 +67,7 @@ namespace DawnOnline.Simulation
             critter.Specy = CreatureType.Predator;
             critter.FoodSpecy = CreatureType.Rabbit;
 
-            critter.Statistics.MaxAge = Globals.Radomizer.Next(100, 150);
+            //critter.Statistics.MaxAge = Globals.Radomizer.Next(100, 150);
             critter.Statistics.WalkingDistance = 5;
             critter.Statistics.TurningAngle = 0.2;
             critter.InitializeSenses();
@@ -83,7 +83,7 @@ namespace DawnOnline.Simulation
             critter.Specy = CreatureType.Rabbit;
             critter.FoodSpecy = CreatureType.Plant;
 
-            critter.Statistics.MaxAge = Globals.Radomizer.Next(100, 300);
+            //critter.Statistics.MaxAge = Globals.Radomizer.Next(100, 300);
             critter.Statistics.WalkingDistance = 4;
             critter.Statistics.TurningAngle = 0.35;
             critter.InitializeSenses();
@@ -99,7 +99,7 @@ namespace DawnOnline.Simulation
             critter.Specy = CreatureType.Plant;
             //critter.FoodSpecy = CreatureType.Predator; // instead: killing creatures can produce plants
 
-            critter.Statistics.MaxAge = Globals.Radomizer.Next(50, 200);
+            //critter.Statistics.MaxAge = Globals.Radomizer.Next(50, 200);
             critter.Statistics.WalkingDistance = 0;
             critter.Statistics.TurningAngle = 0;
             critter.InitializeSenses();

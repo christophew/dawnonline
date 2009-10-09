@@ -12,7 +12,7 @@ namespace DawnOnline.Simulation
 
         IList<ICreature> GetCreatures();
 
-        void AddObstacle(IPlacement obstacle, Coordinate origin);
+        bool AddObstacle(IPlacement obstacle, Coordinate origin);
         IList<IPlacement> GetObstacles();
     }
 }

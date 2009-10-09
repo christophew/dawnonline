@@ -17,9 +17,7 @@ namespace DawnOnline.Simulation
 
         public CreatureType Specy { get; set; }
         public CreatureType FoodSpecy { get; set; }
-        public int Age { get; private set; }
-        private int _reproductionEnergy = 0;
-        private int _reproductionThreshold = 100;
+        //public int Age { get; private set; }
 
         public Environment MyEnvironment { get; set; }
         public IPlacement Place { get { return _place; } }
@@ -163,7 +161,17 @@ namespace DawnOnline.Simulation
             if (!HasBrain)
                 return;
 
-            if (Age++ > _characterSheet.MaxAge)
+            //if (Age++ > _characterSheet.MaxAge)
+            //{
+            //    MyEnvironment.KillCreature(this);
+            //    return;
+            //}
+
+            int necessaryFood = Globals.Radomizer.Next(3);
+
+            if (Specy == CreatureType.Plant) necessaryFood = 0;
+
+            if (!_characterSheet.Hunger.CanIncrease(necessaryFood))
             {
                 MyEnvironment.KillCreature(this);
                 return;
@@ -172,9 +180,8 @@ namespace DawnOnline.Simulation
             Brain.DoSomething();
 
             // TESTING: 
-            if (Specy == CreatureType.Plant)
             {
-                _reproductionEnergy += Globals.Radomizer.Next(5);
+                _characterSheet.Hunger.Increase(necessaryFood);
             }
         }
 
@@ -186,10 +193,10 @@ namespace DawnOnline.Simulation
 
 
             // TESTING: assume he also hit, kills and eats his target
-            if (Specy != CreatureType.Plant)
+            //if (Specy != CreatureType.Plant)
             {
                 if (enemy != null)
-                    _reproductionEnergy += 75;
+                    _characterSheet.Hunger.Decrease((int)enemy.Statistics.FoodValue);
             }
             
 
@@ -203,6 +210,9 @@ namespace DawnOnline.Simulation
 
         private Creature FindFoodInCircle(Coordinate center, double radius)
         {
+            if (FoodSpecy == CreatureType.Unknown)
+                return null;
+
             var creatures = MyEnvironment.GetCreatures();
             foreach (Creature current in creatures)
             {
@@ -248,9 +258,11 @@ namespace DawnOnline.Simulation
             return _rightEye.SeesACreature(specy);
         }
 
+        private int _timeToReproduce = Globals.Radomizer.Next(50, 100);
+
         public bool TryReproduce()
         {
-            if (_reproductionEnergy < _reproductionThreshold)
+            if (_timeToReproduce-- > 0)
                 return false;
 
 
@@ -258,9 +270,9 @@ namespace DawnOnline.Simulation
 
             MyEnvironment.AddCreature(child, MathTools.OffsetCoordinate(_place.Position, _place.Angle + Math.PI, _place.Form.Radius + 5), Globals.Radomizer.Next(7));
 
-            _reproductionEnergy -= _reproductionThreshold;
-            _reproductionThreshold = (int)(_reproductionThreshold*1.5);
-
+            //_characterSheet.ReproductionEnergy -= _characterSheet.ReproductionThreshold;
+            //_characterSheet.ReproductionThreshold = (int)(_characterSheet.ReproductionThreshold * 1.5);
+            _timeToReproduce = Globals.Radomizer.Next(50, 100);
 
             return true;
         }

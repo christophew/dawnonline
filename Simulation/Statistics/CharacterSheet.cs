@@ -15,24 +15,30 @@ namespace DawnOnline.Simulation.Statistics
         internal double FatigueCost { get; set; }
         internal double FatigueRecovery { get; set; }
         internal double MeleeRange { get; set; }
-        internal int MaxAge { get; set; }
+
+        //internal int MaxAge { get; set; }
+        internal double FoodValue { get; set; }
 
         // Monitors
         internal Monitor Fatigue { get; private set; }
+        internal Monitor Hunger { get; private set; }
 
         internal CharacterSheet()
         {
             Fatigue = new Monitor();
+            Hunger = new Monitor();
 
             // Defaults
             WalkingDistance = 1;
             TurningAngle = 0.01;
             VisionAccuracyPercent = 70;
-            VisionDistance = 100;
+            VisionDistance = 250;
             FatigueCost = 15;
             FatigueRecovery = 30;
             MeleeRange = 15;
-            MaxAge = Int32.MaxValue;
+            //MaxAge = Int32.MaxValue;
+
+            FoodValue = 10;
         }
 
         #region ICloneable Members
