@@ -27,38 +27,27 @@ namespace FrontEnd
 
         private void AddRabbits_Click(object sender, RoutedEventArgs e)
         {
-            for (int i = 0; i < 50; i++)
-            {
-                _environment.AddCreature(SimulationFactory.CreateRabbit(),
-                                 new Coordinate { X = _randomize.Next(MaxX), Y = _randomize.Next(MaxY) },
-                                 _randomize.Next(6));
-            }
+            AddCreatures(CreatureType.Rabbit, 30);
         }
 
         private void AddPlants_Click(object sender, RoutedEventArgs e)
         {
-            for (int i = 0; i < 50; i++)
-            {
-                _environment.AddCreature(SimulationFactory.CreatePlant(),
-                                 new Coordinate { X = _randomize.Next(MaxX), Y = _randomize.Next(MaxY) },
-                                 _randomize.Next(6));
-            }
+            AddCreatures(CreatureType.Plant, 30);
         }
 
         private void AddPredators_Click(object sender, RoutedEventArgs e)
         {
-            for (int i = 0; i < 50; i++)
+            AddCreatures(CreatureType.Predator, 30);
+        }
+
+        private void AddCreatures(CreatureType specy, int amount)
+        {
+            for (int i = 0; i < amount; i++)
             {
-                _environment.AddCreature(SimulationFactory.CreatePredator(),
+                _environment.AddCreature(SimulationFactory.CreateCreature(specy),
                                  new Coordinate { X = _randomize.Next(MaxX), Y = _randomize.Next(MaxY) },
                                  _randomize.Next(6));
             }
-        }
-
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            MoveAll();
         }
 
         private void MoveAll()
@@ -97,7 +86,13 @@ namespace FrontEnd
                         _environment.AddCreature(plant, killed.Place.Position, 0);
                     }
                 }
+            }
 
+            // Repopulate
+            {
+                if (nrOfPlants == 0) AddCreatures(CreatureType.Plant, 10);
+                if (nrOfPredators == 0) AddCreatures(CreatureType.Predator, 10);
+                if (nrOfRabbits == 0) AddCreatures(CreatureType.Rabbit, 10);
             }
 
             Info.Content = string.Format("Plant: {0}; Rabbits: {1}; Predators:{2}", nrOfPlants, nrOfRabbits, nrOfPredators);

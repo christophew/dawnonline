@@ -259,7 +259,7 @@ namespace DawnOnline.Simulation
             MyEnvironment.AddCreature(child, MathTools.OffsetCoordinate(_place.Position, _place.Angle + Math.PI, _place.Form.Radius + 5), Globals.Radomizer.Next(7));
 
             _reproductionEnergy -= _reproductionThreshold;
-            //_reproductionThreshold = (int)(_reproductionThreshold*1.5);
+            _reproductionThreshold = (int)(_reproductionThreshold*1.5);
 
 
             return true;
