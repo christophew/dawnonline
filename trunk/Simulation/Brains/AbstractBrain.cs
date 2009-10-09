@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DawnOnline.Simulation.Brains
 {
-    internal abstract class AbstractBrain
+    internal abstract class AbstractBrain : ICloneable
     {
         internal Creature MyCreature { get; set; }
 
@@ -13,7 +13,7 @@ namespace DawnOnline.Simulation.Brains
 
         protected void DoRandomAction()
         {
-            int randomAction = Globals.Radomizer.Next(4);
+            int randomAction = Globals.Radomizer.Next(5);
 
             if (randomAction == 0)
                 MyCreature.WalkForward();
@@ -23,6 +23,17 @@ namespace DawnOnline.Simulation.Brains
                 MyCreature.TurnRight();
             if (randomAction == 3)
                 MyCreature.Rest();
+            if (randomAction == 4)
+                MyCreature.TryReproduce();
         }
+
+        #region ICloneable Members
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
+
+        #endregion
     }
 }

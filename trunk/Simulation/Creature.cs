@@ -24,6 +24,8 @@ namespace DawnOnline.Simulation
             set { _alive = value; }
         }
 
+        private int _reproductionEnergy { get; set; }
+
         public bool HasBrain { get { return Brain != null; } }
 
         internal AbstractBrain Brain 
@@ -157,6 +159,9 @@ namespace DawnOnline.Simulation
                 return;
 
             Brain.DoSomething();
+
+            // TESTING
+            _reproductionEnergy++;
         }
 
         public ICreature Attack()
@@ -200,5 +205,23 @@ namespace DawnOnline.Simulation
         {
             return _rightEye.SeesACreature();
         }
+
+        public void TryReproduce()
+        {
+            if (_reproductionEnergy < 40)
+                return;
+
+
+            var child = new Creature(_place.Form.Radius);
+            child.Brain = this.Brain.Clone() as AbstractBrain;
+            child._characterSheet = this._characterSheet.Clone() as CharacterSheet;
+            child.InitializeSenses();
+
+            MyEnvironment.AddCreature(child, MathTools.OffsetCoordinate(_place.Position, _place.Angle + Math.PI, _place.Form.Radius + 5), _place.Angle + Math.PI);
+
+            _reproductionEnergy = 0;
+        }
+
+
     }
 }

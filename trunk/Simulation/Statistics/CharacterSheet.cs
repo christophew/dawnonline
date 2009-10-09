@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DawnOnline.Simulation.Statistics
 {
-    internal class CharacterSheet
+    internal class CharacterSheet : ICloneable
     {
         internal double WalkingDistance { get; set; }
         internal double RunningDistance { get { return WalkingDistance*2.0; } }
@@ -32,5 +32,14 @@ namespace DawnOnline.Simulation.Statistics
             FatigueRecovery = 30;
             MeleeRange = 15;
         }
+
+        #region ICloneable Members
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
+
+        #endregion
     }
 }

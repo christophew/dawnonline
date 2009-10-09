@@ -36,5 +36,15 @@ namespace DawnOnline.Simulation.UnitTests
             Assert.AreEqual(MathTools.ConvertToRadials(180 + 45), MathTools.GetAngle(0, 0, -10, -10));
             Assert.AreEqual(MathTools.ConvertToRadials(270 + 45), MathTools.GetAngle(0, 0, 10, -10));
         }
+
+        [Test]
+        public void TestOffsetCoordinate()
+        {
+            var origin = new Coordinate(0, 0);
+            Assert.AreEqual(10, MathTools.OffsetCoordinate(origin, 0, 10).X);
+            Assert.AreEqual(-10, MathTools.OffsetCoordinate(origin, Math.PI, 10).X);
+            Assert.AreEqual(10, MathTools.OffsetCoordinate(origin, Math.PI / 2.0, 10).Y);
+            Assert.AreEqual(-10, MathTools.OffsetCoordinate(origin, 3.0 * Math.PI / 2.0, 10).Y);
+        }
     }
 }
