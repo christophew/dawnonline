@@ -247,10 +247,10 @@ namespace FrontEnd
         private void BuildWorld()
         {
             // World boundaries
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, -20), new Coordinate { X = -1, Y = -1 });
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, 20), new Coordinate { X = 0, Y = MaxY });
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(-20, MaxY), new Coordinate { X = 0, Y = 0 });
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(20, MaxY), new Coordinate { X = MaxX + 1, Y = 1 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, -20), new Coordinate { X = 0, Y = -1 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, 20), new Coordinate { X = 0, Y = MaxY + 1});
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(-20, MaxY), new Coordinate { X = -1, Y = 0 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(20, MaxY), new Coordinate { X = MaxX + 1, Y = 0 });
 
             //// Some obstacles
             //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(300, 10), new Coordinate { X = 500, Y = 400 });
@@ -276,12 +276,12 @@ namespace FrontEnd
             //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 100), new Coordinate { X = 300, Y = 700 });
 
             // Randow obstacles
-            int maxWide = 200;
             int maxHeight = 200;
+            int maxWide = 200;
             for (int i=0; i < 50; i++)
             {
                 int height = _randomize.Next(maxHeight);
-                int wide = _randomize.Next(maxWide);
+                int wide = _randomize.Next(maxWide - height);
                 var position = new Coordinate(_randomize.Next(MaxX - wide), _randomize.Next(MaxY - height));
                 var box = SimulationFactory.CreateObstacleBox(wide, height);
 
@@ -327,5 +327,6 @@ namespace FrontEnd
             _currentScale += (e.Delta > 0) ? 0.05 : -0.05;
             MyCanvas.LayoutTransform = new ScaleTransform(_currentScale, _currentScale);
         }
+
     }
 }

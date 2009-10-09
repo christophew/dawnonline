@@ -13,8 +13,7 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Canvas Name="MyCanvas" Grid.Row="1" Grid.ColumnSpan="4">
-        </Canvas>
+        <Canvas Name="MyCanvas" Grid.Row="1" Grid.ColumnSpan="4"></Canvas>
         <Button Grid.Column="0" Click="AddPlants_Click">Add Plants</Button>
         <Button Grid.Column="1" Click="AddRabbits_Click">Add Rabbits</Button>
         <Button Grid.Column="2" Click="AddPredators_Click">Add Predators</Button>
