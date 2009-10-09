@@ -13,8 +13,8 @@ namespace FrontEnd
     public partial class Window1 : Window
     {
         private readonly IEnvironment _environment = SimulationFactory.CreateEnvironment();
-        private const int MaxX = 1500;
-        private const int MaxY = 900;
+        private const int MaxX = 3000;
+        private const int MaxY = 2000;
         private ICreature _avatar = SimulationFactory.CreateAvatar();
         private DateTime _lastMove = DateTime.Now;
 
@@ -78,22 +78,22 @@ namespace FrontEnd
                 if (current.Specy == CreatureType.Predator) nrOfPredators++;
 
                 // TEST: grow on organic waste
-                if ((killed != null) && (killed.Specy != CreatureType.Plant))
-                {
-                    if (_randomize.Next(5) == 0)
-                    {
-                        var plant = SimulationFactory.CreatePlant();
-                        _environment.AddCreature(plant, killed.Place.Position, 0);
-                    }
-                }
+                //if ((killed != null) && (killed.Specy != CreatureType.Plant))
+                //{
+                //    if (_randomize.Next(5) == 0)
+                //    {
+                //        var plant = SimulationFactory.CreatePlant();
+                //        _environment.AddCreature(plant, killed.Place.Position, 0);
+                //    }
+                //}
             }
 
             // Repopulate
-            {
-                if (nrOfPlants == 0) AddCreatures(CreatureType.Plant, 10);
-                if (nrOfPredators == 0) AddCreatures(CreatureType.Predator, 10);
-                if (nrOfRabbits == 0) AddCreatures(CreatureType.Rabbit, 10);
-            }
+            //{
+            //    if (nrOfPlants == 0) AddCreatures(CreatureType.Plant, 10);
+            //    if (nrOfPredators == 0) AddCreatures(CreatureType.Predator, 10);
+            //    if (nrOfRabbits == 0) AddCreatures(CreatureType.Rabbit, 10);
+            //}
 
             Info.Content = string.Format("Plant: {0}; Rabbits: {1}; Predators:{2}", nrOfPlants, nrOfRabbits, nrOfPredators);
         }
@@ -180,7 +180,7 @@ namespace FrontEnd
             //    }
             //}
 
-            // LineOfSight
+             //LineOfSight
             //{
             //    foreach (var eye in creature.Eyes)
             //    {
@@ -247,34 +247,46 @@ namespace FrontEnd
         private void BuildWorld()
         {
             // World boundaries
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, -20), new Coordinate { X = 0, Y = 0 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, -20), new Coordinate { X = -1, Y = -1 });
             _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, 20), new Coordinate { X = 0, Y = MaxY });
             _environment.AddObstacle(SimulationFactory.CreateObstacleBox(-20, MaxY), new Coordinate { X = 0, Y = 0 });
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(20, MaxY), new Coordinate { X = MaxX, Y = 0 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(20, MaxY), new Coordinate { X = MaxX + 1, Y = 1 });
 
-            // Some obstacles
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(300, 10), new Coordinate { X = 500, Y = 400 });
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, 100), new Coordinate { X = 500, Y = 400 });
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(300, 10), new Coordinate { X = 100, Y = 100 });
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, 300), new Coordinate { X = 100, Y = 100 });
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, -100), new Coordinate { X = 800, Y = 400 });
+            //// Some obstacles
+            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(300, 10), new Coordinate { X = 500, Y = 400 });
+            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, 100), new Coordinate { X = 500, Y = 400 });
+            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(300, 10), new Coordinate { X = 100, Y = 100 });
+            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, 300), new Coordinate { X = 100, Y = 100 });
+            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, -100), new Coordinate { X = 800, Y = 400 });
 
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, -100), new Coordinate { X = 900, Y = 400 });
+            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, -100), new Coordinate { X = 900, Y = 400 });
 
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 30), new Coordinate { X = 700, Y = 100 });
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(70, 30), new Coordinate { X = 200, Y = 700 });
+            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 30), new Coordinate { X = 700, Y = 100 });
+            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(70, 30), new Coordinate { X = 200, Y = 700 });
 
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(-300, 10), new Coordinate { X = 1400, Y = 800 });
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, -300), new Coordinate { X = 1400, Y = 800 });
+            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(-300, 10), new Coordinate { X = 1400, Y = 800 });
+            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, -300), new Coordinate { X = 1400, Y = 800 });
 
 
 
-            // Squares
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 100), new Coordinate { X = 600, Y = 50 });
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 100), new Coordinate { X = 1200, Y = 3 });
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 100), new Coordinate { X = 20, Y = 600 });
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 100), new Coordinate { X = 300, Y = 700 });
+            //// Squares
+            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 100), new Coordinate { X = 600, Y = 50 });
+            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 100), new Coordinate { X = 1200, Y = 3 });
+            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 100), new Coordinate { X = 20, Y = 600 });
+            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 100), new Coordinate { X = 300, Y = 700 });
 
+            // Randow obstacles
+            int maxWide = 200;
+            int maxHeight = 200;
+            for (int i=0; i < 50; i++)
+            {
+                int height = _randomize.Next(maxHeight);
+                int wide = _randomize.Next(maxWide);
+                var position = new Coordinate(_randomize.Next(MaxX - wide), _randomize.Next(MaxY - height));
+                var box = SimulationFactory.CreateObstacleBox(wide, height);
+
+                _environment.AddObstacle(box, position);
+            }
         }
 
         void UpdateClient(object sender, EventArgs e)
@@ -306,6 +318,14 @@ namespace FrontEnd
                         break;
                 }
             }
+        }
+
+
+        private double _currentScale = 1.0;
+        private void Window_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            _currentScale += (e.Delta > 0) ? 0.05 : -0.05;
+            MyCanvas.LayoutTransform = new ScaleTransform(_currentScale, _currentScale);
         }
     }
 }

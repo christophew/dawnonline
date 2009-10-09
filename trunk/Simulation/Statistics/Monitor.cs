@@ -11,6 +11,14 @@ namespace DawnOnline.Simulation.Statistics
         private static int _maxAmount = 100;
         private int _current;
 
+        public Monitor()
+        {
+        }
+
+        public Monitor(int max)
+        {
+            _maxAmount = max;
+        }
 
         internal bool CanIncrease(int amount)
         {
