@@ -15,6 +15,12 @@ namespace DawnOnline.Simulation
         {
         }
 
+        public Coordinate(double x, double y)
+        {
+            X = x;
+            Y = y;
+        }
+
         public Coordinate(Vector vector)
         {
             X = vector.X;

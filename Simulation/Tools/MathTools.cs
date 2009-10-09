@@ -75,5 +75,10 @@ namespace DawnOnline.Simulation.Tools
         {
             return degrees*Math.PI/180.0;
         }
+
+        public static Coordinate OffsetCoordinate(Coordinate origin, double angle, double distance)
+        {
+            return new Coordinate(origin.X + Math.Cos(angle)*distance, origin.Y + Math.Sin(angle)*distance);
+        }
     }
 }
