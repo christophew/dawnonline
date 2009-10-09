@@ -24,7 +24,7 @@ namespace DawnOnline.Simulation.Brains
             if (randomAction == 3)
                 MyCreature.Rest();
             if (randomAction == 4)
-                MyCreature.TryReproduce();
+                MyCreature.WalkForward();
         }
 
         #region ICloneable Members

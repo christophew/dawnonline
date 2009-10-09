@@ -8,21 +8,35 @@ namespace DawnOnline.Simulation.Brains
         {
             Debug.Assert(MyCreature != null);
 
-            if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) && !MyCreature.SeesACreatureForward())
-            {
-                MyCreature.WalkForward();
+            if (MyCreature.TryReproduce())
                 return;
-            }
-            if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) && MyCreature.SeesACreatureLeft())
+
+            if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) && MyCreature.SeesACreatureForward(CreatureType.Plant))
             {
-                MyCreature.TurnRight();
                 MyCreature.RunForward();
                 return;
             }
-            if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) && MyCreature.SeesACreatureRight())
+            //if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) && MyCreature.SeesACreatureLeft(CreatureType.Predator))
+            //{
+            //    MyCreature.TurnRight();
+            //    MyCreature.RunForward();
+            //    return;
+            //}
+            //if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) && MyCreature.SeesACreatureRight(CreatureType.Predator))
+            //{
+            //    MyCreature.TurnLeft();
+            //    MyCreature.RunForward();
+            //    return;
+            //}
+
+            if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) && MyCreature.SeesACreatureLeft(CreatureType.Plant))
             {
                 MyCreature.TurnLeft();
-                MyCreature.RunForward();
+                return;
+            }
+            if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) && MyCreature.SeesACreatureRight(CreatureType.Plant))
+            {
+                MyCreature.TurnRight();
                 return;
             }
 

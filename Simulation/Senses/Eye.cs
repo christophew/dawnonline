@@ -27,6 +27,11 @@ namespace DawnOnline.Simulation.Senses
         {
             return GetLineOfSight() != null;
         }
+         
+        public bool SeesACreature(CreatureType specy)
+        {
+            return GetLineOfSight(specy) != null;
+        }
 
         public bool Sees(Creature targetCreature)
         {
@@ -38,6 +43,25 @@ namespace DawnOnline.Simulation.Senses
             var creatures = CreatureEnvironment.GetCreatures();
             foreach (Creature current in creatures)
             {
+                var lineOfSight = GetLineOfSight(current);
+                if (lineOfSight != null)
+                    return lineOfSight;
+            }
+
+            return null;
+        }
+
+        private IPolygon GetLineOfSight(CreatureType specy)
+        {
+            if (specy == CreatureType.Unknown)
+                return null;
+
+            var creatures = CreatureEnvironment.GetCreatures();
+            foreach (Creature current in creatures)
+            {
+                if (current.Specy != specy)
+                    continue;
+
                 var lineOfSight = GetLineOfSight(current);
                 if (lineOfSight != null)
                     return lineOfSight;
