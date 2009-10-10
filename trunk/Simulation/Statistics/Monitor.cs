@@ -50,5 +50,13 @@ namespace DawnOnline.Simulation.Statistics
                 return _current > _criticalThreshold;
             }
         }
+
+        public double PercentFilled
+        {
+            get
+            {
+                return _current*100.0/_maxAmount;
+            }
+        }
     }
 }
