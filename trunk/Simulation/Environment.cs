@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using DawnOnline.Simulation.Collision;
+using DawnOnline.Simulation.Tools;
 
 namespace DawnOnline.Simulation
 {
@@ -74,5 +75,21 @@ namespace DawnOnline.Simulation
             return _obstacles;
         }
 
+
+        public IList<ICreature> GetCreaturesInRange(Coordinate position, double radius, CreatureType specy)
+        {
+            var list = new List<ICreature>();
+
+            double radius2 = radius*radius;
+
+            foreach(var current in _creatures)
+            {
+                double distance2 = (MathTools.GetDistance2(position, current.Place.Position));
+                if (distance2 < radius2)
+                    list.Add(current);
+            }
+
+            return list;
+        }
     }
 }
