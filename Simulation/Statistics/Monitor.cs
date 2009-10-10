@@ -8,8 +8,9 @@ namespace DawnOnline.Simulation.Statistics
 {
     internal class Monitor
     {
-        private static int _maxAmount = 100;
+        private int _maxAmount = 100;
         private int _current;
+        private int _criticalThreshold = 80;
 
         public Monitor()
         {
@@ -18,26 +19,36 @@ namespace DawnOnline.Simulation.Statistics
         public Monitor(int max)
         {
             _maxAmount = max;
+            _criticalThreshold = max*80/100;
         }
 
-        internal bool CanIncrease(int amount)
+        public bool CanIncrease(int amount)
         {
             return _current + amount < _maxAmount;
         }
 
-        internal void Increase(int amount)
+        public void Increase(int amount)
         {
             _current += amount;
 
-            Debug.Assert(_current < _maxAmount);
+            if (_current > _maxAmount)
+                _current = _maxAmount;
         }
 
-        internal void Decrease(int amount)
+        public void Decrease(int amount)
         {
             _current -= amount;
 
             if (_current < 0)
                 _current = 0;
+        }
+
+        public bool IsCritical
+        {
+            get
+            {
+                return _current > _criticalThreshold;
+            }
         }
     }
 }

@@ -86,7 +86,15 @@ namespace DawnOnline.Simulation
         {
             get
             {
-                return !Statistics.Fatigue.CanIncrease((int) Statistics.FatigueCost);
+                return Statistics.Fatigue.IsCritical;
+            }
+        }
+
+        public bool IsHungry
+        {
+            get
+            {
+                return Statistics.Hunger.IsCritical;
             }
         }
 
@@ -169,7 +177,7 @@ namespace DawnOnline.Simulation
 
             int necessaryFood = Globals.Radomizer.Next(3);
 
-            if (Specy == CreatureType.Plant) necessaryFood = 1;
+            //if (Specy == CreatureType.Plant) necessaryFood = 1;
 
             if (!_characterSheet.Hunger.CanIncrease(necessaryFood))
             {
@@ -189,18 +197,29 @@ namespace DawnOnline.Simulation
         {
             Debug.Assert(Alive);
 
-            var enemy = FindFoodInCircle(_place.Position, _characterSheet.MeleeRange);
 
-
-            // TESTING: assume he also hit, kills and eats his target
-            //if (Specy != CreatureType.Plant)
+            if (Specy != CreatureType.Plant)
             {
+                if (!IsHungry)
+                    return null;
+
+                var enemy = FindFoodInCircle(_place.Position, _characterSheet.MeleeRange);
+
+                // TESTING: assume he also hit, kills and eats his target
                 if (enemy != null)
                     _characterSheet.Hunger.Decrease((int)enemy.Statistics.FoodValue);
+                return enemy;
             }
-            
+            else
+            {
+                // TODO: some inheritance?
+                double rootsRadius = 30;
+                double soilFoodValue = 10;
 
-            return enemy;
+                var plantsInRegion = MyEnvironment.GetCreaturesInRange(_place.Position, rootsRadius, CreatureType.Plant);
+                _characterSheet.Hunger.Decrease((int)(soilFoodValue/plantsInRegion.Count));
+                return null;
+            }
         }
 
         private static bool IsInCircle(Creature enemy, Coordinate position, double radius)

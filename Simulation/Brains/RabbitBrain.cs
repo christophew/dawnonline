@@ -11,34 +11,30 @@ namespace DawnOnline.Simulation.Brains
             if (MyCreature.TryReproduce())
                 return;
 
-            if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) && MyCreature.SeesACreatureForward(CreatureType.Plant))
+            if (MyCreature.IsHungry)
             {
-                MyCreature.RunForward();
-                return;
+                FindPlants();
             }
-            //if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) && MyCreature.SeesACreatureLeft(CreatureType.Predator))
-            //{
-            //    MyCreature.TurnRight();
-            //    MyCreature.RunForward();
-            //    return;
-            //}
-            //if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) && MyCreature.SeesACreatureRight(CreatureType.Predator))
-            //{
-            //    MyCreature.TurnLeft();
-            //    MyCreature.RunForward();
-            //    return;
-            //}
 
-            if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) && MyCreature.SeesACreatureLeft(CreatureType.Plant))
+            // Run from predator
             {
-                MyCreature.TurnLeft();
-                return;
+                if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) &&
+                    MyCreature.SeesACreatureLeft(CreatureType.Predator))
+                {
+                    //MyCreature.TurnRight();
+                    MyCreature.RunForward();
+                    return;
+                }
+                if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) &&
+                    MyCreature.SeesACreatureRight(CreatureType.Predator))
+                {
+                    //MyCreature.TurnLeft();
+                    MyCreature.RunForward();
+                    return;
+                }
             }
-            if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) && MyCreature.SeesACreatureRight(CreatureType.Plant))
-            {
-                MyCreature.TurnRight();
-                return;
-            }
+
+
 
             if (MyCreature.IsTired)
             {
@@ -46,7 +42,31 @@ namespace DawnOnline.Simulation.Brains
                 return;
             }
 
+
+            FindPlants();
+
             DoRandomAction();
+        }
+
+        private void FindPlants()
+        {
+            if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) && MyCreature.SeesACreatureForward(CreatureType.Plant))
+            {
+                MyCreature.RunForward();
+                return;
+            }
+            if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) &&
+                MyCreature.SeesACreatureLeft(CreatureType.Plant))
+            {
+                MyCreature.TurnLeft();
+                return;
+            }
+            if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) &&
+                MyCreature.SeesACreatureRight(CreatureType.Plant))
+            {
+                MyCreature.TurnRight();
+                return;
+            }      
         }
     }
 }
