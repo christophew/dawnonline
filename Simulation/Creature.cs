@@ -200,7 +200,8 @@ namespace DawnOnline.Simulation
 
             if (Specy != CreatureType.Plant)
             {
-                if (!IsHungry)
+                // No need to eat
+                if (Statistics.Hunger.PercentFilled < 25)
                     return null;
 
                 var enemy = FindFoodInCircle(_place.Position, _characterSheet.MeleeRange);
@@ -277,8 +278,8 @@ namespace DawnOnline.Simulation
             return _rightEye.SeesACreature(specy);
         }
 
-        private int _timeToReproduceMax = 100;
-        private int _timeToReproduceMin = 50;
+        private int _timeToReproduceMax = 300;
+        private int _timeToReproduceMin = 200;
         private int _timeToReproduce = Globals.Radomizer.Next(50, 100);
 
         public bool TryReproduce()
@@ -293,7 +294,8 @@ namespace DawnOnline.Simulation
 
             //_characterSheet.ReproductionEnergy -= _characterSheet.ReproductionThreshold;
             //_characterSheet.ReproductionThreshold = (int)(_characterSheet.ReproductionThreshold * 1.5);
-            _timeToReproduceMax *= 2;
+
+            _timeToReproduceMax = (int)(_timeToReproduceMax * 1.5);
             _timeToReproduce = Globals.Radomizer.Next(_timeToReproduceMin, _timeToReproduceMax);
 
             return true;

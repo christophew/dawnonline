@@ -231,7 +231,7 @@ namespace FrontEnd
 
             {
                 var dt = new System.Windows.Threading.DispatcherTimer();
-                dt.Interval = new TimeSpan(0, 0, 0, 0, 250);
+                dt.Interval = new TimeSpan(0, 0, 0, 1, 0);
                 dt.Tick += UpdateClient;
                 dt.Start();
             }
