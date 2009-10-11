@@ -1,16 +1,67 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using NUnit.Framework;
+using DawnOnline.Simulation;
 using DawnOnline.Simulation.Tools;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace DawnOnline.Simulation.UnitTests
+namespace SimulationTests
 {
-    [TestFixture]
+    /// <summary>
+    /// Summary description for MathToolsTest
+    /// </summary>
+    [TestClass]
     public class MathToolsTest
     {
-        [Test]
+        public MathToolsTest()
+        {
+            //
+            // TODO: Add constructor logic here
+            //
+        }
+
+        private TestContext testContextInstance;
+
+        /// <summary>
+        ///Gets or sets the test context which provides
+        ///information about and functionality for the current test run.
+        ///</summary>
+        public TestContext TestContext
+        {
+            get
+            {
+                return testContextInstance;
+            }
+            set
+            {
+                testContextInstance = value;
+            }
+        }
+
+        #region Additional test attributes
+        //
+        // You can use the following additional attributes as you write your tests:
+        //
+        // Use ClassInitialize to run code before running the first test in the class
+        // [ClassInitialize()]
+        // public static void MyClassInitialize(TestContext testContext) { }
+        //
+        // Use ClassCleanup to run code after all tests in a class have run
+        // [ClassCleanup()]
+        // public static void MyClassCleanup() { }
+        //
+        // Use TestInitialize to run code before running each test 
+        // [TestInitialize()]
+        // public void MyTestInitialize() { }
+        //
+        // Use TestCleanup to run code after each test has run
+        // [TestCleanup()]
+        // public void MyTestCleanup() { }
+        //
+        #endregion
+
+        [TestMethod]
         public void TestDistance2()
         {
             Assert.AreEqual(100, MathTools.GetDistance2(new Coordinate { X = 0, Y = 0 }, new Coordinate { X = 10, Y = 0 }));
@@ -19,7 +70,7 @@ namespace DawnOnline.Simulation.UnitTests
             Assert.AreEqual(100, MathTools.GetDistance2(new Coordinate { X = 0, Y = 10 }, new Coordinate { X = 0, Y = 0 }));
         }
 
-        [Test]
+        [TestMethod]
         public void TestConvertToDegrees()
         {
             Assert.AreEqual(0, MathTools.ConvertToRadials(0));
@@ -28,7 +79,7 @@ namespace DawnOnline.Simulation.UnitTests
             Assert.AreEqual(Math.PI / 4.0, MathTools.ConvertToRadials(45));
         }
 
-        [Test]
+        [TestMethod]
         public void TestAngle()
         {
             Assert.AreEqual(MathTools.ConvertToRadials(45), MathTools.GetAngle(0, 0, 10, 10));
@@ -37,7 +88,7 @@ namespace DawnOnline.Simulation.UnitTests
             Assert.AreEqual(MathTools.ConvertToRadials(270 + 45), MathTools.GetAngle(0, 0, 10, -10));
         }
 
-        [Test]
+        [TestMethod]
         public void TestOffsetCoordinate()
         {
             var origin = new Coordinate(0, 0);
