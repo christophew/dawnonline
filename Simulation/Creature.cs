@@ -137,8 +137,6 @@ namespace DawnOnline.Simulation
         {
             foreach (var obstacle in MyEnvironment.GetObstacles())
             {
-                //if (polygon == player) continue;
-
                 Polygon obstaclePolygon = obstacle.Form.Shape as Polygon;
 
                 PolygonCollisionResult collitionResult = CollisionDetection.PolygonCollision(Place.Form.Shape as Polygon, obstaclePolygon, velocity);
@@ -290,7 +288,13 @@ namespace DawnOnline.Simulation
 
             ICreature child = SimulationFactory.CreateCreature(Specy);
 
-            MyEnvironment.AddCreature(child, MathTools.OffsetCoordinate(_place.Position, _place.Angle + Math.PI, _place.Form.Radius + 5), Globals.Radomizer.Next(7));
+            MyEnvironment.AddCreature(
+                child,
+                MathTools.OffsetCoordinate(
+                    _place.Position,
+                    _place.Angle + Math.PI,
+                    _place.Form.BoundingCircleRadius + 5),
+                Globals.Radomizer.Next(7));
 
             //_characterSheet.ReproductionEnergy -= _characterSheet.ReproductionThreshold;
             //_characterSheet.ReproductionThreshold = (int)(_characterSheet.ReproductionThreshold * 1.5);

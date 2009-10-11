@@ -8,7 +8,7 @@ namespace DawnOnline.Simulation
 {
     class Form : IForm
     {
-        public double Radius
+        public double BoundingCircleRadius
         {
             get; set;
         }

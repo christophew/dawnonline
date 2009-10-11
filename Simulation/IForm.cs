@@ -4,7 +4,7 @@ namespace DawnOnline.Simulation
 {
     public interface IForm
     {
-        double Radius { get; }
+        double BoundingCircleRadius { get; }
 
         IPolygon Shape { get; }
     }
