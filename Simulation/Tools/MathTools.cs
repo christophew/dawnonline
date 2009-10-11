@@ -80,5 +80,11 @@ namespace DawnOnline.Simulation.Tools
         {
             return new Coordinate(origin.X + Math.Cos(angle)*distance, origin.Y + Math.Sin(angle)*distance);
         }
+
+        public static bool CirclesIntersect(Coordinate position1, double radius1, Coordinate position2, double radius2)
+        {
+            double radius = radius1 + radius2;
+            return GetDistance2(position1, position2) < radius*radius;
+        }
     }
 }

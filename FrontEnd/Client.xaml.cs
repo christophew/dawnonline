@@ -231,7 +231,7 @@ namespace FrontEnd
 
             {
                 var dt = new System.Windows.Threading.DispatcherTimer();
-                dt.Interval = new TimeSpan(0, 0, 0, 1, 0);
+                dt.Interval = new TimeSpan(0, 0, 0, 0, 500);
                 dt.Tick += UpdateClient;
                 dt.Start();
             }
@@ -247,45 +247,23 @@ namespace FrontEnd
         private void BuildWorld()
         {
             // World boundaries
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, -20), new Coordinate { X = -11, Y = MaxY / 2.0 });
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, 20), new Coordinate { X = MaxX + 11, Y = MaxY / 2.0});
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(-20, MaxY), new Coordinate { X = MaxX / 2.0, Y = -11 });
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(20, MaxY), new Coordinate { X = MaxX / 2.0, Y = + 11 });
-
-            //// Some obstacles
-            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(300, 10), new Coordinate { X = 500, Y = 400 });
-            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, 100), new Coordinate { X = 500, Y = 400 });
-            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(300, 10), new Coordinate { X = 100, Y = 100 });
-            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, 300), new Coordinate { X = 100, Y = 100 });
-            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, -100), new Coordinate { X = 800, Y = 400 });
-
-            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, -100), new Coordinate { X = 900, Y = 400 });
-
-            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 30), new Coordinate { X = 700, Y = 100 });
-            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(70, 30), new Coordinate { X = 200, Y = 700 });
-
-            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(-300, 10), new Coordinate { X = 1400, Y = 800 });
-            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(10, -300), new Coordinate { X = 1400, Y = 800 });
-
-
-
-            //// Squares
-            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 100), new Coordinate { X = 600, Y = 50 });
-            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 100), new Coordinate { X = 1200, Y = 3 });
-            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 100), new Coordinate { X = 20, Y = 600 });
-            //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(100, 100), new Coordinate { X = 300, Y = 700 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, -20), new Coordinate { X = MaxX / 2.0, Y = -11 }); // Top
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, 20), new Coordinate { X = MaxX / 2.0, Y = MaxY + 11 }); // Bottom
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(-20, MaxY), new Coordinate { X = -11, Y = MaxY / 2.0 }); // Left
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(20, MaxY), new Coordinate { X = MaxX + 11, Y = MaxY / 2.0 }); // Right
 
             // Randow obstacles
             int maxHeight = 200;
             int maxWide = 200;
-            for (int i=0; i < 50; i++)
+            for (int i=0; i < 50;)
             {
                 int height = _randomize.Next(maxHeight);
-                int wide = _randomize.Next(maxWide - height);
+                int wide = _randomize.Next(maxWide);
                 var position = new Coordinate(_randomize.Next(MaxX - wide), _randomize.Next(MaxY - height));
                 var box = SimulationFactory.CreateObstacleBox(wide, height);
 
-                _environment.AddObstacle(box, position);
+                if (_environment.AddObstacle(box, position))
+                    i++;
             }
         }
 

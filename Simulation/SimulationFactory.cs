@@ -73,6 +73,7 @@ namespace DawnOnline.Simulation
             //critter.Statistics.MaxAge = Globals.Radomizer.Next(100, 150);
             critter.Statistics.WalkingDistance = 5;
             critter.Statistics.TurningAngle = 0.2;
+            critter.Statistics.ReproductionIncreaseAverage = 2;
             critter.InitializeSenses();
 
             return critter;
@@ -89,6 +90,8 @@ namespace DawnOnline.Simulation
             //critter.Statistics.MaxAge = Globals.Radomizer.Next(100, 300);
             critter.Statistics.WalkingDistance = 4;
             critter.Statistics.TurningAngle = 0.35;
+            critter.Statistics.FoodValue = 500;
+            critter.Statistics.ReproductionIncreaseAverage = 7;
             critter.InitializeSenses();
 
             return critter;
@@ -105,6 +108,8 @@ namespace DawnOnline.Simulation
             //critter.Statistics.MaxAge = Globals.Radomizer.Next(50, 200);
             critter.Statistics.WalkingDistance = 0;
             critter.Statistics.TurningAngle = 0;
+            critter.Statistics.FoodValue = 200;
+            critter.Statistics.ReproductionIncreaseAverage = 7;
             critter.InitializeSenses();
 
             return critter;

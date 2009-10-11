@@ -97,5 +97,14 @@ namespace SimulationTests
             Assert.AreEqual(10, MathTools.OffsetCoordinate(origin, Math.PI / 2.0, 10).Y);
             Assert.AreEqual(-10, MathTools.OffsetCoordinate(origin, 3.0 * Math.PI / 2.0, 10).Y);
         }
+
+        [TestMethod]
+        public void TestCirclesIntersect()
+        {
+            Assert.IsTrue(MathTools.CirclesIntersect(new Coordinate(0, 0), 10, new Coordinate(15, 0), 6));
+            Assert.IsFalse(MathTools.CirclesIntersect(new Coordinate(0, 0), 10, new Coordinate(15, 0), 4));
+            Assert.IsTrue(MathTools.CirclesIntersect(new Coordinate(15, 0), 10, new Coordinate(0, 0), 6));
+        }
+
     }
 }

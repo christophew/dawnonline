@@ -135,6 +135,5 @@ namespace DawnOnline.Simulation.Collision
                 }
             }
         }
-
     }
 }
