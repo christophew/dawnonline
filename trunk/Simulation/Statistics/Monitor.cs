@@ -58,5 +58,18 @@ namespace DawnOnline.Simulation.Statistics
                 return _current*100.0/_maxAmount;
             }
         }
+
+        public bool IsFilled
+        {
+            get
+            {
+                return _current == _maxAmount;   
+            }
+        }
+
+        public void Clear()
+        {
+            _current = 0;
+        }
     }
 }

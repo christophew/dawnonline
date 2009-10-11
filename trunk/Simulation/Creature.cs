@@ -137,6 +137,10 @@ namespace DawnOnline.Simulation
         {
             foreach (var obstacle in MyEnvironment.GetObstacles())
             {
+                // Bounding circle optimization
+                if (!MathTools.CirclesIntersect(Place.Position, Place.Form.BoundingCircleRadius, obstacle.Position, obstacle.Form.BoundingCircleRadius))
+                    continue;
+
                 Polygon obstaclePolygon = obstacle.Form.Shape as Polygon;
 
                 PolygonCollisionResult collitionResult = CollisionDetection.PolygonCollision(Place.Form.Shape as Polygon, obstaclePolygon, velocity);
@@ -172,6 +176,7 @@ namespace DawnOnline.Simulation
             //    MyEnvironment.KillCreature(this);
             //    return;
             //}
+            Statistics.Reproduction.Increase(Globals.Radomizer.Next(0, Statistics.ReproductionIncreaseAverage * 2));
 
             int necessaryFood = Globals.Radomizer.Next(3);
 
@@ -276,13 +281,9 @@ namespace DawnOnline.Simulation
             return _rightEye.SeesACreature(specy);
         }
 
-        private int _timeToReproduceMax = 300;
-        private int _timeToReproduceMin = 200;
-        private int _timeToReproduce = Globals.Radomizer.Next(50, 100);
-
         public bool TryReproduce()
         {
-            if (_timeToReproduce-- > 0)
+            if (!Statistics.Reproduction.IsFilled)
                 return false;
 
 
@@ -296,11 +297,8 @@ namespace DawnOnline.Simulation
                     _place.Form.BoundingCircleRadius + 5),
                 Globals.Radomizer.Next(7));
 
-            //_characterSheet.ReproductionEnergy -= _characterSheet.ReproductionThreshold;
-            //_characterSheet.ReproductionThreshold = (int)(_characterSheet.ReproductionThreshold * 1.5);
 
-            _timeToReproduceMax = (int)(_timeToReproduceMax * 1.5);
-            _timeToReproduce = Globals.Radomizer.Next(_timeToReproduceMin, _timeToReproduceMax);
+            Statistics.Reproduction.Clear();
 
             return true;
         }
