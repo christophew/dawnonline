@@ -24,7 +24,7 @@ namespace DawnOnline.Simulation
             box.Points.Add(new Vector(halfRadius, -halfRadius));
             box.BuildEdges();
 
-            return new Form { Radius = radius, Shape = box };
+            return new Form { BoundingCircleRadius = radius, Shape = box };
         }
 
         public static IPlacement CreateObstacleBox(double deltaX, double deltaY)
@@ -32,13 +32,16 @@ namespace DawnOnline.Simulation
             double radius = Math.Max(deltaX, deltaY);
 
             Polygon box = new Polygon();
-            box.Points.Add(new Vector(0, 0));
-            box.Points.Add(new Vector((float)deltaX, 0));
-            box.Points.Add(new Vector((float)deltaX, (float)deltaY));
-            box.Points.Add(new Vector(0, (float)deltaY));
+            float halveDeltaX = (float) (deltaX/2.0);
+            float halveDeltaY = (float) (deltaY/2.0);
+
+            box.Points.Add(new Vector(- halveDeltaX, - halveDeltaY));
+            box.Points.Add(new Vector(halveDeltaX, -halveDeltaY));
+            box.Points.Add(new Vector(halveDeltaX, halveDeltaY));
+            box.Points.Add(new Vector(-halveDeltaX, halveDeltaY));
             box.BuildEdges();
 
-            var form = new Form { Radius = radius, Shape = box };
+            var form = new Form { BoundingCircleRadius = radius, Shape = box };
             var placement = new Placement { Form = form };
 
             return placement;

@@ -75,7 +75,6 @@ namespace DawnOnline.Simulation
             return _obstacles;
         }
 
-
         public IList<ICreature> GetCreaturesInRange(Coordinate position, double radius, CreatureType specy)
         {
             var list = new List<ICreature>();

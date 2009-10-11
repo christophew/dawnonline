@@ -140,11 +140,11 @@ namespace FrontEnd
                 if (creature.Specy == CreatureType.Plant) color = Brushes.Green;
 
                 var newEllipse = new Ellipse();
-                newEllipse.Height = placement.Form.Radius;
-                newEllipse.Width = placement.Form.Radius;
+                newEllipse.Height = placement.Form.BoundingCircleRadius;
+                newEllipse.Width = placement.Form.BoundingCircleRadius;
                 newEllipse.Fill = color;
-                newEllipse.SetValue(Canvas.LeftProperty, placement.Position.X - placement.Form.Radius/2.0);
-                newEllipse.SetValue(Canvas.TopProperty, placement.Position.Y - placement.Form.Radius/2.0);
+                newEllipse.SetValue(Canvas.LeftProperty, placement.Position.X - placement.Form.BoundingCircleRadius/2.0);
+                newEllipse.SetValue(Canvas.TopProperty, placement.Position.Y - placement.Form.BoundingCircleRadius/2.0);
                 newEllipse.Stroke = creature.IsTired ? Brushes.Blue : Brushes.Black;
 
                 MyCanvas.Children.Add(newEllipse);
@@ -156,8 +156,8 @@ namespace FrontEnd
                 var newLine = new Line();
                 newLine.X1 = placement.Position.X;
                 newLine.Y1 = placement.Position.Y;
-                newLine.X2 = placement.Position.X + Math.Cos(placement.Angle) * placement.Form.Radius;
-                newLine.Y2 = placement.Position.Y + Math.Sin(placement.Angle) * placement.Form.Radius;
+                newLine.X2 = placement.Position.X + Math.Cos(placement.Angle) * placement.Form.BoundingCircleRadius;
+                newLine.Y2 = placement.Position.Y + Math.Sin(placement.Angle) * placement.Form.BoundingCircleRadius;
                 newLine.Stroke = Brushes.Black;
 
                 MyCanvas.Children.Add(newLine);
@@ -247,10 +247,10 @@ namespace FrontEnd
         private void BuildWorld()
         {
             // World boundaries
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, -20), new Coordinate { X = 0, Y = -1 });
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, 20), new Coordinate { X = 0, Y = MaxY + 1});
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(-20, MaxY), new Coordinate { X = -1, Y = 0 });
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(20, MaxY), new Coordinate { X = MaxX + 1, Y = 0 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, -20), new Coordinate { X = -11, Y = MaxY / 2.0 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, 20), new Coordinate { X = MaxX + 11, Y = MaxY / 2.0});
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(-20, MaxY), new Coordinate { X = MaxX / 2.0, Y = -11 });
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(20, MaxY), new Coordinate { X = MaxX / 2.0, Y = + 11 });
 
             //// Some obstacles
             //_environment.AddObstacle(SimulationFactory.CreateObstacleBox(300, 10), new Coordinate { X = 500, Y = 400 });
