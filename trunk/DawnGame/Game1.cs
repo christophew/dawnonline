@@ -34,6 +34,7 @@ namespace DawnGame
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
+
             Content.RootDirectory = "Content";
         }
 
@@ -47,9 +48,24 @@ namespace DawnGame
         {
             // TODO: Add your initialization logic here
             BuildWorld();
-            AddCreatures(CreatureType.Rabbit, 30);
-            AddCreatures(CreatureType.Plant, 30);
-            AddCreatures(CreatureType.Predator, 30);
+            AddCreatures(CreatureType.Rabbit, 200);
+            AddCreatures(CreatureType.Plant, 200);
+            AddCreatures(CreatureType.Predator, 200);
+
+            graphics.PreferredBackBufferWidth = 3000;
+            graphics.PreferredBackBufferHeight = 2000;
+            graphics.IsFullScreen = false;
+            graphics.ApplyChanges();
+
+            System.Windows.Forms.Control form = System.Windows.Forms.Form.FromHandle(this.Window.Handle);
+            form.Location = new System.Drawing.Point(0, 0);
+
+            //var myViewport = GraphicsDevice.Viewport;
+            //myViewport.X = 100;
+            //myViewport.Y = 100;
+            //myViewport.Height = 100;
+            //GraphicsDevice.Viewport = myViewport;
+            //graphics.ApplyChanges();
 
             base.Initialize();
         }
@@ -65,6 +81,8 @@ namespace DawnGame
 
             // TODO: use this.Content to load your game content here
             oneForAll = Content.Load<Texture2D>(@"sprites\cannonball");
+            //oneForAll = new Texture2D(GraphicsDevice, 1, 1);
+            
         }
 
         /// <summary>
@@ -81,6 +99,7 @@ namespace DawnGame
         /// checking for collisions, gathering input, and playing audio.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        private static TimeSpan lastMove;
         protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
@@ -88,7 +107,12 @@ namespace DawnGame
                 this.Exit();
 
             // TODO: Add your update logic here
-            MoveAll();
+            if ((gameTime.TotalGameTime - lastMove).TotalMilliseconds > 200)
+            {
+                MoveAll();
+                lastMove = gameTime.TotalGameTime;
+            }
+
 
             base.Update(gameTime);
         }
@@ -114,7 +138,7 @@ namespace DawnGame
             foreach (var current in obstacles)
             {
                 //DrawObstacle(current);
-                spriteBatch.Draw(oneForAll, new Vector2((float)current.Position.X, (float)current.Position.Y), Color.White);
+                spriteBatch.Draw(oneForAll, new Vector2((float)current.Position.X, (float)current.Position.Y), Color.Green);
             }
 
             spriteBatch.End();
