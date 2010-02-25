@@ -182,11 +182,11 @@ namespace DawnOnline.Simulation
 
             //if (Specy == CreatureType.Plant) necessaryFood = 1;
 
-            if (!_characterSheet.Hunger.CanIncrease(necessaryFood))
-            {
-                MyEnvironment.KillCreature(this);
-                return;
-            }
+            //if (!_characterSheet.Hunger.CanIncrease(necessaryFood))
+            //{
+            //    MyEnvironment.KillCreature(this);
+            //    return;
+            //}
 
             Brain.DoSomething();
 
@@ -283,6 +283,7 @@ namespace DawnOnline.Simulation
 
         public bool TryReproduce()
         {
+            return false;
             if (!Statistics.Reproduction.IsFilled)
                 return false;
 
