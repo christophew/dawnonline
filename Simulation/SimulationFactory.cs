@@ -71,7 +71,7 @@ namespace DawnOnline.Simulation
             critter.FoodSpecy = CreatureType.Rabbit;
 
             //critter.Statistics.MaxAge = Globals.Radomizer.Next(100, 150);
-            critter.Statistics.WalkingDistance = 5;
+            critter.Statistics.WalkingDistance = 2;
             critter.Statistics.TurningAngle = 0.2;
             critter.Statistics.ReproductionIncreaseAverage = 2;
             critter.InitializeSenses();
@@ -88,7 +88,7 @@ namespace DawnOnline.Simulation
             critter.FoodSpecy = CreatureType.Plant;
 
             //critter.Statistics.MaxAge = Globals.Radomizer.Next(100, 300);
-            critter.Statistics.WalkingDistance = 4;
+            critter.Statistics.WalkingDistance = 1.5;
             critter.Statistics.TurningAngle = 0.35;
             critter.Statistics.FoodValue = 500;
             critter.Statistics.ReproductionIncreaseAverage = 7;
@@ -120,7 +120,7 @@ namespace DawnOnline.Simulation
             var avatar = new Creature(15);
 
             avatar.Specy = CreatureType.Avatar;
-            avatar.Statistics.WalkingDistance = 6;
+            avatar.Statistics.WalkingDistance = 3;
             avatar.Statistics.TurningAngle = 0.35;
             avatar.InitializeSenses();
 

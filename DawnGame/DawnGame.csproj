@@ -70,6 +70,7 @@
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml">
@@ -85,9 +86,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BasicShape.cs" />
+    <Compile Include="GameObject.cs" />
+    <Compile Include="LineBatch.cs" />
+    <Compile Include="PointBatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="RoundLine.cs" />
+    <Compile Include="RoundLineUtils.cs" />
+    <Compile Include="SimpleBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
