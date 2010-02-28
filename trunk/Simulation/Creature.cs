@@ -12,6 +12,7 @@ namespace DawnOnline.Simulation
     class Creature : ICreature
     {
         private Placement _place = new Placement();
+        private Movement _movement = new Movement();
         private CharacterSheet _characterSheet = new CharacterSheet();
         private AbstractBrain _brain;
 
@@ -21,6 +22,7 @@ namespace DawnOnline.Simulation
 
         public Environment MyEnvironment { get; set; }
         public IPlacement Place { get { return _place; } }
+        public IMovement Movement { get { return _movement; } }
 
         public bool Alive
         {
@@ -236,12 +238,10 @@ namespace DawnOnline.Simulation
             if (FoodSpecy == CreatureType.Unknown)
                 return null;
 
-            var creatures = MyEnvironment.GetCreatures();
+            var creatures = MyEnvironment.GetCreatures(FoodSpecy);
             foreach (Creature current in creatures)
             {
                 if (current.Equals(this))
-                    continue;
-                if (current.Specy != FoodSpecy)
                     continue;
 
                 if (IsInCircle(current, center, radius))

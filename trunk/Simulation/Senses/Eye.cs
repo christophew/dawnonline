@@ -56,12 +56,9 @@ namespace DawnOnline.Simulation.Senses
             if (specy == CreatureType.Unknown)
                 return null;
 
-            var creatures = CreatureEnvironment.GetCreatures();
+            var creatures = CreatureEnvironment.GetCreatures(specy);
             foreach (Creature current in creatures)
             {
-                if (current.Specy != specy)
-                    continue;
-
                 var lineOfSight = GetLineOfSight(current);
                 if (lineOfSight != null)
                     return lineOfSight;
@@ -77,9 +74,10 @@ namespace DawnOnline.Simulation.Senses
                 return null;
 
             // Check distance
+            var visionDistance2 = VisionDistance*VisionDistance;
             {
                 double distance2 = MathTools.GetDistance2(CreaturePlace.Position, current.Place.Position);
-                if (distance2 > VisionDistance*VisionDistance)
+                if (distance2 > visionDistance2)
                     return null;
             }
 
@@ -104,6 +102,10 @@ namespace DawnOnline.Simulation.Senses
                 bool visionBlocked = false;
                 foreach (var obstacle in CreatureEnvironment.GetObstacles())
                 {
+                    // Bounding circle optimization
+                    if (!MathTools.CirclesIntersect(obstacle.Position, obstacle.Form.BoundingCircleRadius, current.Place.Position, visionDistance2))
+                        continue;
+
                     Polygon obstaclePolygon = obstacle.Form.Shape as Polygon;
                     PolygonCollisionResult collitionResult = CollisionDetection.PolygonCollision(lineOfSight,
                                                                                                  obstaclePolygon,
@@ -120,6 +122,6 @@ namespace DawnOnline.Simulation.Senses
             }
 
             return lineOfSight;
-    }
+        }
     }
 }

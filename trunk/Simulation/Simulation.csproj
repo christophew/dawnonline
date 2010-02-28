@@ -64,7 +64,9 @@
     <Compile Include="Form.cs" />
     <Compile Include="ICreature.cs" />
     <Compile Include="IForm.cs" />
+    <Compile Include="IMovement.cs" />
     <Compile Include="IPlacement.cs" />
+    <Compile Include="Movement.cs" />
     <Compile Include="Placement.cs" />
     <Compile Include="Coordinate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
