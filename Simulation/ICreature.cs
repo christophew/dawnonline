@@ -38,6 +38,7 @@ namespace DawnOnline.Simulation
         bool SeesACreatureRight();
 
         IPlacement Place { get; }
+        IMovement Movement { get; }
 
         IList<IEye> Eyes { get; }
     }

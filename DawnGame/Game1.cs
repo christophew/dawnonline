@@ -70,8 +70,8 @@ namespace DawnGame
                                      new Coordinate { X = _randomize.Next(MaxX), Y = _randomize.Next(MaxY) }, 0);
             BuildWorld();
 
-            AddCreatures(CreatureType.Rabbit, 100);
-            AddCreatures(CreatureType.Plant, 100);
+            AddCreatures(CreatureType.Rabbit, 300);
+            AddCreatures(CreatureType.Plant, 300);
             AddCreatures(CreatureType.Predator, 100);
 
             graphics.PreferredBackBufferWidth = 3000;
@@ -235,8 +235,8 @@ namespace DawnGame
             if (zoomOut)
                 cameraZoom *= 0.99f;
 
-            //viewMatrix = Matrix.CreateTranslation(-cameraX, -cameraY, 0) * Matrix.CreateScale(1.0f / cameraZoom, 1.0f / cameraZoom, 1.0f);
-            viewMatrix = Matrix.CreateTranslation(-(float)_avatar.Place.Position.X, -(float)_avatar.Place.Position.Y, 0) * Matrix.CreateScale(1.0f / cameraZoom, 1.0f / cameraZoom, 1.0f);
+            viewMatrix = Matrix.CreateTranslation(-cameraX, -cameraY, 0) * Matrix.CreateScale(1.0f / cameraZoom, 1.0f / cameraZoom, 1.0f);
+            //viewMatrix = Matrix.CreateTranslation(-(float)_avatar.Place.Position.X, -(float)_avatar.Place.Position.Y, 0) * Matrix.CreateScale(1.0f / cameraZoom, 1.0f / cameraZoom, 1.0f);
 
             if (keyboardState.IsKeyDown(Keys.PageUp))
                 roundLineManager.BlurThreshold *= 1.001f;

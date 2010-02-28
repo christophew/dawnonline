@@ -11,6 +11,7 @@ namespace DawnOnline.Simulation
     class Environment : IEnvironment
     {
         List<ICreature> _creatures = new List<ICreature>();
+        Dictionary<CreatureType, List<ICreature>> _creaturesPerSpecy = new Dictionary<CreatureType, List<ICreature>>();
         List<IPlacement> _obstacles = new List<IPlacement>();
 
         public void AddCreature(ICreature creature, Coordinate origin, double angle)
@@ -22,7 +23,16 @@ namespace DawnOnline.Simulation
             (myCreature.Place as Placement).OffsetPosition(origin, angle);
 
             if (!IntersectsWithObstacles(myCreature.Place))
+            {
                 _creatures.Add(creature);
+
+                if (!_creaturesPerSpecy.ContainsKey(myCreature.Specy))
+                {
+                    _creaturesPerSpecy.Add(myCreature.Specy, new List<ICreature>());
+                }
+
+                _creaturesPerSpecy[myCreature.Specy].Add(creature);
+            }
         }
 
         private bool IntersectsWithObstacles(IPlacement place)
@@ -50,11 +60,22 @@ namespace DawnOnline.Simulation
 
             myCreature.Alive = false;
             _creatures.Remove(creature);
+            _creaturesPerSpecy[myCreature.Specy].Remove(creature);
         }
 
         public IList<ICreature> GetCreatures()
         {
             return _creatures;
+        }
+
+        public IList<ICreature> GetCreatures(CreatureType specy)
+        {
+            if (!_creaturesPerSpecy.ContainsKey(specy))
+            {
+                _creaturesPerSpecy.Add(specy, new List<ICreature>());
+            }
+
+            return _creaturesPerSpecy[specy];
         }
 
         public bool AddObstacle(IPlacement obstacle, Coordinate origin)
@@ -80,8 +101,9 @@ namespace DawnOnline.Simulation
             var list = new List<ICreature>();
 
             double radius2 = radius*radius;
+            var creaturesOfSpecy = GetCreatures(specy);
 
-            foreach(var current in _creatures)
+            foreach (var current in creaturesOfSpecy)
             {
                 double distance2 = (MathTools.GetDistance2(position, current.Place.Position));
                 if (distance2 < radius2)
