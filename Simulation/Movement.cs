@@ -1,9 +1,11 @@
-﻿namespace DawnOnline.Simulation
+﻿using DawnOnline.Simulation.Collision;
+
+namespace DawnOnline.Simulation
 {
     internal class Movement : IMovement
     {
-        public bool MoveForward { get; set;}
-        public bool TurnLeft { get; set;}
-        public bool TurnRight { get; set; }
+        public Vector ForwardMotion { get; set; }
+        public double TurnMotion { get; set; }
+        public double FatigueCost { get; set; }
     }
 }

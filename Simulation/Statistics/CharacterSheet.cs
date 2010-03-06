@@ -34,8 +34,8 @@ namespace DawnOnline.Simulation.Statistics
             Reproduction = new Monitor(1000);
 
             // Defaults
-            WalkingDistance = 1;
-            TurningAngle = 0.01;
+            WalkingDistance = 10;
+            TurningAngle = 1;
             VisionAccuracyPercent = 70;
             VisionDistance = 250;
             FatigueCost = 15;

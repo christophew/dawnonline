@@ -156,6 +156,7 @@ namespace DawnGame
             // TODO: Unload any non ContentManager content here
         }
 
+        private static TimeSpan _lastThink;
         private static TimeSpan _lastMove;
 
         /// <summary>
@@ -172,19 +173,36 @@ namespace DawnGame
             KeyboardState keyboardState = Keyboard.GetState();
             GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
 
-
-            if ((gameTime.TotalGameTime - _lastMove).TotalMilliseconds > 100)
+            // Avatar
             {
+                _avatar.ClearMovement();
+
                 if (keyboardState.IsKeyDown(Keys.I))
                     _avatar.WalkForward();
                 if (keyboardState.IsKeyDown(Keys.L))
                     _avatar.TurnLeft();
                 if (keyboardState.IsKeyDown(Keys.J))
                     _avatar.TurnRight();
+            }
 
+            // Think = Decide where to move
+            if ((gameTime.TotalGameTime - _lastThink).TotalMilliseconds > 250)
+            {
                 MoveAll();
+                _lastThink = gameTime.TotalGameTime;
+            }
+
+            // Move
+            if ((gameTime.TotalGameTime - _lastMove).TotalMilliseconds > 100)
+            {
+                ApplyMove((gameTime.TotalGameTime - _lastMove).TotalMilliseconds);
                 _lastMove = gameTime.TotalGameTime;
             }
+
+
+
+
+
 
             if (gamePadState.Buttons.Back == ButtonState.Pressed ||
                 keyboardState.IsKeyDown(Keys.Escape))
@@ -192,6 +210,27 @@ namespace DawnGame
                 this.Exit();
             }
 
+
+            UpdateCamera(keyboardState, gamePadState);
+
+            UpdateDrawOptions(keyboardState);
+
+            base.Update(gameTime);
+        }
+
+        private void UpdateDrawOptions(KeyboardState keyboardState)
+        {
+            if (keyboardState.IsKeyDown(Keys.PageUp))
+                roundLineManager.BlurThreshold *= 1.001f;
+            if (keyboardState.IsKeyDown(Keys.PageDown))
+                roundLineManager.BlurThreshold /= 1.001f;
+
+            if (roundLineManager.BlurThreshold > 1)
+                roundLineManager.BlurThreshold = 1;
+        }
+
+        private void UpdateCamera(KeyboardState keyboardState, GamePadState gamePadState)
+        {
             if (gamePadState.Buttons.A == ButtonState.Pressed ||
                 keyboardState.IsKeyDown(Keys.A))
             {
@@ -224,9 +263,9 @@ namespace DawnGame
             float dy = leftY * 0.01f * cameraZoom;
 
             bool zoomIn = gamePadState.Buttons.RightShoulder == ButtonState.Pressed ||
-                keyboardState.IsKeyDown(Keys.Z);
+                          keyboardState.IsKeyDown(Keys.Z);
             bool zoomOut = gamePadState.Buttons.LeftShoulder == ButtonState.Pressed ||
-                keyboardState.IsKeyDown(Keys.X);
+                           keyboardState.IsKeyDown(Keys.X);
 
             cameraX += dx;
             cameraY += dy;
@@ -235,18 +274,8 @@ namespace DawnGame
             if (zoomOut)
                 cameraZoom *= 0.99f;
 
-            viewMatrix = Matrix.CreateTranslation(-cameraX, -cameraY, 0) * Matrix.CreateScale(1.0f / cameraZoom, 1.0f / cameraZoom, 1.0f);
-            //viewMatrix = Matrix.CreateTranslation(-(float)_avatar.Place.Position.X, -(float)_avatar.Place.Position.Y, 0) * Matrix.CreateScale(1.0f / cameraZoom, 1.0f / cameraZoom, 1.0f);
-
-            if (keyboardState.IsKeyDown(Keys.PageUp))
-                roundLineManager.BlurThreshold *= 1.001f;
-            if (keyboardState.IsKeyDown(Keys.PageDown))
-                roundLineManager.BlurThreshold /= 1.001f;
-
-            if (roundLineManager.BlurThreshold > 1)
-                roundLineManager.BlurThreshold = 1;
-
-            base.Update(gameTime);
+            //viewMatrix = Matrix.CreateTranslation(-cameraX, -cameraY, 0) * Matrix.CreateScale(1.0f / cameraZoom, 1.0f / cameraZoom, 1.0f);
+            viewMatrix = Matrix.CreateTranslation(-(float)_avatar.Place.Position.X, -(float)_avatar.Place.Position.Y, 0) * Matrix.CreateScale(1.0f / cameraZoom, 1.0f / cameraZoom, 1.0f);
         }
 
         /// <summary>
@@ -418,6 +447,19 @@ namespace DawnGame
                 _environment.AddCreature(SimulationFactory.CreateCreature(specy),
                                  new Coordinate { X = _randomize.Next(MaxX), Y = _randomize.Next(MaxY) },
                                  _randomize.Next(6));
+            }
+        }
+
+        private void ApplyMove(double timeDelta)
+        {
+            var creatures = new List<ICreature>(_environment.GetCreatures());
+
+            foreach (var current in creatures)
+            {
+                if (!current.Alive)
+                    continue;
+
+                current.ApplyMovement(timeDelta);
             }
         }
 
