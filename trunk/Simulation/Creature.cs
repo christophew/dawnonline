@@ -105,15 +105,32 @@ namespace DawnOnline.Simulation
             Statistics.Fatigue.Decrease((int)Statistics.FatigueRecovery);
         }
 
+        public void ClearMovement()
+        {
+            _movement.FatigueCost = 0;
+            _movement.TurnMotion = 0;
+            _movement.ForwardMotion = new Vector();
+        }
+
+        public void ApplyMovement(double timeDelta)
+        {
+            double toSeconds = timeDelta/1000.0;
+
+            var realTranslation = TryMove(_movement.ForwardMotion * toSeconds);
+            _place.OffsetPosition(new Coordinate(realTranslation), 0.0);
+
+            _place.Angle += _movement.TurnMotion * toSeconds;
+
+            Statistics.Fatigue.Increase((int)(_movement.FatigueCost * toSeconds));
+        }
+
         public void WalkForward()
         {
             Debug.Assert(MyEnvironment != null);
 
-            var originalTranslation = new Vector((float)(Math.Cos(_place.Angle) * Statistics.WalkingDistance),
+            _movement.ForwardMotion = new Vector((float)(Math.Cos(_place.Angle) * Statistics.WalkingDistance),
                                                 (float)(Math.Sin(_place.Angle) * Statistics.WalkingDistance));
-
-            var realTranslation = TryMove(originalTranslation);
-            _place.OffsetPosition(new Coordinate(realTranslation), 0.0);
+            _movement.FatigueCost = 0;
         }
 
         public void RunForward()
@@ -126,13 +143,10 @@ namespace DawnOnline.Simulation
                 return;
             }
 
-            var originalTranslation = new Vector((float)(Math.Cos(_place.Angle)*Statistics.RunningDistance),
+            _movement.ForwardMotion = new Vector((float)(Math.Cos(_place.Angle) * Statistics.RunningDistance),
                                                  (float)(Math.Sin(_place.Angle)*Statistics.RunningDistance));
 
-            var realTranslation = TryMove(originalTranslation);
-            _place.OffsetPosition(new Coordinate(realTranslation), 0.0);
-
-            Statistics.Fatigue.Increase((int)Statistics.FatigueCost);
+            _movement.FatigueCost = Statistics.FatigueCost;
         }
 
         private Vector TryMove(Vector velocity)
@@ -158,12 +172,12 @@ namespace DawnOnline.Simulation
 
         public void TurnLeft()
         {
-            _place.Angle -= Statistics.TurningAngle;
+            _movement.TurnMotion = -Statistics.TurningAngle;
         }
 
         public void TurnRight()
         {
-            _place.Angle += Statistics.TurningAngle;
+            _movement.TurnMotion = Statistics.TurningAngle;
         }
 
         public void Move()
@@ -172,6 +186,8 @@ namespace DawnOnline.Simulation
 
             if (!HasBrain)
                 return;
+
+            ClearMovement();
 
             //if (Age++ > _characterSheet.MaxAge)
             //{

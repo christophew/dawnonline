@@ -31,6 +31,8 @@ namespace DawnOnline.Simulation
         void TurnRight();
 
         void Move();
+        void ClearMovement();
+        void ApplyMovement(double timeDelta);
 
         ICreature Attack();
         bool SeesACreatureForward();

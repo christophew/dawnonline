@@ -1,9 +1,10 @@
-﻿namespace DawnOnline.Simulation
+﻿using DawnOnline.Simulation.Collision;
+namespace DawnOnline.Simulation
 {
     public interface IMovement
     {
-        bool MoveForward { get; }
-        bool TurnLeft { get; }
-        bool TurnRight { get; }
+        Vector ForwardMotion { get; }
+        double TurnMotion { get; }
+        double FatigueCost { get; }
     }
 }
