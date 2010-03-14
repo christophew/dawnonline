@@ -87,7 +87,7 @@ namespace SimulationTests
 
             // Test Critter.Angle
             eye.Angle = MathTools.ConvertToRadials(-1);
-            critter1.Statistics.TurningAngle = MathTools.ConvertToRadials(1.0);
+            critter1.CharacterSheet.TurningAngle = MathTools.ConvertToRadials(1.0);
             Assert.IsFalse(eye.Sees(critter2));
             critter1.TurnRight();
             Assert.IsFalse(eye.Sees(critter2));

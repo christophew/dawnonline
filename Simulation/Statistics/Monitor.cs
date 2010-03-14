@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
-
-namespace DawnOnline.Simulation.Statistics
+﻿namespace DawnOnline.Simulation.Statistics
 {
-    internal class Monitor
+    internal class Monitor : IMonitor
     {
         private int _maxAmount = 100;
         private int _current;

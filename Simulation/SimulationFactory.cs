@@ -9,6 +9,8 @@ namespace DawnOnline.Simulation
 {
     public static class SimulationFactory
     {
+        private const double _velocityMultiplier = 2;
+
         public static IEnvironment CreateEnvironment()
         {
             return new Environment();
@@ -68,12 +70,12 @@ namespace DawnOnline.Simulation
             critter.Brain = new PredatorBrain();
 
             critter.Specy = CreatureType.Predator;
-            critter.FoodSpecy = CreatureType.Rabbit;
+            critter.FoodSpecy = CreatureType.Avatar;
 
-            //critter.Statistics.MaxAge = Globals.Radomizer.Next(100, 150);
-            critter.Statistics.WalkingDistance = 20;
-            critter.Statistics.TurningAngle = 1;
-            critter.Statistics.ReproductionIncreaseAverage = 2;
+            //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(100, 150);
+            critter.CharacterSheet.WalkingDistance = 20 * _velocityMultiplier;
+            critter.CharacterSheet.TurningAngle = 1;
+            critter.CharacterSheet.ReproductionIncreaseAverage = 2;
             critter.InitializeSenses();
 
             return critter;
@@ -87,11 +89,11 @@ namespace DawnOnline.Simulation
             critter.Specy = CreatureType.Rabbit;
             critter.FoodSpecy = CreatureType.Plant;
 
-            //critter.Statistics.MaxAge = Globals.Radomizer.Next(100, 300);
-            critter.Statistics.WalkingDistance = 15;
-            critter.Statistics.TurningAngle = 1.5;
-            critter.Statistics.FoodValue = 500;
-            critter.Statistics.ReproductionIncreaseAverage = 7;
+            //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(100, 300);
+            critter.CharacterSheet.WalkingDistance = 15 * _velocityMultiplier;
+            critter.CharacterSheet.TurningAngle = 1.5;
+            critter.CharacterSheet.FoodValue = 500;
+            critter.CharacterSheet.ReproductionIncreaseAverage = 7;
             critter.InitializeSenses();
 
             return critter;
@@ -105,11 +107,11 @@ namespace DawnOnline.Simulation
             critter.Specy = CreatureType.Plant;
             //critter.FoodSpecy = CreatureType.Predator; // instead: killing creatures can produce plants
 
-            //critter.Statistics.MaxAge = Globals.Radomizer.Next(50, 200);
-            critter.Statistics.WalkingDistance = 0;
-            critter.Statistics.TurningAngle = 0;
-            critter.Statistics.FoodValue = 200;
-            critter.Statistics.ReproductionIncreaseAverage = 7;
+            //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(50, 200);
+            critter.CharacterSheet.WalkingDistance = 0;
+            critter.CharacterSheet.TurningAngle = 0;
+            critter.CharacterSheet.FoodValue = 200;
+            critter.CharacterSheet.ReproductionIncreaseAverage = 7;
             critter.InitializeSenses();
 
             return critter;
@@ -120,8 +122,8 @@ namespace DawnOnline.Simulation
             var avatar = new Creature(15);
 
             avatar.Specy = CreatureType.Avatar;
-            avatar.Statistics.WalkingDistance = 30;
-            avatar.Statistics.TurningAngle = 1;
+            avatar.CharacterSheet.WalkingDistance = 30 * _velocityMultiplier;
+            avatar.CharacterSheet.TurningAngle = 1;
             avatar.InitializeSenses();
 
             return avatar;

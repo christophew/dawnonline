@@ -96,14 +96,22 @@ namespace DawnOnline.Simulation
             return _obstacles;
         }
 
-        public IList<ICreature> GetCreaturesInRange(Coordinate position, double radius, CreatureType specy)
+        internal IList<ICreature> GetCreaturesInRange(Coordinate position, double radius)
+        {
+            return GetCreaturesInRange(position, radius, GetCreatures());
+        }
+
+        internal IList<ICreature> GetCreaturesInRange(Coordinate position, double radius, CreatureType specy)
+        {
+            return GetCreaturesInRange(position, radius, GetCreatures(specy));
+        }
+
+        private static IList<ICreature> GetCreaturesInRange(Coordinate position, double radius, IList<ICreature> creatures)
         {
             var list = new List<ICreature>();
 
-            double radius2 = radius*radius;
-            var creaturesOfSpecy = GetCreatures(specy);
-
-            foreach (var current in creaturesOfSpecy)
+            double radius2 = radius * radius;
+            foreach (var current in creatures)
             {
                 double distance2 = (MathTools.GetDistance2(position, current.Place.Position));
                 if (distance2 < radius2)
@@ -112,5 +120,6 @@ namespace DawnOnline.Simulation
 
             return list;
         }
+
     }
 }

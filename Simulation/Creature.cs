@@ -11,8 +11,12 @@ namespace DawnOnline.Simulation
 {
     class Creature : ICreature
     {
+        #region ICreature
+        public ICharacterSheet iCharacterSheet { get { return _characterSheet; } }
+        #endregion
+
         private Placement _place = new Placement();
-        private Movement _movement = new Movement();
+        private ActionQueue _actionQueue = new ActionQueue();
         private CharacterSheet _characterSheet = new CharacterSheet();
         private AbstractBrain _brain;
 
@@ -20,9 +24,11 @@ namespace DawnOnline.Simulation
         public CreatureType FoodSpecy { get; set; }
         //public int Age { get; private set; }
 
-        public Environment MyEnvironment { get; set; }
         public IPlacement Place { get { return _place; } }
-        public IMovement Movement { get { return _movement; } }
+
+        internal CharacterSheet CharacterSheet { get { return _characterSheet; } }
+        internal Environment MyEnvironment { get; set; }
+        internal ActionQueue MyActionQueue { get { return _actionQueue; } }
 
         public bool Alive
         {
@@ -51,8 +57,6 @@ namespace DawnOnline.Simulation
         {
             get { return new List<IEye> {_forwardEye, _leftEye, _rightEye}; }
         }
-
-        internal CharacterSheet Statistics { get { return _characterSheet; } }
 
         internal bool _alive = true;
 
@@ -88,7 +92,15 @@ namespace DawnOnline.Simulation
         {
             get
             {
-                return Statistics.Fatigue.IsCritical;
+                return CharacterSheet.Fatigue.IsCritical;
+            }
+        }
+
+        public bool IsDying
+        {
+            get
+            {
+                return CharacterSheet.Damage.IsCritical;
             }
         }
 
@@ -96,41 +108,51 @@ namespace DawnOnline.Simulation
         {
             get
             {
-                return Statistics.Hunger.IsCritical;
+                return CharacterSheet.Hunger.IsCritical;
             }
         }
 
         public void Rest()
         {
-            Statistics.Fatigue.Decrease((int)Statistics.FatigueRecovery);
+            CharacterSheet.Fatigue.Decrease((int)CharacterSheet.FatigueRecovery);
         }
 
-        public void ClearMovement()
+        public void ClearActionQueue()
         {
-            _movement.FatigueCost = 0;
-            _movement.TurnMotion = 0;
-            _movement.ForwardMotion = new Vector();
+            _actionQueue.FatigueCost = 0;
+            _actionQueue.TurnMotion = 0;
+            _actionQueue.ForwardMotion = new Vector();
+            _actionQueue.HasAttacked = false;
         }
 
-        public void ApplyMovement(double timeDelta)
+        public void ApplyActionQueue(double timeDelta)
         {
             double toSeconds = timeDelta/1000.0;
 
-            var realTranslation = TryMove(_movement.ForwardMotion * toSeconds);
+            _characterSheet.Damage.Increase((int)_actionQueue.Damage);
+            _actionQueue.Damage = 0;
+            
+            if (_characterSheet.Damage.IsFilled)
+            {
+                MyEnvironment.KillCreature(this);
+                return;
+            }
+
+            var realTranslation = TryMove(_actionQueue.ForwardMotion * toSeconds);
             _place.OffsetPosition(new Coordinate(realTranslation), 0.0);
 
-            _place.Angle += _movement.TurnMotion * toSeconds;
+            _place.Angle += _actionQueue.TurnMotion * toSeconds;
 
-            Statistics.Fatigue.Increase((int)(_movement.FatigueCost * toSeconds));
+            CharacterSheet.Fatigue.Increase((int)(_actionQueue.FatigueCost * toSeconds));
         }
 
         public void WalkForward()
         {
             Debug.Assert(MyEnvironment != null);
 
-            _movement.ForwardMotion = new Vector((float)(Math.Cos(_place.Angle) * Statistics.WalkingDistance),
-                                                (float)(Math.Sin(_place.Angle) * Statistics.WalkingDistance));
-            _movement.FatigueCost = 0;
+            _actionQueue.ForwardMotion = new Vector((float)(Math.Cos(_place.Angle) * CharacterSheet.WalkingDistance),
+                                                (float)(Math.Sin(_place.Angle) * CharacterSheet.WalkingDistance));
+            _actionQueue.FatigueCost = 0;
         }
 
         public void RunForward()
@@ -143,10 +165,10 @@ namespace DawnOnline.Simulation
                 return;
             }
 
-            _movement.ForwardMotion = new Vector((float)(Math.Cos(_place.Angle) * Statistics.RunningDistance),
-                                                 (float)(Math.Sin(_place.Angle)*Statistics.RunningDistance));
+            _actionQueue.ForwardMotion = new Vector((float)(Math.Cos(_place.Angle) * CharacterSheet.RunningDistance),
+                                                 (float)(Math.Sin(_place.Angle)*CharacterSheet.RunningDistance));
 
-            _movement.FatigueCost = Statistics.FatigueCost;
+            _actionQueue.FatigueCost = CharacterSheet.FatigueCost;
         }
 
         private Vector TryMove(Vector velocity)
@@ -172,12 +194,12 @@ namespace DawnOnline.Simulation
 
         public void TurnLeft()
         {
-            _movement.TurnMotion = -Statistics.TurningAngle;
+            _actionQueue.TurnMotion = -CharacterSheet.TurningAngle;
         }
 
         public void TurnRight()
         {
-            _movement.TurnMotion = Statistics.TurningAngle;
+            _actionQueue.TurnMotion = CharacterSheet.TurningAngle;
         }
 
         public void Move()
@@ -187,14 +209,14 @@ namespace DawnOnline.Simulation
             if (!HasBrain)
                 return;
 
-            ClearMovement();
+            ClearActionQueue();
 
             //if (Age++ > _characterSheet.MaxAge)
             //{
             //    MyEnvironment.KillCreature(this);
             //    return;
             //}
-            Statistics.Reproduction.Increase(Globals.Radomizer.Next(0, Statistics.ReproductionIncreaseAverage * 2));
+            CharacterSheet.Reproduction.Increase(Globals.Radomizer.Next(0, CharacterSheet.ReproductionIncreaseAverage * 2));
 
             int necessaryFood = Globals.Radomizer.Next(3);
 
@@ -214,57 +236,39 @@ namespace DawnOnline.Simulation
             }
         }
 
-        public ICreature Attack()
+        private Creature FindCreatureToAttack()
+        {
+            var creaturesToAttack = MyEnvironment.GetCreaturesInRange(Place.Position, CharacterSheet.MeleeRange);
+
+            foreach (Creature current in creaturesToAttack)
+            {
+                if (!current.Equals(this))
+                    return current;
+            }
+            return null;
+        }
+
+        public void Attack()
+        {
+            if (_actionQueue.HasAttacked)
+                return;
+
+            _actionQueue.HasAttacked = true;
+
+
+            var creatureToAttack = FindCreatureToAttack();
+
+            if (creatureToAttack == null)
+                return;
+
+            Attack(creatureToAttack);
+        }
+
+        public void Attack(Creature target)
         {
             Debug.Assert(Alive);
 
-
-            if (Specy != CreatureType.Plant)
-            {
-                // No need to eat
-                if (Statistics.Hunger.PercentFilled < 25)
-                    return null;
-
-                var enemy = FindFoodInCircle(_place.Position, _characterSheet.MeleeRange);
-
-                // TESTING: assume he also hit, kills and eats his target
-                if (enemy != null)
-                    _characterSheet.Hunger.Decrease((int)enemy.Statistics.FoodValue);
-                return enemy;
-            }
-            else
-            {
-                // TODO: some inheritance?
-                double rootsRadius = 30;
-                double soilFoodValue = 10;
-
-                var plantsInRegion = MyEnvironment.GetCreaturesInRange(_place.Position, rootsRadius, CreatureType.Plant);
-                _characterSheet.Hunger.Decrease((int)(soilFoodValue/plantsInRegion.Count));
-                return null;
-            }
-        }
-
-        private static bool IsInCircle(Creature enemy, Coordinate position, double radius)
-        {
-            return MathTools.GetDistance2(position, enemy.Place.Position) < radius * radius;
-        }
-
-        private Creature FindFoodInCircle(Coordinate center, double radius)
-        {
-            if (FoodSpecy == CreatureType.Unknown)
-                return null;
-
-            var creatures = MyEnvironment.GetCreatures(FoodSpecy);
-            foreach (Creature current in creatures)
-            {
-                if (current.Equals(this))
-                    continue;
-
-                if (IsInCircle(current, center, radius))
-                    return current;
-            }
-
-            return null;
+            target.MyActionQueue.Damage = _characterSheet.MeleeRange;
         }
 
         public bool SeesACreatureForward()
@@ -300,7 +304,7 @@ namespace DawnOnline.Simulation
         public bool TryReproduce()
         {
             return false;
-            if (!Statistics.Reproduction.IsFilled)
+            if (!CharacterSheet.Reproduction.IsFilled)
                 return false;
 
 
@@ -315,7 +319,7 @@ namespace DawnOnline.Simulation
                 Globals.Radomizer.Next(7));
 
 
-            Statistics.Reproduction.Clear();
+            CharacterSheet.Reproduction.Clear();
 
             return true;
         }

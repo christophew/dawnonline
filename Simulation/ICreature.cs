@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DawnOnline.Simulation.Collision;
-using DawnOnline.Simulation.Senses;
+﻿using DawnOnline.Simulation.Statistics;
 
 namespace DawnOnline.Simulation
 {
@@ -22,6 +17,7 @@ namespace DawnOnline.Simulation
 
         bool Alive { get; }
 
+        bool IsDying { get; }
         bool IsTired { get; }
 
         void Rest();
@@ -29,19 +25,13 @@ namespace DawnOnline.Simulation
         void RunForward();
         void TurnLeft();
         void TurnRight();
+        void Attack();
 
         void Move();
-        void ClearMovement();
-        void ApplyMovement(double timeDelta);
-
-        ICreature Attack();
-        bool SeesACreatureForward();
-        bool SeesACreatureLeft();
-        bool SeesACreatureRight();
+        void ClearActionQueue();
+        void ApplyActionQueue(double timeDelta);
 
         IPlacement Place { get; }
-        IMovement Movement { get; }
-
-        IList<IEye> Eyes { get; }
+        ICharacterSheet iCharacterSheet { get; }
     }
 }

@@ -70,8 +70,8 @@ namespace DawnGame
                                      new Coordinate { X = _randomize.Next(MaxX), Y = _randomize.Next(MaxY) }, 0);
             BuildWorld();
 
-            AddCreatures(CreatureType.Rabbit, 300);
-            AddCreatures(CreatureType.Plant, 300);
+            //AddCreatures(CreatureType.Rabbit, 300);
+            //AddCreatures(CreatureType.Plant, 300);
             AddCreatures(CreatureType.Predator, 100);
 
             graphics.PreferredBackBufferWidth = 3000;
@@ -175,7 +175,7 @@ namespace DawnGame
 
             // Avatar
             {
-                _avatar.ClearMovement();
+                _avatar.ClearActionQueue();
 
                 if (keyboardState.IsKeyDown(Keys.I))
                     _avatar.WalkForward();
@@ -183,6 +183,8 @@ namespace DawnGame
                     _avatar.TurnLeft();
                 if (keyboardState.IsKeyDown(Keys.J))
                     _avatar.TurnRight();
+                if (keyboardState.IsKeyDown(Keys.Space))
+                    _avatar.Attack();
             }
 
             // Think = Decide where to move
@@ -199,7 +201,7 @@ namespace DawnGame
                 _lastMove = gameTime.TotalGameTime;
             }
 
-
+            
 
 
 
@@ -274,8 +276,8 @@ namespace DawnGame
             if (zoomOut)
                 cameraZoom *= 0.99f;
 
-            //viewMatrix = Matrix.CreateTranslation(-cameraX, -cameraY, 0) * Matrix.CreateScale(1.0f / cameraZoom, 1.0f / cameraZoom, 1.0f);
-            viewMatrix = Matrix.CreateTranslation(-(float)_avatar.Place.Position.X, -(float)_avatar.Place.Position.Y, 0) * Matrix.CreateScale(1.0f / cameraZoom, 1.0f / cameraZoom, 1.0f);
+            viewMatrix = Matrix.CreateTranslation(-cameraX, -cameraY, 0) * Matrix.CreateScale(1.0f / cameraZoom, 1.0f / cameraZoom, 1.0f);
+            //viewMatrix = Matrix.CreateTranslation(-(float)_avatar.Place.Position.X, -(float)_avatar.Place.Position.Y, 0) * Matrix.CreateScale(1.0f / cameraZoom, 1.0f / cameraZoom, 1.0f);
         }
 
         /// <summary>
@@ -339,6 +341,13 @@ namespace DawnGame
             spriteBatch.Begin();
             //DrawSprites(spriteBatch);
             spriteBatch.DrawString(font, Information, new Vector2(100f, 100f), Color.Green);
+
+            if (_avatar != null)
+            {
+                string stats = string.Format("Damage: {0}%", _avatar.iCharacterSheet.iDamage.PercentFilled);
+                spriteBatch.DrawString(font, stats, new Vector2(100f, 150f), Color.Green);
+            }
+
             spriteBatch.End();
 
 
@@ -459,7 +468,7 @@ namespace DawnGame
                 if (!current.Alive)
                     continue;
 
-                current.ApplyMovement(timeDelta);
+                current.ApplyActionQueue(timeDelta);
             }
         }
 
@@ -482,9 +491,6 @@ namespace DawnGame
                 if (!current.Alive)
                     continue;
 
-                var killed = current.Attack();
-                if ((killed != null) && (killed != _avatar))
-                    _environment.KillCreature(killed);
 
                 if (current.Specy == CreatureType.Plant) nrOfPlants++;
                 if (current.Specy == CreatureType.Rabbit) nrOfRabbits++;

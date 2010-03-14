@@ -5,8 +5,13 @@ using System.Text;
 
 namespace DawnOnline.Simulation.Statistics
 {
-    internal class CharacterSheet : ICloneable
+    internal class CharacterSheet : ICloneable, ICharacterSheet
     {
+        #region ICharacterSheet
+        public IMonitor iFatigue { get { return Fatigue; } }
+        public IMonitor iDamage { get { return Damage; } }
+        #endregion
+
         internal double WalkingDistance { get; set; }
         internal double RunningDistance { get { return WalkingDistance * 2.0; } }
         internal double TurningAngle { get; set; }
@@ -15,6 +20,7 @@ namespace DawnOnline.Simulation.Statistics
         internal double FatigueCost { get; set; }
         internal double FatigueRecovery { get; set; }
         internal double MeleeRange { get; set; }
+        internal double MeleeDamage { get; set; }
 
         //internal int MaxAge { get; set; }
         internal double FoodValue { get; set; }
@@ -24,12 +30,14 @@ namespace DawnOnline.Simulation.Statistics
 
         // Monitors
         internal Monitor Fatigue { get; set; }
+        internal Monitor Damage { get; set; }
         internal Monitor Hunger { get; set; }
         internal Monitor Reproduction { get; set; }
 
         internal CharacterSheet()
         {
             Fatigue = new Monitor();
+            Damage = new Monitor();
             Hunger = new Monitor(500);
             Reproduction = new Monitor(1000);
 
@@ -41,6 +49,7 @@ namespace DawnOnline.Simulation.Statistics
             FatigueCost = 15;
             FatigueRecovery = 30;
             MeleeRange = 15;
+            MeleeDamage = 25;
             //MaxAge = Int32.MaxValue;
             ReproductionIncreaseAverage = 5;
 
