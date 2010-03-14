@@ -69,9 +69,6 @@ namespace FrontEnd
                 if (!current.Alive)
                     continue;
 
-                var killed = current.Attack();
-                if ((killed != null) && (killed != _avatar))
-                    _environment.KillCreature(killed);
 
                 if (current.Specy == CreatureType.Plant) nrOfPlants++;
                 if (current.Specy == CreatureType.Rabbit) nrOfRabbits++;

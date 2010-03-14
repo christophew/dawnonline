@@ -18,14 +18,14 @@ namespace DawnOnline.Simulation.Brains
 
             // Run from predator
             {
-                if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) &&
+                if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) &&
                     MyCreature.SeesACreatureLeft(CreatureType.Predator))
                 {
                     //MyCreature.TurnRight();
                     MyCreature.RunForward();
                     return;
                 }
-                if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) &&
+                if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) &&
                     MyCreature.SeesACreatureRight(CreatureType.Predator))
                 {
                     //MyCreature.TurnLeft();
@@ -50,18 +50,18 @@ namespace DawnOnline.Simulation.Brains
 
         private void FindPlants()
         {
-            if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) && MyCreature.SeesACreatureForward(CreatureType.Plant))
+            if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) && MyCreature.SeesACreatureForward(CreatureType.Plant))
             {
                 MyCreature.RunForward();
                 return;
             }
-            if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) &&
+            if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) &&
                 MyCreature.SeesACreatureLeft(CreatureType.Plant))
             {
                 MyCreature.TurnLeft();
                 return;
             }
-            if ((Globals.Radomizer.Next(100) < MyCreature.Statistics.VisionAccuracyPercent) &&
+            if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) &&
                 MyCreature.SeesACreatureRight(CreatureType.Plant))
             {
                 MyCreature.TurnRight();
