@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using A.Namespace.Of.Your.Choice.Graphics;
 using BoxTutorial;
 using DawnOnline.Simulation;
@@ -27,10 +26,10 @@ namespace DawnGame
         SpriteBatch spriteBatch;
         LineBatch lineBatch;
 
-        private readonly IEnvironment _environment = SimulationFactory.CreateEnvironment();
+        private readonly DawnOnline.Simulation.Environment _environment = SimulationFactory.CreateEnvironment();
         private const int MaxX = 3000;
         private const int MaxY = 2000;
-        private ICreature _avatar = SimulationFactory.CreateAvatar();
+        private Creature _avatar = SimulationFactory.CreateAvatar();
 
         private string Information = "";
         private SpriteFont font;
@@ -188,14 +187,14 @@ namespace DawnGame
             }
 
             // Think = Decide where to move
-            if ((gameTime.TotalGameTime - _lastThink).TotalMilliseconds > 250)
+            if ((gameTime.TotalGameTime - _lastThink).TotalMilliseconds > 100)
             {
                 MoveAll();
                 _lastThink = gameTime.TotalGameTime;
             }
 
             // Move
-            if ((gameTime.TotalGameTime - _lastMove).TotalMilliseconds > 100)
+            if ((gameTime.TotalGameTime - _lastMove).TotalMilliseconds > 50)
             {
                 ApplyMove((gameTime.TotalGameTime - _lastMove).TotalMilliseconds);
                 _lastMove = gameTime.TotalGameTime;
@@ -344,7 +343,7 @@ namespace DawnGame
 
             if (_avatar != null)
             {
-                string stats = string.Format("Damage: {0}%", _avatar.iCharacterSheet.iDamage.PercentFilled);
+                string stats = string.Format("Damage: {0}%", _avatar.CharacterSheet.Damage.PercentFilled);
                 spriteBatch.DrawString(font, stats, new Vector2(100f, 150f), Color.Green);
             }
 
@@ -389,7 +388,7 @@ namespace DawnGame
             }
         }
 
-        private static void DrawCreature(ICreature creature, Color color, RoundLineManager manager, Matrix viewProjMatrix, float time, string curTechniqueName)
+        private static void DrawCreature(Creature creature, Color color, RoundLineManager manager, Matrix viewProjMatrix, float time, string curTechniqueName)
         {
             var pos = creature.Place.Position;
             var angle = creature.Place.Angle;
@@ -461,7 +460,7 @@ namespace DawnGame
 
         private void ApplyMove(double timeDelta)
         {
-            var creatures = new List<ICreature>(_environment.GetCreatures());
+            var creatures = new List<Creature>(_environment.GetCreatures());
 
             foreach (var current in creatures)
             {
@@ -474,7 +473,7 @@ namespace DawnGame
 
         private void MoveAll()
         {
-            var creatures = new List<ICreature>(_environment.GetCreatures());
+            var creatures = new List<Creature>(_environment.GetCreatures());
 
             int nrOfPlants = 0;
             int nrOfRabbits = 0;

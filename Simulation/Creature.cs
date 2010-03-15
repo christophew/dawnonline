@@ -9,12 +9,17 @@ using DawnOnline.Simulation.Senses;
 
 namespace DawnOnline.Simulation
 {
-    class Creature : ICreature
+    public enum CreatureType
     {
-        #region ICreature
-        public ICharacterSheet iCharacterSheet { get { return _characterSheet; } }
-        #endregion
+        Unknown,
+        Avatar,
+        Predator,
+        Rabbit,
+        Plant
+    }
 
+    public class Creature
+    {
         private Placement _place = new Placement();
         private ActionQueue _actionQueue = new ActionQueue();
         private CharacterSheet _characterSheet = new CharacterSheet();
@@ -24,9 +29,9 @@ namespace DawnOnline.Simulation
         public CreatureType FoodSpecy { get; set; }
         //public int Age { get; private set; }
 
-        public IPlacement Place { get { return _place; } }
+        public Placement Place { get { return _place; } }
+        public CharacterSheet CharacterSheet { get { return _characterSheet; } }
 
-        internal CharacterSheet CharacterSheet { get { return _characterSheet; } }
         internal Environment MyEnvironment { get; set; }
         internal ActionQueue MyActionQueue { get { return _actionQueue; } }
 
@@ -308,7 +313,7 @@ namespace DawnOnline.Simulation
                 return false;
 
 
-            ICreature child = SimulationFactory.CreateCreature(Specy);
+            Creature child = SimulationFactory.CreateCreature(Specy);
 
             MyEnvironment.AddCreature(
                 child,

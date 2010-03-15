@@ -21,7 +21,7 @@ namespace DawnOnline.Simulation.Senses
         public double VisionAngle { get; set; }
 
         private Environment CreatureEnvironment { get { return _creature.MyEnvironment; } }
-        private IPlacement CreaturePlace { get { return _creature.Place; } }
+        private Placement CreaturePlace { get { return _creature.Place; } }
 
         public bool SeesACreature()
         {

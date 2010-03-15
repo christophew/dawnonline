@@ -12,10 +12,10 @@ namespace FrontEnd
 {
     public partial class Window1 : Window
     {
-        private readonly IEnvironment _environment = SimulationFactory.CreateEnvironment();
+        private readonly DawnOnline.Simulation.Environment _environment = SimulationFactory.CreateEnvironment();
         private const int MaxX = 3000;
         private const int MaxY = 2000;
-        private ICreature _avatar = SimulationFactory.CreateAvatar();
+        private Creature _avatar = SimulationFactory.CreateAvatar();
         private DateTime _lastMove = DateTime.Now;
 
         Random _randomize = new Random();
@@ -52,7 +52,7 @@ namespace FrontEnd
 
         private void MoveAll()
         {
-            var creatures = new List<ICreature>(_environment.GetCreatures());
+            var creatures = new List<Creature>(_environment.GetCreatures());
 
             int nrOfPlants = 0;
             int nrOfRabbits = 0;
@@ -95,7 +95,7 @@ namespace FrontEnd
             Info.Content = string.Format("Plant: {0}; Rabbits: {1}; Predators:{2}", nrOfPlants, nrOfRabbits, nrOfPredators);
         }
 
-        private void DrawObstacle(IPlacement obstacle)
+        private void DrawObstacle(Placement obstacle)
         {
             DrawPolygon(obstacle.Form.Shape);
         }
@@ -118,7 +118,7 @@ namespace FrontEnd
             }
         }
 
-        private void DrawCreature(ICreature creature)
+        private void DrawCreature(Creature creature)
         {
             var placement = creature.Place;
 
