@@ -1,27 +1,27 @@
 ﻿namespace DawnOnline.Simulation.Statistics
 {
-    internal class Monitor : IMonitor
+    public class Monitor
     {
         private int _maxAmount = 100;
         private int _current;
         private int _criticalThreshold = 80;
 
-        public Monitor()
+        internal Monitor()
         {
         }
 
-        public Monitor(int max)
+        internal Monitor(int max)
         {
             _maxAmount = max;
             _criticalThreshold = max*80/100;
         }
 
-        public bool CanIncrease(int amount)
+        internal bool CanIncrease(int amount)
         {
             return _current + amount < _maxAmount;
         }
 
-        public void Increase(int amount)
+        internal void Increase(int amount)
         {
             _current += amount;
 
@@ -29,7 +29,7 @@
                 _current = _maxAmount;
         }
 
-        public void Decrease(int amount)
+        internal void Decrease(int amount)
         {
             _current -= amount;
 
@@ -61,7 +61,7 @@
             }
         }
 
-        public void Clear()
+        internal void Clear()
         {
             _current = 0;
         }

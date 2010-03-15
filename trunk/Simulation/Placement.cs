@@ -6,31 +6,31 @@ using DawnOnline.Simulation.Collision;
 
 namespace DawnOnline.Simulation
 {
-    class Placement : IPlacement
+    public class Placement
     {
         #region IPlacement Members
 
-        public Placement()
+        internal Placement()
         {
             Position = new Coordinate();
         }
 
-        public IForm Form
+        public Form Form
         {
-            get; set;
+            get; internal set;
         }
 
         public Coordinate Position
         {
-            get; set;
+            get; internal set;
         }
 
         public double Angle
         {
-            get; set;
+            get; internal set;
         }
 
-        public void OffsetPosition(Coordinate position, double angle)
+        internal void OffsetPosition(Coordinate position, double angle)
         {
             Position.X += position.X;
             Position.Y += position.Y;

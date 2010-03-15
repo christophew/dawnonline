@@ -5,13 +5,8 @@ using System.Text;
 
 namespace DawnOnline.Simulation.Statistics
 {
-    internal class CharacterSheet : ICloneable, ICharacterSheet
+    public class CharacterSheet : ICloneable
     {
-        #region ICharacterSheet
-        public IMonitor iFatigue { get { return Fatigue; } }
-        public IMonitor iDamage { get { return Damage; } }
-        #endregion
-
         internal double WalkingDistance { get; set; }
         internal double RunningDistance { get { return WalkingDistance * 2.0; } }
         internal double TurningAngle { get; set; }
@@ -29,8 +24,8 @@ namespace DawnOnline.Simulation.Statistics
 
 
         // Monitors
-        internal Monitor Fatigue { get; set; }
-        internal Monitor Damage { get; set; }
+        public Monitor Fatigue { get; internal set; }
+        public Monitor Damage { get; internal set; }
         internal Monitor Hunger { get; set; }
         internal Monitor Reproduction { get; set; }
 

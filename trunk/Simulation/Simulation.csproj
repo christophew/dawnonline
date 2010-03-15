@@ -60,12 +60,7 @@
     <Compile Include="Creature.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="Globals.cs" />
-    <Compile Include="IEnvironment.cs" />
     <Compile Include="Form.cs" />
-    <Compile Include="ICreature.cs" />
-    <Compile Include="IForm.cs" />
-    <Compile Include="IActionQueue.cs" />
-    <Compile Include="IPlacement.cs" />
     <Compile Include="ActionQueue.cs" />
     <Compile Include="Placement.cs" />
     <Compile Include="Coordinate.cs" />
@@ -74,8 +69,6 @@
     <Compile Include="Senses\IEye.cs" />
     <Compile Include="SimulationFactory.cs" />
     <Compile Include="Statistics\CharacterSheet.cs" />
-    <Compile Include="Statistics\ICharacterSheet.cs" />
-    <Compile Include="Statistics\IMonitor.cs" />
     <Compile Include="Statistics\Monitor.cs" />
     <Compile Include="Tools\MathTools.cs" />
   </ItemGroup>

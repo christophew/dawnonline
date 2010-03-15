@@ -8,13 +8,13 @@ using DawnOnline.Simulation.Tools;
 
 namespace DawnOnline.Simulation
 {
-    class Environment : IEnvironment
+    public class Environment
     {
-        List<ICreature> _creatures = new List<ICreature>();
-        Dictionary<CreatureType, List<ICreature>> _creaturesPerSpecy = new Dictionary<CreatureType, List<ICreature>>();
-        List<IPlacement> _obstacles = new List<IPlacement>();
+        List<Creature> _creatures = new List<Creature>();
+        Dictionary<CreatureType, List<Creature>> _creaturesPerSpecy = new Dictionary<CreatureType, List<Creature>>();
+        List<Placement> _obstacles = new List<Placement>();
 
-        public void AddCreature(ICreature creature, Coordinate origin, double angle)
+        public void AddCreature(Creature creature, Coordinate origin, double angle)
         {
             var myCreature = creature as Creature;
             Debug.Assert(myCreature != null);
@@ -28,14 +28,14 @@ namespace DawnOnline.Simulation
 
                 if (!_creaturesPerSpecy.ContainsKey(myCreature.Specy))
                 {
-                    _creaturesPerSpecy.Add(myCreature.Specy, new List<ICreature>());
+                    _creaturesPerSpecy.Add(myCreature.Specy, new List<Creature>());
                 }
 
                 _creaturesPerSpecy[myCreature.Specy].Add(creature);
             }
         }
 
-        private bool IntersectsWithObstacles(IPlacement place)
+        private bool IntersectsWithObstacles(Placement place)
         {
             foreach (var current in _obstacles)
             {
@@ -53,7 +53,7 @@ namespace DawnOnline.Simulation
             return false;
         }
 
-        public void KillCreature(ICreature creature)
+        public void KillCreature(Creature creature)
         {
             var myCreature = creature as Creature;
             Debug.Assert(myCreature != null);
@@ -63,22 +63,22 @@ namespace DawnOnline.Simulation
             _creaturesPerSpecy[myCreature.Specy].Remove(creature);
         }
 
-        public IList<ICreature> GetCreatures()
+        public IList<Creature> GetCreatures()
         {
             return _creatures;
         }
 
-        public IList<ICreature> GetCreatures(CreatureType specy)
+        public IList<Creature> GetCreatures(CreatureType specy)
         {
             if (!_creaturesPerSpecy.ContainsKey(specy))
             {
-                _creaturesPerSpecy.Add(specy, new List<ICreature>());
+                _creaturesPerSpecy.Add(specy, new List<Creature>());
             }
 
             return _creaturesPerSpecy[specy];
         }
 
-        public bool AddObstacle(IPlacement obstacle, Coordinate origin)
+        public bool AddObstacle(Placement obstacle, Coordinate origin)
         {
             var myObstacle = obstacle as Placement;
 
@@ -91,24 +91,24 @@ namespace DawnOnline.Simulation
             return true;
         }
 
-        public IList<IPlacement> GetObstacles()
+        public IList<Placement> GetObstacles()
         {
             return _obstacles;
         }
 
-        internal IList<ICreature> GetCreaturesInRange(Coordinate position, double radius)
+        internal IList<Creature> GetCreaturesInRange(Coordinate position, double radius)
         {
             return GetCreaturesInRange(position, radius, GetCreatures());
         }
 
-        internal IList<ICreature> GetCreaturesInRange(Coordinate position, double radius, CreatureType specy)
+        internal IList<Creature> GetCreaturesInRange(Coordinate position, double radius, CreatureType specy)
         {
             return GetCreaturesInRange(position, radius, GetCreatures(specy));
         }
 
-        private static IList<ICreature> GetCreaturesInRange(Coordinate position, double radius, IList<ICreature> creatures)
+        private static IList<Creature> GetCreaturesInRange(Coordinate position, double radius, IList<Creature> creatures)
         {
-            var list = new List<ICreature>();
+            var list = new List<Creature>();
 
             double radius2 = radius * radius;
             foreach (var current in creatures)

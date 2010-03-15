@@ -6,16 +6,16 @@ using DawnOnline.Simulation.Collision;
 
 namespace DawnOnline.Simulation
 {
-    class Form : IForm
+    public class Form
     {
         public double BoundingCircleRadius
         {
-            get; set;
+            get; internal set;
         }
 
         public IPolygon Shape
         {
-            get; set;
+            get; internal set;
         }
     }
 }
