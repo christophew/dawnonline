@@ -3,7 +3,7 @@ using DawnOnline.Simulation.Collision;
 
 namespace DawnOnline.Simulation
 {
-    public class ActionQueue
+    internal class ActionQueue
     {
         internal Vector ForwardMotion { get; set; }
         internal double TurnMotion { get; set; }

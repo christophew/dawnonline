@@ -58,20 +58,20 @@ namespace DawnOnline.Simulation
         private Eye _leftEye;
         private Eye _rightEye;
 
-        public IList<IEye> Eyes
+        internal IList<IEye> Eyes
         {
             get { return new List<IEye> {_forwardEye, _leftEye, _rightEye}; }
         }
 
-        internal bool _alive = true;
+        private bool _alive = true;
 
 
-        public Creature(double bodyRadius)
+        internal Creature(double bodyRadius)
         {
             _place.Form = SimulationFactory.CreateCircle(bodyRadius);
         }
 
-        public void InitializeSenses()
+        internal void InitializeSenses()
         {
             _forwardEye = new Eye(this)
             {
@@ -128,6 +128,16 @@ namespace DawnOnline.Simulation
             _actionQueue.TurnMotion = 0;
             _actionQueue.ForwardMotion = new Vector();
             _actionQueue.HasAttacked = false;
+        }
+
+        public bool IsAttacking()
+        {
+            return MyActionQueue.HasAttacked;
+        }
+
+        public bool IsAttacked()
+        {
+            return MyActionQueue.Damage > 0;
         }
 
         public void ApplyActionQueue(double timeDelta)
