@@ -14,6 +14,7 @@ using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Net;
 using Microsoft.Xna.Framework.Storage;
 using RoundLineCode;
+using System.Diagnostics;
 
 namespace DawnGame
 {
@@ -24,20 +25,14 @@ namespace DawnGame
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        LineBatch lineBatch;
 
-        private readonly DawnOnline.Simulation.Environment _environment = SimulationFactory.CreateEnvironment();
-        private const int MaxX = 3000;
-        private const int MaxY = 2000;
-        private Creature _avatar = SimulationFactory.CreateAvatar();
-
-        private string Information = "";
+        private string _worldInformation = "";
+        private Stopwatch _thinkTimer = new Stopwatch();
+        private Stopwatch _moveTimer = new Stopwatch();
         private SpriteFont font;
         Matrix projMatrix;
         Matrix viewMatrix;
         Matrix viewMatrix2;
-
-        private Texture2D oneForAll;
 
         RoundLineManager roundLineManager;
         float cameraX = 1500;
@@ -47,6 +42,7 @@ namespace DawnGame
         int roundLineTechniqueIndex = 0;
         string[] roundLineTechniqueNames;
 
+        DawnWorld _dawnWorld = new DawnWorld();
 
         Random _randomize = new Random();
 
@@ -65,14 +61,6 @@ namespace DawnGame
         /// </summary>
         protected override void Initialize()
         {
-            _environment.AddCreature(_avatar,
-                                     new Coordinate { X = _randomize.Next(MaxX), Y = _randomize.Next(MaxY) }, 0);
-            BuildWorld();
-
-            //AddCreatures(CreatureType.Rabbit, 300);
-            //AddCreatures(CreatureType.Plant, 300);
-            AddCreatures(CreatureType.Predator, 100);
-
             graphics.PreferredBackBufferWidth = 3000;
             graphics.PreferredBackBufferHeight = 2000;
             graphics.IsFullScreen = false;
@@ -127,12 +115,6 @@ namespace DawnGame
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            lineBatch = new LineBatch(GraphicsDevice, 1f);
-
-            // TODO: use this.Content to load your game content here
-            oneForAll = Content.Load<Texture2D>(@"sprites\creature");
-            //oneForAll = Content.Load<Texture2D>(@"sprites\cannonball");
-            //oneForAll = new Texture2D(GraphicsDevice, 1, 1);
 
             font = Content.Load<SpriteFont>(@"fonts\MyFont");
 
@@ -141,9 +123,7 @@ namespace DawnGame
             roundLineTechniqueNames = roundLineManager.TechniqueNames;
 
 
-
             Create2DProjectionMatrix();
-
         }
 
         /// <summary>
@@ -174,36 +154,40 @@ namespace DawnGame
 
             // Avatar
             {
-                _avatar.ClearActionQueue();
+                _dawnWorld.Avatar.ClearActionQueue();
 
                 if (keyboardState.IsKeyDown(Keys.I))
-                    _avatar.WalkForward();
+                    _dawnWorld.Avatar.WalkForward();
                 if (keyboardState.IsKeyDown(Keys.L))
-                    _avatar.TurnLeft();
+                    _dawnWorld.Avatar.TurnLeft();
                 if (keyboardState.IsKeyDown(Keys.J))
-                    _avatar.TurnRight();
+                    _dawnWorld.Avatar.TurnRight();
                 if (keyboardState.IsKeyDown(Keys.Space))
-                    _avatar.Attack();
+                    _dawnWorld.Avatar.Attack();
             }
 
             // Think = Decide where to move
             if ((gameTime.TotalGameTime - _lastThink).TotalMilliseconds > 100)
             {
-                MoveAll();
+                _thinkTimer.Reset();
+                _thinkTimer.Start();
+                _dawnWorld.MoveAll();
+                _thinkTimer.Stop();
+
                 _lastThink = gameTime.TotalGameTime;
             }
 
             // Move
             if ((gameTime.TotalGameTime - _lastMove).TotalMilliseconds > 50)
             {
-                ApplyMove((gameTime.TotalGameTime - _lastMove).TotalMilliseconds);
+                _moveTimer.Reset();
+                _moveTimer.Start();
+                _dawnWorld.ApplyMove((gameTime.TotalGameTime - _lastMove).TotalMilliseconds);
+                _moveTimer.Stop();
                 _lastMove = gameTime.TotalGameTime;
             }
 
-            
-
-
-
+            _worldInformation = _dawnWorld.GetWorldInformation();
 
             if (gamePadState.Buttons.Back == ButtonState.Pressed ||
                 keyboardState.IsKeyDown(Keys.Escape))
@@ -289,26 +273,11 @@ namespace DawnGame
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            //lineBatch.Begin();
-            //{
-            //    //DrawTestPolygon(lineBatch);
-
-            //    //var obstacles = _environment.GetObstacles();
-            //    //foreach (var current in obstacles)
-            //    //{
-            //    //    var points = current.Form.Shape.Points;
-            //    //    var pos = current.Position;
-
-            //    //    DrawPolygon(lineBatch, points, pos);
-            //    //}
-            //}
-            //lineBatch.End();
-
             {
                 float time = (float) gameTime.TotalRealTime.TotalSeconds;
                 string curTechniqueName = roundLineTechniqueNames[roundLineTechniqueIndex];
                 {
-                    var obstacles = _environment.GetObstacles();
+                    var obstacles = _dawnWorld.Environment.GetObstacles();
                     foreach (var current in obstacles)
                     {
                         var points = current.Form.Shape.Points;
@@ -318,33 +287,26 @@ namespace DawnGame
                     }
                 }
                 {
-                    var creatures = _environment.GetCreatures();
+                    var creatures = _dawnWorld.Environment.GetCreatures();
                     foreach (var current in creatures)
                     {
-                        //DrawCreature(current);
-                        var color = Color.White;
-                        if (current.Specy == CreatureType.Plant)
-                            color = Color.Green;
-                        if (current.Specy == CreatureType.Rabbit)
-                            color = Color.Blue;
-                        if (current.Specy == CreatureType.Predator)
-                            color = Color.Red;
-                        if (current.Specy == CreatureType.Avatar)
-                            color = Color.Gold;
-
-                        DrawCreature(current, color, roundLineManager, viewProjMatrix, time, curTechniqueName);
+                        DrawCreature(current, roundLineManager, viewProjMatrix, time, curTechniqueName);
                     }
                 }
             }
 
             spriteBatch.Begin();
-            //DrawSprites(spriteBatch);
-            spriteBatch.DrawString(font, Information, new Vector2(100f, 100f), Color.Green);
 
-            if (_avatar != null)
+            spriteBatch.DrawString(font, _worldInformation, new Vector2(100f, 100f), Color.Green);
+
+            string technicalInformation = string.Format("Think: {0}ms; Move: {1}ms", _thinkTimer.ElapsedMilliseconds, _moveTimer.ElapsedMilliseconds);
+
+            spriteBatch.DrawString(font, technicalInformation, new Vector2(100f, 150f), Color.Green);
+
+            if (_dawnWorld.Avatar != null)
             {
-                string stats = string.Format("Damage: {0}%", _avatar.CharacterSheet.Damage.PercentFilled);
-                spriteBatch.DrawString(font, stats, new Vector2(100f, 150f), Color.Green);
+                string stats = string.Format("Damage: {0}%", _dawnWorld.Avatar.CharacterSheet.Damage.PercentFilled);
+                spriteBatch.DrawString(font, stats, new Vector2(100f, 200f), Color.Green);
             }
 
             spriteBatch.End();
@@ -353,43 +315,20 @@ namespace DawnGame
             base.Draw(gameTime);
         }
 
-        private void DrawSprites(SpriteBatch spriteBatch)
+        private static void DrawCreature(Creature creature, RoundLineManager manager, Matrix viewProjMatrix, float time, string curTechniqueName)
         {
-            var creatures = _environment.GetCreatures();
-            foreach (var current in creatures)
-            {
-                //DrawCreature(current);
-                var color = Color.White;
-                if (current.Specy == CreatureType.Plant)
-                    color = Color.Green;
-                if (current.Specy == CreatureType.Rabbit)
-                    color = Color.Blue;
-                if (current.Specy == CreatureType.Predator)
-                    color = Color.Red;
+            Color color = Color.White;
 
-                //spriteBatch.Draw(
-                //    oneForAll, 
-                //    new Vector2((float)current.Place.Position.X, (float)current.Place.Position.Y), 
-                //    color);
+            if (creature.Specy == CreatureType.Avatar)
+                color = Color.Gold;
+            if (creature.Specy == CreatureType.Predator)
+                color = Color.Green;
 
+            if (creature.IsAttacked())
+                color = Color.Black;
+            if (creature.IsAttacked())
+                color = Color.Red;
 
-                //Rectangle destination = new Rectangle(0, 0, 10, 10);
-
-                spriteBatch.Draw(
-                    oneForAll,
-                    new Vector2((float)current.Place.Position.X, (float)current.Place.Position.Y),
-                    null,
-                    color,
-                    (float)current.Place.Angle,
-                    Vector2.Zero, // rotation origin, 
-                    1f, //1.0f / this.cameraZoom, 
-                    SpriteEffects.None,
-                    0);
-            }
-        }
-
-        private static void DrawCreature(Creature creature, Color color, RoundLineManager manager, Matrix viewProjMatrix, float time, string curTechniqueName)
-        {
             var pos = creature.Place.Position;
             var angle = creature.Place.Angle;
 
@@ -425,97 +364,7 @@ namespace DawnGame
             }
         }
 
-        private void BuildWorld()
-        {
-            // World boundaries
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, -20), new Coordinate { X = MaxX / 2.0, Y = -11 }); // Top
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, 20), new Coordinate { X = MaxX / 2.0, Y = MaxY + 11 }); // Bottom
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(-20, MaxY), new Coordinate { X = -11, Y = MaxY / 2.0 }); // Left
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(20, MaxY), new Coordinate { X = MaxX + 11, Y = MaxY / 2.0 }); // Right
-
-            // Randow obstacles
-            int maxHeight = 200;
-            int maxWide = 200;
-            for (int i = 0; i < 50; )
-            {
-                int height = _randomize.Next(maxHeight);
-                int wide = _randomize.Next(maxWide);
-                var position = new Coordinate(_randomize.Next(MaxX - wide), _randomize.Next(MaxY - height));
-                var box = SimulationFactory.CreateObstacleBox(wide, height);
-
-                if (_environment.AddObstacle(box, position))
-                    i++;
-            }
-        }
-
-        private void AddCreatures(CreatureType specy, int amount)
-        {
-            for (int i = 0; i < amount; i++)
-            {
-                _environment.AddCreature(SimulationFactory.CreateCreature(specy),
-                                 new Coordinate { X = _randomize.Next(MaxX), Y = _randomize.Next(MaxY) },
-                                 _randomize.Next(6));
-            }
-        }
-
-        private void ApplyMove(double timeDelta)
-        {
-            var creatures = new List<Creature>(_environment.GetCreatures());
-
-            foreach (var current in creatures)
-            {
-                if (!current.Alive)
-                    continue;
-
-                current.ApplyActionQueue(timeDelta);
-            }
-        }
-
-        private void MoveAll()
-        {
-            var creatures = new List<Creature>(_environment.GetCreatures());
-
-            int nrOfPlants = 0;
-            int nrOfRabbits = 0;
-            int nrOfPredators = 0;
-
-            foreach (var current in creatures)
-            {
-                if (!current.Alive)
-                    continue;
-
-                current.Move();
-
-                // Died of old age..
-                if (!current.Alive)
-                    continue;
-
-
-                if (current.Specy == CreatureType.Plant) nrOfPlants++;
-                if (current.Specy == CreatureType.Rabbit) nrOfRabbits++;
-                if (current.Specy == CreatureType.Predator) nrOfPredators++;
-
-                // TEST: grow on organic waste
-                //if ((killed != null) && (killed.Specy != CreatureType.Plant))
-                //{
-                //    if (_randomize.Next(5) == 0)
-                //    {
-                //        var plant = SimulationFactory.CreatePlant();
-                //        _environment.AddCreature(plant, killed.Place.Position, 0);
-                //    }
-                //}
-            }
-
-            // Repopulate
-            //{
-            //    if (nrOfPlants == 0) AddCreatures(CreatureType.Plant, 10);
-            //    if (nrOfPredators == 0) AddCreatures(CreatureType.Predator, 10);
-            //    if (nrOfRabbits == 0) AddCreatures(CreatureType.Rabbit, 10);
-            //}
-
-            Information = string.Format("Plant: {0}; Rabbits: {1}; Predators:{2}", nrOfPlants, nrOfRabbits, nrOfPredators);
-        }
-
+        
 
     }
 }
