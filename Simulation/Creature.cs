@@ -144,7 +144,7 @@ namespace DawnOnline.Simulation
         {
             double toSeconds = timeDelta/1000.0;
 
-            _characterSheet.Damage.Increase((int)_actionQueue.Damage);
+            //_characterSheet.Damage.Increase((int)_actionQueue.Damage);
             _actionQueue.Damage = 0;
             
             if (_characterSheet.Damage.IsFilled)
@@ -167,6 +167,15 @@ namespace DawnOnline.Simulation
 
             _actionQueue.ForwardMotion = new Vector((float)(Math.Cos(_place.Angle) * CharacterSheet.WalkingDistance),
                                                 (float)(Math.Sin(_place.Angle) * CharacterSheet.WalkingDistance));
+            _actionQueue.FatigueCost = 0;
+        }
+
+        public void WalkBackward()
+        {
+            Debug.Assert(MyEnvironment != null);
+
+            _actionQueue.ForwardMotion = new Vector((float)(Math.Cos(_place.Angle) * CharacterSheet.WalkingDistance),
+                                                (float)(Math.Sin(_place.Angle) * CharacterSheet.WalkingDistance)) * - 0.5;
             _actionQueue.FatigueCost = 0;
         }
 

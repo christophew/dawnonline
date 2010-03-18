@@ -27,8 +27,14 @@ namespace DawnGame
         SpriteBatch spriteBatch;
 
         private string _worldInformation = "";
+
         private Stopwatch _thinkTimer = new Stopwatch();
         private Stopwatch _moveTimer = new Stopwatch();
+        private Stopwatch _drawTimer = new Stopwatch();
+        private Stopwatch _updateTimer = new Stopwatch();
+        private double _lastDrawTime = 0;
+
+
         private SpriteFont font;
         Matrix projMatrix;
         Matrix viewMatrix;
@@ -43,6 +49,10 @@ namespace DawnGame
         string[] roundLineTechniqueNames;
 
         DawnWorld _dawnWorld = new DawnWorld();
+
+        private Model _creatureModel;
+        private Model _creatureModel_Avatar;
+        private Model _creatureModel_Monkey;
 
         Random _randomize = new Random();
 
@@ -101,10 +111,19 @@ namespace DawnGame
                 projScaleX = 1.0f;
                 projScaleY = width / height;
             }
-            projMatrix = Matrix.CreateScale(projScaleX, projScaleY, 0.0f);
+            projMatrix = Matrix.CreateScale(projScaleX, projScaleY, 0f);
             projMatrix.M43 = 0.5f;
         }
 
+        public void Create3DProjectionMatrix()
+        {
+            projMatrix = Matrix.CreatePerspectiveFieldOfView(
+                MathHelper.ToRadians(45f),
+                graphics.GraphicsDevice.Viewport.AspectRatio,
+                1f,
+                50000f);
+
+        }
 
 
         /// <summary>
@@ -117,13 +136,18 @@ namespace DawnGame
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             font = Content.Load<SpriteFont>(@"fonts\MyFont");
+            _creatureModel = Content.Load<Model>(@"cube");
+            _creatureModel_Monkey = Content.Load<Model>(@"Monkey");
+            _creatureModel_Avatar = Content.Load<Model>(@"directx");
+
 
             roundLineManager = new RoundLineManager();
             roundLineManager.Init(GraphicsDevice, Content);
             roundLineTechniqueNames = roundLineManager.TechniqueNames;
 
 
-            Create2DProjectionMatrix();
+            //Create2DProjectionMatrix();
+            Create3DProjectionMatrix();
         }
 
         /// <summary>
@@ -145,22 +169,26 @@ namespace DawnGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            _updateTimer.Reset();
+            _updateTimer.Start();
+
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
             KeyboardState keyboardState = Keyboard.GetState();
-            GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
 
             // Avatar
             {
                 _dawnWorld.Avatar.ClearActionQueue();
 
-                if (keyboardState.IsKeyDown(Keys.I))
+                if (keyboardState.IsKeyDown(Keys.Up))
                     _dawnWorld.Avatar.WalkForward();
-                if (keyboardState.IsKeyDown(Keys.L))
+                if (keyboardState.IsKeyDown(Keys.Down))
+                    _dawnWorld.Avatar.WalkBackward();
+                if (keyboardState.IsKeyDown(Keys.Right)) // OK OK, left and right are inversed.. so?
                     _dawnWorld.Avatar.TurnLeft();
-                if (keyboardState.IsKeyDown(Keys.J))
+                if (keyboardState.IsKeyDown(Keys.Left)) // OK OK, left and right are inversed.. so?
                     _dawnWorld.Avatar.TurnRight();
                 if (keyboardState.IsKeyDown(Keys.Space))
                     _dawnWorld.Avatar.Attack();
@@ -189,18 +217,22 @@ namespace DawnGame
 
             _worldInformation = _dawnWorld.GetWorldInformation();
 
-            if (gamePadState.Buttons.Back == ButtonState.Pressed ||
-                keyboardState.IsKeyDown(Keys.Escape))
+            if (keyboardState.IsKeyDown(Keys.Escape))
             {
                 this.Exit();
             }
 
+            UpdateRoundingTechnique(keyboardState);
 
-            UpdateCamera(keyboardState, gamePadState);
+            //UpdateCamera(keyboardState);
+            UpdateCamera2(keyboardState);
+            //UpdateCamera_FirstPerson(_dawnWorld.Avatar);
 
             UpdateDrawOptions(keyboardState);
 
             base.Update(gameTime);
+
+            _updateTimer.Stop();
         }
 
         private void UpdateDrawOptions(KeyboardState keyboardState)
@@ -214,10 +246,9 @@ namespace DawnGame
                 roundLineManager.BlurThreshold = 1;
         }
 
-        private void UpdateCamera(KeyboardState keyboardState, GamePadState gamePadState)
+        private void UpdateRoundingTechnique(KeyboardState keyboardState)
         {
-            if (gamePadState.Buttons.A == ButtonState.Pressed ||
-                keyboardState.IsKeyDown(Keys.A))
+            if (keyboardState.IsKeyDown(Keys.A))
             {
                 if (!aButtonDown)
                 {
@@ -231,37 +262,62 @@ namespace DawnGame
             {
                 aButtonDown = false;
             }
-
-            float leftX = gamePadState.ThumbSticks.Left.X;
-            if (keyboardState.IsKeyDown(Keys.Left))
-                leftX -= 1.0f;
-            if (keyboardState.IsKeyDown(Keys.Right))
-                leftX += 1.0f;
-
-            float leftY = gamePadState.ThumbSticks.Left.Y;
-            if (keyboardState.IsKeyDown(Keys.Up))
-                leftY += 1.0f;
-            if (keyboardState.IsKeyDown(Keys.Down))
-                leftY -= 1.0f;
-
-            float dx = leftX * 0.01f * cameraZoom;
-            float dy = leftY * 0.01f * cameraZoom;
-
-            bool zoomIn = gamePadState.Buttons.RightShoulder == ButtonState.Pressed ||
-                          keyboardState.IsKeyDown(Keys.Z);
-            bool zoomOut = gamePadState.Buttons.LeftShoulder == ButtonState.Pressed ||
-                           keyboardState.IsKeyDown(Keys.X);
-
-            cameraX += dx;
-            cameraY += dy;
-            if (zoomIn)
-                cameraZoom /= 0.99f;
-            if (zoomOut)
-                cameraZoom *= 0.99f;
-
-            viewMatrix = Matrix.CreateTranslation(-cameraX, -cameraY, 0) * Matrix.CreateScale(1.0f / cameraZoom, 1.0f / cameraZoom, 1.0f);
-            //viewMatrix = Matrix.CreateTranslation(-(float)_avatar.Place.Position.X, -(float)_avatar.Place.Position.Y, 0) * Matrix.CreateScale(1.0f / cameraZoom, 1.0f / cameraZoom, 1.0f);
         }
+
+        Vector3 cameraPosition = new Vector3(1500f, 1000f, 2000f);
+        private float pan = 0f;
+
+        void UpdateCamera2(KeyboardState keyboardState)
+        {
+            float cameraVelocity = 10f;
+
+            // Left/Right
+            if (keyboardState.IsKeyDown(Keys.NumPad4))
+                cameraPosition.X -= cameraVelocity;
+            if (keyboardState.IsKeyDown(Keys.NumPad6))
+                cameraPosition.X += cameraVelocity;
+
+            // Up/Down
+            if (keyboardState.IsKeyDown(Keys.NumPad8))
+                cameraPosition.Y += cameraVelocity;
+            if (keyboardState.IsKeyDown(Keys.NumPad2))
+                cameraPosition.Y -= cameraVelocity;
+
+            // In/Out
+            if (keyboardState.IsKeyDown(Keys.NumPad7))
+                cameraPosition.Z += cameraVelocity;
+            if (keyboardState.IsKeyDown(Keys.NumPad9))
+                cameraPosition.Z -= cameraVelocity;
+
+            // Pan
+            if (keyboardState.IsKeyDown(Keys.NumPad1))
+                pan += cameraVelocity;
+            if (keyboardState.IsKeyDown(Keys.NumPad3))
+                pan -= cameraVelocity;
+
+            
+            Vector3 cameraLookAt = new Vector3(cameraPosition.X, cameraPosition.Y + pan, 0f);
+
+            viewMatrix = Matrix.CreateLookAt(cameraPosition, cameraLookAt, Vector3.Up);
+        }
+
+        void UpdateCamera_FirstPerson(Creature creature)
+        {
+            var pos = creature.Place.Position;
+            var angle = creature.Place.Angle;
+
+            var normalizedAngle = MathHelper.WrapAngle((float)angle);
+            var correction = MathHelper.PiOver2;
+            if (normalizedAngle > MathHelper.PiOver2 || normalizedAngle < -MathHelper.PiOver2)
+                correction = -MathHelper.PiOver2;
+            Matrix cameraRotation = Matrix.CreateRotationZ(correction);
+
+            var camPosition = new Vector3((float)(pos.X), (float)(pos.Y), 20);
+            var cameraLookAt = new Vector3((float)(pos.X + Math.Cos(angle) * 10), (float)(pos.Y + Math.Sin(angle) * 10), 20);
+
+            viewMatrix = Matrix.CreateLookAt(camPosition, cameraLookAt, Vector3.Up) * cameraRotation;
+        }
+
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -269,6 +325,9 @@ namespace DawnGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            _drawTimer.Reset();
+            _drawTimer.Start();
+
             Matrix viewProjMatrix = viewMatrix * projMatrix;
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -290,7 +349,8 @@ namespace DawnGame
                     var creatures = _dawnWorld.Environment.GetCreatures();
                     foreach (var current in creatures)
                     {
-                        DrawCreature(current, roundLineManager, viewProjMatrix, time, curTechniqueName);
+                        //DrawCreature(current, roundLineManager, viewProjMatrix, time, curTechniqueName);
+                        DrawCreature(current);
                     }
                 }
             }
@@ -299,8 +359,8 @@ namespace DawnGame
 
             spriteBatch.DrawString(font, _worldInformation, new Vector2(100f, 100f), Color.Green);
 
-            string technicalInformation = string.Format("Think: {0}ms; Move: {1}ms", _thinkTimer.ElapsedMilliseconds, _moveTimer.ElapsedMilliseconds);
-
+            string technicalInformation = string.Format("Think: {0}ms; Move: {1}ms; Draw: {2}ms; Update: {3}ms", 
+                _thinkTimer.ElapsedMilliseconds, _moveTimer.ElapsedMilliseconds, _updateTimer.ElapsedMilliseconds, _lastDrawTime);
             spriteBatch.DrawString(font, technicalInformation, new Vector2(100f, 150f), Color.Green);
 
             if (_dawnWorld.Avatar != null)
@@ -313,6 +373,25 @@ namespace DawnGame
 
 
             base.Draw(gameTime);
+
+            _drawTimer.Stop();
+            _lastDrawTime = _drawTimer.ElapsedMilliseconds;
+        }
+
+        private void DrawCreature(Creature creature)
+        {
+            GameObject gameCreature = new GameObject();
+
+            var pos = creature.Place.Position;
+            var angle = creature.Place.Angle;
+           
+
+            gameCreature.model = creature.Equals(_dawnWorld.Avatar)? _creatureModel_Avatar : _creatureModel;
+            gameCreature.position = new Vector3((float)(pos.X), (float)(pos.Y), 0f);
+            gameCreature.rotation = new Vector3(0, 0, (float)angle);
+            gameCreature.scale = 10f;
+
+            DrawObject(gameCreature);
         }
 
         private static void DrawCreature(Creature creature, RoundLineManager manager, Matrix viewProjMatrix, float time, string curTechniqueName)
@@ -329,9 +408,11 @@ namespace DawnGame
             if (creature.IsAttacked())
                 color = Color.Red;
 
+            // Draw body
             var pos = creature.Place.Position;
-            var angle = creature.Place.Angle;
 
+            // Draw direction
+            var angle = creature.Place.Angle;
             var vector1 = new Vector2((float)(pos.X ), (float)(pos.Y ));
             var vector2 = new Vector2((float)(pos.X + Math.Cos(angle) * 10), (float)(pos.Y + Math.Sin(angle) * 10));
             RoundLine line = new RoundLine(vector1, vector2);
@@ -364,7 +445,32 @@ namespace DawnGame
             }
         }
 
-        
+        void DrawObject(GameObject gameObject)
+        {
+            foreach (var mesh in gameObject.model.Meshes)
+            {
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    effect.EnableDefaultLighting();
+                    effect.PreferPerPixelLighting = true;
+
+                    effect.World = Matrix.CreateTranslation(gameObject.position);
+
+                    effect.World = Matrix.CreateFromYawPitchRoll(
+                                       gameObject.rotation.Y,
+                                       gameObject.rotation.X,
+                                       gameObject.rotation.Z) *
+                                   Matrix.CreateScale(gameObject.scale) *
+                                   Matrix.CreateTranslation(gameObject.position);
+
+
+                    effect.Projection = projMatrix;
+                    effect.View = viewMatrix;
+                }
+                mesh.Draw();
+            }
+        }
+
 
     }
 }

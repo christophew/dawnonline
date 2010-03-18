@@ -10,7 +10,7 @@ namespace DawnOnline.Simulation
     public static class SimulationFactory
     {
         private const double _velocityMultiplier = 5;
-        private const double _turnMultiplier = 5;
+        private const double _turnMultiplier = 4;
 
         public static Environment CreateEnvironment()
         {

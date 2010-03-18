@@ -80,6 +80,95 @@
       <Processor>EffectProcessor</Processor>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="test.fbx">
+      <Name>test</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="test2.fbx">
+      <Name>test2</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="cube.fbx">
+      <Name>cube</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
+    <Compile Include="monkey.fbx">
+      <Name>monkey</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="triangle.fbx">
+      <Name>triangle</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="triangle2.fbx">
+      <Name>triangle2</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="triangle3.fbx">
+      <Name>triangle3</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="cone.fbx">
+      <Name>cone</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="cube2.fbx">
+      <Name>cube2</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="launcher_head.fbx">
+      <Name>launcher_head</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="sphere.fbx">
+      <Name>sphere</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="test3.x">
+      <Name>test3</Name>
+      <Importer>XImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="directx.x">
+      <Name>directx</Name>
+      <Importer>XImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
