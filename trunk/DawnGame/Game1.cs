@@ -38,7 +38,7 @@ namespace DawnGame
         private SpriteFont font;
         Matrix projMatrix;
         Matrix viewMatrix;
-        Matrix viewMatrix2;
+        private Matrix _viewProjMatrix;
 
         RoundLineManager roundLineManager;
         float cameraX = 1500;
@@ -55,6 +55,14 @@ namespace DawnGame
         private Model _creatureModel_Monkey;
 
         Random _randomize = new Random();
+
+        BasicEffect basicEffect;
+        VertexDeclaration vertexDeclaration;
+
+        //LineManager lineManager = new LineManager();
+        //List<Line> testLineList = new List<Line>();
+        //Matrix testLineMatrix;
+ 
 
         public Game1()
         {
@@ -86,13 +94,17 @@ namespace DawnGame
             //GraphicsDevice.Viewport = myViewport;
             //graphics.ApplyChanges();
 
+            //StrokeFont.AddStringCentered("Microbe\nPatr l", testLineList);
+            //testLineMatrix = Matrix.CreateScale(1f) * Matrix.CreateTranslation(0, 1f, 0);
+
+
             base.Initialize();
         }
 
         /// <summary>
         /// Create a simple 2D projection matrix
         /// </summary>
-        public void Create2DProjectionMatrix()
+        private void Create2DProjectionMatrix()
         {
             // Projection matrix ignores Z and just squishes X or Y to balance the upcoming viewport stretch
             float projScaleX;
@@ -115,7 +127,7 @@ namespace DawnGame
             projMatrix.M43 = 0.5f;
         }
 
-        public void Create3DProjectionMatrix()
+        private void Create3DProjectionMatrix()
         {
             projMatrix = Matrix.CreatePerspectiveFieldOfView(
                 MathHelper.ToRadians(45f),
@@ -137,7 +149,7 @@ namespace DawnGame
 
             font = Content.Load<SpriteFont>(@"fonts\MyFont");
             _creatureModel = Content.Load<Model>(@"cube");
-            _creatureModel_Monkey = Content.Load<Model>(@"Monkey");
+            //_creatureModel = Content.Load<Model>(@"Monkey");
             _creatureModel_Avatar = Content.Load<Model>(@"directx");
 
 
@@ -145,9 +157,17 @@ namespace DawnGame
             roundLineManager.Init(GraphicsDevice, Content);
             roundLineTechniqueNames = roundLineManager.TechniqueNames;
 
-
             //Create2DProjectionMatrix();
             Create3DProjectionMatrix();
+            UpdateViewMatrix();
+
+            //InitializeEffect();
+            //InitializePointList();
+            //InitializeLineList();
+            //InitializeLineStrip();
+
+            //lineManager.Init(graphics.GraphicsDevice, Content);
+
         }
 
         /// <summary>
@@ -230,6 +250,8 @@ namespace DawnGame
 
             UpdateDrawOptions(keyboardState);
 
+            //UpdateEffects();
+
             base.Update(gameTime);
 
             _updateTimer.Stop();
@@ -265,6 +287,7 @@ namespace DawnGame
         }
 
         Vector3 cameraPosition = new Vector3(1500f, 1000f, 2000f);
+        //Vector3 cameraPosition = new Vector3(0, 0, 5);
         private float pan = 0f;
 
         void UpdateCamera2(KeyboardState keyboardState)
@@ -295,7 +318,12 @@ namespace DawnGame
             if (keyboardState.IsKeyDown(Keys.NumPad3))
                 pan -= cameraVelocity;
 
-            
+            UpdateViewMatrix();
+        }
+
+        private void UpdateViewMatrix()
+        {
+
             Vector3 cameraLookAt = new Vector3(cameraPosition.X, cameraPosition.Y + pan, 0f);
 
             viewMatrix = Matrix.CreateLookAt(cameraPosition, cameraLookAt, Vector3.Up);
@@ -328,12 +356,14 @@ namespace DawnGame
             _drawTimer.Reset();
             _drawTimer.Start();
 
-            Matrix viewProjMatrix = viewMatrix * projMatrix;
+            _viewProjMatrix = viewMatrix * projMatrix;
+
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+
             {
-                float time = (float) gameTime.TotalRealTime.TotalSeconds;
+                float time = (float)gameTime.TotalRealTime.TotalSeconds;
                 string curTechniqueName = roundLineTechniqueNames[roundLineTechniqueIndex];
                 {
                     var obstacles = _dawnWorld.Environment.GetObstacles();
@@ -342,7 +372,7 @@ namespace DawnGame
                         var points = current.Form.Shape.Points;
                         var pos = current.Position;
 
-                        DrawPolygon(roundLineManager, points, viewProjMatrix, time, curTechniqueName);
+                        DrawPolygon(roundLineManager, points, time, curTechniqueName);
                     }
                 }
                 {
@@ -359,7 +389,7 @@ namespace DawnGame
 
             spriteBatch.DrawString(font, _worldInformation, new Vector2(100f, 100f), Color.Green);
 
-            string technicalInformation = string.Format("Think: {0}ms; Move: {1}ms; Draw: {2}ms; Update: {3}ms", 
+            string technicalInformation = string.Format("Think: {0}ms; Move: {1}ms; Update: {2}ms; Draw: {3}ms",
                 _thinkTimer.ElapsedMilliseconds, _moveTimer.ElapsedMilliseconds, _updateTimer.ElapsedMilliseconds, _lastDrawTime);
             spriteBatch.DrawString(font, technicalInformation, new Vector2(100f, 150f), Color.Green);
 
@@ -370,6 +400,20 @@ namespace DawnGame
             }
 
             spriteBatch.End();
+
+
+            // Custom draw test
+            //graphics.GraphicsDevice.VertexDeclaration = vertexDeclaration;
+            //basicEffect.Begin();
+            //foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
+            //{
+            //    pass.Begin();
+            //    DrawLineList();
+            //    pass.End();
+            //}
+            //basicEffect.End();
+            // End custom draw test
+
 
 
             base.Draw(gameTime);
@@ -392,6 +436,14 @@ namespace DawnGame
             gameCreature.scale = 10f;
 
             DrawObject(gameCreature);
+
+            Color color = creature.CanAttack() ? Color.Black : Color.Red;
+
+            var attackMiddle = new Vector2(
+                (float)(pos.X + Math.Cos(angle) * creature.CharacterSheet.MeleeRange),
+                (float)(pos.Y + Math.Sin(angle) * creature.CharacterSheet.MeleeRange));
+
+            DrawCircle(attackMiddle, creature.CharacterSheet.MeleeRange, color);
         }
 
         private static void DrawCreature(Creature creature, RoundLineManager manager, Matrix viewProjMatrix, float time, string curTechniqueName)
@@ -419,9 +471,11 @@ namespace DawnGame
             manager.Draw(line, 3, color, viewProjMatrix, time, curTechniqueName);
         }
 
-        private static void DrawPolygon(RoundLineManager manager, IList<Vector> points, Matrix viewProjMatrix, float time, string curTechniqueName)
+        private void DrawPolygon(RoundLineManager manager, IList<Vector> points, float time, string curTechniqueName)
         {
-           for (int i = 0; i < points.Count; i++)
+            List<RoundLine> lines = new List<RoundLine>();
+            
+            for (int i = 0; i < points.Count; i++)
             {
                 DawnOnline.Simulation.Collision.Vector point1 = points[i];
                 DawnOnline.Simulation.Collision.Vector point2;
@@ -439,10 +493,37 @@ namespace DawnGame
                 var vector2 = new Vector2((float)(point2.X ), (float)(point2.Y ));
 
                 RoundLine line = new RoundLine(vector1, vector2);
-
-                manager.Draw(line, 3, Color.Black, viewProjMatrix, time, curTechniqueName);
-                //manager.Draw(line, 3, Color.Black, new Matrix(), time, curTechniqueName);
+                lines.Add(line);
             }
+
+            manager.Draw(lines, 3, Color.Black, _viewProjMatrix, time, curTechniqueName);
+        }
+
+        private void DrawCircle(Vector2 centre, double radius, Color color)
+        {
+            float time = (float)1f/60f;
+            string curTechniqueName = roundLineTechniqueNames[roundLineTechniqueIndex];
+
+            const int nrOfVertexes = 32;
+
+            List<RoundLine> lines = new List<RoundLine>();
+
+            Vector2 lastPoint = new Vector2((float)(centre.X + radius), (float)(centre.Y));
+
+            for (int i = 1; i < nrOfVertexes + 1; i++)
+            {
+                float currentAngle = i*MathHelper.TwoPi/nrOfVertexes;
+
+                var newPoint = new Vector2((float)(centre.X + Math.Cos(currentAngle) * radius), (float)(centre.Y + Math.Sin(currentAngle) * radius));
+
+                RoundLine line = new RoundLine(lastPoint, newPoint);
+
+                lines.Add(line);
+
+                lastPoint = newPoint;
+            }
+
+            roundLineManager.Draw(lines, 1, color, _viewProjMatrix, time, curTechniqueName);
         }
 
         void DrawObject(GameObject gameObject)
@@ -471,6 +552,131 @@ namespace DawnGame
             }
         }
 
+        #region CustomDraw test
 
+        int points = 8;
+        VertexPositionNormalTexture[] pointList;
+        VertexBuffer vertexBuffer;
+
+        short[] lineListIndices;
+        short[] lineStripIndices;
+
+        private void InitializeEffect()
+        {
+
+            vertexDeclaration = new VertexDeclaration(
+                graphics.GraphicsDevice,
+                VertexPositionNormalTexture.VertexElements);
+
+            basicEffect = new BasicEffect(graphics.GraphicsDevice, null);
+            basicEffect.DiffuseColor = new Vector3(1.0f, 1.0f, 1.0f);
+
+            basicEffect.View = viewMatrix;
+            basicEffect.Projection = projMatrix;
+
+        }
+
+        private void InitializePointList()
+        {
+            vertexDeclaration = new VertexDeclaration(
+                graphics.GraphicsDevice,
+                VertexPositionNormalTexture.VertexElements);
+
+            double angle = MathHelper.TwoPi / points;
+
+            pointList = new VertexPositionNormalTexture[points + 1];
+
+            pointList[0] = new VertexPositionNormalTexture(
+                Vector3.Zero, Vector3.Forward, Vector2.One);
+
+            for (int i = 1; i <= points; i++)
+            {
+                pointList[i] = new VertexPositionNormalTexture(
+                    new Vector3(
+                                 (float)Math.Round(Math.Sin(angle * i), 4),
+                                 (float)Math.Round(Math.Cos(angle * i), 4),
+                                  0.0f),
+                    Vector3.Forward,
+                    new Vector2());
+            }
+
+            // Initialize the vertex buffer, allocating memory for each vertex.
+            vertexBuffer = new VertexBuffer(graphics.GraphicsDevice,
+                VertexPositionNormalTexture.SizeInBytes * (pointList.Length),
+                BufferUsage.None);
+
+            // Set the vertex buffer data to the array of vertices.
+            vertexBuffer.SetData<VertexPositionNormalTexture>(pointList);
+
+        }
+        private void InitializeLineList()
+        {
+            // Initialize an array of indices of type short.
+            lineListIndices = new short[(points * 2)];
+
+            // Populate the array with references to indices in the vertex buffer
+            for (int i = 0; i < points; i++)
+            {
+                lineListIndices[i * 2] = (short)(i + 1);
+                lineListIndices[(i * 2) + 1] = (short)(i + 2);
+            }
+
+            lineListIndices[(points * 2) - 1] = 1;
+
+        }
+
+        private void InitializeLineStrip()
+        {
+            // Initialize an array of indices of type short.
+            lineStripIndices = new short[points + 1];
+
+            // Populate the array with references to indices in the vertex buffer.
+            for (int i = 0; i < points; i++)
+            {
+                lineStripIndices[i] = (short)(i + 1);
+            }
+
+            lineStripIndices[points] = 1;
+
+        }
+
+        private void DrawLineList()
+        {
+            graphics.GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionNormalTexture>(
+                PrimitiveType.LineList,
+                pointList,
+                0,  // vertex buffer offset to add to each element of the index buffer
+                9,  // number of vertices in pointList
+                lineListIndices,  // the index buffer
+                0,  // first index element to read
+                8   // number of primitives to draw
+            );
+
+        }
+
+        private void DrawLineStrip()
+        {
+            graphics.GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionNormalTexture>(
+                PrimitiveType.LineStrip,
+                pointList,
+                0,   // vertex buffer offset to add to each element of the index buffer
+                9,   // number of vertices to draw
+                lineStripIndices,
+                0,   // first index element to read
+                8    // number of primitives to draw
+            );
+        }
+
+        private void UpdateEffects()
+        {
+            if (basicEffect != null)
+            {
+                basicEffect.View = viewMatrix;
+                basicEffect.Projection = projMatrix;
+            }
+        }
+
+
+        #endregion
     }
 }

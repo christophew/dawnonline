@@ -159,6 +159,11 @@ namespace DawnOnline.Simulation
             _place.Angle += _actionQueue.TurnMotion * toSeconds;
 
             CharacterSheet.Fatigue.Increase((int)(_actionQueue.FatigueCost * toSeconds));
+
+            if (_actionQueue.HasAttacked)
+            {
+                _actionQueue.LastAttackTime = DateTime.Now;
+            }
         }
 
         public void WalkForward()
@@ -260,9 +265,15 @@ namespace DawnOnline.Simulation
             }
         }
 
-        private Creature FindCreatureToAttack()
+        internal Creature FindCreatureToAttack(CreatureType ofType)
         {
-            var creaturesToAttack = MyEnvironment.GetCreaturesInRange(Place.Position, CharacterSheet.MeleeRange);
+            var attackMiddle = new Coordinate(
+                Place.Position.X + Math.Cos(Place.Angle) * CharacterSheet.MeleeRange,
+                Place.Position.Y + Math.Sin(Place.Angle) * CharacterSheet.MeleeRange);
+
+            var creaturesToAttack = ofType == CreatureType.Unknown ?  
+                MyEnvironment.GetCreaturesInRange(attackMiddle, CharacterSheet.MeleeRange) : 
+                MyEnvironment.GetCreaturesInRange(attackMiddle, CharacterSheet.MeleeRange, ofType);
 
             foreach (Creature current in creaturesToAttack)
             {
@@ -272,27 +283,33 @@ namespace DawnOnline.Simulation
             return null;
         }
 
+
+        public bool CanAttack()
+        {
+            return ((DateTime.Now - _actionQueue.LastAttackTime).TotalSeconds > CharacterSheet.MeleeCoolDown);
+        }
+
         public void Attack()
         {
-            if (_actionQueue.HasAttacked)
+            if (!CanAttack())
                 return;
 
-            _actionQueue.HasAttacked = true;
-
-
-            var creatureToAttack = FindCreatureToAttack();
-
+            var creatureToAttack = FindCreatureToAttack(CreatureType.Unknown);
             if (creatureToAttack == null)
                 return;
 
             Attack(creatureToAttack);
         }
 
-        public void Attack(Creature target)
+        internal void Attack(Creature target)
         {
+            if (!CanAttack())
+                return;
+
             Debug.Assert(Alive);
 
-            target.MyActionQueue.Damage = _characterSheet.MeleeRange;
+            _actionQueue.HasAttacked = true;
+            target.MyActionQueue.Damage = _characterSheet.MeleeDamage;
         }
 
         public bool SeesACreatureForward()
