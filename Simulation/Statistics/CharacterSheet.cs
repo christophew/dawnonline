@@ -7,15 +7,17 @@ namespace DawnOnline.Simulation.Statistics
 {
     public class CharacterSheet : ICloneable
     {
-        internal double WalkingDistance { get; set; }
-        internal double RunningDistance { get { return WalkingDistance * 2.0; } }
-        internal double TurningAngle { get; set; }
+        public double WalkingDistance { get; internal set; }
+        public double RunningDistance { get { return WalkingDistance * 2.0; } }
+        public double TurningAngle { get; internal set; }
+        public double VisionDistance { get; internal set; }
+        public double FatigueCost { get; internal set; }
+        public double FatigueRecovery { get; internal set; }
+        public double MeleeRange { get; internal set; }
+        public double MeleeDamage { get; internal set; }
+        public double MeleeCoolDown { get; internal set; }
+
         internal int VisionAccuracyPercent { get; set; }
-        internal double VisionDistance { get; set; }
-        internal double FatigueCost { get; set; }
-        internal double FatigueRecovery { get; set; }
-        internal double MeleeRange { get; set; }
-        internal double MeleeDamage { get; set; }
 
         //internal int MaxAge { get; set; }
         internal double FoodValue { get; set; }
@@ -43,12 +45,13 @@ namespace DawnOnline.Simulation.Statistics
             VisionDistance = 250;
             FatigueCost = 15;
             FatigueRecovery = 30;
-            MeleeRange = 15;
+            MeleeRange = 20;
             MeleeDamage = 25;
             //MaxAge = Int32.MaxValue;
             ReproductionIncreaseAverage = 5;
 
             FoodValue = 10;
+            MeleeCoolDown = 1; // Seconds
         }
 
         #region ICloneable Members

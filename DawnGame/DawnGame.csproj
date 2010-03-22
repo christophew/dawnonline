@@ -89,6 +89,7 @@
     <Compile Include="BasicShape.cs" />
     <Compile Include="DawnWorld.cs" />
     <Compile Include="GameObject.cs" />
+    <Compile Include="Line.cs" />
     <Compile Include="LineBatch.cs" />
     <Compile Include="PointBatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="RoundLine.cs" />
     <Compile Include="RoundLineUtils.cs" />
     <Compile Include="SimpleBox.cs" />
+    <Compile Include="StrokeFont.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

@@ -1,29 +1,16 @@
 ﻿using System.Diagnostics;
+using System;
 
 namespace DawnOnline.Simulation.Brains
 {
     internal class PredatorBrain : AbstractBrain
     {
-        private Creature FindCreatureToAttack()
-        {
-            var creaturesToAttack = MyCreature.MyEnvironment.GetCreaturesInRange(MyCreature.Place.Position,
-                                                                                 MyCreature.CharacterSheet.MeleeRange,
-                                                                                 MyCreature.FoodSpecy);
-
-            foreach (Creature current in creaturesToAttack)
-            {
-                if (!current.Equals(MyCreature))
-                    return current;
-            }
-            return null;
-        }
-
         internal override void DoSomething()
         {
             Debug.Assert(MyCreature != null);
 
             // Find something to attack
-            var creaturesToAttack = FindCreatureToAttack();
+            var creaturesToAttack = MyCreature.FindCreatureToAttack(MyCreature.FoodSpecy);
             if (creaturesToAttack != null)
             {
                 MyCreature.Attack(creaturesToAttack);
