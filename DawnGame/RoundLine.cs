@@ -225,12 +225,12 @@ namespace RoundLineCode
                 iVertex = iv;
                 tri[iv++] = new RoundLineVertex(new Vector3(0.0f, -1.0f, 0), new Vector2(1, threePi2), new Vector2(0, 0), instance);
                 tri[iv++] = new RoundLineVertex(new Vector3(0.0f, -1.0f, 0), new Vector2(1, threePi2), new Vector2(0, 1), instance);
-                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 0.0f, 0), new Vector2(0, threePi2), new Vector2(0, 1), instance);
-                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 0.0f, 0), new Vector2(0, threePi2), new Vector2(0, 0), instance);
-                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 0.0f, 0), new Vector2(0, pi2), new Vector2(0, 1), instance);
-                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 0.0f, 0), new Vector2(0, pi2), new Vector2(0, 0), instance);
-                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 1.0f, 0), new Vector2(1, pi2), new Vector2(0, 1), instance);
-                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 1.0f, 0), new Vector2(1, pi2), new Vector2(0, 0), instance);
+                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 0.0f , 0), new Vector2(0, threePi2), new Vector2(0, 1), instance);
+                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 0.0f , 0), new Vector2(0, threePi2), new Vector2(0, 0), instance);
+                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 0.0f , 0), new Vector2(0, pi2), new Vector2(0, 1), instance);
+                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 0.0f , 0), new Vector2(0, pi2), new Vector2(0, 0), instance);
+                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 1.0f , 0), new Vector2(1, pi2), new Vector2(0, 1), instance);
+                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 1.0f , 0), new Vector2(1, pi2), new Vector2(0, 0), instance);
 
                 // core indices
                 indices[ii++] = (short)(iVertex + 0);
