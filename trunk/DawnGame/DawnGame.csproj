@@ -87,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasicShape.cs" />
+    <Compile Include="Camera.cs" />
     <Compile Include="DawnWorld.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="Line.cs" />
