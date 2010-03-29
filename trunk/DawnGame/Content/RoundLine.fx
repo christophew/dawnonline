@@ -176,7 +176,7 @@ technique Standard
 {
 	pass P0
 	{
-		CullMode = CW;
+		//CullMode = CW;
 		AlphaBlendEnable = true;
 		SrcBlend = SrcAlpha;
 		DestBlend = InvSrcAlpha;
