@@ -61,7 +61,7 @@ namespace DawnGame
         VertexDeclaration vertexDeclaration;
 
         LineManager lineManager = new LineManager();
-        Matrix lineWorldMatrix = Matrix.CreateRotationX(MathHelper.PiOver2);
+        Matrix lineWorldMatrix = Matrix.CreateRotationX(MathHelper.PiOver2); // draw lines on the z-plane
  
 
         public Game1()
@@ -244,8 +244,7 @@ namespace DawnGame
 
             UpdateRoundingTechnique(keyboardState);
 
-            //UpdateCamera(keyboardState);
-            UpdateCamera2(keyboardState);
+            UpdateCamera(keyboardState);
             //UpdateCamera_FirstPerson(_dawnWorld.Avatar);
 
             UpdateDrawOptions(keyboardState);
@@ -290,7 +289,7 @@ namespace DawnGame
         //Vector3 cameraPosition = new Vector3(0, 0, 5);
         private float pan = 0;
 
-        void UpdateCamera2(KeyboardState keyboardState)
+        void UpdateCamera(KeyboardState keyboardState)
         {
             float cameraVelocity = 10f;
 
@@ -335,16 +334,10 @@ namespace DawnGame
             var pos = creature.Place.Position;
             var angle = creature.Place.Angle;
 
-            var normalizedAngle = MathHelper.WrapAngle((float)angle);
-            var correction = MathHelper.PiOver2;
-            if (normalizedAngle > MathHelper.PiOver2 || normalizedAngle < -MathHelper.PiOver2)
-                correction = -MathHelper.PiOver2;
-            Matrix cameraRotation = Matrix.CreateRotationZ(correction);
+            var camPosition = new Vector3((float)(pos.X), 20, (float)(pos.Y));
+            var cameraLookAt = new Vector3((float)(pos.X + Math.Cos(angle) * 10), 17, (float)(pos.Y + Math.Sin(angle) * 10));
 
-            var camPosition = new Vector3((float)(pos.X), (float)(pos.Y), 20);
-            var cameraLookAt = new Vector3((float)(pos.X + Math.Cos(angle) * 10), (float)(pos.Y + Math.Sin(angle) * 10), 20);
-
-            viewMatrix = Matrix.CreateLookAt(camPosition, cameraLookAt, Vector3.Up) * cameraRotation;
+            viewMatrix = Matrix.CreateLookAt(camPosition, cameraLookAt, Vector3.Up);
         }
 
 
@@ -448,35 +441,10 @@ namespace DawnGame
             DrawCircle(attackMiddle, creature.CharacterSheet.MeleeRange, color);
         }
 
-        private static void DrawCreature(Creature creature, RoundLineManager manager, Matrix viewProjMatrix, float time, string curTechniqueName)
-        {
-            Color color = Color.White;
-
-            if (creature.Specy == CreatureType.Avatar)
-                color = Color.Gold;
-            if (creature.Specy == CreatureType.Predator)
-                color = Color.Green;
-
-            if (creature.IsAttacked())
-                color = Color.Black;
-            if (creature.IsAttacked())
-                color = Color.Red;
-
-            // Draw body
-            var pos = creature.Place.Position;
-
-            // Draw direction
-            var angle = creature.Place.Angle;
-            var vector1 = new Vector2((float)(pos.X ), (float)(pos.Y ));
-            var vector2 = new Vector2((float)(pos.X + Math.Cos(angle) * 10), (float)(pos.Y + Math.Sin(angle) * 10));
-            RoundLine line = new RoundLine(vector1, vector2);
-            manager.Draw(line, 3, color, viewProjMatrix, time, curTechniqueName);
-        }
-
         private void DrawPolygon(IList<Vector> points, float time, string curTechniqueName)
         {
-            //List<RoundLine> lines = new List<RoundLine>();
-            List<Line> lines = new List<Line>();
+            List<RoundLine> lines = new List<RoundLine>();
+            //List<Line> lines = new List<Line>();
             
             for (int i = 0; i < points.Count; i++)
             {
@@ -495,13 +463,13 @@ namespace DawnGame
                 var vector1 = new Vector2((float)(point1.X ), (float)(point1.Y ));
                 var vector2 = new Vector2((float)(point2.X ), (float)(point2.Y ));
 
-                //RoundLine line = new RoundLine(vector1, vector2);
-                Line line = new Line(vector1, vector2);
+                RoundLine line = new RoundLine(vector1, vector2);
+                //Line line = new Line(vector1, vector2);
                 lines.Add(line);
             }
 
-            //roundLineManager.Draw(lines, 3, Color.Black, _viewProjMatrix, time, curTechniqueName);
-            lineManager.Draw(lines, 3, Color.Black.ToVector4(), viewMatrix, projMatrix, time, null, lineWorldMatrix, 0.97f);
+            roundLineManager.Draw(lines, 3, Color.Black, lineWorldMatrix * _viewProjMatrix, time, curTechniqueName);
+            //lineManager.Draw(lines, 3, Color.Black.ToVector4(), viewMatrix, projMatrix, time, null, lineWorldMatrix, 0.97f);
         }
 
         private void DrawCircle(Vector2 centre, double radius, Color color)
@@ -511,8 +479,8 @@ namespace DawnGame
 
             const int nrOfVertexes = 32;
 
-            //List<RoundLine> lines = new List<RoundLine>();
-            List<Line> lines = new List<Line>();
+            List<RoundLine> lines = new List<RoundLine>();
+            //List<Line> lines = new List<Line>();
 
             Vector2 lastPoint = new Vector2((float)(centre.X + radius), (float)(centre.Y));
 
@@ -522,16 +490,16 @@ namespace DawnGame
 
                 var newPoint = new Vector2((float)(centre.X + Math.Cos(currentAngle) * radius), (float)(centre.Y + Math.Sin(currentAngle) * radius));
 
-                //RoundLine line = new RoundLine(lastPoint, newPoint);
-                Line line = new Line(lastPoint, newPoint);
+                RoundLine line = new RoundLine(lastPoint, newPoint);
+                //Line line = new Line(lastPoint, newPoint);
 
                 lines.Add(line);
 
                 lastPoint = newPoint;
             }
 
-            //roundLineManager.Draw(lines, 1, color, _viewProjMatrix, time, curTechniqueName);
-            lineManager.Draw(lines, 1, color.ToVector4(), viewMatrix, projMatrix, time, null, lineWorldMatrix, 1);
+            roundLineManager.Draw(lines, 1, color, lineWorldMatrix * _viewProjMatrix, time, curTechniqueName);
+            //lineManager.Draw(lines, 1, color.ToVector4(), viewMatrix, projMatrix, time, null, lineWorldMatrix, 1);
         }
 
         void DrawObject(GameObject gameObject)

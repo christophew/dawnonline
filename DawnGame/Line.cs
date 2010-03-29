@@ -128,6 +128,7 @@ namespace DawnGame
             indices[3] = 2;
             indices[4] = 3;
             indices[5] = 0;
+
             indices[6] = 2;
             indices[7] = 4;
             indices[8] = 3;
