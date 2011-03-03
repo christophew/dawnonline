@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DawnGame.Cameras;
 using DawnOnline.Simulation;
 using DawnOnline.Simulation.Collision;
 using Microsoft.Xna.Framework;
@@ -13,6 +14,7 @@ using Microsoft.Xna.Framework.Net;
 using Microsoft.Xna.Framework.Storage;
 using RoundLineCode;
 using System.Diagnostics;
+using TexturedBox;
 
 namespace DawnGame
 {
@@ -34,15 +36,9 @@ namespace DawnGame
 
 
         private SpriteFont font;
-        Matrix projMatrix;
-        Matrix projMatrix2D;
-        Matrix viewMatrix;
         private Matrix _viewProjMatrix;
 
         RoundLineManager roundLineManager;
-        float cameraX = 1500;
-        float cameraY = 1000;
-        float cameraZoom = 1000;
         bool aButtonDown = false;
         int roundLineTechniqueIndex = 0;
         string[] roundLineTechniqueNames;
@@ -55,12 +51,13 @@ namespace DawnGame
 
         Random _randomize = new Random();
 
-        BasicEffect basicEffect;
         VertexDeclaration vertexDeclaration;
 
         Matrix lineWorldMatrix = Matrix.CreateRotationX(MathHelper.PiOver2); // draw lines on the z-plane
 
         private Texture2D _wallTexture;
+
+        private ICamera _camera;
 
         public Game1()
         {
@@ -85,15 +82,6 @@ namespace DawnGame
             System.Windows.Forms.Control form = System.Windows.Forms.Control.FromHandle(this.Window.Handle);
             form.Location = new System.Drawing.Point(0, 0);
 
-            //var myViewport = GraphicsDevice.Viewport;
-            //myViewport.X = 100;
-            //myViewport.Y = 100;
-            //myViewport.Height = 100;
-            //GraphicsDevice.Viewport = myViewport;
-            //graphics.ApplyChanges();
-
-            //StrokeFont.AddStringCentered("Microbe\nPatr l", testLineList);
-
 
             base.Initialize();
         }
@@ -101,7 +89,7 @@ namespace DawnGame
         /// <summary>
         /// Create a simple 2D projection matrix
         /// </summary>
-        private void Create2DProjectionMatrix()
+        private Matrix Create2DProjectionMatrix()
         {
             // Projection matrix ignores Z and just squishes X or Y to balance the upcoming viewport stretch
             float projScaleX;
@@ -120,21 +108,12 @@ namespace DawnGame
                 projScaleX = 1.0f;
                 projScaleY = width / height;
             }
-            projMatrix2D = Matrix.CreateScale(projScaleX, projScaleY, 0f);
+            var projMatrix2D = Matrix.CreateScale(projScaleX, projScaleY, 0f);
             //projMatrix2D = Matrix.CreateScale(projScaleX, 0f, projScaleY);
             projMatrix2D.M43 = 0.5f;
+
+            return projMatrix2D;
         }
-
-        private void Create3DProjectionMatrix()
-        {
-            projMatrix = Matrix.CreatePerspectiveFieldOfView(
-                MathHelper.ToRadians(45f),
-                graphics.GraphicsDevice.Viewport.AspectRatio,
-                1f,
-                50000f);
-
-        }
-
 
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
@@ -157,9 +136,15 @@ namespace DawnGame
             roundLineManager.Init(GraphicsDevice, Content);
             roundLineTechniqueNames = roundLineManager.TechniqueNames;
 
-            Create2DProjectionMatrix();
-            Create3DProjectionMatrix();
-            UpdateViewMatrix();
+            _wallManager = new WallManager(GraphicsDevice, _wallTexture);
+
+
+            //_camera = new BirdsEyeCamera(GraphicsDevice, new Vector3(1500f, 2000f, 1000f), 500);
+            //_camera = new AvatarCamera(GraphicsDevice, _dawnWorld.Avatar);
+            _camera = new FirstPersonCamera(Window, 100);
+
+
+            //Create2DProjectionMatrix();
 
             //InitializeEffect();
             //InitializePointList();
@@ -193,6 +178,8 @@ namespace DawnGame
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
+            _camera.Update(gameTime);
+            
             KeyboardState keyboardState = Keyboard.GetState();
 
             // Avatar
@@ -241,8 +228,6 @@ namespace DawnGame
 
             UpdateRoundingTechnique(keyboardState);
 
-            UpdateCamera(keyboardState);
-            //UpdateCamera_FirstPerson(_dawnWorld.Avatar);
 
             UpdateDrawOptions(keyboardState);
 
@@ -282,62 +267,6 @@ namespace DawnGame
             }
         }
 
-        Vector3 cameraPosition = new Vector3(1500f, 2000f, 1000f);
-        //Vector3 cameraPosition = new Vector3(0, 0, 5);
-        private float pan = 0;
-
-        void UpdateCamera(KeyboardState keyboardState)
-        {
-            float cameraVelocity = 10f;
-
-            // Left/Right
-            if (keyboardState.IsKeyDown(Keys.NumPad4))
-                cameraPosition.X -= cameraVelocity;
-            if (keyboardState.IsKeyDown(Keys.NumPad6))
-                cameraPosition.X += cameraVelocity;
-
-            // Up/Down
-            if (keyboardState.IsKeyDown(Keys.NumPad8))
-                cameraPosition.Z -= cameraVelocity;
-            if (keyboardState.IsKeyDown(Keys.NumPad2))
-                cameraPosition.Z += cameraVelocity;
-
-            // In/Out
-            if (keyboardState.IsKeyDown(Keys.NumPad7))
-                cameraPosition.Y += cameraVelocity;
-            if (keyboardState.IsKeyDown(Keys.NumPad9))
-                cameraPosition.Y -= cameraVelocity;
-
-            // Pan
-            if (keyboardState.IsKeyDown(Keys.NumPad1))
-                pan += cameraVelocity;
-            if (keyboardState.IsKeyDown(Keys.NumPad3))
-                pan -= cameraVelocity;
-
-            UpdateViewMatrix();
-        }
-
-        private void UpdateViewMatrix()
-        {
-
-            Vector3 cameraLookAt = new Vector3(cameraPosition.X, 0f, cameraPosition.Z + pan);
-
-            //Vector3 cameraLookAt = Vector3.Zero;
-
-            viewMatrix = Matrix.CreateLookAt(cameraPosition, cameraLookAt, Vector3.Forward);
-        }
-
-        void UpdateCamera_FirstPerson(Creature creature)
-        {
-            var pos = creature.Place.Position;
-            var angle = creature.Place.Angle;
-
-            var camPosition = new Vector3((float)(pos.X), 20, (float)(pos.Y));
-            var cameraLookAt = new Vector3((float)(pos.X + Math.Cos(angle) * 10), 17, (float)(pos.Y + Math.Sin(angle) * 10));
-
-            viewMatrix = Matrix.CreateLookAt(camPosition, cameraLookAt, Vector3.Up);
-        }
-
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -348,25 +277,15 @@ namespace DawnGame
             _drawTimer.Reset();
             _drawTimer.Start();
 
-            _viewProjMatrix = viewMatrix * projMatrix;
+            _viewProjMatrix = _camera.View*_camera.Projection;
 
 
             GraphicsDevice.Clear(Color.AntiqueWhite);
 
 
             {
-                float time = (float)gameTime.TotalGameTime.TotalSeconds;
-                string curTechniqueName = roundLineTechniqueNames[roundLineTechniqueIndex];
-                {
-                    var obstacles = _dawnWorld.Environment.GetObstacles();
-                    foreach (var current in obstacles)
-                    {
-                        var points = current.Form.Shape.Points;
-                        var pos = current.Position;
-
-                        DrawPolygon(points, time, curTechniqueName);
-                    }
-                }
+                Draw2DWorld(gameTime);
+                Draw3DWorld();
                 {
                     var creatures = _dawnWorld.Environment.GetCreatures();
                     foreach (var current in creatures)
@@ -391,36 +310,11 @@ namespace DawnGame
                 spriteBatch.DrawString(font, stats, new Vector2(100f, 200f), Color.Green);
             }
 
-            spriteBatch.DrawString(font, string.Format("Camera position: ({0}, {1}, {2}); pan: {3}", cameraPosition.X, cameraPosition.Y, cameraPosition.Z, pan), new Vector2(100f, 250f), Color.Green);
+            spriteBatch.DrawString(font, _camera.GetDebugString(), new Vector2(100f, 250f), Color.Green);
 
             spriteBatch.End();
 
 
-            // Custom draw test
-            //graphics.GraphicsDevice.VertexDeclaration = vertexDeclaration;
-            //basicEffect.Begin();
-            //foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
-            //{
-            //    pass.Begin();
-            //    DrawLineList();
-            //    pass.End();
-            //}
-            //basicEffect.End();
-            // End custom draw test
-
-            {
-                float tilt = MathHelper.ToRadians(22.5f);
-                angle += 0.5f;
-                var worldMatrix = Matrix.CreateRotationY(MathHelper.ToRadians(angle));
-                cube.shapeTexture = _wallTexture;
-                cubeEffect = new BasicEffect(GraphicsDevice);
-                cubeEffect.World = worldMatrix;
-                cubeEffect.View = viewMatrix;
-                cubeEffect.Projection = projMatrix;
-                cubeEffect.TextureEnabled = true;
-                //cubeEffect.EmissiveColor = (Vector3)Color.White;
-                DrawCube(cube, worldMatrix);
-            }
 
             base.Draw(gameTime);
 
@@ -428,20 +322,88 @@ namespace DawnGame
             _lastDrawTime = _drawTimer.ElapsedMilliseconds;
         }
 
-        BasicShape cube = new BasicShape(new Vector3(1000, 10, 2), new Vector3(500, 100, 500));
-        BasicEffect cubeEffect;
-        private float angle;
 
-        private void DrawCube(BasicShape cube, Matrix world)
+
+        private void Draw2DWorld(GameTime gameTime)
         {
-            cubeEffect.World = world;
-
-            foreach (EffectPass pass in cubeEffect.CurrentTechnique.Passes)
+            float time = (float)gameTime.TotalGameTime.TotalSeconds;
+            string curTechniqueName = roundLineTechniqueNames[roundLineTechniqueIndex];
             {
-                pass.Apply();
-                cubeEffect.Texture = cube.shapeTexture;
-                cube.RenderShape(GraphicsDevice);
+                var obstacles = _dawnWorld.Environment.GetObstacles();
+                foreach (var current in obstacles)
+                {
+                    var points = current.Form.Shape.Points;
+                    var pos = current.Position;
+
+                    DrawPolygon(points, time, curTechniqueName);
+                }
             }
+        }
+
+        private void Draw3DWorld()
+        {
+            Create3DWorld();
+
+            //foreach (var shape in _worldShapes)
+            //{
+            //    shape.Draw(GraphicsDevice, _camera.View, _camera.Projection);
+            //}
+            _wallManager.Draw(_worldShapes, GraphicsDevice, _camera.View, _camera.Projection);
+        }
+
+
+        private List<BasicShape> _worldShapes;
+        private WallManager _wallManager;
+
+        private void Create3DWorld()
+        {
+            if (_worldShapes != null)
+                return;
+
+            _worldShapes = new List<BasicShape>();
+
+            var obstacles = _dawnWorld.Environment.GetObstacles();
+            foreach (var current in obstacles)
+            {
+                _worldShapes.AddRange(Create3DShape(current.Form.Shape, current.Position));
+            }
+        }
+
+        
+
+        private List<BasicShape> Create3DShape(IPolygon polygon, Coordinate position)
+        {
+            var shape = new List<BasicShape>();
+            //List<Line> lines = new List<Line>();
+
+            for (int i = 0; i < polygon.Points.Count; i++)
+            {
+                DawnOnline.Simulation.Collision.Vector point1 = polygon.Points[i];
+                DawnOnline.Simulation.Collision.Vector point2;
+                if (i + 1 >= polygon.Points.Count)
+                {
+                    point2 = polygon.Points[0];
+                }
+                else
+                {
+                    point2 = polygon.Points[i + 1];
+                }
+
+                var vector1 = new Vector2((float)(point1.X), (float)(point1.Y));
+                var vector2 = new Vector2((float)(point2.X), (float)(point2.Y));
+
+                // Only take into account straight angles
+                bool turn = (point2.X == point1.X);
+                var length = turn ? point2.Y - point1.Y : point2.X - point1.X;
+
+                var wall = new BasicShape(
+                    new Vector3(length, 20, 0.2f),
+                    new Vector3((float)point1.X, 0, (float)point1.Y), 
+                    turn ? MathHelper.PiOver2 : 0);
+                wall.shapeTexture = _wallTexture;
+                shape.Add(wall);
+            }
+            return shape;
         }
 
         private void DrawCreature(Creature creature)
@@ -457,7 +419,7 @@ namespace DawnGame
             gameCreature.rotation = new Vector3(0, -(float)angle, 0);
             gameCreature.scale = 10f;
 
-            gameCreature.DrawObject(viewMatrix, projMatrix);
+            gameCreature.DrawObject(_camera.View, _camera.Projection);
 
             Color color = creature.CanAttack() ? Color.Black : Color.Red;
 
@@ -596,16 +558,6 @@ namespace DawnGame
                 8    // number of primitives to draw
             );
         }
-
-        private void UpdateEffects()
-        {
-            if (basicEffect != null)
-            {
-                basicEffect.View = viewMatrix;
-                basicEffect.Projection = projMatrix;
-            }
-        }
-
 
         #endregion
     }

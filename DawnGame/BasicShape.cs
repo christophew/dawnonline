@@ -15,11 +15,11 @@ namespace TexturedBox
         private int shapeTriangles;
         private VertexBuffer shapeBuffer;
         
-        public Texture2D shapeTexture;
         public Matrix worldMatrix;
+        public Texture2D shapeTexture;
 
 
-        BasicEffect cubeEffect;
+        private BasicEffect _cubeEffect;
 
         public BasicShape(Vector3 size, Vector3 position, float angleY)
         {
@@ -33,26 +33,36 @@ namespace TexturedBox
 
         public void Draw(GraphicsDevice device, Matrix cameraMatrix, Matrix projectionMatrix)
         {
-            if (cubeEffect == null)
+            if (_cubeEffect == null)
             {
-                cubeEffect = new BasicEffect(device);
-                cubeEffect.Texture = shapeTexture;
-                cubeEffect.TextureEnabled = true;
+                _cubeEffect = new BasicEffect(device);
+                _cubeEffect.Texture = shapeTexture;
+                _cubeEffect.TextureEnabled = true;
             }
 
 
-            foreach (EffectPass pass in cubeEffect.CurrentTechnique.Passes)
+            foreach (EffectPass pass in _cubeEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-
-                cubeEffect.World = worldMatrix;
-                cubeEffect.View = cameraMatrix;
-                cubeEffect.Projection = projectionMatrix;
-                RenderShape(device);
             }
+
+            _cubeEffect.World = worldMatrix;
+            _cubeEffect.View = cameraMatrix;
+            _cubeEffect.Projection = projectionMatrix;
+            RenderShape(device);
+       }
+
+        public void DrawBatch(GraphicsDevice device, Matrix cameraMatrix, Matrix projectionMatrix, BasicEffect effect)
+        {
+            effect.World = worldMatrix;
+            effect.View = cameraMatrix;
+            effect.Projection = projectionMatrix;
+
+            RenderShape(device);
         }
 
-        private void RenderShape(GraphicsDevice device)
+
+        internal void RenderShape(GraphicsDevice device)
         {
             shapeBuffer = new VertexBuffer(device, typeof(VertexPositionNormalTexture), shapeVertices.Length,
                                            BufferUsage.WriteOnly);
