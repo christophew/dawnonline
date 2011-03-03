@@ -10,7 +10,6 @@ namespace DawnGame
         public Vector3 rotation = Vector3.Zero;
         public float scale = 1f;
         public Vector3 velocity = Vector3.Zero;
-        public bool alive = false;
 
         public void DrawObject(Matrix viewMatrix, Matrix projMatrix)
         {

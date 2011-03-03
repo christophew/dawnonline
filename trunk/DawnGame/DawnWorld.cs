@@ -38,7 +38,7 @@ namespace DawnGame
             // Randow obstacles
             int maxHeight = 200;
             int maxWide = 200;
-            for (int i = 0; i < 50; )
+            for (int i = 0; i < 10; )
             {
                 int height = _randomize.Next(maxHeight);
                 int wide = _randomize.Next(maxWide);
