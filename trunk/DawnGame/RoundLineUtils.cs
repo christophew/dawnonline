@@ -1,9 +1,9 @@
 ﻿// RoundLineUtils.cs
 // By Michael D. Anderson
-// Version 3.00, Mar 12 2009
+// Version 4.00, Feb 8 2011
 //
 // Various support functions for RoundLines.
-// You don't need to include this file in your program
+// You don't need to include this file in your program if
 // you only want basic RoundLine drawing functionality.
 
 #region Using Statements
