@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using A.Namespace.Of.Your.Choice.Graphics;
-using BoxTutorial;
 using DawnOnline.Simulation;
 using DawnOnline.Simulation.Collision;
 using Microsoft.Xna.Framework;
@@ -60,9 +58,9 @@ namespace DawnGame
         BasicEffect basicEffect;
         VertexDeclaration vertexDeclaration;
 
-        LineManager lineManager = new LineManager();
         Matrix lineWorldMatrix = Matrix.CreateRotationX(MathHelper.PiOver2); // draw lines on the z-plane
- 
+
+        private Texture2D _wallTexture;
 
         public Game1()
         {
@@ -148,9 +146,11 @@ namespace DawnGame
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             font = Content.Load<SpriteFont>(@"fonts\MyFont");
-            _creatureModel = Content.Load<Model>(@"cube");
-            //_creatureModel = Content.Load<Model>(@"Monkey");
+            _creatureModel = Content.Load<Model>(@"shark");
+            //_creatureModel = Content.Load<Model>(@"launcher_head");
             _creatureModel_Avatar = Content.Load<Model>(@"directx");
+
+            _wallTexture = Content.Load<Texture2D>(@"Textures\brickThumb");
 
 
             roundLineManager = new RoundLineManager();
@@ -165,9 +165,6 @@ namespace DawnGame
             //InitializePointList();
             //InitializeLineList();
             //InitializeLineStrip();
-
-            lineManager.Init(graphics.GraphicsDevice, Content);
-
         }
 
         /// <summary>
@@ -324,6 +321,7 @@ namespace DawnGame
         {
 
             Vector3 cameraLookAt = new Vector3(cameraPosition.X, 0f, cameraPosition.Z + pan);
+
             //Vector3 cameraLookAt = Vector3.Zero;
 
             viewMatrix = Matrix.CreateLookAt(cameraPosition, cameraLookAt, Vector3.Forward);
@@ -353,12 +351,11 @@ namespace DawnGame
             _viewProjMatrix = viewMatrix * projMatrix;
 
 
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-            graphics.GraphicsDevice.RenderState.CullMode = CullMode.None; // Needed for LineManager
+            GraphicsDevice.Clear(Color.AntiqueWhite);
 
 
             {
-                float time = (float)gameTime.TotalRealTime.TotalSeconds;
+                float time = (float)gameTime.TotalGameTime.TotalSeconds;
                 string curTechniqueName = roundLineTechniqueNames[roundLineTechniqueIndex];
                 {
                     var obstacles = _dawnWorld.Environment.GetObstacles();
@@ -394,6 +391,8 @@ namespace DawnGame
                 spriteBatch.DrawString(font, stats, new Vector2(100f, 200f), Color.Green);
             }
 
+            spriteBatch.DrawString(font, string.Format("Camera position: ({0}, {1}, {2}); pan: {3}", cameraPosition.X, cameraPosition.Y, cameraPosition.Z, pan), new Vector2(100f, 250f), Color.Green);
+
             spriteBatch.End();
 
 
@@ -409,12 +408,40 @@ namespace DawnGame
             //basicEffect.End();
             // End custom draw test
 
-
+            {
+                float tilt = MathHelper.ToRadians(22.5f);
+                angle += 0.5f;
+                var worldMatrix = Matrix.CreateRotationY(MathHelper.ToRadians(angle));
+                cube.shapeTexture = _wallTexture;
+                cubeEffect = new BasicEffect(GraphicsDevice);
+                cubeEffect.World = worldMatrix;
+                cubeEffect.View = viewMatrix;
+                cubeEffect.Projection = projMatrix;
+                cubeEffect.TextureEnabled = true;
+                //cubeEffect.EmissiveColor = (Vector3)Color.White;
+                DrawCube(cube, worldMatrix);
+            }
 
             base.Draw(gameTime);
 
             _drawTimer.Stop();
             _lastDrawTime = _drawTimer.ElapsedMilliseconds;
+        }
+
+        BasicShape cube = new BasicShape(new Vector3(1000, 10, 2), new Vector3(500, 100, 500));
+        BasicEffect cubeEffect;
+        private float angle;
+
+        private void DrawCube(BasicShape cube, Matrix world)
+        {
+            cubeEffect.World = world;
+
+            foreach (EffectPass pass in cubeEffect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                cubeEffect.Texture = cube.shapeTexture;
+                cube.RenderShape(GraphicsDevice);
+            }
         }
 
         private void DrawCreature(Creature creature)
@@ -430,7 +457,7 @@ namespace DawnGame
             gameCreature.rotation = new Vector3(0, -(float)angle, 0);
             gameCreature.scale = 10f;
 
-            DrawObject(gameCreature);
+            gameCreature.DrawObject(viewMatrix, projMatrix);
 
             Color color = creature.CanAttack() ? Color.Black : Color.Red;
 
@@ -502,32 +529,6 @@ namespace DawnGame
             //lineManager.Draw(lines, 1, color.ToVector4(), viewMatrix, projMatrix, time, null, lineWorldMatrix, 1);
         }
 
-        void DrawObject(GameObject gameObject)
-        {
-            foreach (var mesh in gameObject.model.Meshes)
-            {
-                foreach (BasicEffect effect in mesh.Effects)
-                {
-                    effect.EnableDefaultLighting();
-                    effect.PreferPerPixelLighting = true;
-
-                    effect.World = Matrix.CreateTranslation(gameObject.position);
-
-                    effect.World = Matrix.CreateFromYawPitchRoll(
-                                       gameObject.rotation.Y,
-                                       gameObject.rotation.X,
-                                       gameObject.rotation.Z) *
-                                   Matrix.CreateScale(gameObject.scale) *
-                                   Matrix.CreateTranslation(gameObject.position);
-
-
-                    effect.Projection = projMatrix;
-                    effect.View = viewMatrix;
-                }
-                mesh.Draw();
-            }
-        }
-
         #region CustomDraw test
 
         int points = 8;
@@ -537,54 +538,7 @@ namespace DawnGame
         short[] lineListIndices;
         short[] lineStripIndices;
 
-        private void InitializeEffect()
-        {
-
-            vertexDeclaration = new VertexDeclaration(
-                graphics.GraphicsDevice,
-                VertexPositionNormalTexture.VertexElements);
-
-            basicEffect = new BasicEffect(graphics.GraphicsDevice, null);
-            basicEffect.DiffuseColor = new Vector3(1.0f, 1.0f, 1.0f);
-
-            basicEffect.View = viewMatrix;
-            basicEffect.Projection = projMatrix;
-        }
-
-        private void InitializePointList()
-        {
-            vertexDeclaration = new VertexDeclaration(
-                graphics.GraphicsDevice,
-                VertexPositionNormalTexture.VertexElements);
-
-            double angle = MathHelper.TwoPi / points;
-
-            pointList = new VertexPositionNormalTexture[points + 1];
-
-            pointList[0] = new VertexPositionNormalTexture(
-                Vector3.Zero, Vector3.Forward, Vector2.One);
-
-            for (int i = 1; i <= points; i++)
-            {
-                pointList[i] = new VertexPositionNormalTexture(
-                    new Vector3(
-                                 (float)Math.Round(Math.Sin(angle * i), 4),
-                                 (float)Math.Round(Math.Cos(angle * i), 4),
-                                  0.0f
-                                  ),
-                    Vector3.Forward,
-                    new Vector2());
-            }
-
-            // Initialize the vertex buffer, allocating memory for each vertex.
-            vertexBuffer = new VertexBuffer(graphics.GraphicsDevice,
-                VertexPositionNormalTexture.SizeInBytes * (pointList.Length),
-                BufferUsage.None);
-
-            // Set the vertex buffer data to the array of vertices.
-            vertexBuffer.SetData<VertexPositionNormalTexture>(pointList);
-
-        }
+ 
         private void InitializeLineList()
         {
             // Initialize an array of indices of type short.

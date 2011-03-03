@@ -1,10 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrontEnd", "FrontEnd\FrontEnd.csproj", "{FD99E9C3-F8D1-49C4-A795-364A363A7B93}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation", "Simulation\Simulation.csproj", "{4F463D41-EA2D-4B41-A4C8-656DDD16F4C7}"
-EndProject
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4CEFFF45-D7C0-41F1-A7A3-3414BC5C3C54}"
 	ProjectSection(SolutionItems) = preProject
 		Dawn.vsmdi = Dawn.vsmdi
@@ -12,9 +8,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Lib\nunit.framework.dll = Lib\nunit.framework.dll
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrontEnd", "FrontEnd\FrontEnd.csproj", "{FD99E9C3-F8D1-49C4-A795-364A363A7B93}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation", "Simulation\Simulation.csproj", "{4F463D41-EA2D-4B41-A4C8-656DDD16F4C7}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulationTests", "SimulationTests\SimulationTests.csproj", "{C6E7017A-0267-4E1E-ACB1-178A1AE76F9C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DawnGame", "DawnGame\DawnGame.csproj", "{D93AF99B-E264-4E64-B966-3847B510A5BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DawnGameContent", "DawnGame\Content\DawnGameContent.contentproj", "{DDD79452-E55B-4AC5-8E7F-81F9F918169D}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution

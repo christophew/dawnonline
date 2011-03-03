@@ -1,6 +1,6 @@
 // RoundLine.cs
 // By Michael D. Anderson
-// Version 3.00, Mar 12 2009
+// Version 4.00, Feb 8 2011
 //
 // A class to efficiently draw thick lines with rounded ends.
 
@@ -53,7 +53,6 @@ namespace RoundLineCode
         public float Rho { get { return rho; } }
         public float Theta { get { return theta; } }
 
-
         public RoundLine(Vector2 p0, Vector2 p1)
         {
             this.p0 = p0;
@@ -61,14 +60,12 @@ namespace RoundLineCode
             RecalcRhoTheta();
         }
 
-
         public RoundLine(float x0, float y0, float x1, float y1)
         {
             this.p0 = new Vector2(x0, y0);
             this.p1 = new Vector2(x1, y1);
             RecalcRhoTheta();
         }
-
 
         protected void RecalcRhoTheta()
         {
@@ -100,13 +97,12 @@ namespace RoundLineCode
 
 
     // A vertex type for drawing RoundLines, including an instance index
-    struct RoundLineVertex
+    struct RoundLineVertex : IVertexType
     {
         public Vector3 pos;
         public Vector2 rhoTheta;
         public Vector2 scaleTrans;
         public float index;
-
 
         public RoundLineVertex(Vector3 pos, Vector2 norm, Vector2 tex, float index)
         {
@@ -116,17 +112,19 @@ namespace RoundLineCode
             this.index = index;
         }
 
-        public static int SizeInBytes = 8 * sizeof(float);
+        public readonly static VertexDeclaration VertexDeclaration = new VertexDeclaration
+            (
+                new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0),
+                new VertexElement(12, VertexElementFormat.Vector2, VertexElementUsage.Normal, 0),
+                new VertexElement(20, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0),
+                new VertexElement(28, VertexElementFormat.Single, VertexElementUsage.TextureCoordinate, 1)
+            );
 
-        public static VertexElement[] VertexElements = new VertexElement[] 
-            {
-                new VertexElement(0, 0, VertexElementFormat.Vector3, VertexElementMethod.Default, VertexElementUsage.Position, 0),
-                new VertexElement(0, 12, VertexElementFormat.Vector2, VertexElementMethod.Default, VertexElementUsage.Normal, 0),
-                new VertexElement(0, 20, VertexElementFormat.Vector2, VertexElementMethod.Default, VertexElementUsage.TextureCoordinate, 0),
-                new VertexElement(0, 28, VertexElementFormat.Single, VertexElementMethod.Default, VertexElementUsage.TextureCoordinate, 1),
-            };
+        VertexDeclaration IVertexType.VertexDeclaration
+        {
+            get { return VertexDeclaration; }
+        }
     }
-
 
 
     /// <summary>
@@ -144,18 +142,15 @@ namespace RoundLineCode
         private EffectParameter blurThresholdParameter;
         private VertexBuffer vb;
         private IndexBuffer ib;
-        private VertexDeclaration vdecl;
         private int numInstances;
         private int numVertices;
         private int numIndices;
         private int numPrimitivesPerInstance;
         private int numPrimitives;
-        private int bytesPerVertex;
         float[] translationData;
 
         public int NumLinesDrawn;
         public float BlurThreshold = 0.97f;
-
 
         public void Init(GraphicsDevice device, ContentManager content)
         {
@@ -183,7 +178,6 @@ namespace RoundLineCode
             }
         }
 
-
         /// <summary>
         /// Create a mesh for a RoundLine.
         /// </summary>
@@ -209,7 +203,6 @@ namespace RoundLineCode
             numPrimitives = numPrimitivesPerInstance * numInstances;
             numIndices = 3 * numPrimitives;
             short[] indices = new short[numIndices];
-            bytesPerVertex = RoundLineVertex.SizeInBytes;
             RoundLineVertex[] tri = new RoundLineVertex[numVertices];
             translationData = new float[numInstances * 4]; // Used in Draw()
 
@@ -225,12 +218,12 @@ namespace RoundLineCode
                 iVertex = iv;
                 tri[iv++] = new RoundLineVertex(new Vector3(0.0f, -1.0f, 0), new Vector2(1, threePi2), new Vector2(0, 0), instance);
                 tri[iv++] = new RoundLineVertex(new Vector3(0.0f, -1.0f, 0), new Vector2(1, threePi2), new Vector2(0, 1), instance);
-                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 0.0f , 0), new Vector2(0, threePi2), new Vector2(0, 1), instance);
-                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 0.0f , 0), new Vector2(0, threePi2), new Vector2(0, 0), instance);
-                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 0.0f , 0), new Vector2(0, pi2), new Vector2(0, 1), instance);
-                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 0.0f , 0), new Vector2(0, pi2), new Vector2(0, 0), instance);
-                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 1.0f , 0), new Vector2(1, pi2), new Vector2(0, 1), instance);
-                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 1.0f , 0), new Vector2(1, pi2), new Vector2(0, 0), instance);
+                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 0.0f, 0), new Vector2(0, threePi2), new Vector2(0, 1), instance);
+                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 0.0f, 0), new Vector2(0, threePi2), new Vector2(0, 0), instance);
+                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 0.0f, 0), new Vector2(0, pi2), new Vector2(0, 1), instance);
+                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 0.0f, 0), new Vector2(0, pi2), new Vector2(0, 0), instance);
+                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 1.0f, 0), new Vector2(1, pi2), new Vector2(0, 1), instance);
+                tri[iv++] = new RoundLineVertex(new Vector3(0.0f, 1.0f, 0), new Vector2(1, pi2), new Vector2(0, 0), instance);
 
                 // core indices
                 indices[ii++] = (short)(iVertex + 0);
@@ -305,15 +298,12 @@ namespace RoundLineCode
                 }
             }
 
-            vb = new VertexBuffer(device, numVertices * bytesPerVertex, BufferUsage.None);
+            vb = new VertexBuffer(device, typeof(RoundLineVertex), numVertices, BufferUsage.None);
             vb.SetData<RoundLineVertex>(tri);
-            vdecl = new VertexDeclaration(device, RoundLineVertex.VertexElements);
 
-            ib = new IndexBuffer(device, numIndices * 2, BufferUsage.None, IndexElementSize.SixteenBits);
+            ib = new IndexBuffer(device, IndexElementSize.SixteenBits, numIndices, BufferUsage.None);
             ib.SetData<short>(indices);
         }
-
-
 
         /// <summary>
         /// Compute a reasonable "BlurThreshold" value to use when drawing RoundLines.
@@ -334,7 +324,6 @@ namespace RoundLineCode
             return MathHelper.Clamp((float)newBlur, 0.5f, 0.99f);
         }
 
-
         /// <summary>
         /// Draw a single RoundLine.  Usually you want to draw a list of RoundLines
         /// at a time instead for better performance.
@@ -342,8 +331,7 @@ namespace RoundLineCode
         public void Draw(RoundLine roundLine, float lineRadius, Color lineColor, Matrix viewProjMatrix,
             float time, string techniqueName)
         {
-            device.VertexDeclaration = vdecl;
-            device.Vertices[0].SetSource(vb, 0, bytesPerVertex);
+            device.SetVertexBuffer(vb);
             device.Indices = ib;
 
             viewProjMatrixParameter.SetValue(viewProjMatrix);
@@ -363,20 +351,13 @@ namespace RoundLineCode
                 effect.CurrentTechnique = effect.Techniques[0];
             else
                 effect.CurrentTechnique = effect.Techniques[techniqueName];
-            effect.Begin();
             EffectPass pass = effect.CurrentTechnique.Passes[0];
-
-            pass.Begin();
+            pass.Apply();
 
             int numInstancesThisDraw = 1;
             device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, numVertices, 0, numPrimitivesPerInstance * numInstancesThisDraw);
             NumLinesDrawn += numInstancesThisDraw;
-            
-            pass.End();
-
-            effect.End();
         }
-
 
         /// <summary>
         /// Draw a list of Lines.
@@ -384,8 +365,7 @@ namespace RoundLineCode
         public void Draw(List<RoundLine> roundLines, float lineRadius, Color lineColor, Matrix viewProjMatrix, 
             float time, string techniqueName)
         {
-            device.VertexDeclaration = vdecl;
-            device.Vertices[0].SetSource(vb, 0, bytesPerVertex);
+            device.SetVertexBuffer(vb);
             device.Indices = ib;
 
             viewProjMatrixParameter.SetValue(viewProjMatrix);
@@ -398,10 +378,8 @@ namespace RoundLineCode
                 effect.CurrentTechnique = effect.Techniques[0];
             else
                 effect.CurrentTechnique = effect.Techniques[techniqueName];
-            effect.Begin();
             EffectPass pass = effect.CurrentTechnique.Passes[0];
-
-            pass.Begin();
+            pass.Apply();
 
             int iData = 0;
             int numInstancesThisDraw = 0;
@@ -416,7 +394,7 @@ namespace RoundLineCode
                 if (numInstancesThisDraw == numInstances)
                 {
                     instanceDataParameter.SetValue(translationData);
-                    effect.CommitChanges();
+                    pass.Apply();
                     device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, numVertices, 0, numPrimitivesPerInstance * numInstancesThisDraw);
                     NumLinesDrawn += numInstancesThisDraw;
                     numInstancesThisDraw = 0;
@@ -426,13 +404,10 @@ namespace RoundLineCode
             if (numInstancesThisDraw > 0)
             {
                 instanceDataParameter.SetValue(translationData);
-                effect.CommitChanges();
+                pass.Apply();
                 device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, numVertices, 0, numPrimitivesPerInstance * numInstancesThisDraw);
                 NumLinesDrawn += numInstancesThisDraw;
             }
-            pass.End();
-
-            effect.End();
         }
     }
 }
