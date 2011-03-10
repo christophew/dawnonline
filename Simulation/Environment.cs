@@ -17,6 +17,7 @@ namespace DawnOnline.Simulation
         List<Creature> _creatures = new List<Creature>();
         Dictionary<CreatureType, List<Creature>> _creaturesPerSpecy = new Dictionary<CreatureType, List<Creature>>();
         List<Placement> _obstacles = new List<Placement>();
+        List<Placement> _bullets = new List<Placement>();
 
 
         //public Environment()
@@ -90,14 +91,27 @@ namespace DawnOnline.Simulation
 
         public bool AddObstacle(Placement obstacle, Vector2 origin)
         {
-            var myObstacle = obstacle as Placement;
+            obstacle.OffsetPosition(origin, 0.0);
 
-            myObstacle.OffsetPosition(origin, 0.0);
 
-            if (IntersectsWithObstacles(obstacle))
-                return false;
+            // Don't check on intersections => causes ghost boxes
+            // TODO: return false should also destroy the fixture in the FarseerWorld
+            //if (IntersectsWithObstacles(obstacle))
+            //    return false;
 
             _obstacles.Add(obstacle);
+
+            return true;
+        }
+
+        public bool AddBullet(Placement obstacle, Vector2 origin)
+        {
+            obstacle.OffsetPosition(origin, 0.0);
+
+            //if (IntersectsWithObstacles(obstacle))
+            //    return false;
+
+            _bullets.Add(obstacle);
 
             return true;
         }
@@ -105,6 +119,11 @@ namespace DawnOnline.Simulation
         public IList<Placement> GetObstacles()
         {
             return _obstacles;
+        }
+
+        public IList<Placement> GetBullets()
+        {
+            return _bullets;
         }
 
         public void Update(double timeDelta)

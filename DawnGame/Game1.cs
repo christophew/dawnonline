@@ -49,6 +49,7 @@ namespace DawnGame
         private Model _creatureModel_Avatar;
         private Model _creatureModel_Monkey;
         private Model _cubeModel;
+        private Model _bulletModel;
 
         Random _randomize = new Random();
 
@@ -128,6 +129,7 @@ namespace DawnGame
             font = Content.Load<SpriteFont>(@"fonts\MyFont");
             _creatureModel = Content.Load<Model>(@"shark");
             _cubeModel = Content.Load<Model>(@"cube3");
+            _bulletModel = Content.Load<Model>(@"cube3");
             _creatureModel_Avatar = Content.Load<Model>(@"directx");
 
             _wallTexture = Content.Load<Texture2D>(@"Textures\brickThumb");
@@ -184,20 +186,7 @@ namespace DawnGame
             KeyboardState keyboardState = Keyboard.GetState();
 
             // Avatar
-            {
-                _dawnWorld.Avatar.ClearActionQueue();
-
-                if (keyboardState.IsKeyDown(Keys.Up))
-                    _dawnWorld.Avatar.WalkForward();
-                if (keyboardState.IsKeyDown(Keys.Down))
-                    _dawnWorld.Avatar.WalkBackward();
-                if (keyboardState.IsKeyDown(Keys.Left))
-                    _dawnWorld.Avatar.TurnLeft();
-                if (keyboardState.IsKeyDown(Keys.Right))
-                    _dawnWorld.Avatar.TurnRight();
-                if (keyboardState.IsKeyDown(Keys.Space))
-                    _dawnWorld.Avatar.Attack();
-            }
+            UpdateAvatar();
 
             // Think = Decide where to move
             if ((gameTime.TotalGameTime - _lastThink).TotalMilliseconds > 0)
@@ -240,6 +229,24 @@ namespace DawnGame
             base.Update(gameTime);
 
             _updateTimer.Stop();
+        }
+
+        private void UpdateAvatar()
+        {
+            var keyboardState = Keyboard.GetState();
+
+            _dawnWorld.Avatar.ClearActionQueue();
+
+            if (keyboardState.IsKeyDown(Keys.Up))
+                _dawnWorld.Avatar.WalkForward();
+            if (keyboardState.IsKeyDown(Keys.Down))
+                _dawnWorld.Avatar.WalkBackward();
+            if (keyboardState.IsKeyDown(Keys.Left))
+                _dawnWorld.Avatar.TurnLeft();
+            if (keyboardState.IsKeyDown(Keys.Right))
+                _dawnWorld.Avatar.TurnRight();
+            if (keyboardState.IsKeyDown(Keys.Space))
+                _dawnWorld.Avatar.Fire();
         }
 
         private void UpdateCamera()
@@ -304,6 +311,9 @@ namespace DawnGame
                 //Draw2DWorld(gameTime);
                 //Draw3DWorld();
                 DrawCubeWorld();
+                DrawBullets();
+
+                // Draw creatures
                 {
                     var creatures = _dawnWorld.Environment.GetCreatures();
                     foreach (var current in creatures)
@@ -396,6 +406,15 @@ namespace DawnGame
             }
         }
 
+        private void DrawBullets()
+        {
+            var obstacles = _dawnWorld.Environment.GetBullets();
+            foreach (var current in obstacles)
+            {
+                DrawBullet(current);
+            }
+        }
+
         private List<BasicShape> _worldShapes;
         private WallManager _wallManager;
 
@@ -476,16 +495,25 @@ namespace DawnGame
 
         private void DrawCube(Placement placement)
         {
-            GameObject gamePlacement = new GameObject();
+            DrawGameObject(placement, _cubeModel, 25f);
+        }
+
+        private void DrawBullet(Placement placement)
+        {
+            DrawGameObject(placement, _cubeModel, 5f);
+        }
+
+        private void DrawGameObject(Placement placement, Model model, float scale)
+        {
+            var gamePlacement = new GameObject();
 
             var pos = placement.Position;
             var angle = placement.Angle;
 
-
-            gamePlacement.model = _cubeModel;
-            gamePlacement.position = new Vector3((float)(pos.X), 0f, (float)(pos.Y));
-            gamePlacement.rotation = new Vector3(0, -(float)angle, 0);
-            gamePlacement.scale = 25f;
+            gamePlacement.model = model;
+            gamePlacement.position = new Vector3(pos.X, 0f, pos.Y);
+            gamePlacement.rotation = new Vector3(0, -angle, 0);
+            gamePlacement.scale = scale;
 
             gamePlacement.DrawObject(_camera.View, _camera.Projection);
         }

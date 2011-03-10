@@ -133,10 +133,7 @@ namespace DawnOnline.Simulation
 
         public void ClearActionQueue()
         {
-            _actionQueue.FatigueCost = 0;
-            _actionQueue.TurnMotion = 0;
-            _actionQueue.ForwardMotion = new Vector();
-            _actionQueue.HasAttacked = false;
+            _actionQueue.ClearForRound();
         }
 
         public bool IsAttacking()
@@ -170,10 +167,22 @@ namespace DawnOnline.Simulation
             //_place.Angle += _actionQueue.TurnMotion * toSeconds;
             _place.Fixture.Body.Rotation += (float)(_actionQueue.TurnMotion * toSeconds);
 
-
             CharacterSheet.Fatigue.Increase((int)(_actionQueue.FatigueCost * toSeconds));
 
-            if (_actionQueue.HasAttacked)
+            // Fire
+            if (_actionQueue.Fire)
+            {
+                var bulletAngleVector = new Vector2((float)Math.Cos(_place.Angle), (float)Math.Sin(_place.Angle));
+                var bullet = SimulationFactory.CreateBullet();
+                MyEnvironment.AddBullet(bullet, _place.Fixture.Body.Position + bulletAngleVector * 15);
+                bullet.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 200);
+                //bullet.Fixture.Body.ApplyForce(bulletAngleVector * 200);
+                _actionQueue.HasFired = true;
+                _actionQueue.Fire = false;
+            }
+
+
+            if (_actionQueue.HasAttacked || _actionQueue.HasFired)
             {
                 _actionQueue.LastAttackTime = DateTime.Now;
             }
@@ -211,6 +220,16 @@ namespace DawnOnline.Simulation
                                                  (float)(Math.Sin(_place.Angle)*CharacterSheet.RunningDistance));
 
             _actionQueue.FatigueCost = CharacterSheet.FatigueCost;
+        }
+
+        public void Fire()
+        {
+            if (!CanAttack())
+                return;
+
+            Debug.Assert(Alive);
+
+            _actionQueue.Fire = true;
         }
 
         private Vector TryMove(Vector velocity)

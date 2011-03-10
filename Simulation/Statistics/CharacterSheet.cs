@@ -51,7 +51,7 @@ namespace DawnOnline.Simulation.Statistics
             ReproductionIncreaseAverage = 5;
 
             FoodValue = 10;
-            MeleeCoolDown = 1; // Seconds
+            MeleeCoolDown = 0.2; // Seconds
         }
 
         #region ICloneable Members
