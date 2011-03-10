@@ -25,7 +25,7 @@ namespace DawnGame
 
             //AddCreatures(CreatureType.Rabbit, 300);
             //AddCreatures(CreatureType.Plant, 300);
-            AddCreatures(CreatureType.Predator, 100);
+            //AddCreatures(CreatureType.Predator, 100);
         }
 
         private void BuildWorld()

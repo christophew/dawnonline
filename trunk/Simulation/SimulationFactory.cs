@@ -50,7 +50,7 @@ namespace DawnOnline.Simulation
             var form = new Form { BoundingCircleRadius = radius, Shape = box };
             var placement = new Placement { Form = form };
             placement.Fixture = FixtureFactory.CreateRectangle(Environment.FareSeerWorld, Math.Max(1, (float)deltaX), Math.Max(1, (float)deltaY), 1f);
-            placement.Fixture.Body.BodyType = BodyType.Static;
+            placement.Fixture.Body.BodyType = BodyType.Dynamic;
             placement.Fixture.Body.LinearDamping = 1f;
             placement.Fixture.Body.AngularDamping = 1f;
             placement.Fixture.Body.Mass = 1000f;
@@ -136,6 +136,25 @@ namespace DawnOnline.Simulation
             avatar.InitializeSenses();
 
             return avatar;
+        }
+
+        internal static Placement CreateBullet()
+        {
+            float radius = 1;
+
+            Polygon box = new Polygon();
+            box.Points.Add(new Vector(0, 0));
+            box.BuildEdges();
+
+            var form = new Form { BoundingCircleRadius = radius, Shape = box };
+            var placement = new Placement { Form = form };
+            placement.Fixture = FixtureFactory.CreateCircle(Environment.FareSeerWorld, 5, 1);
+            placement.Fixture.Body.BodyType = BodyType.Dynamic;
+            //placement.Fixture.Body.LinearDamping = 1f;
+            //placement.Fixture.Body.AngularDamping = 1f;
+            placement.Fixture.Body.Mass = 1f;
+
+            return placement;
         }
     }
 }
