@@ -48,6 +48,7 @@ namespace DawnGame
         private Model _creatureModel;
         private Model _creatureModel_Avatar;
         private Model _creatureModel_Monkey;
+        private Model _cubeModel;
 
         Random _randomize = new Random();
 
@@ -126,7 +127,7 @@ namespace DawnGame
 
             font = Content.Load<SpriteFont>(@"fonts\MyFont");
             _creatureModel = Content.Load<Model>(@"shark");
-            //_creatureModel = Content.Load<Model>(@"launcher_head");
+            _cubeModel = Content.Load<Model>(@"cube3");
             _creatureModel_Avatar = Content.Load<Model>(@"directx");
 
             _wallTexture = Content.Load<Texture2D>(@"Textures\brickThumb");
@@ -139,9 +140,9 @@ namespace DawnGame
             _wallManager = new WallManager(GraphicsDevice, _wallTexture);
 
 
-            //_camera = new BirdsEyeCamera(GraphicsDevice, new Vector3(1500f, 2000f, 1000f), 500);
+            _camera = new BirdsEyeCamera(GraphicsDevice, new Vector3(1500f, 2000f, 1000f), 500);
             //_camera = new AvatarCamera(GraphicsDevice, _dawnWorld.Avatar);
-            _camera = new FirstPersonCamera(Window, 100);
+            //_camera = new FirstPersonCamera(Window, 100);
 
 
             //Create2DProjectionMatrix();
@@ -199,7 +200,7 @@ namespace DawnGame
             }
 
             // Think = Decide where to move
-            if ((gameTime.TotalGameTime - _lastThink).TotalMilliseconds > 100)
+            if ((gameTime.TotalGameTime - _lastThink).TotalMilliseconds > 0)
             {
                 _thinkTimer.Reset();
                 _thinkTimer.Start();
@@ -210,11 +211,13 @@ namespace DawnGame
             }
 
             // Move
-            if ((gameTime.TotalGameTime - _lastMove).TotalMilliseconds > 50)
+            if ((gameTime.TotalGameTime - _lastMove).TotalMilliseconds > 0)
             {
                 _moveTimer.Reset();
                 _moveTimer.Start();
-                _dawnWorld.ApplyMove((gameTime.TotalGameTime - _lastMove).TotalMilliseconds);
+                //_dawnWorld.ApplyMove((gameTime.TotalGameTime - _lastMove).TotalMilliseconds);
+                _dawnWorld.ApplyMove(gameTime.ElapsedGameTime.TotalMilliseconds);
+
                 _moveTimer.Stop();
                 _lastMove = gameTime.TotalGameTime;
             }
@@ -228,6 +231,7 @@ namespace DawnGame
 
             UpdateRoundingTechnique(keyboardState);
 
+            UpdateCamera();
 
             UpdateDrawOptions(keyboardState);
 
@@ -236,6 +240,19 @@ namespace DawnGame
             base.Update(gameTime);
 
             _updateTimer.Stop();
+        }
+
+        private void UpdateCamera()
+        {
+            var keyboard = Keyboard.GetState();
+
+            if (keyboard.IsKeyDown(Keys.F1))
+                _camera = new BirdsEyeCamera(GraphicsDevice, new Vector3(1500f, 2000f, 1000f), 500);
+            if (keyboard.IsKeyDown(Keys.F2))
+                _camera = new AvatarCamera(GraphicsDevice, _dawnWorld.Avatar);
+            if (keyboard.IsKeyDown(Keys.F3))
+                _camera = new FirstPersonCamera(Window, 100);
+
         }
 
         private void UpdateDrawOptions(KeyboardState keyboardState)
@@ -284,8 +301,9 @@ namespace DawnGame
 
 
             {
-                Draw2DWorld(gameTime);
-                Draw3DWorld();
+                //Draw2DWorld(gameTime);
+                //Draw3DWorld();
+                DrawCubeWorld();
                 {
                     var creatures = _dawnWorld.Environment.GetCreatures();
                     foreach (var current in creatures)
@@ -296,24 +314,7 @@ namespace DawnGame
                 }
             }
 
-            spriteBatch.Begin();
-
-            spriteBatch.DrawString(font, _worldInformation, new Vector2(100f, 100f), Color.Green);
-
-            string technicalInformation = string.Format("Think: {0}ms; Move: {1}ms; Update: {2}ms; Draw: {3}ms",
-                _thinkTimer.ElapsedMilliseconds, _moveTimer.ElapsedMilliseconds, _updateTimer.ElapsedMilliseconds, _lastDrawTime);
-            spriteBatch.DrawString(font, technicalInformation, new Vector2(100f, 150f), Color.Green);
-
-            if (_dawnWorld.Avatar != null)
-            {
-                string stats = string.Format("Damage: {0}%", _dawnWorld.Avatar.CharacterSheet.Damage.PercentFilled);
-                spriteBatch.DrawString(font, stats, new Vector2(100f, 200f), Color.Green);
-            }
-
-            spriteBatch.DrawString(font, _camera.GetDebugString(), new Vector2(100f, 250f), Color.Green);
-
-            spriteBatch.End();
-
+            DrawTextInfo();
 
 
             base.Draw(gameTime);
@@ -322,6 +323,41 @@ namespace DawnGame
             _lastDrawTime = _drawTimer.ElapsedMilliseconds;
         }
 
+        private void DrawTextInfo()
+        {
+            spriteBatch.Begin();
+
+            spriteBatch.DrawString(font, _worldInformation, new Vector2(100f, 100f), Color.Green);
+
+            string technicalInformation = string.Format("Think: {0:0000}ms; Move: {1:0000}ms; Update: {2:0000}ms; Draw: {3:0000}ms",
+                                                        _thinkTimer.ElapsedMilliseconds, _moveTimer.ElapsedMilliseconds, _updateTimer.ElapsedMilliseconds, _lastDrawTime);
+            spriteBatch.DrawString(font, technicalInformation, new Vector2(100f, 150f), Color.Green);
+
+            if (_dawnWorld.Avatar != null)
+            {
+                //string stats = string.Format("Damage: {0}%", _dawnWorld.Avatar.CharacterSheet.Damage.PercentFilled);
+                string stats = string.Format("Velocity: ({0}, {1})", _dawnWorld.Avatar.Place.Fixture.Body.LinearVelocity.X, _dawnWorld.Avatar.Place.Fixture.Body.LinearVelocity.Y);
+                spriteBatch.DrawString(font, stats, new Vector2(100f, 200f), Color.Green);
+            }
+
+            spriteBatch.DrawString(font, _camera.GetDebugString(), new Vector2(100f, 250f), Color.Green);
+
+            spriteBatch.End();
+
+
+            // Fix Spritebatch problems
+            {
+                GraphicsDevice.BlendState = BlendState.AlphaBlend;
+                GraphicsDevice.DepthStencilState = DepthStencilState.None;
+                GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
+                GraphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
+
+                GraphicsDevice.BlendState = BlendState.Opaque;
+                GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+
+                GraphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
+            }
+        }
 
 
         private void Draw2DWorld(GameTime gameTime)
@@ -351,6 +387,14 @@ namespace DawnGame
             _wallManager.Draw(_worldShapes, GraphicsDevice, _camera.View, _camera.Projection);
         }
 
+        private void DrawCubeWorld()
+        {
+            var obstacles = _dawnWorld.Environment.GetObstacles();
+            foreach (var current in obstacles)
+            {
+                DrawCube(current);
+            }
+        }
 
         private List<BasicShape> _worldShapes;
         private WallManager _wallManager;
@@ -371,7 +415,7 @@ namespace DawnGame
 
         
 
-        private List<BasicShape> Create3DShape(IPolygon polygon, Coordinate position)
+        private List<BasicShape> Create3DShape(IPolygon polygon, Vector2 position)
         {
             var shape = new List<BasicShape>();
             //List<Line> lines = new List<Line>();
@@ -412,9 +456,9 @@ namespace DawnGame
 
             var pos = creature.Place.Position;
             var angle = creature.Place.Angle;
-           
 
-            gameCreature.model = creature.Equals(_dawnWorld.Avatar)? _creatureModel_Avatar : _creatureModel;
+
+            gameCreature.model = creature.Equals(_dawnWorld.Avatar) ? _creatureModel_Avatar : _creatureModel;
             gameCreature.position = new Vector3((float)(pos.X), 0f, (float)(pos.Y));
             gameCreature.rotation = new Vector3(0, -(float)angle, 0);
             gameCreature.scale = 10f;
@@ -428,6 +472,22 @@ namespace DawnGame
                 (float)(pos.Y + Math.Sin(angle) * creature.CharacterSheet.MeleeRange));
 
             DrawCircle(attackMiddle, creature.CharacterSheet.MeleeRange, color);
+        }
+
+        private void DrawCube(Placement placement)
+        {
+            GameObject gamePlacement = new GameObject();
+
+            var pos = placement.Position;
+            var angle = placement.Angle;
+
+
+            gamePlacement.model = _cubeModel;
+            gamePlacement.position = new Vector3((float)(pos.X), 0f, (float)(pos.Y));
+            gamePlacement.rotation = new Vector3(0, -(float)angle, 0);
+            gamePlacement.scale = 25f;
+
+            gamePlacement.DrawObject(_camera.View, _camera.Projection);
         }
 
         private void DrawPolygon(IList<Vector> points, float time, string curTechniqueName)

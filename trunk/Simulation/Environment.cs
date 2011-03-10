@@ -5,16 +5,26 @@ using System.Text;
 using System.Diagnostics;
 using DawnOnline.Simulation.Collision;
 using DawnOnline.Simulation.Tools;
+using FarseerPhysics.Dynamics;
+using Microsoft.Xna.Framework;
 
 namespace DawnOnline.Simulation
 {
     public class Environment
     {
+        public static World FareSeerWorld = new World(Vector2.Zero);
+
         List<Creature> _creatures = new List<Creature>();
         Dictionary<CreatureType, List<Creature>> _creaturesPerSpecy = new Dictionary<CreatureType, List<Creature>>();
         List<Placement> _obstacles = new List<Placement>();
 
-        public void AddCreature(Creature creature, Coordinate origin, double angle)
+
+        //public Environment()
+        //{
+        //    FareSeerWorld.
+        //}
+
+        public void AddCreature(Creature creature, Vector2 origin, double angle)
         {
             var myCreature = creature as Creature;
             Debug.Assert(myCreature != null);
@@ -78,7 +88,7 @@ namespace DawnOnline.Simulation
             return _creaturesPerSpecy[specy];
         }
 
-        public bool AddObstacle(Placement obstacle, Coordinate origin)
+        public bool AddObstacle(Placement obstacle, Vector2 origin)
         {
             var myObstacle = obstacle as Placement;
 
@@ -88,6 +98,7 @@ namespace DawnOnline.Simulation
                 return false;
 
             _obstacles.Add(obstacle);
+
             return true;
         }
 
@@ -96,17 +107,34 @@ namespace DawnOnline.Simulation
             return _obstacles;
         }
 
-        internal IList<Creature> GetCreaturesInRange(Coordinate position, double radius)
+        public void Update(double timeDelta)
+        {
+            // Perform actions
+            var creatures = new List<Creature>(GetCreatures());
+            foreach (var current in creatures)
+            {
+                if (!current.Alive)
+                    continue;
+
+                current.ApplyActionQueue(timeDelta);
+                current.ClearActionQueue();
+            }
+
+            // Update physics
+            FareSeerWorld.Step(MathHelper.Min((float)timeDelta, 1f / 30f));
+        }
+
+        internal IList<Creature> GetCreaturesInRange(Vector2 position, double radius)
         {
             return GetCreaturesInRange(position, radius, GetCreatures());
         }
 
-        internal IList<Creature> GetCreaturesInRange(Coordinate position, double radius, CreatureType specy)
+        internal IList<Creature> GetCreaturesInRange(Vector2 position, double radius, CreatureType specy)
         {
             return GetCreaturesInRange(position, radius, GetCreatures(specy));
         }
 
-        private static IList<Creature> GetCreaturesInRange(Coordinate position, double radius, IList<Creature> creatures)
+        private static IList<Creature> GetCreaturesInRange(Vector2 position, double radius, IList<Creature> creatures)
         {
             var list = new List<Creature>();
 

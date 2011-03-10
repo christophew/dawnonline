@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using DawnOnline.Simulation;
+using Microsoft.Xna.Framework;
 
 namespace DawnGame
 {
     class DawnWorld
     {
         private readonly DawnOnline.Simulation.Environment _environment = SimulationFactory.CreateEnvironment();
-        private const int MaxX = 3000;
-        private const int MaxY = 2000;
+        private const float MaxX = 3000;
+        private const float MaxY = 2000;
         private Creature _avatar = SimulationFactory.CreateAvatar();
         Random _randomize = new Random();
 
@@ -18,9 +19,9 @@ namespace DawnGame
         public DawnWorld()
         {
             _environment.AddCreature(_avatar,
-                                     new Coordinate { X = _randomize.Next(MaxX), Y = _randomize.Next(MaxY) }, 0);
+                                     new Vector2 { X = _randomize.Next((int)MaxX), Y = _randomize.Next((int)MaxY) }, 0);
 
-            BuildWorld();
+            BuildWorld2();
 
             //AddCreatures(CreatureType.Rabbit, 300);
             //AddCreatures(CreatureType.Plant, 300);
@@ -30,19 +31,40 @@ namespace DawnGame
         private void BuildWorld()
         {
             // World boundaries
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, -20), new Coordinate { X = MaxX / 2.0, Y = -11 }); // Top
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, 20), new Coordinate { X = MaxX / 2.0, Y = MaxY + 11 }); // Bottom
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(-20, MaxY), new Coordinate { X = -11, Y = MaxY / 2.0 }); // Left
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(20, MaxY), new Coordinate { X = MaxX + 11, Y = MaxY / 2.0 }); // Right
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, -20), new Vector2 { X = MaxX / 2.0f, Y = -11 }); // Top
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, 20), new Vector2 { X = MaxX / 2.0f, Y = MaxY + 11 }); // Bottom
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(-20, MaxY), new Vector2 { X = -11, Y = MaxY / 2.0f }); // Left
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(20, MaxY), new Vector2 { X = MaxX + 11, Y = MaxY / 2.0f }); // Right
 
             // Randow obstacles
             int maxHeight = 200;
             int maxWide = 200;
-            for (int i = 0; i < 10; )
+            for (int i = 0; i < 100; )
             {
                 int height = _randomize.Next(maxHeight);
                 int wide = _randomize.Next(maxWide);
-                var position = new Coordinate(_randomize.Next(MaxX - wide), _randomize.Next(MaxY - height));
+                var position = new Vector2(_randomize.Next((int)MaxX - wide), _randomize.Next((int)MaxY - height));
+                var box = SimulationFactory.CreateObstacleBox(wide, height);
+
+                if (_environment.AddObstacle(box, position))
+                    i++;
+            }
+        }
+
+        private void BuildWorld2()
+        {
+            // World boundaries
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, -20), new Vector2 { X = MaxX / 2.0f, Y = -11 }); // Top
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, 20), new Vector2 { X = MaxX / 2.0f, Y = MaxY + 11 }); // Bottom
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(-20, MaxY), new Vector2 { X = -11, Y = MaxY / 2.0f }); // Left
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(20, MaxY), new Vector2 { X = MaxX + 11, Y = MaxY / 2.0f }); // Right
+
+            // Rocks
+            int height = 48;
+            int wide = 48;
+            for (int i = 0; i < 500; )
+            {
+                var position = new Vector2(_randomize.Next((int)MaxX / 50) * 50, _randomize.Next((int)MaxY / 50) * 50);
                 var box = SimulationFactory.CreateObstacleBox(wide, height);
 
                 if (_environment.AddObstacle(box, position))
@@ -55,22 +77,14 @@ namespace DawnGame
             for (int i = 0; i < amount; i++)
             {
                 _environment.AddCreature(SimulationFactory.CreateCreature(specy),
-                                 new Coordinate { X = _randomize.Next(MaxX), Y = _randomize.Next(MaxY) },
+                                 new Vector2 { X = _randomize.Next((int)MaxX), Y = _randomize.Next((int)MaxY) },
                                  _randomize.Next(6));
             }
         }
 
         public void ApplyMove(double timeDelta)
         {
-            var creatures = new List<Creature>(_environment.GetCreatures());
-
-            foreach (var current in creatures)
-            {
-                if (!current.Alive)
-                    continue;
-
-                current.ApplyActionQueue(timeDelta);
-            }
+            _environment.Update(timeDelta);
         }
 
         public void MoveAll()
