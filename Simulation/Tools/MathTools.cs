@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 
 namespace DawnOnline.Simulation.Tools
 {
     static class MathTools
     {
-        public static double GetDistance2(Coordinate position1, Coordinate position2)
+        public static double GetDistance2(Vector2 position1, Vector2 position2)
         {
             double deltaX = position1.X - position2.X;
             double deltaY = position1.Y - position2.Y;
@@ -76,12 +77,12 @@ namespace DawnOnline.Simulation.Tools
             return degrees*Math.PI/180.0;
         }
 
-        public static Coordinate OffsetCoordinate(Coordinate origin, double angle, double distance)
+        public static Vector2 OffsetCoordinate(Vector2 origin, double angle, double distance)
         {
-            return new Coordinate(origin.X + Math.Cos(angle)*distance, origin.Y + Math.Sin(angle)*distance);
+            return new Vector2((float)(origin.X + Math.Cos(angle)*distance), (float)(origin.Y + Math.Sin(angle)*distance));
         }
 
-        public static bool CirclesIntersect(Coordinate position1, double radius1, Coordinate position2, double radius2)
+        public static bool CirclesIntersect(Vector2 position1, double radius1, Vector2 position2, double radius2)
         {
             double radius = radius1 + radius2;
             return GetDistance2(position1, position2) < radius*radius;

@@ -4,12 +4,15 @@ using System.Linq;
 using System.Text;
 using DawnOnline.Simulation.Brains;
 using DawnOnline.Simulation.Collision;
+using FarseerPhysics.Dynamics;
+using FarseerPhysics.Factories;
 
 namespace DawnOnline.Simulation
 {
     public static class SimulationFactory
     {
-        private const double _velocityMultiplier = 5;
+        //private const double _velocityMultiplier = 5;
+        private const double _velocityMultiplier = 200;
         private const double _turnMultiplier = 4;
 
         public static Environment CreateEnvironment()
@@ -46,6 +49,11 @@ namespace DawnOnline.Simulation
 
             var form = new Form { BoundingCircleRadius = radius, Shape = box };
             var placement = new Placement { Form = form };
+            placement.Fixture = FixtureFactory.CreateRectangle(Environment.FareSeerWorld, Math.Max(1, (float)deltaX), Math.Max(1, (float)deltaY), 1f);
+            placement.Fixture.Body.BodyType = BodyType.Static;
+            placement.Fixture.Body.LinearDamping = 1f;
+            placement.Fixture.Body.AngularDamping = 1f;
+            placement.Fixture.Body.Mass = 1000f;
 
             return placement;
         }

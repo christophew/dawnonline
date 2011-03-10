@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using DawnOnline.Simulation;
 using DawnOnline.Simulation.Collision;
+using Microsoft.Xna.Framework;
 
 namespace FrontEnd
 {
@@ -45,8 +46,8 @@ namespace FrontEnd
             for (int i = 0; i < amount; i++)
             {
                 _environment.AddCreature(SimulationFactory.CreateCreature(specy),
-                                 new Coordinate { X = _randomize.Next(MaxX), Y = _randomize.Next(MaxY) },
-                                 _randomize.Next(6));
+                                         new Vector2(_randomize.Next(MaxX), _randomize.Next(MaxY)),
+                                         _randomize.Next(6));
             }
         }
 
@@ -222,7 +223,7 @@ namespace FrontEnd
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             _environment.AddCreature(_avatar,
-                                     new Coordinate { X = _randomize.Next(MaxX), Y = _randomize.Next(MaxY) }, 0);
+                                     new Vector2 { X = _randomize.Next(MaxX), Y = _randomize.Next(MaxY) }, 0);
 
             BuildWorld();
 
@@ -244,10 +245,10 @@ namespace FrontEnd
         private void BuildWorld()
         {
             // World boundaries
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, -20), new Coordinate { X = MaxX / 2.0, Y = -11 }); // Top
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, 20), new Coordinate { X = MaxX / 2.0, Y = MaxY + 11 }); // Bottom
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(-20, MaxY), new Coordinate { X = -11, Y = MaxY / 2.0 }); // Left
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(20, MaxY), new Coordinate { X = MaxX + 11, Y = MaxY / 2.0 }); // Right
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, -20), new Vector2(MaxX / 2.0f, -11)); // Top
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, 20), new Vector2(MaxX / 2.0f, MaxY + 11)); // Bottom
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(-20, MaxY), new Vector2(-11, MaxY / 2.0f)); // Left
+            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(20, MaxY), new Vector2(MaxX + 11, MaxY / 2.0f)); // Right
 
             // Randow obstacles
             int maxHeight = 200;
@@ -256,7 +257,7 @@ namespace FrontEnd
             {
                 int height = _randomize.Next(maxHeight);
                 int wide = _randomize.Next(maxWide);
-                var position = new Coordinate(_randomize.Next(MaxX - wide), _randomize.Next(MaxY - height));
+                var position = new Vector2(_randomize.Next(MaxX - wide), _randomize.Next(MaxY - height));
                 var box = SimulationFactory.CreateObstacleBox(wide, height);
 
                 if (_environment.AddObstacle(box, position))

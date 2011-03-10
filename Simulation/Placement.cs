@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DawnOnline.Simulation.Collision;
+using FarseerPhysics.Dynamics;
+using FarseerPhysics.Factories;
+using Microsoft.Xna.Framework;
 
 namespace DawnOnline.Simulation
 {
     public class Placement
     {
-        #region IPlacement Members
-
         internal Placement()
         {
-            Position = new Coordinate();
         }
 
         public Form Form
@@ -20,26 +20,18 @@ namespace DawnOnline.Simulation
             get; internal set;
         }
 
-        public Coordinate Position
-        {
-            get; internal set;
-        }
+        public Vector2 Position { get { return Fixture.Body.Position; }}
 
-        public double Angle
-        {
-            get; internal set;
-        }
+        public float Angle { get { return Fixture.Body.Rotation; } }
 
-        internal void OffsetPosition(Coordinate position, double angle)
-        {
-            Position.X += position.X;
-            Position.Y += position.Y;
-            Angle += angle;
+        public Fixture Fixture { get; internal set; }
 
+        internal void OffsetPosition(Vector2 position, double angle)
+        {
             (Form.Shape as Polygon).Offset((float)position.X, (float)position.Y);
+
+            Fixture.Body.Position = new Vector2(position.X, position.Y);
+            Fixture.Body.Rotation = (float)angle;
         }
-
-
-        #endregion
     }
 }

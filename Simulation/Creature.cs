@@ -6,6 +6,9 @@ using DawnOnline.Simulation.Statistics;
 using DawnOnline.Simulation.Collision;
 using DawnOnline.Simulation.Tools;
 using DawnOnline.Simulation.Senses;
+using FarseerPhysics.Dynamics;
+using FarseerPhysics.Factories;
+using Microsoft.Xna.Framework;
 
 namespace DawnOnline.Simulation
 {
@@ -69,6 +72,12 @@ namespace DawnOnline.Simulation
         internal Creature(double bodyRadius)
         {
             _place.Form = SimulationFactory.CreateCircle(bodyRadius);
+            _place.Fixture = FixtureFactory.CreateCircle(Environment.FareSeerWorld, (float)bodyRadius, 1.0f);
+            _place.Fixture.Body.BodyType = BodyType.Dynamic;
+            _place.Fixture.Body.Mass = 50;
+            //_place.Fixture.Friction = 0.1f;
+            _place.Fixture.Body.LinearDamping = 1f;
+            _place.Fixture.Body.AngularDamping = 1f;
         }
 
         internal void InitializeSenses()
@@ -142,21 +151,25 @@ namespace DawnOnline.Simulation
 
         public void ApplyActionQueue(double timeDelta)
         {
-            double toSeconds = timeDelta/1000.0;
+            double toSeconds = timeDelta / 1000.0;
 
             //_characterSheet.Damage.Increase((int)_actionQueue.Damage);
             _actionQueue.Damage = 0;
-            
+
             if (_characterSheet.Damage.IsFilled)
             {
                 MyEnvironment.KillCreature(this);
                 return;
             }
 
-            var realTranslation = TryMove(_actionQueue.ForwardMotion * toSeconds);
-            _place.OffsetPosition(new Coordinate(realTranslation), 0.0);
+            //var realTranslation = TryMove(_actionQueue.ForwardMotion * toSeconds);
+            //_place.OffsetPosition(new Vector2(realTranslation), 0.0);
+            var force = new Vector2(_actionQueue.ForwardMotion.X, _actionQueue.ForwardMotion.Y);
+            _place.Fixture.Body.ApplyForce(force);
 
-            _place.Angle += _actionQueue.TurnMotion * toSeconds;
+            //_place.Angle += _actionQueue.TurnMotion * toSeconds;
+            _place.Fixture.Body.Rotation += (float)(_actionQueue.TurnMotion * toSeconds);
+
 
             CharacterSheet.Fatigue.Increase((int)(_actionQueue.FatigueCost * toSeconds));
 
@@ -267,9 +280,9 @@ namespace DawnOnline.Simulation
 
         internal Creature FindCreatureToAttack(CreatureType ofType)
         {
-            var attackMiddle = new Coordinate(
-                Place.Position.X + Math.Cos(Place.Angle) * CharacterSheet.MeleeRange,
-                Place.Position.Y + Math.Sin(Place.Angle) * CharacterSheet.MeleeRange);
+            var attackMiddle = new Vector2(
+                (float)(Place.Position.X + Math.Cos(Place.Angle) * CharacterSheet.MeleeRange),
+                (float)(Place.Position.Y + Math.Sin(Place.Angle) * CharacterSheet.MeleeRange));
 
             var creaturesToAttack = ofType == CreatureType.Unknown ?  
                 MyEnvironment.GetCreaturesInRange(attackMiddle, CharacterSheet.MeleeRange) : 

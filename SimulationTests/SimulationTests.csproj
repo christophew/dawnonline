@@ -60,10 +60,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CreatureTest.cs" />
-    <Compile Include="EnvironmentTest.cs" />
-    <Compile Include="EyeTest.cs" />
-    <Compile Include="MathToolsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
