@@ -259,6 +259,8 @@ namespace DawnGame
             if (keyboard.IsKeyDown(Keys.F2))
                 _camera = new AvatarCamera(GraphicsDevice, _dawnWorld.Avatar);
             if (keyboard.IsKeyDown(Keys.F3))
+                _camera = new BirdsEyeFollowCamera(GraphicsDevice, 800, 500, _dawnWorld.Avatar);
+            if (keyboard.IsKeyDown(Keys.F4))
                 _camera = new FirstPersonCamera(Window, 100);
 
         }
