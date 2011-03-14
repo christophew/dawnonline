@@ -232,8 +232,6 @@ namespace DawnOnline.Simulation
             if (!CanAttack())
                 return;
 
-            Debug.Assert(Alive);
-
             _actionQueue.Fire = true;
         }
 
@@ -323,6 +321,8 @@ namespace DawnOnline.Simulation
 
         public bool CanAttack()
         {
+            if (!Alive)
+                return false;
             return ((DateTime.Now - _actionQueue.LastAttackTime).TotalSeconds > CharacterSheet.MeleeCoolDown);
         }
 

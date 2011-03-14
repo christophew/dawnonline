@@ -122,6 +122,7 @@
     <Compile Include="Cameras\AvatarCamera.cs" />
     <Compile Include="Cameras\BirdsEyeCamera.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="Cameras\BirdsEyeFollowCamera.cs" />
     <Compile Include="DawnWorld.cs" />
     <Compile Include="Cameras\FirstPersonCamera.cs" />
     <Compile Include="GameObject.cs" />
