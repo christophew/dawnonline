@@ -72,12 +72,14 @@ namespace DawnOnline.Simulation
         internal Creature(double bodyRadius)
         {
             _place.Form = SimulationFactory.CreateCircle(bodyRadius);
-            _place.Fixture = FixtureFactory.CreateCircle(Environment.FareSeerWorld, (float)bodyRadius, 1.0f);
+            _place.Fixture = FixtureFactory.CreateCircle(Environment.GetWorld().FarSeerWorld, (float)bodyRadius, 1.0f);
             _place.Fixture.Body.BodyType = BodyType.Dynamic;
             _place.Fixture.Body.Mass = 50;
             //_place.Fixture.Friction = 0.1f;
             _place.Fixture.Body.LinearDamping = 1f;
             _place.Fixture.Body.AngularDamping = 1f;
+
+            _place.Fixture.UserData = this;
         }
 
         internal void InitializeSenses()
@@ -150,7 +152,7 @@ namespace DawnOnline.Simulation
         {
             double toSeconds = timeDelta / 1000.0;
 
-            //_characterSheet.Damage.Increase((int)_actionQueue.Damage);
+            _characterSheet.Damage.Increase((int)_actionQueue.Damage);
             _actionQueue.Damage = 0;
 
             if (_characterSheet.Damage.IsFilled)
@@ -173,10 +175,13 @@ namespace DawnOnline.Simulation
             if (_actionQueue.Fire)
             {
                 var bulletAngleVector = new Vector2((float)Math.Cos(_place.Angle), (float)Math.Sin(_place.Angle));
-                var bullet = SimulationFactory.CreateBullet();
-                MyEnvironment.AddBullet(bullet, _place.Fixture.Body.Position + bulletAngleVector * 15);
-                bullet.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 200);
-                //bullet.Fixture.Body.ApplyForce(bulletAngleVector * 200);
+                var bullet = SimulationFactory.CreateBullet(CharacterSheet.MeleeDamage);
+                // TODO: move to Bullet
+                {
+                    MyEnvironment.AddBullet(bullet, _place.Fixture.Body.Position + bulletAngleVector*30);
+                    bullet.Placement.Fixture.Body.ApplyLinearImpulse(bulletAngleVector*200);
+                    //bullet.Fixture.Body.ApplyForce(bulletAngleVector * 200);
+                }
                 _actionQueue.HasFired = true;
                 _actionQueue.Fire = false;
             }
@@ -342,6 +347,11 @@ namespace DawnOnline.Simulation
 
             _actionQueue.HasAttacked = true;
             target.MyActionQueue.Damage = _characterSheet.MeleeDamage;
+        }
+
+        internal void TakeBulletDamage(Bullet bullet)
+        {
+            this.MyActionQueue.Damage = bullet.Damage;
         }
 
         public bool SeesACreatureForward()

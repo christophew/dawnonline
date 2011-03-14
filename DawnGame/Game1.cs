@@ -128,8 +128,9 @@ namespace DawnGame
 
             font = Content.Load<SpriteFont>(@"fonts\MyFont");
             _creatureModel = Content.Load<Model>(@"shark");
-            _cubeModel = Content.Load<Model>(@"cube3");
-            _bulletModel = Content.Load<Model>(@"cube3");
+            _cubeModel = Content.Load<Model>(@"brickwall");
+            //_bulletModel = Content.Load<Model>(@"bullet");
+            _bulletModel = Content.Load<Model>(@"firebullet");
             _creatureModel_Avatar = Content.Load<Model>(@"directx");
 
             _wallTexture = Content.Load<Texture2D>(@"Textures\brickThumb");
@@ -346,7 +347,7 @@ namespace DawnGame
             if (_dawnWorld.Avatar != null)
             {
                 //string stats = string.Format("Damage: {0}%", _dawnWorld.Avatar.CharacterSheet.Damage.PercentFilled);
-                string stats = string.Format("Velocity: ({0}, {1})", _dawnWorld.Avatar.Place.Fixture.Body.LinearVelocity.X, _dawnWorld.Avatar.Place.Fixture.Body.LinearVelocity.Y);
+                string stats = string.Format("Velocity: {0}", _dawnWorld.Avatar.Place.Fixture.Body.LinearVelocity.Length());
                 spriteBatch.DrawString(font, stats, new Vector2(100f, 200f), Color.Green);
             }
 
@@ -479,7 +480,8 @@ namespace DawnGame
 
             gameCreature.model = creature.Equals(_dawnWorld.Avatar) ? _creatureModel_Avatar : _creatureModel;
             gameCreature.position = new Vector3((float)(pos.X), 0f, (float)(pos.Y));
-            gameCreature.rotation = new Vector3(0, -(float)angle, 0);
+            // MathHelper.PiOver2 correction => geen idee waarom mijn meshes dit nodig hebben, maar ja...
+            gameCreature.rotation = new Vector3(MathHelper.PiOver2, -(float)angle, 0);
             gameCreature.scale = 10f;
 
             gameCreature.DrawObject(_camera.View, _camera.Projection);
@@ -498,9 +500,9 @@ namespace DawnGame
             DrawGameObject(placement, _cubeModel, 25f);
         }
 
-        private void DrawBullet(Placement placement)
+        private void DrawBullet(Bullet bullet)
         {
-            DrawGameObject(placement, _cubeModel, 5f);
+            DrawGameObject(bullet.Placement, _bulletModel, 2f);
         }
 
         private void DrawGameObject(Placement placement, Model model, float scale)
@@ -512,7 +514,8 @@ namespace DawnGame
 
             gamePlacement.model = model;
             gamePlacement.position = new Vector3(pos.X, 0f, pos.Y);
-            gamePlacement.rotation = new Vector3(0, -angle, 0);
+            // MathHelper.PiOver2 correction => geen idee waarom mijn meshes dit nodig hebben, maar ja...
+            gamePlacement.rotation = new Vector3(MathHelper.PiOver2, -(float)angle, 0);
             gamePlacement.scale = scale;
 
             gamePlacement.DrawObject(_camera.View, _camera.Projection);

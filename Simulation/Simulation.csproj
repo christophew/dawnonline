@@ -76,6 +76,7 @@
     <Compile Include="Brains\PredatorBrain.cs" />
     <Compile Include="Brains\AbstractBrain.cs" />
     <Compile Include="Brains\RabbitBrain.cs" />
+    <Compile Include="Bullet.cs" />
     <Compile Include="Collision\CollisionDetection.cs" />
     <Compile Include="Collision\IPolygon.cs" />
     <Compile Include="Collision\Polygon.cs" />

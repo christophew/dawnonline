@@ -10,20 +10,28 @@ using Microsoft.Xna.Framework;
 
 namespace DawnOnline.Simulation
 {
+
     public class Environment
     {
-        public static World FareSeerWorld = new World(Vector2.Zero);
+        private static Environment _theWorld = new Environment();
+        internal static Environment GetWorld()
+        {
+            return _theWorld;
+        }
+
+
+        internal World FarSeerWorld { get; private set; }
 
         List<Creature> _creatures = new List<Creature>();
         Dictionary<CreatureType, List<Creature>> _creaturesPerSpecy = new Dictionary<CreatureType, List<Creature>>();
         List<Placement> _obstacles = new List<Placement>();
-        List<Placement> _bullets = new List<Placement>();
+        List<Bullet> _bullets = new List<Bullet>();
 
 
-        //public Environment()
-        //{
-        //    FareSeerWorld.
-        //}
+        private Environment()
+        {
+            FarSeerWorld = new World(Vector2.Zero);
+        }
 
         public void AddCreature(Creature creature, Vector2 origin, double angle)
         {
@@ -66,12 +74,13 @@ namespace DawnOnline.Simulation
 
         public void KillCreature(Creature creature)
         {
-            var myCreature = creature as Creature;
-            Debug.Assert(myCreature != null);
+            Debug.Assert(creature != null);
 
-            myCreature.Alive = false;
+            creature.Alive = false;
             _creatures.Remove(creature);
-            _creaturesPerSpecy[myCreature.Specy].Remove(creature);
+            _creaturesPerSpecy[creature.Specy].Remove(creature);
+
+            FarSeerWorld.RemoveBody(creature.Place.Fixture.Body);
         }
 
         public IList<Creature> GetCreatures()
@@ -104,16 +113,22 @@ namespace DawnOnline.Simulation
             return true;
         }
 
-        public bool AddBullet(Placement obstacle, Vector2 origin)
+        public bool AddBullet(Bullet bullet, Vector2 origin)
         {
-            obstacle.OffsetPosition(origin, 0.0);
+            bullet.Placement.OffsetPosition(origin, 0.0);
 
             //if (IntersectsWithObstacles(obstacle))
             //    return false;
 
-            _bullets.Add(obstacle);
+            _bullets.Add(bullet);
 
             return true;
+        }
+
+        public void RemoveBullet(Bullet bullet)
+        {
+            FarSeerWorld.RemoveBody(bullet.Placement.Fixture.Body);
+            _bullets.Remove(bullet);
         }
 
         public IList<Placement> GetObstacles()
@@ -121,7 +136,7 @@ namespace DawnOnline.Simulation
             return _obstacles;
         }
 
-        public IList<Placement> GetBullets()
+        public IList<Bullet> GetBullets()
         {
             return _bullets;
         }
@@ -140,7 +155,7 @@ namespace DawnOnline.Simulation
             }
 
             // Update physics
-            FareSeerWorld.Step(MathHelper.Min((float)timeDelta, 1f / 30f));
+            FarSeerWorld.Step(MathHelper.Min((float)timeDelta, 1f / 30f));
         }
 
         internal IList<Creature> GetCreaturesInRange(Vector2 position, double radius)

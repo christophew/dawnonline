@@ -25,7 +25,7 @@ namespace DawnGame
 
             //AddCreatures(CreatureType.Rabbit, 300);
             //AddCreatures(CreatureType.Plant, 300);
-            //AddCreatures(CreatureType.Predator, 100);
+            AddCreatures(CreatureType.Predator, 100);
         }
 
         private void BuildWorld()
@@ -62,7 +62,7 @@ namespace DawnGame
             // Rocks
             int height = 48;
             int wide = 48;
-            for (int i = 0; i < 500; )
+            for (int i = 0; i < 750; )
             {
                 var position = new Vector2(_randomize.Next((int)MaxX / 50) * 50, _randomize.Next((int)MaxY / 50) * 50);
                 var box = SimulationFactory.CreateObstacleBox(wide, height);
