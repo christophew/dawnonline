@@ -346,8 +346,9 @@ namespace DawnGame
 
             if (_dawnWorld.Avatar != null)
             {
-                //string stats = string.Format("Damage: {0}%", _dawnWorld.Avatar.CharacterSheet.Damage.PercentFilled);
-                string stats = string.Format("Velocity: {0}", _dawnWorld.Avatar.Place.Fixture.Body.LinearVelocity.Length());
+                string stats = string.Format("Damage: {0}%; Velocity: {1:000.0}", 
+                    _dawnWorld.Avatar.CharacterSheet.Damage.PercentFilled,
+                    _dawnWorld.Avatar.Place.Fixture.Body.LinearVelocity.Length());
                 spriteBatch.DrawString(font, stats, new Vector2(100f, 200f), Color.Green);
             }
 
