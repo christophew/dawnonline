@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using DawnOnline.Simulation.Tools;
 using FarseerPhysics.Common.PhysicsLogic;
 using FarseerPhysics.Dynamics;
+using Microsoft.Xna.Framework;
 
 namespace DawnOnline.Simulation
 {
@@ -12,9 +14,14 @@ namespace DawnOnline.Simulation
     {
         public Placement Placement { get; internal set; }
         public double Damage { get; internal set; }
+        public bool Explodes { get; internal set; }
+        //public double Force { get; internal set; }
+
+        internal float Range = 50;
+        private float MaxForce = 100;
 
         // State
-        public bool Exploded { get; internal set; }
+        public bool Destroyed { get; internal set; }
 
 
         public static bool OnCollision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
@@ -23,7 +30,7 @@ namespace DawnOnline.Simulation
             Debug.Assert(bullet != null);
 
             // Already registered an impact on another target
-            if (bullet.Exploded)
+            if (bullet.Destroyed)
                 return false;
 
             var targetCreature = fixtureB.UserData as Creature;
@@ -34,10 +41,19 @@ namespace DawnOnline.Simulation
 
 
             // Experiment: explode
+            if (bullet.Explodes)
             {
                 var explosion = new Explosion(Environment.GetWorld().FarSeerWorld);
                 //explosion.IgnoreWhenInsideShape = true;
-                explosion.Activate(bullet.Placement.Fixture.Body.Position, 50, 200);
+                var hits = explosion.Activate(bullet.Placement.Fixture.Body.Position, bullet.Range, bullet.MaxForce);
+                foreach (var hit in hits)
+                {
+                    var explosionTarget = hit.Key.UserData as Creature;
+                    if (explosionTarget == null)
+                        continue;
+                    var distance = MathTools.GetDistance(fixtureA.Body.Position, fixtureB.Body.Position);
+                    explosionTarget.TakeExplosionDamage(bullet, distance);
+                }
             }
 
             // return true : acknowledge the collision
@@ -51,15 +67,18 @@ namespace DawnOnline.Simulation
             Debug.Assert(bullet != null);
 
             // Bullet already destroyed
-            if (bullet.Exploded)
+            if (bullet.Destroyed)
                 return;
 
-            // Ricochette when velocity after collision is high enough
-            if (fixtureA.Body.LinearVelocity.Length() > 100)
-                return;
+            if (!bullet.Explodes)
+            {
+                // Ricochette when velocity after collision is high enough
+                if (fixtureA.Body.LinearVelocity.Length() > 100)
+                    return;
+            }
 
             // Destroy on impact
-            bullet.Exploded = true;
+            bullet.Destroyed = true;
             Environment.GetWorld().RemoveBullet(bullet);
         }
     }

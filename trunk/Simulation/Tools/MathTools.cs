@@ -17,6 +17,11 @@ namespace DawnOnline.Simulation.Tools
             return distance2;
         }
 
+        public static double GetDistance(Vector2 position1, Vector2 position2)
+        {
+            return Math.Sqrt(GetDistance2(position1, position2));
+        }
+
         public static double GetAngle(double px1, double py1, double px2, double py2)
         {
             // Negate X and Y values

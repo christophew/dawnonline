@@ -351,7 +351,13 @@ namespace DawnOnline.Simulation
 
         internal void TakeBulletDamage(Bullet bullet)
         {
-            this.MyActionQueue.Damage = bullet.Damage;
+            this.MyActionQueue.Damage += bullet.Damage;
+        }
+
+        internal void TakeExplosionDamage(Bullet bullet, double distance)
+        {
+            var rangeMinusDistance = Math.Max(Math.Abs(bullet.Range - distance), 0);
+            this.MyActionQueue.Damage += bullet.Damage * rangeMinusDistance * rangeMinusDistance / bullet.Range / bullet.Range;
         }
 
         public bool SeesACreatureForward()

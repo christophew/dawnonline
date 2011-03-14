@@ -166,6 +166,7 @@ namespace DawnOnline.Simulation
 
             bullet.Placement = placement;
             bullet.Damage = damage;
+            bullet.Explodes = true;
             placement.Fixture.UserData = bullet;
 
             return bullet;
