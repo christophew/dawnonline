@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DawnOnline.Simulation;
+using DawnOnline.Simulation.Entities;
 using Microsoft.Xna.Framework;
 
 namespace DawnGame
@@ -25,7 +26,8 @@ namespace DawnGame
 
             //AddCreatures(CreatureType.Rabbit, 300);
             //AddCreatures(CreatureType.Plant, 300);
-            AddCreatures(CreatureType.Predator, 100);
+            //AddCreatures(CreatureType.Predator, 100);
+            AddCreatures(CreatureType.Turret, 50);
         }
 
         private void BuildWorld()
@@ -89,7 +91,7 @@ namespace DawnGame
 
         public void MoveAll()
         {
-            var creatures = new List<Creature>(_environment.GetCreatures());
+            var creatures = new List<IEntity>(_environment.GetCreatures());
 
             foreach (var current in creatures)
             {
@@ -128,7 +130,7 @@ namespace DawnGame
             int nrOfRabbits = 0;
             int nrOfPredators = 0;
 
-            var creatures = new List<Creature>(_environment.GetCreatures());
+            var creatures = new List<IEntity>(_environment.GetCreatures());
 
             foreach (var current in creatures)
             {

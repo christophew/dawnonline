@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using DawnOnline.Simulation.Brains;
 using DawnOnline.Simulation.Collision;
+using DawnOnline.Simulation.Entities;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
 
@@ -69,6 +70,8 @@ namespace DawnOnline.Simulation
                     return CreatePredator();
                 case CreatureType.Rabbit:
                     return CreateRabbit();
+                case CreatureType.Turret:
+                    return CreateTurret();
             }
 
             throw new ArgumentOutOfRangeException();
@@ -170,6 +173,23 @@ namespace DawnOnline.Simulation
             placement.Fixture.UserData = bullet;
 
             return bullet;
+        }
+
+        public static Creature CreateTurret()
+        {
+            var critter = new Creature(15);
+            critter.Brain = new TurretBrain();
+
+            critter.Specy = CreatureType.Turret;
+            critter.FoodSpecy = CreatureType.Avatar;
+
+            //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(100, 150);
+            critter.CharacterSheet.WalkingDistance = 0;
+            critter.CharacterSheet.TurningAngle = 1 * _turnMultiplier;
+            critter.CharacterSheet.MeleeDamage = 0;
+            critter.InitializeSenses_Turret();
+
+            return critter;
         }
     }
 }

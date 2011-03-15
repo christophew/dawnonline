@@ -24,7 +24,10 @@ namespace DawnOnline.Simulation
 
         public float Angle { get { return Fixture.Body.Rotation; } }
 
-        public Fixture Fixture { get; internal set; }
+        public float Velocity { get { return Fixture.Body.LinearVelocity.Length(); } }
+
+
+        internal Fixture Fixture { get; set; }
 
         internal void OffsetPosition(Vector2 position, double angle)
         {

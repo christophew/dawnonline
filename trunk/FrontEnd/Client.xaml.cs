@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using DawnOnline.Simulation;
 using DawnOnline.Simulation.Collision;
+using DawnOnline.Simulation.Entities;
 using Microsoft.Xna.Framework;
 
 namespace FrontEnd
@@ -53,7 +54,7 @@ namespace FrontEnd
 
         private void MoveAll()
         {
-            var creatures = new List<Creature>(_environment.GetCreatures());
+            var creatures = new List<IEntity>(_environment.GetCreatures());
 
             int nrOfPlants = 0;
             int nrOfRabbits = 0;
@@ -119,7 +120,7 @@ namespace FrontEnd
             }
         }
 
-        private void DrawCreature(Creature creature)
+        private void DrawCreature(IEntity creature)
         {
             var placement = creature.Place;
 

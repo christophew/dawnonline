@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using DawnOnline.Simulation.Entities;
 using DawnOnline.Simulation.Tools;
 using FarseerPhysics.Common.PhysicsLogic;
 using FarseerPhysics.Dynamics;

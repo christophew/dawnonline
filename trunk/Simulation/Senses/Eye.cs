@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DawnOnline.Simulation.Collision;
+using DawnOnline.Simulation.Entities;
 using DawnOnline.Simulation.Tools;
 
 namespace DawnOnline.Simulation.Senses

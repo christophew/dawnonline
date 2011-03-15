@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using DawnOnline.Simulation.Collision;
+using DawnOnline.Simulation.Entities;
 using DawnOnline.Simulation.Tools;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
@@ -22,7 +23,7 @@ namespace DawnOnline.Simulation
 
         internal World FarSeerWorld { get; private set; }
 
-        List<Creature> _creatures = new List<Creature>();
+        List<IEntity> _creatures = new List<IEntity>();
         Dictionary<CreatureType, List<Creature>> _creaturesPerSpecy = new Dictionary<CreatureType, List<Creature>>();
         List<Placement> _obstacles = new List<Placement>();
         List<Bullet> _bullets = new List<Bullet>();
@@ -83,7 +84,7 @@ namespace DawnOnline.Simulation
             FarSeerWorld.RemoveBody(creature.Place.Fixture.Body);
         }
 
-        public IList<Creature> GetCreatures()
+        public IList<IEntity> GetCreatures()
         {
             return _creatures;
         }
@@ -144,7 +145,7 @@ namespace DawnOnline.Simulation
         public void Update(double timeDelta)
         {
             // Perform actions
-            var creatures = new List<Creature>(GetCreatures());
+            var creatures = new List<IEntity>(GetCreatures());
             foreach (var current in creatures)
             {
                 if (!current.Alive)
@@ -160,7 +161,8 @@ namespace DawnOnline.Simulation
 
         internal IList<Creature> GetCreaturesInRange(Vector2 position, double radius)
         {
-            return GetCreaturesInRange(position, radius, GetCreatures());
+            var creatures = GetCreatures() as IList<Creature>;
+            return GetCreaturesInRange(position, radius, creatures);
         }
 
         internal IList<Creature> GetCreaturesInRange(Vector2 position, double radius, CreatureType specy)
