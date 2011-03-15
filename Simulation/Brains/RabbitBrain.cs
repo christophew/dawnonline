@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using DawnOnline.Simulation.Entities;
 
 namespace DawnOnline.Simulation.Brains
 {

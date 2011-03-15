@@ -18,17 +18,17 @@ namespace DawnOnline.Simulation.Brains
             }
 
             // Move
-            if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) && MyCreature.SeesACreatureForward(MyCreature.FoodSpecy))
+            if (MyCreature.SeesACreatureForward(MyCreature.FoodSpecy))
             {
                 MyCreature.RunForward();
                 return;
             }
-            if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) && MyCreature.SeesACreatureLeft(MyCreature.FoodSpecy))
+            if (MyCreature.SeesACreatureLeft(MyCreature.FoodSpecy))
             {
                 MyCreature.TurnLeft();
                 return;
             }
-            if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) && MyCreature.SeesACreatureRight(MyCreature.FoodSpecy))
+            if (MyCreature.SeesACreatureRight(MyCreature.FoodSpecy))
             {
                 MyCreature.TurnRight();
                 return;

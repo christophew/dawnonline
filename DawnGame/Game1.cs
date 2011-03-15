@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DawnGame.Cameras;
 using DawnOnline.Simulation;
 using DawnOnline.Simulation.Collision;
+using DawnOnline.Simulation.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -50,6 +51,7 @@ namespace DawnGame
         private Model _creatureModel_Monkey;
         private Model _cubeModel;
         private Model _bulletModel;
+        private Model _gunModel;
 
         Random _randomize = new Random();
 
@@ -131,6 +133,7 @@ namespace DawnGame
             _cubeModel = Content.Load<Model>(@"brickwall");
             //_bulletModel = Content.Load<Model>(@"bullet");
             _bulletModel = Content.Load<Model>(@"firebullet");
+            _gunModel = Content.Load<Model>(@"gun");
             _creatureModel_Avatar = Content.Load<Model>(@"directx");
 
             _wallTexture = Content.Load<Texture2D>(@"Textures\brickThumb");
@@ -350,7 +353,7 @@ namespace DawnGame
             {
                 string stats = string.Format("Damage: {0}%; Velocity: {1:000.0}", 
                     _dawnWorld.Avatar.CharacterSheet.Damage.PercentFilled,
-                    _dawnWorld.Avatar.Place.Fixture.Body.LinearVelocity.Length());
+                    _dawnWorld.Avatar.Place.Velocity);
                 spriteBatch.DrawString(font, stats, new Vector2(100f, 200f), Color.Green);
             }
 
@@ -473,19 +476,37 @@ namespace DawnGame
             return shape;
         }
 
-        private void DrawCreature(Creature creature)
+        private void DrawCreature(IEntity creature)
         {
             GameObject gameCreature = new GameObject();
 
             var pos = creature.Place.Position;
             var angle = creature.Place.Angle;
 
-
-            gameCreature.model = creature.Equals(_dawnWorld.Avatar) ? _creatureModel_Avatar : _creatureModel;
-            gameCreature.position = new Vector3((float)(pos.X), 0f, (float)(pos.Y));
             // MathHelper.PiOver2 correction => geen idee waarom mijn meshes dit nodig hebben, maar ja...
             gameCreature.rotation = new Vector3(MathHelper.PiOver2, -(float)angle, 0);
+            gameCreature.position = new Vector3((float)(pos.X), 0f, (float)(pos.Y));
             gameCreature.scale = 10f;
+
+            switch (creature.Specy)
+            {
+                case CreatureType.Avatar:
+                    gameCreature.model = _creatureModel_Avatar;
+                    break;
+                case CreatureType.Predator:
+                    gameCreature.model = _creatureModel;
+                    break;
+                case CreatureType.Turret:
+                    gameCreature.model = _gunModel;
+                    // MathHelper.PiOver2 correction => geen idee waarom mijn meshes dit nodig hebben, maar ja...
+                    gameCreature.rotation = new Vector3(MathHelper.PiOver2, -angle, -MathHelper.PiOver2);
+                    gameCreature.scale = 7f;
+                   break;
+                default:
+                    gameCreature.model = _creatureModel;
+                    break;
+            }
+
 
             gameCreature.DrawObject(_camera.View, _camera.Projection);
 

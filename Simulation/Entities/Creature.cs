@@ -10,7 +10,7 @@ using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
 using Microsoft.Xna.Framework;
 
-namespace DawnOnline.Simulation
+namespace DawnOnline.Simulation.Entities
 {
     public enum CreatureType
     {
@@ -18,10 +18,11 @@ namespace DawnOnline.Simulation
         Avatar,
         Predator,
         Rabbit,
-        Plant
+        Plant,
+        Turret
     }
 
-    public class Creature
+    public class Creature : IEntity
     {
         private Placement _place = new Placement();
         private ActionQueue _actionQueue = new ActionQueue();
@@ -99,6 +100,28 @@ namespace DawnOnline.Simulation
             _rightEye = new Eye(this)
             {
                 Angle = MathTools.ConvertToRadials(60),
+                VisionAngle = MathTools.ConvertToRadials(30),
+                VisionDistance = _characterSheet.VisionDistance
+            };
+        }
+
+        internal void InitializeSenses_Turret()
+        {
+            _forwardEye = new Eye(this)
+            {
+                Angle = 0.0,
+                VisionAngle = MathTools.ConvertToRadials(10),
+                VisionDistance = _characterSheet.VisionDistance
+            };
+            _leftEye = new Eye(this)
+            {
+                Angle = -MathTools.ConvertToRadials(30),
+                VisionAngle = MathTools.ConvertToRadials(30),
+                VisionDistance = _characterSheet.VisionDistance
+            };
+            _rightEye = new Eye(this)
+            {
+                Angle = MathTools.ConvertToRadials(30),
                 VisionAngle = MathTools.ConvertToRadials(30),
                 VisionDistance = _characterSheet.VisionDistance
             };
