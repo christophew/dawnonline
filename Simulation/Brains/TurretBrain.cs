@@ -1,11 +1,14 @@
-﻿using System.Diagnostics;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
 using DawnOnline.Simulation.Senses;
 using DawnOnline.Simulation.Tools;
 
 namespace DawnOnline.Simulation.Brains
 {
-    internal class PredatorBrain : AbstractBrain
+    class TurretBrain : AbstractBrain
     {
         private Eye _forwardEye;
         private Eye _leftEye;
@@ -18,19 +21,12 @@ namespace DawnOnline.Simulation.Brains
             Debug.Assert(_initialized);
 
             // Find something to attack
-            var creaturesToAttack = MyCreature.FindCreatureToAttack(MyCreature.FoodSpecy);
-            if (creaturesToAttack != null)
+            if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) && _forwardEye.SeesACreature(MyCreature.FoodSpecy))
             {
-                MyCreature.Attack(creaturesToAttack);
-                return;
+                MyCreature.Fire();
             }
 
-            // Move
-            if (_forwardEye.SeesACreature(MyCreature.FoodSpecy))
-            {
-                MyCreature.RunForward();
-                return;
-            }
+            // Turn
             if (_leftEye.SeesACreature(MyCreature.FoodSpecy))
             {
                 MyCreature.TurnLeft();
@@ -42,16 +38,8 @@ namespace DawnOnline.Simulation.Brains
                 return;
             }
 
-            if (MyCreature.TryReproduce())
-                return;
-
-            if (MyCreature.IsTired)
-            {
-                MyCreature.Rest();
-                return;
-            }
-
-            DoRandomAction();
+            // Fallback
+            //MyCreature.TurnLeft();
         }
 
         internal override void InitializeSenses()
@@ -59,23 +47,24 @@ namespace DawnOnline.Simulation.Brains
             _forwardEye = new Eye(MyCreature)
             {
                 Angle = 0.0,
-                VisionAngle = MathTools.ConvertToRadials(30),
+                VisionAngle = MathTools.ConvertToRadials(10),
                 VisionDistance = MyCreature.CharacterSheet.VisionDistance
             };
             _leftEye = new Eye(MyCreature)
             {
-                Angle = -MathTools.ConvertToRadials(60),
+                Angle = -MathTools.ConvertToRadials(30),
                 VisionAngle = MathTools.ConvertToRadials(30),
                 VisionDistance = MyCreature.CharacterSheet.VisionDistance
             };
             _rightEye = new Eye(MyCreature)
             {
-                Angle = MathTools.ConvertToRadials(60),
+                Angle = MathTools.ConvertToRadials(30),
                 VisionAngle = MathTools.ConvertToRadials(30),
                 VisionDistance = MyCreature.CharacterSheet.VisionDistance
             };
 
             _initialized = true;
         }
+
     }
 }

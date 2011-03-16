@@ -5,7 +5,7 @@ using DawnOnline.Simulation.Tools;
 
 namespace DawnOnline.Simulation.Brains
 {
-    internal class PredatorBrain : AbstractBrain
+    internal class PredatorBrain2 : AbstractBrain
     {
         private Eye _forwardEye;
         private Eye _leftEye;
@@ -26,17 +26,17 @@ namespace DawnOnline.Simulation.Brains
             }
 
             // Move
-            if (_forwardEye.SeesACreature(MyCreature.FoodSpecy))
+            if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) && _forwardEye.SeesACreature(MyCreature.FoodSpecy))
             {
                 MyCreature.RunForward();
                 return;
             }
-            if (_leftEye.SeesACreature(MyCreature.FoodSpecy))
+            if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) && _leftEye.SeesACreature(MyCreature.FoodSpecy))
             {
                 MyCreature.TurnLeft();
                 return;
             }
-            if (_rightEye.SeesACreature(MyCreature.FoodSpecy))
+            if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) && _rightEye.SeesACreature(MyCreature.FoodSpecy))
             {
                 MyCreature.TurnRight();
                 return;
