@@ -52,14 +52,14 @@ namespace DawnOnline.Simulation.Brains
             };
             _leftEye = new Eye(MyCreature)
             {
-                Angle = -MathTools.ConvertToRadials(30),
-                VisionAngle = MathTools.ConvertToRadials(30),
+                Angle = -MathTools.ConvertToRadials(90),
+                VisionAngle = MathTools.ConvertToRadials(85),
                 VisionDistance = MyCreature.CharacterSheet.VisionDistance
             };
             _rightEye = new Eye(MyCreature)
             {
-                Angle = MathTools.ConvertToRadials(30),
-                VisionAngle = MathTools.ConvertToRadials(30),
+                Angle = MathTools.ConvertToRadials(90),
+                VisionAngle = MathTools.ConvertToRadials(85),
                 VisionDistance = MyCreature.CharacterSheet.VisionDistance
             };
 

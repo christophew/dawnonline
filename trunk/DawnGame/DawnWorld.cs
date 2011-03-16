@@ -41,7 +41,7 @@ namespace DawnGame
             // Randow obstacles
             int maxHeight = 200;
             int maxWide = 200;
-            for (int i = 0; i < 100; )
+            for (int i = 0; i < 600; )
             {
                 int height = _randomize.Next(maxHeight);
                 int wide = _randomize.Next(maxWide);
@@ -64,7 +64,7 @@ namespace DawnGame
             // Rocks
             int height = 48;
             int wide = 48;
-            for (int i = 0; i < 750; )
+            for (int i = 0; i < 600; )
             {
                 var position = new Vector2(_randomize.Next((int)MaxX / 50) * 50, _randomize.Next((int)MaxY / 50) * 50);
                 var box = SimulationFactory.CreateObstacleBox(wide, height);
