@@ -90,7 +90,7 @@ namespace DawnOnline.Simulation
             critter.CharacterSheet.TurningAngle = 1 * _turnMultiplier;
             critter.CharacterSheet.ReproductionIncreaseAverage = 2;
             critter.CharacterSheet.MeleeDamage = 0;
-            critter.InitializeSenses();
+            critter.Brain.InitializeSenses();
 
             return critter;
         }
@@ -108,7 +108,7 @@ namespace DawnOnline.Simulation
             critter.CharacterSheet.TurningAngle = 1.5 * _turnMultiplier;
             critter.CharacterSheet.FoodValue = 500;
             critter.CharacterSheet.ReproductionIncreaseAverage = 7;
-            critter.InitializeSenses();
+            critter.Brain.InitializeSenses();
 
             return critter;
         }
@@ -126,7 +126,7 @@ namespace DawnOnline.Simulation
             critter.CharacterSheet.TurningAngle = 0;
             critter.CharacterSheet.FoodValue = 200;
             critter.CharacterSheet.ReproductionIncreaseAverage = 7;
-            critter.InitializeSenses();
+            critter.Brain.InitializeSenses();
 
             return critter;
         }
@@ -140,8 +140,6 @@ namespace DawnOnline.Simulation
             avatar.CharacterSheet.TurningAngle = 1 * _turnMultiplier;
             //avatar.CharacterSheet.MeleeDamage = 100;
             avatar.CharacterSheet.MeleeDamage = 50;
-
-            avatar.InitializeSenses();
 
             return avatar;
         }
@@ -169,7 +167,7 @@ namespace DawnOnline.Simulation
 
             bullet.Placement = placement;
             bullet.Damage = damage;
-            bullet.Explodes = true;
+            //bullet.Explodes = true;
             placement.Fixture.UserData = bullet;
 
             return bullet;
@@ -187,7 +185,7 @@ namespace DawnOnline.Simulation
             critter.CharacterSheet.WalkingDistance = 0;
             critter.CharacterSheet.TurningAngle = 1 * _turnMultiplier;
             critter.CharacterSheet.MeleeDamage = 0;
-            critter.InitializeSenses_Turret();
+            critter.Brain.InitializeSenses();
 
             return critter;
         }

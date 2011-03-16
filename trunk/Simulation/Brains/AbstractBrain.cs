@@ -12,6 +12,9 @@ namespace DawnOnline.Simulation.Brains
 
         internal abstract void DoSomething();
 
+        internal virtual void InitializeSenses()
+        {}
+
         protected void DoRandomAction()
         {
             int randomAction = Globals.Radomizer.Next(5);

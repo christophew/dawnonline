@@ -58,14 +58,6 @@ namespace DawnOnline.Simulation.Entities
             }
         }
 
-        private Eye _forwardEye;
-        private Eye _leftEye;
-        private Eye _rightEye;
-
-        internal IList<IEye> Eyes
-        {
-            get { return new List<IEye> {_forwardEye, _leftEye, _rightEye}; }
-        }
 
         private bool _alive = true;
 
@@ -81,50 +73,6 @@ namespace DawnOnline.Simulation.Entities
             _place.Fixture.Body.AngularDamping = 1f;
 
             _place.Fixture.UserData = this;
-        }
-
-        internal void InitializeSenses()
-        {
-            _forwardEye = new Eye(this)
-            {
-                Angle = 0.0,
-                VisionAngle = MathTools.ConvertToRadials(30),
-                VisionDistance = _characterSheet.VisionDistance
-            };
-            _leftEye = new Eye(this)
-            {
-                Angle = -MathTools.ConvertToRadials(60),
-                VisionAngle = MathTools.ConvertToRadials(30),
-                VisionDistance = _characterSheet.VisionDistance
-            };
-            _rightEye = new Eye(this)
-            {
-                Angle = MathTools.ConvertToRadials(60),
-                VisionAngle = MathTools.ConvertToRadials(30),
-                VisionDistance = _characterSheet.VisionDistance
-            };
-        }
-
-        internal void InitializeSenses_Turret()
-        {
-            _forwardEye = new Eye(this)
-            {
-                Angle = 0.0,
-                VisionAngle = MathTools.ConvertToRadials(10),
-                VisionDistance = _characterSheet.VisionDistance
-            };
-            _leftEye = new Eye(this)
-            {
-                Angle = -MathTools.ConvertToRadials(30),
-                VisionAngle = MathTools.ConvertToRadials(30),
-                VisionDistance = _characterSheet.VisionDistance
-            };
-            _rightEye = new Eye(this)
-            {
-                Angle = MathTools.ConvertToRadials(30),
-                VisionAngle = MathTools.ConvertToRadials(30),
-                VisionDistance = _characterSheet.VisionDistance
-            };
         }
 
         public bool IsTired
@@ -202,7 +150,7 @@ namespace DawnOnline.Simulation.Entities
                 // TODO: move to Bullet
                 {
                     MyEnvironment.AddBullet(bullet, _place.Fixture.Body.Position + bulletAngleVector*30);
-                    bullet.Placement.Fixture.Body.ApplyLinearImpulse(bulletAngleVector*200);
+                    bullet.Placement.Fixture.Body.ApplyLinearImpulse(bulletAngleVector*300);
                     //bullet.Fixture.Body.ApplyForce(bulletAngleVector * 200);
                 }
                 _actionQueue.HasFired = true;
@@ -381,36 +329,6 @@ namespace DawnOnline.Simulation.Entities
         {
             var rangeMinusDistance = Math.Max(Math.Abs(bullet.Range - distance), 0);
             this.MyActionQueue.Damage += bullet.Damage * rangeMinusDistance * rangeMinusDistance / bullet.Range / bullet.Range;
-        }
-
-        public bool SeesACreatureForward()
-        {
-            return _forwardEye.SeesACreature();
-        }
-
-        public bool SeesACreatureLeft()
-        {
-            return _leftEye.SeesACreature();
-        }
-
-        public bool SeesACreatureRight()
-        {
-            return _rightEye.SeesACreature();
-        }
-
-        public bool SeesACreatureForward(CreatureType specy)
-        {
-            return _forwardEye.SeesACreature(specy);
-        }
-
-        public bool SeesACreatureLeft(CreatureType specy)
-        {
-            return _leftEye.SeesACreature(specy);
-        }
-
-        public bool SeesACreatureRight(CreatureType specy)
-        {
-            return _rightEye.SeesACreature(specy);
         }
 
         public bool TryReproduce()

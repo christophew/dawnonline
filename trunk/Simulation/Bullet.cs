@@ -74,7 +74,7 @@ namespace DawnOnline.Simulation
             if (!bullet.Explodes)
             {
                 // Ricochette when velocity after collision is high enough
-                if (fixtureA.Body.LinearVelocity.Length() > 100)
+                if (fixtureA.Body.LinearVelocity.Length() > 150)
                     return;
             }
 
