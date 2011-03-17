@@ -65,7 +65,7 @@ namespace DawnGame
             int wide = 48;
 
             // walls
-            for (int i = 0; i < 500; )
+            for (int i = 0; i < 600; )
             {
                 var grid = 50;
                 var maxLength = 5;
@@ -90,7 +90,7 @@ namespace DawnGame
             }
 
             // Boxes
-            for (int i = 0; i < 200; )
+            for (int i = 0; i < 150; )
             {
                 var position = new Vector2(_randomize.Next((int)MaxX / 50) * 50, _randomize.Next((int)MaxY / 50) * 50);
                 var box = SimulationFactory.CreateObstacleBox(wide, height);

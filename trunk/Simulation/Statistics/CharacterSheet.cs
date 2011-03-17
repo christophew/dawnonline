@@ -15,7 +15,9 @@ namespace DawnOnline.Simulation.Statistics
         public double FatigueRecovery { get; internal set; }
         public double MeleeRange { get; internal set; }
         public double MeleeDamage { get; internal set; }
-        public double MeleeCoolDown { get; internal set; }
+        public double CoolDown { get; internal set; }
+        public double RangeDamage { get; internal set; }
+        public bool FiresRockets { get; internal set; }
 
         internal int VisionAccuracyPercent { get; set; }
 
@@ -51,7 +53,7 @@ namespace DawnOnline.Simulation.Statistics
             ReproductionIncreaseAverage = 5;
 
             FoodValue = 10;
-            MeleeCoolDown = 0.2; // Seconds
+            CoolDown = 0.2; // Seconds
         }
 
         #region ICloneable Members

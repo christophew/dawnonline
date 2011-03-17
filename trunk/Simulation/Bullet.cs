@@ -25,6 +25,12 @@ namespace DawnOnline.Simulation
         public bool Destroyed { get; internal set; }
 
 
+        internal void Launch(Vector2 direction)
+        {
+            Environment.GetWorld().AddBullet(this, Placement.Fixture.Body.Position + direction * 30);
+            Placement.Fixture.Body.ApplyLinearImpulse(direction * 300);
+        }
+
         public static bool OnCollision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
         {
             var bullet = fixtureA.UserData as Bullet;
