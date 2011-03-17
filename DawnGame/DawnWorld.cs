@@ -33,10 +33,10 @@ namespace DawnGame
         private void BuildWorld()
         {
             // World boundaries
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, -20), new Vector2 { X = MaxX / 2.0f, Y = -11 }); // Top
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, 20), new Vector2 { X = MaxX / 2.0f, Y = MaxY + 11 }); // Bottom
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(-20, MaxY), new Vector2 { X = -11, Y = MaxY / 2.0f }); // Left
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(20, MaxY), new Vector2 { X = MaxX + 11, Y = MaxY / 2.0f }); // Right
+            _environment.AddObstacle(SimulationFactory.CreateWall(MaxX, -20), new Vector2 { X = MaxX / 2.0f, Y = -11 }); // Top
+            _environment.AddObstacle(SimulationFactory.CreateWall(MaxX, 20), new Vector2 { X = MaxX / 2.0f, Y = MaxY + 11 }); // Bottom
+            _environment.AddObstacle(SimulationFactory.CreateWall(-20, MaxY), new Vector2 { X = -11, Y = MaxY / 2.0f }); // Left
+            _environment.AddObstacle(SimulationFactory.CreateWall(20, MaxY), new Vector2 { X = MaxX + 11, Y = MaxY / 2.0f }); // Right
 
             // Randow obstacles
             int maxHeight = 200;
@@ -56,15 +56,26 @@ namespace DawnGame
         private void BuildWorld2()
         {
             // World boundaries
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, -20), new Vector2 { X = MaxX / 2.0f, Y = -11 }); // Top
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(MaxX, 20), new Vector2 { X = MaxX / 2.0f, Y = MaxY + 11 }); // Bottom
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(-20, MaxY), new Vector2 { X = -11, Y = MaxY / 2.0f }); // Left
-            _environment.AddObstacle(SimulationFactory.CreateObstacleBox(20, MaxY), new Vector2 { X = MaxX + 11, Y = MaxY / 2.0f }); // Right
+            _environment.AddObstacle(SimulationFactory.CreateWall(MaxX, -20), new Vector2 { X = MaxX / 2.0f, Y = -11 }); // Top
+            _environment.AddObstacle(SimulationFactory.CreateWall(MaxX, 20), new Vector2 { X = MaxX / 2.0f, Y = MaxY + 11 }); // Bottom
+            _environment.AddObstacle(SimulationFactory.CreateWall(-20, MaxY), new Vector2 { X = -11, Y = MaxY / 2.0f }); // Left
+            _environment.AddObstacle(SimulationFactory.CreateWall(20, MaxY), new Vector2 { X = MaxX + 11, Y = MaxY / 2.0f }); // Right
 
-            // Rocks
             int height = 48;
             int wide = 48;
-            for (int i = 0; i < 0; )
+
+            // walls
+            for (int i = 0; i < 750; )
+            {
+                var position = new Vector2(_randomize.Next((int)MaxX / 100) * 100, _randomize.Next((int)MaxY / 100) * 100);
+                if (_environment.AddObstacle(SimulationFactory.CreateWall(wide, height), position + new Vector2(0, 0))) i++;
+                if (_environment.AddObstacle(SimulationFactory.CreateWall(wide, height), position + new Vector2(0, 50))) i++;
+                if (_environment.AddObstacle(SimulationFactory.CreateWall(wide, height), position + new Vector2(50, 0))) i++;
+                if (_environment.AddObstacle(SimulationFactory.CreateWall(wide, height), position + new Vector2(50, 50))) i++;
+            }
+
+            // Boxes
+            for (int i = 0; i < 200; )
             {
                 var position = new Vector2(_randomize.Next((int)MaxX / 50) * 50, _randomize.Next((int)MaxY / 50) * 50);
                 var box = SimulationFactory.CreateObstacleBox(wide, height);

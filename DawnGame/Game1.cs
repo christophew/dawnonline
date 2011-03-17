@@ -50,6 +50,7 @@ namespace DawnGame
         private Model _creatureModel_Avatar;
         private Model _creatureModel_Monkey;
         private Model _cubeModel;
+        private Model _wallModel;
         private Model _bulletModel;
         private Model _gunModel;
 
@@ -130,7 +131,8 @@ namespace DawnGame
 
             font = Content.Load<SpriteFont>(@"fonts\MyFont");
             _creatureModel = Content.Load<Model>(@"shark");
-            _cubeModel = Content.Load<Model>(@"brickwall");
+            _cubeModel = Content.Load<Model>(@"box");
+            _wallModel = Content.Load<Model>(@"brickwall");
             //_bulletModel = Content.Load<Model>(@"bullet");
             _bulletModel = Content.Load<Model>(@"firebullet");
             _gunModel = Content.Load<Model>(@"gun");
@@ -409,7 +411,7 @@ namespace DawnGame
             var obstacles = _dawnWorld.Environment.GetObstacles();
             foreach (var current in obstacles)
             {
-                DrawCube(current.Place);
+                DrawCube(current);
             }
         }
 
@@ -519,9 +521,12 @@ namespace DawnGame
             DrawCircle(attackMiddle, creature.CharacterSheet.MeleeRange, color);
         }
 
-        private void DrawCube(Placement placement)
+        private void DrawCube(IEntity obstacle)
         {
-            DrawGameObject(placement, _cubeModel, 25f);
+            if (obstacle.Specy == EntityType.Box)
+                DrawGameObject(obstacle.Place, _cubeModel, 25f);
+            if (obstacle.Specy == EntityType.Wall)
+                DrawGameObject(obstacle.Place, _wallModel, 25f);
         }
 
         private void DrawBullet(Bullet bullet)

@@ -40,10 +40,10 @@ namespace DawnOnline.Simulation
             double radius = Math.Max(deltaX, deltaY);
 
             Polygon box = new Polygon();
-            float halveDeltaX = (float) (deltaX/2.0);
-            float halveDeltaY = (float) (deltaY/2.0);
+            float halveDeltaX = (float)(deltaX / 2.0);
+            float halveDeltaY = (float)(deltaY / 2.0);
 
-            box.Points.Add(new Vector(- halveDeltaX, - halveDeltaY));
+            box.Points.Add(new Vector(-halveDeltaX, -halveDeltaY));
             box.Points.Add(new Vector(halveDeltaX, -halveDeltaY));
             box.Points.Add(new Vector(halveDeltaX, halveDeltaY));
             box.Points.Add(new Vector(-halveDeltaX, halveDeltaY));
@@ -57,7 +57,33 @@ namespace DawnOnline.Simulation
             placement.Fixture.Body.AngularDamping = 1f;
             placement.Fixture.Body.Mass = 1000f;
 
-            var obstacle = new Obstacle {Place = placement, Specy = EntityType.Box};
+            var obstacle = new Obstacle { Place = placement, Specy = EntityType.Box };
+            return obstacle;
+        }
+
+        public static IEntity CreateWall(double deltaX, double deltaY)
+        {
+            double radius = Math.Max(deltaX, deltaY);
+
+            Polygon box = new Polygon();
+            float halveDeltaX = (float)(deltaX / 2.0);
+            float halveDeltaY = (float)(deltaY / 2.0);
+
+            box.Points.Add(new Vector(-halveDeltaX, -halveDeltaY));
+            box.Points.Add(new Vector(halveDeltaX, -halveDeltaY));
+            box.Points.Add(new Vector(halveDeltaX, halveDeltaY));
+            box.Points.Add(new Vector(-halveDeltaX, halveDeltaY));
+            box.BuildEdges();
+
+            var form = new Form { BoundingCircleRadius = radius, Shape = box };
+            var placement = new Placement { Form = form };
+            placement.Fixture = FixtureFactory.CreateRectangle(Environment.GetWorld().FarSeerWorld, Math.Max(1, (float)deltaX), Math.Max(1, (float)deltaY), 1f);
+            placement.Fixture.Body.BodyType = BodyType.Static;
+            placement.Fixture.Body.LinearDamping = 1f;
+            placement.Fixture.Body.AngularDamping = 1f;
+            placement.Fixture.Body.Mass = 1000f;
+
+            var obstacle = new Obstacle { Place = placement, Specy = EntityType.Wall };
             return obstacle;
         }
 
@@ -168,7 +194,7 @@ namespace DawnOnline.Simulation
 
             bullet.Placement = placement;
             bullet.Damage = damage;
-            //bullet.Explodes = true;
+            bullet.Explodes = true;
             placement.Fixture.UserData = bullet;
 
             return bullet;

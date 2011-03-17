@@ -104,10 +104,12 @@ namespace DawnOnline.Simulation
             obstacle.Place.OffsetPosition(origin, 0.0);
 
 
-            // Don't check on intersections => causes ghost boxes
-            // TODO: return false should also destroy the fixture in the FarseerWorld
-            //if (IntersectsWithObstacles(obstacle))
-            //    return false;
+            // TODO: Collisioncheck using Farseer
+            if (IntersectsWithObstacles(obstacle.Place))
+            {
+                FarSeerWorld.RemoveBody(obstacle.Place.Fixture.Body);
+                return false;
+            }
 
             _obstacles.Add(obstacle);
 
