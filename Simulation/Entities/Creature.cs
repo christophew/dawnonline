@@ -136,13 +136,15 @@ namespace DawnOnline.Simulation.Entities
             if (_actionQueue.Fire)
             {
                 var bulletAngleVector = new Vector2((float)Math.Cos(_place.Angle), (float)Math.Sin(_place.Angle));
-                var bullet = SimulationFactory.CreateBullet(CharacterSheet.MeleeDamage);
-                // TODO: move to Bullet
+                var bullet = CharacterSheet.FiresRockets ? 
+                    SimulationFactory.CreateRocket(CharacterSheet.RangeDamage) : 
+                    SimulationFactory.CreateBullet(CharacterSheet.RangeDamage);
+                //bullet.Launch(bulletAngleVector);
                 {
-                    MyEnvironment.AddBullet(bullet, _place.Fixture.Body.Position + bulletAngleVector*30);
-                    bullet.Placement.Fixture.Body.ApplyLinearImpulse(bulletAngleVector*300);
-                    //bullet.Fixture.Body.ApplyForce(bulletAngleVector * 200);
+                    MyEnvironment.AddBullet(bullet, _place.Fixture.Body.Position + bulletAngleVector * 30);
+                    bullet.Placement.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 300);
                 }
+
                 _actionQueue.HasFired = true;
                 _actionQueue.Fire = false;
             }
@@ -284,7 +286,7 @@ namespace DawnOnline.Simulation.Entities
         {
             if (!Alive)
                 return false;
-            return ((DateTime.Now - _actionQueue.LastAttackTime).TotalSeconds > CharacterSheet.MeleeCoolDown);
+            return ((DateTime.Now - _actionQueue.LastAttackTime).TotalSeconds > CharacterSheet.CoolDown);
         }
 
         public void Attack()

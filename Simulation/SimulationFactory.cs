@@ -116,7 +116,8 @@ namespace DawnOnline.Simulation
             critter.CharacterSheet.WalkingDistance = 20 * _velocityMultiplier;
             critter.CharacterSheet.TurningAngle = 1 * _turnMultiplier;
             critter.CharacterSheet.ReproductionIncreaseAverage = 2;
-            critter.CharacterSheet.MeleeDamage = 0;
+            critter.CharacterSheet.MeleeDamage = 1;
+            critter.CharacterSheet.RangeDamage = 0;
             critter.Brain.InitializeSenses();
 
             return critter;
@@ -165,7 +166,7 @@ namespace DawnOnline.Simulation
             avatar.Specy = EntityType.Avatar;
             avatar.CharacterSheet.WalkingDistance = 30 * _velocityMultiplier;
             avatar.CharacterSheet.TurningAngle = 1 * _turnMultiplier;
-            //avatar.CharacterSheet.MeleeDamage = 100;
+            avatar.CharacterSheet.RangeDamage = 50;
             avatar.CharacterSheet.MeleeDamage = 50;
 
             return avatar;
@@ -185,8 +186,33 @@ namespace DawnOnline.Simulation
             var placement = new Placement { Form = form };
             placement.Fixture = FixtureFactory.CreateCircle(Environment.GetWorld().FarSeerWorld, 3, 1);
             placement.Fixture.Body.BodyType = BodyType.Dynamic;
-            //placement.Fixture.Body.LinearDamping = 1f;
-            //placement.Fixture.Body.AngularDamping = 1f;
+            placement.Fixture.Body.Mass = 1f;
+            placement.Fixture.Body.IsBullet = true;
+            placement.Fixture.OnCollision += Bullet.OnCollision;
+            placement.Fixture.AfterCollision += Bullet.AfterCollision;
+
+            bullet.Placement = placement;
+            bullet.Damage = damage;
+            bullet.Explodes = false;
+            placement.Fixture.UserData = bullet;
+
+            return bullet;
+        }
+
+        internal static Bullet CreateRocket(double damage)
+        {
+            var bullet = new Bullet();
+
+            float radius = 1;
+
+            Polygon box = new Polygon();
+            box.Points.Add(new Vector(0, 0));
+            box.BuildEdges();
+
+            var form = new Form { BoundingCircleRadius = radius, Shape = box };
+            var placement = new Placement { Form = form };
+            placement.Fixture = FixtureFactory.CreateCircle(Environment.GetWorld().FarSeerWorld, 3, 1);
+            placement.Fixture.Body.BodyType = BodyType.Dynamic;
             placement.Fixture.Body.Mass = 1f;
             placement.Fixture.Body.IsBullet = true;
             placement.Fixture.OnCollision += Bullet.OnCollision;
@@ -211,6 +237,8 @@ namespace DawnOnline.Simulation
             //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(100, 150);
             critter.CharacterSheet.WalkingDistance = 0;
             critter.CharacterSheet.TurningAngle = 1 * _turnMultiplier;
+            critter.CharacterSheet.CoolDown = 0.3;
+            critter.CharacterSheet.RangeDamage = 1;
             critter.CharacterSheet.MeleeDamage = 0;
             critter.Brain.InitializeSenses();
 
