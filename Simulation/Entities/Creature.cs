@@ -12,25 +12,15 @@ using Microsoft.Xna.Framework;
 
 namespace DawnOnline.Simulation.Entities
 {
-    public enum CreatureType
-    {
-        Unknown,
-        Avatar,
-        Predator,
-        Rabbit,
-        Plant,
-        Turret
-    }
-
-    public class Creature : IEntity
+    internal class Creature : IAvatar
     {
         private Placement _place = new Placement();
         private ActionQueue _actionQueue = new ActionQueue();
         private CharacterSheet _characterSheet = new CharacterSheet();
         private AbstractBrain _brain;
 
-        public CreatureType Specy { get; set; }
-        public CreatureType FoodSpecy { get; set; }
+        public EntityType Specy { get; set; }
+        public EntityType FoodSpecy { get; set; }
         //public int Age { get; private set; }
 
         public Placement Place { get { return _place; } }
@@ -211,10 +201,10 @@ namespace DawnOnline.Simulation.Entities
             foreach (var obstacle in MyEnvironment.GetObstacles())
             {
                 // Bounding circle optimization
-                if (!MathTools.CirclesIntersect(Place.Position, Place.Form.BoundingCircleRadius, obstacle.Position, obstacle.Form.BoundingCircleRadius))
+                if (!MathTools.CirclesIntersect(Place.Position, Place.Form.BoundingCircleRadius, obstacle.Place.Position, obstacle.Place.Form.BoundingCircleRadius))
                     continue;
 
-                Polygon obstaclePolygon = obstacle.Form.Shape as Polygon;
+                Polygon obstaclePolygon = obstacle.Place.Form.Shape as Polygon;
 
                 PolygonCollisionResult collitionResult = CollisionDetection.PolygonCollision(Place.Form.Shape as Polygon, obstaclePolygon, velocity);
 
@@ -271,13 +261,13 @@ namespace DawnOnline.Simulation.Entities
             }
         }
 
-        internal Creature FindCreatureToAttack(CreatureType ofType)
+        internal Creature FindCreatureToAttack(EntityType ofType)
         {
             var attackMiddle = new Vector2(
                 (float)(Place.Position.X + Math.Cos(Place.Angle) * CharacterSheet.MeleeRange),
                 (float)(Place.Position.Y + Math.Sin(Place.Angle) * CharacterSheet.MeleeRange));
 
-            var creaturesToAttack = ofType == CreatureType.Unknown ?  
+            var creaturesToAttack = ofType == EntityType.Unknown ?  
                 MyEnvironment.GetCreaturesInRange(attackMiddle, CharacterSheet.MeleeRange) : 
                 MyEnvironment.GetCreaturesInRange(attackMiddle, CharacterSheet.MeleeRange, ofType);
 
@@ -302,7 +292,7 @@ namespace DawnOnline.Simulation.Entities
             if (!CanAttack())
                 return;
 
-            var creatureToAttack = FindCreatureToAttack(CreatureType.Unknown);
+            var creatureToAttack = FindCreatureToAttack(EntityType.Unknown);
             if (creatureToAttack == null)
                 return;
 
@@ -338,7 +328,7 @@ namespace DawnOnline.Simulation.Entities
                 return false;
 
 
-            Creature child = SimulationFactory.CreateCreature(Specy);
+            Creature child = SimulationFactory.CreateCreature(Specy) as Creature;
 
             MyEnvironment.AddCreature(
                 child,

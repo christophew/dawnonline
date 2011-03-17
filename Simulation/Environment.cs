@@ -23,9 +23,9 @@ namespace DawnOnline.Simulation
 
         internal World FarSeerWorld { get; private set; }
 
-        List<IEntity> _creatures = new List<IEntity>();
-        Dictionary<CreatureType, List<Creature>> _creaturesPerSpecy = new Dictionary<CreatureType, List<Creature>>();
-        List<Placement> _obstacles = new List<Placement>();
+        List<ICreature> _creatures = new List<ICreature>();
+        Dictionary<EntityType, List<ICreature>> _creaturesPerSpecy = new Dictionary<EntityType, List<ICreature>>();
+        List<IEntity> _obstacles = new List<IEntity>();
         List<Bullet> _bullets = new List<Bullet>();
 
 
@@ -34,7 +34,7 @@ namespace DawnOnline.Simulation
             FarSeerWorld = new World(Vector2.Zero);
         }
 
-        public void AddCreature(Creature creature, Vector2 origin, double angle)
+        public void AddCreature(ICreature creature, Vector2 origin, double angle)
         {
             var myCreature = creature as Creature;
             Debug.Assert(myCreature != null);
@@ -48,10 +48,10 @@ namespace DawnOnline.Simulation
 
                 if (!_creaturesPerSpecy.ContainsKey(myCreature.Specy))
                 {
-                    _creaturesPerSpecy.Add(myCreature.Specy, new List<Creature>());
+                    _creaturesPerSpecy.Add(myCreature.Specy, new List<ICreature>());
                 }
 
-                _creaturesPerSpecy[myCreature.Specy].Add(creature);
+                _creaturesPerSpecy[myCreature.Specy].Add(myCreature);
             }
         }
 
@@ -59,7 +59,7 @@ namespace DawnOnline.Simulation
         {
             foreach (var current in _obstacles)
             {
-                Polygon obstaclePolygon = current.Form.Shape as Polygon;
+                Polygon obstaclePolygon = current.Place.Form.Shape as Polygon;
                 PolygonCollisionResult collitionResult = CollisionDetection.PolygonCollision(place.Form.Shape as Polygon,
                                                                                              obstaclePolygon,
                                                                                              new Vector());
@@ -73,7 +73,7 @@ namespace DawnOnline.Simulation
             return false;
         }
 
-        public void KillCreature(Creature creature)
+        internal void KillCreature(Creature creature)
         {
             Debug.Assert(creature != null);
 
@@ -84,24 +84,24 @@ namespace DawnOnline.Simulation
             FarSeerWorld.RemoveBody(creature.Place.Fixture.Body);
         }
 
-        public IList<IEntity> GetCreatures()
+        public IList<ICreature> GetCreatures()
         {
             return _creatures;
         }
 
-        public IList<Creature> GetCreatures(CreatureType specy)
+        public IList<ICreature> GetCreatures(EntityType specy)
         {
             if (!_creaturesPerSpecy.ContainsKey(specy))
             {
-                _creaturesPerSpecy.Add(specy, new List<Creature>());
+                _creaturesPerSpecy.Add(specy, new List<ICreature>());
             }
 
             return _creaturesPerSpecy[specy];
         }
 
-        public bool AddObstacle(Placement obstacle, Vector2 origin)
+        public bool AddObstacle(IEntity obstacle, Vector2 origin)
         {
-            obstacle.OffsetPosition(origin, 0.0);
+            obstacle.Place.OffsetPosition(origin, 0.0);
 
 
             // Don't check on intersections => causes ghost boxes
@@ -132,7 +132,7 @@ namespace DawnOnline.Simulation
             _bullets.Remove(bullet);
         }
 
-        public IList<Placement> GetObstacles()
+        public IList<IEntity> GetObstacles()
         {
             return _obstacles;
         }
@@ -145,7 +145,7 @@ namespace DawnOnline.Simulation
         public void Update(double timeDelta)
         {
             // Perform actions
-            var creatures = new List<IEntity>(GetCreatures());
+            var creatures = new List<ICreature>(GetCreatures());
             foreach (var current in creatures)
             {
                 if (!current.Alive)
@@ -165,9 +165,10 @@ namespace DawnOnline.Simulation
             return GetCreaturesInRange(position, radius, creatures);
         }
 
-        internal IList<Creature> GetCreaturesInRange(Vector2 position, double radius, CreatureType specy)
+        internal IList<Creature> GetCreaturesInRange(Vector2 position, double radius, EntityType specy)
         {
-            return GetCreaturesInRange(position, radius, GetCreatures(specy));
+            var creatures = GetCreatures(specy) as IList<Creature>;
+            return GetCreaturesInRange(position, radius, creatures);
         }
 
         private static IList<Creature> GetCreaturesInRange(Vector2 position, double radius, IList<Creature> creatures)

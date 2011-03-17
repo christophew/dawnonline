@@ -18,9 +18,9 @@ namespace DawnGame.Cameras
         private Vector3 _cameraPosition;
         private float _cameraVelocity;
         private float _pan;
-        private Creature _creature;
+        private ICreature _creature;
 
-        public BirdsEyeFollowCamera(GraphicsDevice device, float height, float velocity, Creature creature)
+        public BirdsEyeFollowCamera(GraphicsDevice device, float height, float velocity, ICreature creature)
         {
             _cameraPosition = new Vector3(0, height, 0);
             _cameraVelocity = velocity;

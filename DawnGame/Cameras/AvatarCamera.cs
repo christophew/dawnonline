@@ -24,9 +24,9 @@ namespace DawnGame.Cameras
             UpdateViewMatrix();
         }
 
-        private Creature _creature;
+        private ICreature _creature;
 
-        internal AvatarCamera(GraphicsDevice device, Creature creature)
+        internal AvatarCamera(GraphicsDevice device, ICreature creature)
         {
             _creature = creature;
 

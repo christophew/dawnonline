@@ -6,17 +6,21 @@ using DawnOnline.Simulation.Statistics;
 
 namespace DawnOnline.Simulation.Entities
 {
+    public enum EntityType
+    {
+        Unknown,
+        Avatar,
+        Predator,
+        Rabbit,
+        Plant,
+        Turret,
+        Wall,
+        Box
+    }
+
     public interface IEntity
     {
-        bool Alive { get; }
-        bool IsTired { get; }
-        CreatureType Specy { get; }
+        EntityType Specy { get; }
         Placement Place { get; }
-        CharacterSheet CharacterSheet { get; }
-
-        void ApplyActionQueue(double timeDelta);
-        void ClearActionQueue();
-        void Move();
-        bool CanAttack();
     }
 }

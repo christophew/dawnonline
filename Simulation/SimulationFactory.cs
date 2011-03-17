@@ -35,7 +35,7 @@ namespace DawnOnline.Simulation
             return new Form { BoundingCircleRadius = radius, Shape = box };
         }
 
-        public static Placement CreateObstacleBox(double deltaX, double deltaY)
+        public static IEntity CreateObstacleBox(double deltaX, double deltaY)
         {
             double radius = Math.Max(deltaX, deltaY);
 
@@ -57,33 +57,34 @@ namespace DawnOnline.Simulation
             placement.Fixture.Body.AngularDamping = 1f;
             placement.Fixture.Body.Mass = 1000f;
 
-            return placement;
+            var obstacle = new Obstacle {Place = placement, Specy = EntityType.Box};
+            return obstacle;
         }
 
-        public static Creature CreateCreature(CreatureType specy)
+        public static ICreature CreateCreature(EntityType specy)
         {
             switch (specy)
             {
-                case CreatureType.Plant:
+                case EntityType.Plant:
                     return CreatePlant();
-                case CreatureType.Predator:
+                case EntityType.Predator:
                     return CreatePredator();
-                case CreatureType.Rabbit:
+                case EntityType.Rabbit:
                     return CreateRabbit();
-                case CreatureType.Turret:
+                case EntityType.Turret:
                     return CreateTurret();
             }
 
             throw new ArgumentOutOfRangeException();
         }
 
-        public static Creature CreatePredator()
+        public static ICreature CreatePredator()
         {
             var critter = new Creature(15);
             critter.Brain = new PredatorBrain();
 
-            critter.Specy = CreatureType.Predator;
-            critter.FoodSpecy = CreatureType.Avatar;
+            critter.Specy = EntityType.Predator;
+            critter.FoodSpecy = EntityType.Avatar;
 
             //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(100, 150);
             critter.CharacterSheet.WalkingDistance = 20 * _velocityMultiplier;
@@ -95,13 +96,13 @@ namespace DawnOnline.Simulation
             return critter;
         }
 
-        public static Creature CreateRabbit()
+        public static ICreature CreateRabbit()
         {
             var critter = new Creature(10);
             critter.Brain = new RabbitBrain();
 
-            critter.Specy = CreatureType.Rabbit;
-            critter.FoodSpecy = CreatureType.Plant;
+            critter.Specy = EntityType.Rabbit;
+            critter.FoodSpecy = EntityType.Plant;
 
             //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(100, 300);
             critter.CharacterSheet.WalkingDistance = 15 * _velocityMultiplier;
@@ -113,12 +114,12 @@ namespace DawnOnline.Simulation
             return critter;
         }
 
-        public static Creature CreatePlant()
+        public static ICreature CreatePlant()
         {
             var critter = new Creature(12);
             critter.Brain = new PlantBrain();
 
-            critter.Specy = CreatureType.Plant;
+            critter.Specy = EntityType.Plant;
             //critter.FoodSpecy = CreatureType.Predator; // instead: killing creatures can produce plants
 
             //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(50, 200);
@@ -131,11 +132,11 @@ namespace DawnOnline.Simulation
             return critter;
         }
 
-        public static Creature CreateAvatar()
+        public static IAvatar CreateAvatar()
         {
             var avatar = new Creature(15);
 
-            avatar.Specy = CreatureType.Avatar;
+            avatar.Specy = EntityType.Avatar;
             avatar.CharacterSheet.WalkingDistance = 30 * _velocityMultiplier;
             avatar.CharacterSheet.TurningAngle = 1 * _turnMultiplier;
             //avatar.CharacterSheet.MeleeDamage = 100;
@@ -156,7 +157,7 @@ namespace DawnOnline.Simulation
 
             var form = new Form { BoundingCircleRadius = radius, Shape = box };
             var placement = new Placement { Form = form };
-            placement.Fixture = FixtureFactory.CreateCircle(Environment.GetWorld().FarSeerWorld, 5, 1);
+            placement.Fixture = FixtureFactory.CreateCircle(Environment.GetWorld().FarSeerWorld, 3, 1);
             placement.Fixture.Body.BodyType = BodyType.Dynamic;
             //placement.Fixture.Body.LinearDamping = 1f;
             //placement.Fixture.Body.AngularDamping = 1f;
@@ -167,19 +168,19 @@ namespace DawnOnline.Simulation
 
             bullet.Placement = placement;
             bullet.Damage = damage;
-            bullet.Explodes = true;
+            //bullet.Explodes = true;
             placement.Fixture.UserData = bullet;
 
             return bullet;
         }
 
-        public static Creature CreateTurret()
+        public static ICreature CreateTurret()
         {
             var critter = new Creature(15);
             critter.Brain = new TurretBrain();
 
-            critter.Specy = CreatureType.Turret;
-            critter.FoodSpecy = CreatureType.Avatar;
+            critter.Specy = EntityType.Turret;
+            critter.FoodSpecy = EntityType.Avatar;
 
             //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(100, 150);
             critter.CharacterSheet.WalkingDistance = 0;
