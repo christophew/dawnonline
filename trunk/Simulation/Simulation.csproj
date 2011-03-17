@@ -84,7 +84,10 @@
     <Compile Include="Collision\Polygon.cs" />
     <Compile Include="Collision\Vector.cs" />
     <Compile Include="Entities\Creature.cs" />
+    <Compile Include="Entities\IAvatar.cs" />
+    <Compile Include="Entities\ICreature.cs" />
     <Compile Include="Entities\IEntity.cs" />
+    <Compile Include="Entities\Obstacle.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="Form.cs" />

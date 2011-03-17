@@ -385,8 +385,8 @@ namespace DawnGame
                 var obstacles = _dawnWorld.Environment.GetObstacles();
                 foreach (var current in obstacles)
                 {
-                    var points = current.Form.Shape.Points;
-                    var pos = current.Position;
+                    var points = current.Place.Form.Shape.Points;
+                    var pos = current.Place.Position;
 
                     DrawPolygon(points, time, curTechniqueName);
                 }
@@ -409,7 +409,7 @@ namespace DawnGame
             var obstacles = _dawnWorld.Environment.GetObstacles();
             foreach (var current in obstacles)
             {
-                DrawCube(current);
+                DrawCube(current.Place);
             }
         }
 
@@ -435,7 +435,7 @@ namespace DawnGame
             var obstacles = _dawnWorld.Environment.GetObstacles();
             foreach (var current in obstacles)
             {
-                _worldShapes.AddRange(Create3DShape(current.Form.Shape, current.Position));
+                _worldShapes.AddRange(Create3DShape(current.Place.Form.Shape, current.Place.Position));
             }
         }
 
@@ -476,7 +476,7 @@ namespace DawnGame
             return shape;
         }
 
-        private void DrawCreature(IEntity creature)
+        private void DrawCreature(ICreature creature)
         {
             GameObject gameCreature = new GameObject();
 
@@ -490,13 +490,13 @@ namespace DawnGame
 
             switch (creature.Specy)
             {
-                case CreatureType.Avatar:
+                case EntityType.Avatar:
                     gameCreature.model = _creatureModel_Avatar;
                     break;
-                case CreatureType.Predator:
+                case EntityType.Predator:
                     gameCreature.model = _creatureModel;
                     break;
-                case CreatureType.Turret:
+                case EntityType.Turret:
                     gameCreature.model = _gunModel;
                     // MathHelper.PiOver2 correction => geen idee waarom mijn meshes dit nodig hebben, maar ja...
                     gameCreature.rotation = new Vector3(MathHelper.PiOver2, -angle, -MathHelper.PiOver2);
@@ -526,7 +526,7 @@ namespace DawnGame
 
         private void DrawBullet(Bullet bullet)
         {
-            DrawGameObject(bullet.Placement, _bulletModel, 2f);
+            DrawGameObject(bullet.Placement, _bulletModel, 1.5f);
         }
 
         private void DrawGameObject(Placement placement, Model model, float scale)

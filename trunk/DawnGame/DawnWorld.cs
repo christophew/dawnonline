@@ -11,10 +11,10 @@ namespace DawnGame
         private readonly DawnOnline.Simulation.Environment _environment = SimulationFactory.CreateEnvironment();
         private const float MaxX = 3000;
         private const float MaxY = 2000;
-        private Creature _avatar = SimulationFactory.CreateAvatar();
+        private IAvatar _avatar = SimulationFactory.CreateAvatar();
         Random _randomize = new Random();
 
-        public Creature Avatar { get { return _avatar; } }
+        public IAvatar Avatar { get { return _avatar; } }
         public DawnOnline.Simulation.Environment Environment { get { return _environment; } }
 
         public DawnWorld()
@@ -27,7 +27,7 @@ namespace DawnGame
             //AddCreatures(CreatureType.Rabbit, 300);
             //AddCreatures(CreatureType.Plant, 300);
             //AddCreatures(CreatureType.Predator, 100);
-            AddCreatures(CreatureType.Turret, 50);
+            AddCreatures(EntityType.Turret, 50);
         }
 
         private void BuildWorld()
@@ -64,7 +64,7 @@ namespace DawnGame
             // Rocks
             int height = 48;
             int wide = 48;
-            for (int i = 0; i < 600; )
+            for (int i = 0; i < 0; )
             {
                 var position = new Vector2(_randomize.Next((int)MaxX / 50) * 50, _randomize.Next((int)MaxY / 50) * 50);
                 var box = SimulationFactory.CreateObstacleBox(wide, height);
@@ -74,7 +74,7 @@ namespace DawnGame
             }
         }
 
-        private void AddCreatures(CreatureType specy, int amount)
+        private void AddCreatures(EntityType specy, int amount)
         {
             for (int i = 0; i < amount; i++)
             {
@@ -91,7 +91,7 @@ namespace DawnGame
 
         public void MoveAll()
         {
-            var creatures = new List<IEntity>(_environment.GetCreatures());
+            var creatures = new List<ICreature>(_environment.GetCreatures());
 
             foreach (var current in creatures)
             {
@@ -130,16 +130,16 @@ namespace DawnGame
             int nrOfRabbits = 0;
             int nrOfPredators = 0;
 
-            var creatures = new List<IEntity>(_environment.GetCreatures());
+            var creatures = new List<ICreature>(_environment.GetCreatures());
 
             foreach (var current in creatures)
             {
                 if (!current.Alive)
                     continue;
 
-                if (current.Specy == CreatureType.Plant) nrOfPlants++;
-                if (current.Specy == CreatureType.Rabbit) nrOfRabbits++;
-                if (current.Specy == CreatureType.Predator) nrOfPredators++;
+                if (current.Specy == EntityType.Plant) nrOfPlants++;
+                if (current.Specy == EntityType.Rabbit) nrOfRabbits++;
+                if (current.Specy == EntityType.Predator) nrOfPredators++;
             }
 
             return string.Format("Plant: {0}; Rabbits: {1}; Predators:{2}", nrOfPlants, nrOfRabbits, nrOfPredators);

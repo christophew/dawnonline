@@ -17,7 +17,7 @@ namespace FrontEnd
         private readonly DawnOnline.Simulation.Environment _environment = SimulationFactory.CreateEnvironment();
         private const int MaxX = 3000;
         private const int MaxY = 2000;
-        private Creature _avatar = SimulationFactory.CreateAvatar();
+        private IAvatar _avatar = SimulationFactory.CreateAvatar();
         private DateTime _lastMove = DateTime.Now;
 
         Random _randomize = new Random();
@@ -29,20 +29,20 @@ namespace FrontEnd
 
         private void AddRabbits_Click(object sender, RoutedEventArgs e)
         {
-            AddCreatures(CreatureType.Rabbit, 30);
+            AddCreatures(EntityType.Rabbit, 30);
         }
 
         private void AddPlants_Click(object sender, RoutedEventArgs e)
         {
-            AddCreatures(CreatureType.Plant, 30);
+            AddCreatures(EntityType.Plant, 30);
         }
 
         private void AddPredators_Click(object sender, RoutedEventArgs e)
         {
-            AddCreatures(CreatureType.Predator, 30);
+            AddCreatures(EntityType.Predator, 30);
         }
 
-        private void AddCreatures(CreatureType specy, int amount)
+        private void AddCreatures(EntityType specy, int amount)
         {
             for (int i = 0; i < amount; i++)
             {
@@ -54,7 +54,7 @@ namespace FrontEnd
 
         private void MoveAll()
         {
-            var creatures = new List<IEntity>(_environment.GetCreatures());
+            var creatures = new List<ICreature>(_environment.GetCreatures());
 
             int nrOfPlants = 0;
             int nrOfRabbits = 0;
@@ -72,9 +72,9 @@ namespace FrontEnd
                     continue;
 
 
-                if (current.Specy == CreatureType.Plant) nrOfPlants++;
-                if (current.Specy == CreatureType.Rabbit) nrOfRabbits++;
-                if (current.Specy == CreatureType.Predator) nrOfPredators++;
+                if (current.Specy == EntityType.Plant) nrOfPlants++;
+                if (current.Specy == EntityType.Rabbit) nrOfRabbits++;
+                if (current.Specy == EntityType.Predator) nrOfPredators++;
 
                 // TEST: grow on organic waste
                 //if ((killed != null) && (killed.Specy != CreatureType.Plant))
@@ -120,7 +120,7 @@ namespace FrontEnd
             }
         }
 
-        private void DrawCreature(IEntity creature)
+        private void DrawCreature(ICreature creature)
         {
             var placement = creature.Place;
 
@@ -135,8 +135,8 @@ namespace FrontEnd
                 //if (creature.SeesACreatureForward())
                 //    color = Brushes.Gray;
 
-                if (creature.Specy == CreatureType.Rabbit) color = Brushes.WhiteSmoke;
-                if (creature.Specy == CreatureType.Plant) color = Brushes.Green;
+                if (creature.Specy == EntityType.Rabbit) color = Brushes.WhiteSmoke;
+                if (creature.Specy == EntityType.Plant) color = Brushes.Green;
 
                 var newEllipse = new Ellipse();
                 newEllipse.Height = placement.Form.BoundingCircleRadius;
@@ -150,7 +150,7 @@ namespace FrontEnd
             }
 
             // Direction
-            if (creature.Specy != CreatureType.Plant)
+            if (creature.Specy != EntityType.Plant)
             {
                 var newLine = new Line();
                 newLine.X1 = placement.Position.X;
@@ -217,7 +217,7 @@ namespace FrontEnd
             var obstacles = _environment.GetObstacles();
             foreach (var current in obstacles)
             {
-                DrawObstacle(current);
+                DrawObstacle(current.Place);
             }
         }
 
