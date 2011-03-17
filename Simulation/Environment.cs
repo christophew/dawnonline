@@ -34,7 +34,7 @@ namespace DawnOnline.Simulation
             FarSeerWorld = new World(Vector2.Zero);
         }
 
-        public void AddCreature(ICreature creature, Vector2 origin, double angle)
+        public bool AddCreature(ICreature creature, Vector2 origin, double angle)
         {
             var myCreature = creature as Creature;
             Debug.Assert(myCreature != null);
@@ -42,17 +42,22 @@ namespace DawnOnline.Simulation
             myCreature.MyEnvironment = this;
             (myCreature.Place as Placement).OffsetPosition(origin, angle);
 
-            if (!IntersectsWithObstacles(myCreature.Place))
+            // TODO: use farseer for obstacle collision
+            if (IntersectsWithObstacles(myCreature.Place))
             {
-                _creatures.Add(creature);
-
-                if (!_creaturesPerSpecy.ContainsKey(myCreature.Specy))
-                {
-                    _creaturesPerSpecy.Add(myCreature.Specy, new List<ICreature>());
-                }
-
-                _creaturesPerSpecy[myCreature.Specy].Add(myCreature);
+                FarSeerWorld.RemoveBody(creature.Place.Fixture.Body);
+                return false;
             }
+
+            _creatures.Add(creature);
+
+            if (!_creaturesPerSpecy.ContainsKey(myCreature.Specy))
+            {
+                _creaturesPerSpecy.Add(myCreature.Specy, new List<ICreature>());
+            }
+
+            _creaturesPerSpecy[myCreature.Specy].Add(myCreature);
+            return true;
         }
 
         private bool IntersectsWithObstacles(Placement place)
@@ -161,21 +166,19 @@ namespace DawnOnline.Simulation
             FarSeerWorld.Step(MathHelper.Min((float)timeDelta, 1f / 30f));
         }
 
-        internal IList<Creature> GetCreaturesInRange(Vector2 position, double radius)
+        internal IList<ICreature> GetCreaturesInRange(Vector2 position, double radius)
         {
-            var creatures = GetCreatures() as IList<Creature>;
-            return GetCreaturesInRange(position, radius, creatures);
+            return GetCreaturesInRange(position, radius, GetCreatures());
         }
 
-        internal IList<Creature> GetCreaturesInRange(Vector2 position, double radius, EntityType specy)
+        internal IList<ICreature> GetCreaturesInRange(Vector2 position, double radius, EntityType specy)
         {
-            var creatures = GetCreatures(specy) as IList<Creature>;
-            return GetCreaturesInRange(position, radius, creatures);
+            return GetCreaturesInRange(position, radius, GetCreatures(specy));
         }
 
-        private static IList<Creature> GetCreaturesInRange(Vector2 position, double radius, IList<Creature> creatures)
+        private static IList<ICreature> GetCreaturesInRange(Vector2 position, double radius, IList<ICreature> creatures)
         {
-            var list = new List<Creature>();
+            var list = new List<ICreature>();
 
             double radius2 = radius * radius;
             foreach (var current in creatures)

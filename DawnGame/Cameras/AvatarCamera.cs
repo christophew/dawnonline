@@ -12,14 +12,15 @@ namespace DawnGame.Cameras
 {
     public class AvatarCamera : ICamera
     {
-        private float _height = 15;
+        private float _lookatHeight = 14;
+        private float _cameraHeight = 15;
 
         public Matrix View { get; private set; }
         public Matrix Projection { get; private set; }
 
         public string GetDebugString()
         {
-            return string.Format("Height: {0:00.00}", _height);
+            return string.Format("Height: {0:00.00}", _lookatHeight);
         }
 
         public void Update(GameTime gameTime)
@@ -30,9 +31,9 @@ namespace DawnGame.Cameras
             float timeScale = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             if (keys.IsKeyDown(Keys.NumPad8))
-                _height += velocity * timeScale;
+                _lookatHeight += velocity * timeScale;
             else if (keys.IsKeyDown(Keys.NumPad2))
-                _height -= velocity * timeScale;
+                _lookatHeight -= velocity * timeScale;
 
             UpdateViewMatrix();
         }
@@ -57,8 +58,8 @@ namespace DawnGame.Cameras
             var pos = _creature.Place.Position;
             var angle = _creature.Place.Angle;
 
-            var camPosition = new Vector3((float)(pos.X), 15, (float)(pos.Y));
-            var cameraLookAt = new Vector3((float)(pos.X + Math.Cos(angle) * 10), _height, (float)(pos.Y + Math.Sin(angle) * 10));
+            var camPosition = new Vector3((float)(pos.X), _cameraHeight, (float)(pos.Y));
+            var cameraLookAt = new Vector3((float)(pos.X + Math.Cos(angle) * 10), _lookatHeight, (float)(pos.Y + Math.Sin(angle) * 10));
 
             View = Matrix.CreateLookAt(camPosition, cameraLookAt, Vector3.Up);
         }

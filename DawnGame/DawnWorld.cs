@@ -24,10 +24,10 @@ namespace DawnGame
 
             BuildWorld2();
 
-            //AddCreatures(CreatureType.Rabbit, 300);
-            //AddCreatures(CreatureType.Plant, 300);
-            //AddCreatures(CreatureType.Predator, 100);
-            AddCreatures(EntityType.Turret, 50);
+            //AddCreatures(EntityType.Rabbit, 300);
+            //AddCreatures(EntityType.Plant, 300);
+            AddCreatures(EntityType.Predator, 50);
+            AddCreatures(EntityType.Turret, 30);
         }
 
         private void BuildWorld()
@@ -65,13 +65,28 @@ namespace DawnGame
             int wide = 48;
 
             // walls
-            for (int i = 0; i < 750; )
+            for (int i = 0; i < 500; )
             {
-                var position = new Vector2(_randomize.Next((int)MaxX / 100) * 100, _randomize.Next((int)MaxY / 100) * 100);
-                if (_environment.AddObstacle(SimulationFactory.CreateWall(wide, height), position + new Vector2(0, 0))) i++;
-                if (_environment.AddObstacle(SimulationFactory.CreateWall(wide, height), position + new Vector2(0, 50))) i++;
-                if (_environment.AddObstacle(SimulationFactory.CreateWall(wide, height), position + new Vector2(50, 0))) i++;
-                if (_environment.AddObstacle(SimulationFactory.CreateWall(wide, height), position + new Vector2(50, 50))) i++;
+                var grid = 50;
+                var maxLength = 5;
+                var position = new Vector2(_randomize.Next((int)MaxX / grid) * grid, _randomize.Next((int)MaxY / grid) * grid);
+
+                if (_randomize.Next(2) == 0)
+                {
+                    int maxHorizontal = _randomize.Next(maxLength);
+                    for (int j = 0; j < maxHorizontal; j++)
+                    {
+                        if (_environment.AddObstacle(SimulationFactory.CreateWall(wide, height), position + new Vector2(0, 50*j))) i++;
+                    }
+                }
+                else
+                {
+                    int maxVertical = _randomize.Next(maxLength);
+                    for (int j = 0; j < maxVertical; j++)
+                    {
+                        if (_environment.AddObstacle(SimulationFactory.CreateWall(wide, height), position + new Vector2(50*j, 0))) i++;
+                    }
+                }
             }
 
             // Boxes
@@ -87,11 +102,12 @@ namespace DawnGame
 
         private void AddCreatures(EntityType specy, int amount)
         {
-            for (int i = 0; i < amount; i++)
+            for (int i = 0; i < amount;)
             {
-                _environment.AddCreature(SimulationFactory.CreateCreature(specy),
+                if (_environment.AddCreature(SimulationFactory.CreateCreature(specy),
                                  new Vector2 { X = _randomize.Next((int)MaxX), Y = _randomize.Next((int)MaxY) },
-                                 _randomize.Next(6));
+                                 _randomize.Next(6)))
+                    i++;
             }
         }
 
