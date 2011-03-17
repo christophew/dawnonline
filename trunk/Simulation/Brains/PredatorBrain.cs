@@ -29,7 +29,6 @@ namespace DawnOnline.Simulation.Brains
             if (_forwardEye.SeesACreature(MyCreature.FoodSpecy))
             {
                 MyCreature.RunForward();
-                return;
             }
             if (_leftEye.SeesACreature(MyCreature.FoodSpecy))
             {
@@ -64,14 +63,14 @@ namespace DawnOnline.Simulation.Brains
             };
             _leftEye = new Eye(MyCreature)
             {
-                Angle = -MathTools.ConvertToRadials(60),
-                VisionAngle = MathTools.ConvertToRadials(30),
+                Angle = -MathTools.ConvertToRadials(90),
+                VisionAngle = MathTools.ConvertToRadials(60),
                 VisionDistance = MyCreature.CharacterSheet.VisionDistance
             };
             _rightEye = new Eye(MyCreature)
             {
-                Angle = MathTools.ConvertToRadials(60),
-                VisionAngle = MathTools.ConvertToRadials(30),
+                Angle = MathTools.ConvertToRadials(90),
+                VisionAngle = MathTools.ConvertToRadials(60),
                 VisionDistance = MyCreature.CharacterSheet.VisionDistance
             };
 
