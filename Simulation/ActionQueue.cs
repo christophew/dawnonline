@@ -10,6 +10,7 @@ namespace DawnOnline.Simulation
         internal double FatigueCost { get; set; }
         internal double Damage { get; set; }
         internal bool Fire { get; set; }
+        internal bool FireRocket { get; set; }
         internal bool HasAttacked { get; set; }
         internal bool HasFired { get; set; }
         internal DateTime LastAttackTime { get; set; }

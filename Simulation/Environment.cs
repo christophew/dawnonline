@@ -121,6 +121,12 @@ namespace DawnOnline.Simulation
             return true;
         }
 
+        internal void RemoveObstacle(IEntity obstacle)
+        {
+            FarSeerWorld.RemoveBody(obstacle.Place.Fixture.Body);
+            _obstacles.Remove(obstacle);
+        }
+
         public bool AddBullet(Bullet bullet, Vector2 origin)
         {
             bullet.Placement.OffsetPosition(origin, 0.0);

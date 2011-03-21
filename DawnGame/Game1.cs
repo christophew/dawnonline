@@ -53,6 +53,7 @@ namespace DawnGame
         private Model _wallModel;
         private Model _bulletModel;
         private Model _gunModel;
+        private Model _treasureModel;
 
         Random _randomize = new Random();
 
@@ -137,6 +138,7 @@ namespace DawnGame
             _bulletModel = Content.Load<Model>(@"firebullet");
             _gunModel = Content.Load<Model>(@"gun");
             _creatureModel_Avatar = Content.Load<Model>(@"directx");
+            _treasureModel = Content.Load<Model>(@"cube3");
 
             _wallTexture = Content.Load<Texture2D>(@"Textures\brickThumb");
 
@@ -148,7 +150,8 @@ namespace DawnGame
             _wallManager = new WallManager(GraphicsDevice, _wallTexture);
 
 
-            _camera = new BirdsEyeCamera(GraphicsDevice, new Vector3(1500f, 2000f, 1000f), 500);
+            _camera = new BirdsEyeFollowCamera(GraphicsDevice, 800, 500, _dawnWorld.Avatar);
+            //_camera = new BirdsEyeCamera(GraphicsDevice, new Vector3(1500f, 2000f, 1000f), 500);
             //_camera = new AvatarCamera(GraphicsDevice, _dawnWorld.Avatar);
             //_camera = new FirstPersonCamera(Window, 100);
 
@@ -253,6 +256,8 @@ namespace DawnGame
                 _dawnWorld.Avatar.TurnRight();
             if (keyboardState.IsKeyDown(Keys.Space))
                 _dawnWorld.Avatar.Fire();
+            if (keyboardState.IsKeyDown(Keys.LeftControl))
+                _dawnWorld.Avatar.FireRocket();
         }
 
         private void UpdateCamera()
@@ -527,6 +532,8 @@ namespace DawnGame
                 DrawGameObject(obstacle.Place, _cubeModel, 25f);
             if (obstacle.Specy == EntityType.Wall)
                 DrawGameObject(obstacle.Place, _wallModel, 25f);
+            if (obstacle.Specy == EntityType.Treasure)
+                DrawGameObject(obstacle.Place, _treasureModel, 7f);
         }
 
         private void DrawBullet(Bullet bullet)
@@ -610,75 +617,5 @@ namespace DawnGame
             roundLineManager.Draw(lines, 1, color, lineWorldMatrix * _viewProjMatrix, time, curTechniqueName);
             //lineManager.Draw(lines, 1, color.ToVector4(), viewMatrix, projMatrix, time, null, lineWorldMatrix, 1);
         }
-
-        #region CustomDraw test
-
-        int points = 8;
-        VertexPositionNormalTexture[] pointList;
-        VertexBuffer vertexBuffer;
-
-        short[] lineListIndices;
-        short[] lineStripIndices;
-
- 
-        private void InitializeLineList()
-        {
-            // Initialize an array of indices of type short.
-            lineListIndices = new short[(points * 2)];
-
-            // Populate the array with references to indices in the vertex buffer
-            for (int i = 0; i < points; i++)
-            {
-                lineListIndices[i * 2] = (short)(i + 1);
-                lineListIndices[(i * 2) + 1] = (short)(i + 2);
-            }
-
-            lineListIndices[(points * 2) - 1] = 1;
-
-        }
-
-        private void InitializeLineStrip()
-        {
-            // Initialize an array of indices of type short.
-            lineStripIndices = new short[points + 1];
-
-            // Populate the array with references to indices in the vertex buffer.
-            for (int i = 0; i < points; i++)
-            {
-                lineStripIndices[i] = (short)(i + 1);
-            }
-
-            lineStripIndices[points] = 1;
-
-        }
-
-        private void DrawLineList()
-        {
-            graphics.GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionNormalTexture>(
-                PrimitiveType.LineList,
-                pointList,
-                0,  // vertex buffer offset to add to each element of the index buffer
-                9,  // number of vertices in pointList
-                lineListIndices,  // the index buffer
-                0,  // first index element to read
-                8   // number of primitives to draw
-            );
-
-        }
-
-        private void DrawLineStrip()
-        {
-            graphics.GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionNormalTexture>(
-                PrimitiveType.LineStrip,
-                pointList,
-                0,   // vertex buffer offset to add to each element of the index buffer
-                9,   // number of vertices to draw
-                lineStripIndices,
-                0,   // first index element to read
-                8    // number of primitives to draw
-            );
-        }
-
-        #endregion
     }
 }

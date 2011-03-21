@@ -9,9 +9,11 @@ namespace DawnOnline.Simulation.Entities
     {
         void TurnLeft();
         void TurnRight();
-        void Fire();
         void RunForward();
         void WalkForward();
         void WalkBackward();
+
+        void Fire();
+        void FireRocket();
     }
 }
