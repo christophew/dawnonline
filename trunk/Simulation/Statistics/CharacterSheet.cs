@@ -17,7 +17,6 @@ namespace DawnOnline.Simulation.Statistics
         public double MeleeDamage { get; internal set; }
         public double CoolDown { get; internal set; }
         public double RangeDamage { get; internal set; }
-        public bool FiresRockets { get; internal set; }
 
         internal int VisionAccuracyPercent { get; set; }
 

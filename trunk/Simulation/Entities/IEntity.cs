@@ -15,7 +15,8 @@ namespace DawnOnline.Simulation.Entities
         Plant,
         Turret,
         Wall,
-        Box
+        Box,
+        Treasure
     }
 
     public interface IEntity

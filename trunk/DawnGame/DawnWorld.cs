@@ -98,6 +98,16 @@ namespace DawnGame
                 if (_environment.AddObstacle(box, position))
                     i++;
             }
+
+            // Treasure
+            for (int i = 0; i < 50; )
+            {
+                var position = new Vector2(_randomize.Next((int)MaxX / 50) * 50, _randomize.Next((int)MaxY / 50) * 50);
+                var box = SimulationFactory.CreateTreasure();
+
+                if (_environment.AddObstacle(box, position))
+                    i++;
+            }
         }
 
         private void AddCreatures(EntityType specy, int amount)

@@ -136,9 +136,7 @@ namespace DawnOnline.Simulation.Entities
             if (_actionQueue.Fire)
             {
                 var bulletAngleVector = new Vector2((float)Math.Cos(_place.Angle), (float)Math.Sin(_place.Angle));
-                var bullet = CharacterSheet.FiresRockets ? 
-                    SimulationFactory.CreateRocket(CharacterSheet.RangeDamage) : 
-                    SimulationFactory.CreateBullet(CharacterSheet.RangeDamage);
+                var bullet = SimulationFactory.CreateBullet(CharacterSheet.RangeDamage);
                 //bullet.Launch(bulletAngleVector);
                 {
                     MyEnvironment.AddBullet(bullet, _place.Fixture.Body.Position + bulletAngleVector * 30);
@@ -147,6 +145,21 @@ namespace DawnOnline.Simulation.Entities
 
                 _actionQueue.HasFired = true;
                 _actionQueue.Fire = false;
+            }
+
+            // Fire rocket
+            if (_actionQueue.FireRocket)
+            {
+                var bulletAngleVector = new Vector2((float)Math.Cos(_place.Angle), (float)Math.Sin(_place.Angle));
+                var bullet = SimulationFactory.CreateRocket(CharacterSheet.RangeDamage);
+                //bullet.Launch(bulletAngleVector);
+                {
+                    MyEnvironment.AddBullet(bullet, _place.Fixture.Body.Position + bulletAngleVector * 30);
+                    bullet.Placement.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 200);
+                }
+
+                _actionQueue.HasFired = true;
+                _actionQueue.FireRocket = false;
             }
 
 
@@ -196,6 +209,20 @@ namespace DawnOnline.Simulation.Entities
                 return;
 
             _actionQueue.Fire = true;
+        }
+
+        public void FireRocket()
+        {
+            if (!CanAttack())
+                return;
+
+            _actionQueue.FireRocket = true;
+        }
+
+        internal void Take(Collectable collectable)
+        {
+            // TODO: score!
+            Environment.GetWorld().RemoveObstacle(collectable);
         }
 
         private Vector TryMove(Vector velocity)

@@ -244,5 +244,37 @@ namespace DawnOnline.Simulation
 
             return critter;
         }
+
+        public static IEntity CreateTreasure()
+        {
+            var treasure = new Collectable();
+
+            float radius = 5;
+
+            Polygon box = new Polygon();
+            float halveDeltaX = (float)(radius / 2.0);
+            float halveDeltaY = (float)(radius / 2.0);
+
+            box.Points.Add(new Vector(-halveDeltaX, -halveDeltaY));
+            box.Points.Add(new Vector(halveDeltaX, -halveDeltaY));
+            box.Points.Add(new Vector(halveDeltaX, halveDeltaY));
+            box.Points.Add(new Vector(-halveDeltaX, halveDeltaY));
+            box.BuildEdges();
+
+            var form = new Form { BoundingCircleRadius = radius, Shape = box };
+            var placement = new Placement { Form = form };
+            placement.Fixture = FixtureFactory.CreateCircle(Environment.GetWorld().FarSeerWorld, radius, 1);
+            placement.Fixture.Body.BodyType = BodyType.Dynamic;
+            placement.Fixture.Body.LinearDamping = 0.5f;
+            placement.Fixture.Body.AngularDamping = 0.5f;
+            placement.Fixture.Body.Mass = 10f;
+            placement.Fixture.OnCollision += Collectable.OnCollision;
+
+            treasure.Place = placement;
+            treasure.Specy = EntityType.Treasure;
+            placement.Fixture.UserData = treasure;
+
+            return treasure;
+        }
     }
 }
