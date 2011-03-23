@@ -15,9 +15,12 @@ namespace DawnOnline.Simulation.Brains
         internal virtual void InitializeSenses()
         {}
 
+        internal virtual void ClearState()
+        {}
+
         protected void DoRandomAction()
         {
-            int randomAction = Globals.Radomizer.Next(5);
+            int randomAction = Globals.Radomizer.Next(10);
 
             if (randomAction == 0)
                 MyCreature.WalkForward();
@@ -27,7 +30,7 @@ namespace DawnOnline.Simulation.Brains
                 MyCreature.TurnRight();
             if (randomAction == 3)
                 MyCreature.Rest();
-            if (randomAction == 4)
+            if (randomAction >= 4)
                 MyCreature.WalkForward();
         }
 

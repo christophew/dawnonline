@@ -265,7 +265,7 @@ namespace DawnGame
             var keyboard = Keyboard.GetState();
 
             if (keyboard.IsKeyDown(Keys.F1))
-                _camera = new BirdsEyeCamera(GraphicsDevice, new Vector3(1500f, 2000f, 1000f), 500);
+                _camera = new BirdsEyeCamera(GraphicsDevice, new Vector3(1500f, 2800f, 1000f), 500);
             if (keyboard.IsKeyDown(Keys.F2))
                 _camera = new AvatarCamera(GraphicsDevice, _dawnWorld.Avatar);
             if (keyboard.IsKeyDown(Keys.F3))
@@ -533,7 +533,7 @@ namespace DawnGame
             if (obstacle.Specy == EntityType.Wall)
                 DrawGameObject(obstacle.Place, _wallModel, 25f);
             if (obstacle.Specy == EntityType.Treasure)
-                DrawGameObject(obstacle.Place, _treasureModel, 7f);
+                DrawGameObject(obstacle.Place, _treasureModel, 5f);
         }
 
         private void DrawBullet(Bullet bullet)
