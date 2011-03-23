@@ -225,27 +225,6 @@ namespace DawnOnline.Simulation.Entities
             Environment.GetWorld().RemoveObstacle(collectable);
         }
 
-        private Vector TryMove(Vector velocity)
-        {
-            foreach (var obstacle in MyEnvironment.GetObstacles())
-            {
-                // Bounding circle optimization
-                if (!MathTools.CirclesIntersect(Place.Position, Place.Form.BoundingCircleRadius, obstacle.Place.Position, obstacle.Place.Form.BoundingCircleRadius))
-                    continue;
-
-                Polygon obstaclePolygon = obstacle.Place.Form.Shape as Polygon;
-
-                PolygonCollisionResult collitionResult = CollisionDetection.PolygonCollision(Place.Form.Shape as Polygon, obstaclePolygon, velocity);
-
-                if (collitionResult.WillIntersect)
-                {
-                    velocity = velocity + collitionResult.MinimumTranslationVector;
-                }
-            }
-
-            return velocity;
-        }
-
         public void TurnLeft()
         {
             _actionQueue.TurnMotion = -CharacterSheet.TurningAngle;
@@ -283,6 +262,7 @@ namespace DawnOnline.Simulation.Entities
             //}
 
             Brain.DoSomething();
+            Brain.ClearState();
 
             // TESTING: 
             {

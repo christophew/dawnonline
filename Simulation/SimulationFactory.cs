@@ -229,7 +229,6 @@ namespace DawnOnline.Simulation
         public static ICreature CreateTurret()
         {
             var critter = new Creature(15);
-            critter.Brain = new TurretBrain();
 
             critter.Specy = EntityType.Turret;
             critter.FoodSpecy = EntityType.Avatar;
@@ -240,7 +239,12 @@ namespace DawnOnline.Simulation
             critter.CharacterSheet.CoolDown = 0.3;
             critter.CharacterSheet.RangeDamage = 1;
             critter.CharacterSheet.MeleeDamage = 0;
+
+            critter.CharacterSheet.VisionDistance = 500;
+
+            critter.Brain = new TurretBrain();
             critter.Brain.InitializeSenses();
+
 
             return critter;
         }
