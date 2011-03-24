@@ -227,11 +227,11 @@ namespace DawnGame
                 this.Exit();
             }
 
-            UpdateRoundingTechnique(keyboardState);
+            //UpdateRoundingTechnique(keyboardState);
+            //UpdateDrawOptions(keyboardState);
 
             UpdateCamera();
 
-            UpdateDrawOptions(keyboardState);
 
             //UpdateEffects();
 
@@ -246,14 +246,18 @@ namespace DawnGame
 
             _dawnWorld.Avatar.ClearActionQueue();
 
-            if (keyboardState.IsKeyDown(Keys.Up))
+            if (keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Keys.Z))
                 _dawnWorld.Avatar.WalkForward();
-            if (keyboardState.IsKeyDown(Keys.Down))
+            if (keyboardState.IsKeyDown(Keys.Down) || keyboardState.IsKeyDown(Keys.S))
                 _dawnWorld.Avatar.WalkBackward();
-            if (keyboardState.IsKeyDown(Keys.Left))
+            if (keyboardState.IsKeyDown(Keys.Left) || keyboardState.IsKeyDown(Keys.Q))
                 _dawnWorld.Avatar.TurnLeft();
-            if (keyboardState.IsKeyDown(Keys.Right))
+            if (keyboardState.IsKeyDown(Keys.Right) || keyboardState.IsKeyDown(Keys.D))
                 _dawnWorld.Avatar.TurnRight();
+            if (keyboardState.IsKeyDown(Keys.A))
+                _dawnWorld.Avatar.StrafeLeft();
+            if (keyboardState.IsKeyDown(Keys.E))
+                _dawnWorld.Avatar.StrafeRight();
             if (keyboardState.IsKeyDown(Keys.Space))
                 _dawnWorld.Avatar.Fire();
             if (keyboardState.IsKeyDown(Keys.LeftControl))
@@ -275,34 +279,34 @@ namespace DawnGame
 
         }
 
-        private void UpdateDrawOptions(KeyboardState keyboardState)
-        {
-            if (keyboardState.IsKeyDown(Keys.PageUp))
-                roundLineManager.BlurThreshold *= 1.001f;
-            if (keyboardState.IsKeyDown(Keys.PageDown))
-                roundLineManager.BlurThreshold /= 1.001f;
+        //private void UpdateDrawOptions(KeyboardState keyboardState)
+        //{
+        //    if (keyboardState.IsKeyDown(Keys.PageUp))
+        //        roundLineManager.BlurThreshold *= 1.001f;
+        //    if (keyboardState.IsKeyDown(Keys.PageDown))
+        //        roundLineManager.BlurThreshold /= 1.001f;
 
-            if (roundLineManager.BlurThreshold > 1)
-                roundLineManager.BlurThreshold = 1;
-        }
+        //    if (roundLineManager.BlurThreshold > 1)
+        //        roundLineManager.BlurThreshold = 1;
+        //}
 
-        private void UpdateRoundingTechnique(KeyboardState keyboardState)
-        {
-            if (keyboardState.IsKeyDown(Keys.A))
-            {
-                if (!aButtonDown)
-                {
-                    aButtonDown = true;
-                    roundLineTechniqueIndex++;
-                    if (roundLineTechniqueIndex >= roundLineTechniqueNames.Length)
-                        roundLineTechniqueIndex = 0;
-                }
-            }
-            else
-            {
-                aButtonDown = false;
-            }
-        }
+        //private void UpdateRoundingTechnique(KeyboardState keyboardState)
+        //{
+        //    if (keyboardState.IsKeyDown(Keys.A))
+        //    {
+        //        if (!aButtonDown)
+        //        {
+        //            aButtonDown = true;
+        //            roundLineTechniqueIndex++;
+        //            if (roundLineTechniqueIndex >= roundLineTechniqueNames.Length)
+        //                roundLineTechniqueIndex = 0;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        aButtonDown = false;
+        //    }
+        //}
 
 
         /// <summary>
