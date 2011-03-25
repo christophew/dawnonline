@@ -27,6 +27,11 @@ namespace DawnOnline.Simulation.Senses
         private Environment CreatureEnvironment { get { return _creature.MyEnvironment; } }
         private Placement CreaturePlace { get { return _creature.Place; } }
 
+        internal bool SeesACreature(List<EntityType> species)
+        {
+            return species.Any(HasLineOfSight);
+        }
+
         internal bool SeesACreature(EntityType specy)
         {
             return HasLineOfSight(specy);

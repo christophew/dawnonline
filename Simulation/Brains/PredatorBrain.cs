@@ -29,7 +29,7 @@ namespace DawnOnline.Simulation.Brains
             Debug.Assert(_initialized);
 
             // Find something to attack
-            var creaturesToAttack = MyCreature.FindCreatureToAttack(MyCreature.FoodSpecy);
+            var creaturesToAttack = MyCreature.FindCreatureToAttack(MyCreature.FoodSpecies);
             if (creaturesToAttack != null)
             {
                 MyCreature.Attack(creaturesToAttack);
@@ -37,16 +37,16 @@ namespace DawnOnline.Simulation.Brains
             }
 
             // Move
-            if (_forwardEye.SeesACreature(MyCreature.FoodSpecy))
+            if (_forwardEye.SeesACreature(MyCreature.FoodSpecies))
             {
                 MyCreature.RunForward();
             }
-            if (_leftEye.SeesACreature(MyCreature.FoodSpecy))
+            if (_leftEye.SeesACreature(MyCreature.FoodSpecies))
             {
                 MyCreature.TurnLeft();
                 return;
             }
-            if (_rightEye.SeesACreature(MyCreature.FoodSpecy))
+            if (_rightEye.SeesACreature(MyCreature.FoodSpecies))
             {
                 MyCreature.TurnRight();
                 return;

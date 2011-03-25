@@ -94,6 +94,16 @@ namespace DawnOnline.Simulation
             return _creatures;
         }
 
+        internal IList<ICreature> GetCreatures(List<EntityType> species)
+        {
+            var result = new List<ICreature>();
+            foreach (var specy in species)
+            {
+                result.AddRange(GetCreatures(specy));
+            }
+            return result;
+        }
+
         public IList<ICreature> GetCreatures(EntityType specy)
         {
             if (!_creaturesPerSpecy.ContainsKey(specy))
@@ -165,7 +175,7 @@ namespace DawnOnline.Simulation
                     continue;
 
                 current.ApplyActionQueue(timeDelta);
-                current.ClearActionQueue();
+                //current.ClearActionQueue();
             }
 
             // Update physics
@@ -177,9 +187,9 @@ namespace DawnOnline.Simulation
             return GetCreaturesInRange(position, radius, GetCreatures());
         }
 
-        internal IList<ICreature> GetCreaturesInRange(Vector2 position, double radius, EntityType specy)
+        internal IList<ICreature> GetCreaturesInRange(Vector2 position, double radius, List<EntityType> species)
         {
-            return GetCreaturesInRange(position, radius, GetCreatures(specy));
+            return GetCreaturesInRange(position, radius, GetCreatures(species));
         }
 
         private static IList<ICreature> GetCreaturesInRange(Vector2 position, double radius, IList<ICreature> creatures)

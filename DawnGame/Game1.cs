@@ -27,8 +27,6 @@ namespace DawnGame
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        private string _worldInformation = "";
-
         private Stopwatch _thinkTimer = new Stopwatch();
         private Stopwatch _moveTimer = new Stopwatch();
         private Stopwatch _drawTimer = new Stopwatch();
@@ -188,11 +186,6 @@ namespace DawnGame
             _updateTimer.Reset();
             _updateTimer.Start();
 
-            // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
-
-            _camera.Update(gameTime);
             
             KeyboardState keyboardState = Keyboard.GetState();
 
@@ -200,7 +193,7 @@ namespace DawnGame
             UpdateAvatar();
 
             // Think = Decide where to move
-            if ((gameTime.TotalGameTime - _lastThink).TotalMilliseconds > 0)
+            if ((gameTime.TotalGameTime - _lastThink).TotalMilliseconds > 50)
             {
                 _thinkTimer.Reset();
                 _thinkTimer.Start();
@@ -222,20 +215,16 @@ namespace DawnGame
                 _lastMove = gameTime.TotalGameTime;
             }
 
-            _worldInformation = _dawnWorld.GetWorldInformation();
-
+            // Exit
             if (keyboardState.IsKeyDown(Keys.Escape))
             {
                 this.Exit();
             }
 
-            //UpdateRoundingTechnique(keyboardState);
-            //UpdateDrawOptions(keyboardState);
-
             UpdateCamera();
+            _camera.Update(gameTime);
 
 
-            //UpdateEffects();
 
             base.Update(gameTime);
 
@@ -366,7 +355,8 @@ namespace DawnGame
         {
             spriteBatch.Begin();
 
-            spriteBatch.DrawString(font, _worldInformation, new Vector2(100f, 100f), Color.Green);
+            var worldInformation = _dawnWorld.GetWorldInformation();
+            spriteBatch.DrawString(font, worldInformation, new Vector2(100f, 100f), Color.Green);
 
             string technicalInformation = string.Format("Think: {0:0000}ms; Move: {1:0000}ms; Update: {2:0000}ms; Draw: {3:0000}ms",
                                                         _thinkTimer.ElapsedMilliseconds, _moveTimer.ElapsedMilliseconds, _updateTimer.ElapsedMilliseconds, _lastDrawTime);
