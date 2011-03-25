@@ -76,7 +76,7 @@ namespace DawnGame
             }
 
             // walls
-            for (int i = 0; i < 600; )
+            for (int i = 0; i < 500; )
             {
                 var grid = 50;
                 var maxLength = 5;
@@ -177,6 +177,7 @@ namespace DawnGame
             int nrOfPlants = 0;
             int nrOfRabbits = 0;
             int nrOfPredators = 0;
+            int nrOfTurrets = 0;
 
             var creatures = new List<ICreature>(_environment.GetCreatures());
 
@@ -188,9 +189,11 @@ namespace DawnGame
                 if (current.Specy == EntityType.Plant) nrOfPlants++;
                 if (current.Specy == EntityType.Rabbit) nrOfRabbits++;
                 if (current.Specy == EntityType.Predator) nrOfPredators++;
+                if (current.Specy == EntityType.Turret) nrOfTurrets++;
             }
 
-            return string.Format("Plant: {0}; Rabbits: {1}; Predators:{2}", nrOfPlants, nrOfRabbits, nrOfPredators);
+            //return string.Format("Plant: {0}; Rabbits: {1}; Predators:{2}", nrOfPlants, nrOfRabbits, nrOfPredators);
+            return string.Format("Turret: {0}; Predators:{1}", nrOfTurrets, nrOfPredators);
         }
     }
 }

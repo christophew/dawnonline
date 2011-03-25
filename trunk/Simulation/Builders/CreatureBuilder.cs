@@ -39,7 +39,7 @@ namespace DawnOnline.Simulation.Builders
             critter.Brain = new PredatorBrain();
 
             critter.Specy = EntityType.Predator;
-            critter.FoodSpecy = EntityType.Avatar;
+            critter.FoodSpecies = new List<EntityType> { EntityType.Turret, EntityType.Avatar };
 
             //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(100, 150);
             critter.CharacterSheet.WalkingDistance = 30 * _velocityMultiplier;
@@ -58,7 +58,7 @@ namespace DawnOnline.Simulation.Builders
             critter.Brain = new RabbitBrain();
 
             critter.Specy = EntityType.Rabbit;
-            critter.FoodSpecy = EntityType.Plant;
+            critter.FoodSpecies = new List<EntityType> { EntityType.Plant };
 
             //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(100, 300);
             critter.CharacterSheet.WalkingDistance = 15 * _velocityMultiplier;
@@ -106,7 +106,7 @@ namespace DawnOnline.Simulation.Builders
             var critter = new Creature(15);
 
             critter.Specy = EntityType.Turret;
-            critter.FoodSpecy = EntityType.Avatar;
+            critter.FoodSpecies = new List<EntityType> { EntityType.Predator };
 
             //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(100, 150);
             critter.CharacterSheet.WalkingDistance = 0;

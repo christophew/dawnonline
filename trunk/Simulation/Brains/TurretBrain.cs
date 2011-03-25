@@ -21,18 +21,19 @@ namespace DawnOnline.Simulation.Brains
             Debug.Assert(_initialized);
 
             // Find something to attack
-            if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) && _forwardEye.SeesACreature(MyCreature.FoodSpecy))
+            if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) && _forwardEye.SeesACreature(MyCreature.FoodSpecies))
             {
-                MyCreature.Fire();
+                //MyCreature.Fire();
+                MyCreature.FireRocket();
             }
 
             // Turn
-            if (_leftEye.SeesACreature(MyCreature.FoodSpecy))
+            if (_leftEye.SeesACreature(MyCreature.FoodSpecies))
             {
                 MyCreature.TurnLeft();
                 return;
             }
-            if (_rightEye.SeesACreature(MyCreature.FoodSpecy))
+            if (_rightEye.SeesACreature(MyCreature.FoodSpecies))
             {
                 MyCreature.TurnRight();
                 return;

@@ -70,8 +70,8 @@ namespace DawnOnline.Simulation.Builders
             float radius = 5;
 
             Polygon box = new Polygon();
-            float halveDeltaX = (float)(radius / 2.0);
-            float halveDeltaY = (float)(radius / 2.0);
+            float halveDeltaX = (float)(radius);
+            float halveDeltaY = (float)(radius);
 
             box.Points.Add(new Vector(-halveDeltaX, -halveDeltaY));
             box.Points.Add(new Vector(halveDeltaX, -halveDeltaY));
@@ -104,8 +104,8 @@ namespace DawnOnline.Simulation.Builders
             // Temp: untill Polygons are also moved to farseer
             Polygon box = new Polygon();
             {
-                float halveDeltaX = (float) (radius/2.0);
-                float halveDeltaY = (float) (radius/2.0);
+                float halveDeltaX = (float) (radius);
+                float halveDeltaY = (float) (radius);
 
                 box.Points.Add(new Vector(-halveDeltaX, -halveDeltaY));
                 box.Points.Add(new Vector(halveDeltaX, -halveDeltaY));

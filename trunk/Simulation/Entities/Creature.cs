@@ -21,7 +21,7 @@ namespace DawnOnline.Simulation.Entities
         private AbstractBrain _brain;
 
         public EntityType Specy { get; set; }
-        public EntityType FoodSpecy { get; set; }
+        public List<EntityType> FoodSpecies { get; set; }
         //public int Age { get; private set; }
 
         public Placement Place { get { return _place; } }
@@ -294,15 +294,15 @@ namespace DawnOnline.Simulation.Entities
             }
         }
 
-        internal Creature FindCreatureToAttack(EntityType ofType)
+        internal Creature FindCreatureToAttack(List<EntityType> ofTypes)
         {
             var attackMiddle = new Vector2(
                 (float)(Place.Position.X + Math.Cos(Place.Angle) * CharacterSheet.MeleeRange),
                 (float)(Place.Position.Y + Math.Sin(Place.Angle) * CharacterSheet.MeleeRange));
 
-            var creaturesToAttack = ofType == EntityType.Unknown ?  
+            var creaturesToAttack = ofTypes == null ?  
                 MyEnvironment.GetCreaturesInRange(attackMiddle, CharacterSheet.MeleeRange) : 
-                MyEnvironment.GetCreaturesInRange(attackMiddle, CharacterSheet.MeleeRange, ofType);
+                MyEnvironment.GetCreaturesInRange(attackMiddle, CharacterSheet.MeleeRange, ofTypes);
 
             foreach (Creature current in creaturesToAttack)
             {
@@ -325,7 +325,7 @@ namespace DawnOnline.Simulation.Entities
             if (!CanAttack())
                 return;
 
-            var creatureToAttack = FindCreatureToAttack(EntityType.Unknown);
+            var creatureToAttack = FindCreatureToAttack(null);
             if (creatureToAttack == null)
                 return;
 

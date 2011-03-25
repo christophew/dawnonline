@@ -18,7 +18,7 @@ namespace DawnOnline.Simulation.Brains
             Debug.Assert(_initialized);
 
             // Find something to attack
-            var creaturesToAttack = MyCreature.FindCreatureToAttack(MyCreature.FoodSpecy);
+            var creaturesToAttack = MyCreature.FindCreatureToAttack(MyCreature.FoodSpecies);
             if (creaturesToAttack != null)
             {
                 MyCreature.Attack(creaturesToAttack);
@@ -26,17 +26,17 @@ namespace DawnOnline.Simulation.Brains
             }
 
             // Move
-            if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) && _forwardEye.SeesACreature(MyCreature.FoodSpecy))
+            if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) && _forwardEye.SeesACreature(MyCreature.FoodSpecies))
             {
                 MyCreature.RunForward();
                 return;
             }
-            if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) && _leftEye.SeesACreature(MyCreature.FoodSpecy))
+            if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) && _leftEye.SeesACreature(MyCreature.FoodSpecies))
             {
                 MyCreature.TurnLeft();
                 return;
             }
-            if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) && _rightEye.SeesACreature(MyCreature.FoodSpecy))
+            if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) && _rightEye.SeesACreature(MyCreature.FoodSpecies))
             {
                 MyCreature.TurnRight();
                 return;
