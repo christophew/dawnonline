@@ -22,7 +22,7 @@ namespace DawnGame.Cameras
 
         public BirdsEyeFollowCamera(GraphicsDevice device, float height, float velocity, ICreature creature)
         {
-            _cameraPosition = new Vector3(0, height, 0);
+            _cameraPosition = new Vector3(creature.Place.Position.X, height, creature.Place.Position.Y);
             _cameraVelocity = velocity;
             _creature = creature;
 
