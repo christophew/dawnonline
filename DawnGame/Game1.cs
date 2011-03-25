@@ -54,6 +54,7 @@ namespace DawnGame
         private Model _bulletModel;
         private Model _gunModel;
         private Model _treasureModel;
+        private Model _predatorFactoryModel;
 
         Random _randomize = new Random();
 
@@ -139,6 +140,7 @@ namespace DawnGame
             _gunModel = Content.Load<Model>(@"gun");
             _creatureModel_Avatar = Content.Load<Model>(@"directx");
             _treasureModel = Content.Load<Model>(@"cube3");
+            _predatorFactoryModel = Content.Load<Model>(@"Factory4");
 
             _wallTexture = Content.Load<Texture2D>(@"Textures\brickThumb");
 
@@ -251,9 +253,19 @@ namespace DawnGame
             if (keyboardState.IsKeyDown(Keys.Down) || keyboardState.IsKeyDown(Keys.S))
                 _dawnWorld.Avatar.WalkBackward();
             if (keyboardState.IsKeyDown(Keys.Left) || keyboardState.IsKeyDown(Keys.Q))
-                _dawnWorld.Avatar.TurnLeft();
+            {
+                if (keyboardState.IsKeyDown(Keys.LeftShift))
+                    _dawnWorld.Avatar.TurnLeftSlow();
+                else
+                    _dawnWorld.Avatar.TurnLeft();
+            }
             if (keyboardState.IsKeyDown(Keys.Right) || keyboardState.IsKeyDown(Keys.D))
-                _dawnWorld.Avatar.TurnRight();
+            {
+                if (keyboardState.IsKeyDown(Keys.LeftShift))
+                    _dawnWorld.Avatar.TurnRightSlow();
+                else
+                    _dawnWorld.Avatar.TurnRight();
+            }
             if (keyboardState.IsKeyDown(Keys.A))
                 _dawnWorld.Avatar.StrafeLeft();
             if (keyboardState.IsKeyDown(Keys.E))
@@ -533,19 +545,21 @@ namespace DawnGame
         private void DrawCube(IEntity obstacle)
         {
             if (obstacle.Specy == EntityType.Box)
-                DrawGameObject(obstacle.Place, _cubeModel, 25f);
+                DrawGameObject(obstacle.Place, _cubeModel, 25f, 0);
             if (obstacle.Specy == EntityType.Wall)
-                DrawGameObject(obstacle.Place, _wallModel, 25f);
+                DrawGameObject(obstacle.Place, _wallModel, 25f, 0);
             if (obstacle.Specy == EntityType.Treasure)
-                DrawGameObject(obstacle.Place, _treasureModel, 5f);
+                DrawGameObject(obstacle.Place, _treasureModel, 5f, 0);
+            if (obstacle.Specy == EntityType.PredatorFactory)
+                DrawGameObject(obstacle.Place, _predatorFactoryModel, 50f, -50);
         }
 
         private void DrawBullet(Bullet bullet)
         {
-            DrawGameObject(bullet.Placement, _bulletModel, 1.5f);
+            DrawGameObject(bullet.Placement, _bulletModel, 1.5f, 0);
         }
 
-        private void DrawGameObject(Placement placement, Model model, float scale)
+        private void DrawGameObject(Placement placement, Model model, float scale, float yOffset)
         {
             var gamePlacement = new GameObject();
 
@@ -553,7 +567,7 @@ namespace DawnGame
             var angle = placement.Angle;
 
             gamePlacement.model = model;
-            gamePlacement.position = new Vector3(pos.X, 0f, pos.Y);
+            gamePlacement.position = new Vector3(pos.X, yOffset, pos.Y);
             // MathHelper.PiOver2 correction => geen idee waarom mijn meshes dit nodig hebben, maar ja...
             gamePlacement.rotation = new Vector3(MathHelper.PiOver2, -(float)angle, 0);
             gamePlacement.scale = scale;

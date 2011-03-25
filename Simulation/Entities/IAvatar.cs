@@ -9,6 +9,8 @@ namespace DawnOnline.Simulation.Entities
     {
         void TurnLeft();
         void TurnRight();
+        void TurnLeftSlow();
+        void TurnRightSlow();
         void StrafeLeft();
         void StrafeRight();
         void RunForward();

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using DawnOnline.Simulation.Brains;
+using DawnOnline.Simulation.Builders;
 using DawnOnline.Simulation.Statistics;
 using DawnOnline.Simulation.Collision;
 using DawnOnline.Simulation.Tools;
@@ -111,6 +112,7 @@ namespace DawnOnline.Simulation.Entities
 
         public void ApplyActionQueue(double timeDelta)
         {
+            // toSeconds is NOT needed for farseer updates => uses timeDelta in own update
             double toSeconds = timeDelta / 1000.0;
 
             _characterSheet.Damage.Increase((int)_actionQueue.Damage);
@@ -125,7 +127,9 @@ namespace DawnOnline.Simulation.Entities
 
             // Move
             _place.Fixture.Body.ApplyForce(_actionQueue.ForwardMotion + _actionQueue.StrafeMotion);
-            _place.Fixture.Body.Rotation += (float)(_actionQueue.TurnMotion * toSeconds);
+            //_place.Fixture.Body.Rotation += (float)(_actionQueue.TurnMotion * toSeconds);
+            //_place.Fixture.Body.ApplyAngularImpulse(((float)(_actionQueue.TurnMotion)));
+            _place.Fixture.Body.AngularVelocity = (float)_actionQueue.TurnMotion;
 
             // Fatigue
             CharacterSheet.Fatigue.Increase((int)(_actionQueue.FatigueCost * toSeconds));
@@ -134,7 +138,7 @@ namespace DawnOnline.Simulation.Entities
             if (_actionQueue.Fire)
             {
                 var bulletAngleVector = new Vector2((float)Math.Cos(_place.Angle), (float)Math.Sin(_place.Angle));
-                var bullet = SimulationFactory.CreateBullet(CharacterSheet.RangeDamage);
+                var bullet = BulletBuilder.CreateBullet(CharacterSheet.RangeDamage);
                 //bullet.Launch(bulletAngleVector);
                 {
                     MyEnvironment.AddBullet(bullet, _place.Fixture.Body.Position + bulletAngleVector * 30);
@@ -149,7 +153,7 @@ namespace DawnOnline.Simulation.Entities
             if (_actionQueue.FireRocket)
             {
                 var bulletAngleVector = new Vector2((float)Math.Cos(_place.Angle), (float)Math.Sin(_place.Angle));
-                var bullet = SimulationFactory.CreateRocket(CharacterSheet.RangeDamage);
+                var bullet = BulletBuilder.CreateRocket(CharacterSheet.RangeDamage);
                 //bullet.Launch(bulletAngleVector);
                 {
                     MyEnvironment.AddBullet(bullet, _place.Fixture.Body.Position + bulletAngleVector * 30);
@@ -231,6 +235,16 @@ namespace DawnOnline.Simulation.Entities
         public void TurnRight()
         {
             _actionQueue.TurnMotion = CharacterSheet.TurningAngle;
+        }
+
+        public void TurnLeftSlow()
+        {
+            _actionQueue.TurnMotion = -CharacterSheet.TurningAngle / 3.0;
+        }
+
+        public void TurnRightSlow()
+        {
+            _actionQueue.TurnMotion = CharacterSheet.TurningAngle / 3.0;
         }
 
         public void StrafeLeft()
@@ -347,7 +361,7 @@ namespace DawnOnline.Simulation.Entities
                 return false;
 
 
-            Creature child = SimulationFactory.CreateCreature(Specy) as Creature;
+            Creature child = CreatureBuilder.CreateCreature(Specy) as Creature;
 
             MyEnvironment.AddCreature(
                 child,
