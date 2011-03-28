@@ -121,7 +121,7 @@ namespace DawnGame
             }
         }
 
-        private void AddCreatures(EntityType specy, int amount)
+        public void AddCreatures(EntityType specy, int amount)
         {
             for (int i = 0; i < amount;)
             {

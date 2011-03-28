@@ -19,5 +19,7 @@ namespace DawnOnline.Simulation.Entities
 
         void Fire();
         void FireRocket();
+
+        void BuildEntity(EntityType entityType);
     }
 }

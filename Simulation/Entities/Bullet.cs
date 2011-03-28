@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using DawnOnline.Simulation.Entities;
+﻿using System.Diagnostics;
 using DawnOnline.Simulation.Tools;
 using FarseerPhysics.Common.PhysicsLogic;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
 
-namespace DawnOnline.Simulation
+namespace DawnOnline.Simulation.Entities
 {
-    public class Bullet
+    internal class Bullet : IEntity
     {
-        public Placement Placement { get; internal set; }
+        public Placement Place { get; internal set; }
+        public EntityType Specy { get { return EntityType.Bullet; } }
+
         public double Damage { get; internal set; }
         public bool Explodes { get; internal set; }
         //public double Force { get; internal set; }
@@ -27,8 +24,8 @@ namespace DawnOnline.Simulation
 
         internal void Launch(Vector2 direction)
         {
-            Environment.GetWorld().AddBullet(this, Placement.Fixture.Body.Position + direction * 30);
-            Placement.Fixture.Body.ApplyLinearImpulse(direction * 300);
+            Environment.GetWorld().AddBullet(this, Place.Fixture.Body.Position + direction * 30);
+            Place.Fixture.Body.ApplyLinearImpulse(direction * 300);
         }
 
         public static bool OnCollision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
@@ -52,7 +49,7 @@ namespace DawnOnline.Simulation
             {
                 var explosion = new Explosion(Environment.GetWorld().FarSeerWorld);
                 //explosion.IgnoreWhenInsideShape = true;
-                var hits = explosion.Activate(bullet.Placement.Fixture.Body.Position, bullet.Range, bullet.MaxForce);
+                var hits = explosion.Activate(bullet.Place.Fixture.Body.Position, bullet.Range, bullet.MaxForce);
                 foreach (var hit in hits)
                 {
                     var explosionTarget = hit.Key.UserData as Creature;

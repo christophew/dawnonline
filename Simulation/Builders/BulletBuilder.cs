@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DawnOnline.Simulation.Collision;
+using DawnOnline.Simulation.Entities;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
 
@@ -29,7 +30,7 @@ namespace DawnOnline.Simulation.Builders
             placement.Fixture.OnCollision += Bullet.OnCollision;
             placement.Fixture.AfterCollision += Bullet.AfterCollision;
 
-            bullet.Placement = placement;
+            bullet.Place = placement;
             bullet.Damage = damage;
             bullet.Explodes = false;
             placement.Fixture.UserData = bullet;
@@ -56,7 +57,7 @@ namespace DawnOnline.Simulation.Builders
             placement.Fixture.OnCollision += Bullet.OnCollision;
             placement.Fixture.AfterCollision += Bullet.AfterCollision;
 
-            bullet.Placement = placement;
+            bullet.Place = placement;
             bullet.Damage = damage;
             bullet.Explodes = true;
             placement.Fixture.UserData = bullet;

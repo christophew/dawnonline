@@ -26,7 +26,7 @@ namespace DawnOnline.Simulation
         List<ICreature> _creatures = new List<ICreature>();
         Dictionary<EntityType, List<ICreature>> _creaturesPerSpecy = new Dictionary<EntityType, List<ICreature>>();
         List<IEntity> _obstacles = new List<IEntity>();
-        List<Bullet> _bullets = new List<Bullet>();
+        List<IEntity> _bullets = new List<IEntity>();
 
 
         private Environment()
@@ -137,9 +137,9 @@ namespace DawnOnline.Simulation
             _obstacles.Remove(obstacle);
         }
 
-        public bool AddBullet(Bullet bullet, Vector2 origin)
+        internal bool AddBullet(Bullet bullet, Vector2 origin)
         {
-            bullet.Placement.OffsetPosition(origin, 0.0);
+            bullet.Place.OffsetPosition(origin, 0.0);
 
             //if (IntersectsWithObstacles(obstacle))
             //    return false;
@@ -149,9 +149,9 @@ namespace DawnOnline.Simulation
             return true;
         }
 
-        public void RemoveBullet(Bullet bullet)
+        internal void RemoveBullet(Bullet bullet)
         {
-            FarSeerWorld.RemoveBody(bullet.Placement.Fixture.Body);
+            FarSeerWorld.RemoveBody(bullet.Place.Fixture.Body);
             _bullets.Remove(bullet);
         }
 
@@ -160,7 +160,7 @@ namespace DawnOnline.Simulation
             return _obstacles;
         }
 
-        public IList<Bullet> GetBullets()
+        public IList<IEntity> GetBullets()
         {
             return _bullets;
         }

@@ -1,41 +1,44 @@
-﻿using Microsoft.Xna.Framework;
+﻿using DawnGame.Cameras;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DawnGame
 {
     class GameObject
     {
-        public Model model = null;
-        public Vector3 position = Vector3.Zero;
-        public Vector3 rotation = Vector3.Zero;
-        public float scale = 1f;
-        public Vector3 velocity = Vector3.Zero;
+        private Model _model = null;
+        private Vector3 _originalPosition = Vector3.Zero;
+        private Vector3 _originalRotation = Vector3.Zero;
+        private float _scale = 1f;
 
-        public void DrawObject(Matrix viewMatrix, Matrix projMatrix)
+        public GameObject(Model model, Vector3 rotation, Vector3 position, float scale)
         {
-            foreach (var mesh in model.Meshes)
+            _model = model;
+            _originalRotation = rotation;
+            _originalPosition = position;
+            _scale = scale;
+        }
+
+        public void DrawObject(ICamera camera, Vector3 position, Vector3 rotation)
+        {
+            var totalRotation = _originalRotation + rotation;
+            var totalPosition = _originalPosition + position;
+            var worldMatrix = Matrix.CreateFromYawPitchRoll(totalRotation.Y, totalRotation.X, totalRotation.Z)
+                              *Matrix.CreateScale(_scale)
+                              *Matrix.CreateTranslation(totalPosition);
+
+            foreach (var mesh in _model.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
                     effect.EnableDefaultLighting();
                     effect.PreferPerPixelLighting = true;
-
-                    //effect.World = Matrix.CreateTranslation(gameObject.position);
-
-                    effect.World = Matrix.CreateFromYawPitchRoll(
-                                       rotation.Y,
-                                       rotation.X,
-                                       rotation.Z) *
-                                   Matrix.CreateScale(scale) *
-                                   Matrix.CreateTranslation(position);
-
-
-                    effect.Projection = projMatrix;
-                    effect.View = viewMatrix;
+                    effect.World = worldMatrix;
+                    effect.Projection = camera.Projection;
+                    effect.View = camera.View;
                 }
                 mesh.Draw();
             }
         }
-
     }
 }
