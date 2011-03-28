@@ -142,7 +142,7 @@ namespace DawnOnline.Simulation.Entities
                 //bullet.Launch(bulletAngleVector);
                 {
                     MyEnvironment.AddBullet(bullet, _place.Fixture.Body.Position + bulletAngleVector * 30);
-                    bullet.Placement.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 300);
+                    bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 300);
                 }
 
                 _actionQueue.HasFired = true;
@@ -157,7 +157,7 @@ namespace DawnOnline.Simulation.Entities
                 //bullet.Launch(bulletAngleVector);
                 {
                     MyEnvironment.AddBullet(bullet, _place.Fixture.Body.Position + bulletAngleVector * 30);
-                    bullet.Placement.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 200);
+                    bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 200);
                 }
 
                 _actionQueue.HasFired = true;
@@ -168,6 +168,12 @@ namespace DawnOnline.Simulation.Entities
             if (_actionQueue.HasAttacked || _actionQueue.HasFired)
             {
                 _actionQueue.LastAttackTime = DateTime.Now;
+            }
+
+            // Build
+            if (_actionQueue.BuildEntityOfType != EntityType.Unknown)
+            {
+                DoBuildEntity(_actionQueue.BuildEntityOfType);
             }
         }
 
@@ -317,7 +323,7 @@ namespace DawnOnline.Simulation.Entities
         {
             if (!Alive)
                 return false;
-            return ((DateTime.Now - _actionQueue.LastAttackTime).TotalSeconds > CharacterSheet.CoolDown);
+            return ((DateTime.Now - _actionQueue.LastAttackTime).TotalSeconds > CharacterSheet.AttackCoolDown);
         }
 
         public void Attack()
@@ -377,6 +383,30 @@ namespace DawnOnline.Simulation.Entities
             return true;
         }
 
+        public void BuildEntity(EntityType entityType)
+        {
+            if ((DateTime.Now - _actionQueue.LastBuildTime).TotalSeconds > CharacterSheet.BuildCoolDown)
+            {
+                _actionQueue.BuildEntityOfType = entityType;
+            }
+        }
+
+        public void DoBuildEntity(EntityType entityType)
+        {
+            if (entityType == EntityType.Unknown)
+            {
+                return;
+            }
+            if (entityType == EntityType.Turret)
+            {
+                var turret = CreatureBuilder.CreateTurret();
+                MyEnvironment.AddCreature(turret, Place.Position, Place.Angle);
+                _actionQueue.LastBuildTime = DateTime.Now;
+                return;
+            }
+
+            throw new NotSupportedException();
+        }
 
     }
 }

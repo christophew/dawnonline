@@ -1,5 +1,6 @@
 ﻿using System;
 using DawnOnline.Simulation.Collision;
+using DawnOnline.Simulation.Entities;
 using Microsoft.Xna.Framework;
 
 namespace DawnOnline.Simulation
@@ -15,7 +16,11 @@ namespace DawnOnline.Simulation
         internal bool FireRocket { get; set; }
         internal bool HasAttacked { get; set; }
         internal bool HasFired { get; set; }
+        internal EntityType BuildEntityOfType { get; set; }
+
+        // Timers: not cleared
         internal DateTime LastAttackTime { get; set; }
+        internal DateTime LastBuildTime { get; set; }
 
         internal void ClearForRound()
         {
@@ -25,6 +30,7 @@ namespace DawnOnline.Simulation
             ForwardMotion = Vector2.Zero;
             HasAttacked = false;
             HasFired = false;
+            BuildEntityOfType = EntityType.Unknown;
         }
     }
 }

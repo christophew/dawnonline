@@ -77,50 +77,36 @@ namespace DawnOnline.Simulation.Senses
             }
 
             // Check obstacles
-            _fixturesInRay = new List<Fixture>();
-            var me = this;
-            Environment.GetWorld().FarSeerWorld.RayCast(me.RayCastCallback, _creature.Place.Position, current.Place.Position);
-
-            // Fixtures are NOT hit by the ray in sequence
-            // = we'll have to find the closest entity that was hit ourselves
-            Fixture closestFixture = FindClosestFixture(_creature.Place.Position, _fixturesInRay);
-
-            var closestEntity = closestFixture != null ? closestFixture.UserData as IEntity : null;
-            if (closestEntity == current)
-                return true;
+            {
+                _creatureToFind = current;
+                _creatureBlocked = false;
+                Environment.GetWorld().FarSeerWorld.RayCast(this.RayCastCallback2, _creature.Place.Position, current.Place.Position);
+                if (!_creatureBlocked)
+                    return true;
+            }
 
 
             return false;
         }
 
-        private List<Fixture> _fixturesInRay;
+        private Creature _creatureToFind;
+        private bool _creatureBlocked;
 
-        internal float RayCastCallback(Fixture fixture, Vector2 point, Vector2 normal, float fraction)
+        internal float RayCastCallback2(Fixture fixture, Vector2 point, Vector2 normal, float fraction)
         {
             //return -1: ignore this fixture and continue
             //return 0: terminate the ray cast
             //return fraction: clip the ray to this point
             //return 1: don't clip the ray and continue
 
-            _fixturesInRay.Add(fixture);
-            return -1;
-        }
-
-        private static Fixture FindClosestFixture(Vector2 origin, IEnumerable<Fixture> fixtures)
-        {
-            Fixture closestFixture = null;
-            double closestDistance = float.MaxValue;
-            foreach (var fixture in fixtures)
+            var creature = fixture.UserData as Creature;
+            //if ((creature != _creatureToFind) && (creature != _creature))
+            if (creature != _creatureToFind)
             {
-                var currentDistance = MathTools.GetDistance(origin, fixture.Body.Position);
-                if (currentDistance < closestDistance)
-                {
-                    closestDistance = currentDistance;
-                    closestFixture = fixture;
-                }
+                _creatureBlocked = true;
+                return 0;
             }
-
-            return closestFixture;
+            return -1;
         }
     }
 }

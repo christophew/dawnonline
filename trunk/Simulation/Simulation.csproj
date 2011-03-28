@@ -81,7 +81,7 @@
     <Compile Include="Builders\BulletBuilder.cs" />
     <Compile Include="Builders\CreatureBuilder.cs" />
     <Compile Include="Builders\ObstacleBuilder.cs" />
-    <Compile Include="Bullet.cs" />
+    <Compile Include="Entities\Bullet.cs" />
     <Compile Include="Collision\CollisionDetection.cs" />
     <Compile Include="Collision\IPolygon.cs" />
     <Compile Include="Collision\Polygon.cs" />

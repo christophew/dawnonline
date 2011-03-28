@@ -38,25 +38,20 @@ namespace DawnGame
         private Matrix _viewProjMatrix;
 
         RoundLineManager roundLineManager;
-        bool aButtonDown = false;
         int roundLineTechniqueIndex = 0;
         string[] roundLineTechniqueNames;
 
         DawnWorld _dawnWorld = new DawnWorld();
 
-        private Model _creatureModel;
-        private Model _creatureModel_Avatar;
-        private Model _creatureModel_Monkey;
-        private Model _cubeModel;
-        private Model _wallModel;
-        private Model _bulletModel;
-        private Model _gunModel;
-        private Model _treasureModel;
-        private Model _predatorFactoryModel;
-
-        Random _randomize = new Random();
-
-        VertexDeclaration vertexDeclaration;
+        private GameObject _creatureModel;
+        private GameObject _creatureModel_Avatar;
+        //private GameObject _creatureModel_Monkey;
+        private GameObject _cubeModel;
+        private GameObject _wallModel;
+        private GameObject _bulletModel;
+        private GameObject _gunModel;
+        private GameObject _treasureModel;
+        private GameObject _predatorFactoryModel;
 
         Matrix lineWorldMatrix = Matrix.CreateRotationX(MathHelper.PiOver2); // draw lines on the z-plane
 
@@ -92,35 +87,6 @@ namespace DawnGame
         }
 
         /// <summary>
-        /// Create a simple 2D projection matrix
-        /// </summary>
-        private Matrix Create2DProjectionMatrix()
-        {
-            // Projection matrix ignores Z and just squishes X or Y to balance the upcoming viewport stretch
-            float projScaleX;
-            float projScaleY;
-            float width = graphics.GraphicsDevice.Viewport.Width;
-            float height = graphics.GraphicsDevice.Viewport.Height;
-            if (width > height)
-            {
-                // Wide window
-                projScaleX = height / width;
-                projScaleY = 1.0f;
-            }
-            else
-            {
-                // Tall window
-                projScaleX = 1.0f;
-                projScaleY = width / height;
-            }
-            var projMatrix2D = Matrix.CreateScale(projScaleX, projScaleY, 0f);
-            //projMatrix2D = Matrix.CreateScale(projScaleX, 0f, projScaleY);
-            projMatrix2D.M43 = 0.5f;
-
-            return projMatrix2D;
-        }
-
-        /// <summary>
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
         /// </summary>
@@ -130,15 +96,20 @@ namespace DawnGame
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             font = Content.Load<SpriteFont>(@"fonts\MyFont");
-            _creatureModel = Content.Load<Model>(@"shark");
-            _cubeModel = Content.Load<Model>(@"box");
-            _wallModel = Content.Load<Model>(@"brickwall");
-            //_bulletModel = Content.Load<Model>(@"bullet");
-            _bulletModel = Content.Load<Model>(@"firebullet");
-            _gunModel = Content.Load<Model>(@"gun");
-            _creatureModel_Avatar = Content.Load<Model>(@"directx");
-            _treasureModel = Content.Load<Model>(@"cube3");
-            _predatorFactoryModel = Content.Load<Model>(@"Factory4");
+
+            _creatureModel = new GameObject(Content.Load<Model>(@"shark"), new Vector3(MathHelper.PiOver2, 0, 0), Vector3.Zero, 10f);
+            _creatureModel_Avatar = new GameObject(Content.Load<Model>(@"directx"), new Vector3(MathHelper.PiOver2, 0, 0), Vector3.Zero, 10f);
+            _gunModel = new GameObject(Content.Load<Model>(@"gun"), new Vector3(MathHelper.PiOver2, 0, -MathHelper.PiOver2), Vector3.Zero, 7f);
+
+            _cubeModel = new GameObject(Content.Load<Model>(@"box"), Vector3.Zero, Vector3.Zero, 25f);
+            _wallModel = new GameObject(Content.Load<Model>(@"brickwall"), Vector3.Zero, Vector3.Zero, 25f);
+            _predatorFactoryModel = new GameObject(Content.Load<Model>(@"Factory4"), Vector3.One, new Vector3(0, -50, 0), 50f);
+
+            //_bulletModel = new GameObject(Content.Load<Model>(@"bullet"), Vector3.Zero, 1f);
+            _bulletModel = new GameObject(Content.Load<Model>(@"firebullet"), Vector3.Zero, Vector3.Zero, 1.5f);
+
+            _treasureModel = new GameObject(Content.Load<Model>(@"cube3"), Vector3.Zero, Vector3.Zero, 5f);
+
 
             _wallTexture = Content.Load<Texture2D>(@"Textures\brickThumb");
 
@@ -147,21 +118,12 @@ namespace DawnGame
             roundLineManager.Init(GraphicsDevice, Content);
             roundLineTechniqueNames = roundLineManager.TechniqueNames;
 
-            _wallManager = new WallManager(GraphicsDevice, _wallTexture);
 
 
             _camera = new BirdsEyeFollowCamera(GraphicsDevice, 800, 500, _dawnWorld.Avatar);
             //_camera = new BirdsEyeCamera(GraphicsDevice, new Vector3(1500f, 2000f, 1000f), 500);
             //_camera = new AvatarCamera(GraphicsDevice, _dawnWorld.Avatar);
             //_camera = new FirstPersonCamera(Window, 100);
-
-
-            //Create2DProjectionMatrix();
-
-            //InitializeEffect();
-            //InitializePointList();
-            //InitializeLineList();
-            //InitializeLineStrip();
         }
 
         /// <summary>
@@ -175,6 +137,7 @@ namespace DawnGame
 
         private static TimeSpan _lastThink;
         private static TimeSpan _lastMove;
+        private static DateTime _creaturesAddedAt;
 
         /// <summary>
         /// Allows the game to run logic such as updating the world,
@@ -192,8 +155,15 @@ namespace DawnGame
             // Avatar
             UpdateAvatar();
 
+            // World
+            if (keyboardState.IsKeyDown(Keys.P) && ((DateTime.Now - _creaturesAddedAt).TotalSeconds > 5))
+            {
+                _dawnWorld.AddCreatures(EntityType.Predator, 10);
+                _creaturesAddedAt = DateTime.Now;
+            }
+
             // Think = Decide where to move
-            if ((gameTime.TotalGameTime - _lastThink).TotalMilliseconds > 50)
+            if ((gameTime.TotalGameTime - _lastThink).TotalMilliseconds > 0)
             {
                 _thinkTimer.Reset();
                 _thinkTimer.Start();
@@ -263,6 +233,9 @@ namespace DawnGame
                 _dawnWorld.Avatar.Fire();
             if (keyboardState.IsKeyDown(Keys.LeftControl))
                 _dawnWorld.Avatar.FireRocket();
+
+            if (keyboardState.IsKeyDown(Keys.T))
+                _dawnWorld.Avatar.BuildEntity(EntityType.Turret);
         }
 
         private void UpdateCamera()
@@ -337,7 +310,8 @@ namespace DawnGame
                     foreach (var current in creatures)
                     {
                         //DrawCreature(current, roundLineManager, viewProjMatrix, time, curTechniqueName);
-                        DrawCreature(current);
+                        DrawEntity(current);
+                        DrawCreatureInfo(current);
                     }
                 }
             }
@@ -406,23 +380,12 @@ namespace DawnGame
             }
         }
 
-        private void Draw3DWorld()
-        {
-            Create3DWorld();
-
-            //foreach (var shape in _worldShapes)
-            //{
-            //    shape.Draw(GraphicsDevice, _camera.View, _camera.Projection);
-            //}
-            _wallManager.Draw(_worldShapes, GraphicsDevice, _camera.View, _camera.Projection);
-        }
-
         private void DrawCubeWorld()
         {
             var obstacles = _dawnWorld.Environment.GetObstacles();
             foreach (var current in obstacles)
             {
-                DrawCube(current);
+                DrawEntity(current);
             }
         }
 
@@ -431,12 +394,11 @@ namespace DawnGame
             var obstacles = _dawnWorld.Environment.GetBullets();
             foreach (var current in obstacles)
             {
-                DrawBullet(current);
+                DrawEntity(current);
             }
         }
 
         private List<BasicShape> _worldShapes;
-        private WallManager _wallManager;
 
         private void Create3DWorld()
         {
@@ -489,40 +451,46 @@ namespace DawnGame
             return shape;
         }
 
-        private void DrawCreature(ICreature creature)
+        private void DrawEntity(IEntity entity)
         {
-            GameObject gameCreature = new GameObject();
+            var rotation = new Vector3(0, -entity.Place.Angle, 0);
+            var position = new Vector3(entity.Place.Position.X, 0f, entity.Place.Position.Y);
 
-            var pos = creature.Place.Position;
-            var angle = creature.Place.Angle;
-
-            // MathHelper.PiOver2 correction => geen idee waarom mijn meshes dit nodig hebben, maar ja...
-            gameCreature.rotation = new Vector3(MathHelper.PiOver2, -(float)angle, 0);
-            gameCreature.position = new Vector3((float)(pos.X), 0f, (float)(pos.Y));
-            gameCreature.scale = 10f;
-
-            switch (creature.Specy)
+            switch (entity.Specy)
             {
                 case EntityType.Avatar:
-                    gameCreature.model = _creatureModel_Avatar;
+                    _creatureModel_Avatar.DrawObject(_camera, position, rotation);
                     break;
                 case EntityType.Predator:
-                    gameCreature.model = _creatureModel;
+                    _creatureModel.DrawObject(_camera, position, rotation);
                     break;
                 case EntityType.Turret:
-                    gameCreature.model = _gunModel;
-                    // MathHelper.PiOver2 correction => geen idee waarom mijn meshes dit nodig hebben, maar ja...
-                    gameCreature.rotation = new Vector3(MathHelper.PiOver2, -angle, -MathHelper.PiOver2);
-                    gameCreature.scale = 7f;
-                   break;
-                default:
-                    gameCreature.model = _creatureModel;
+                    _gunModel.DrawObject(_camera, position, rotation);
                     break;
+                case EntityType.Box:
+                    _cubeModel.DrawObject(_camera, position, rotation);
+                    break;
+                case EntityType.Wall:
+                    _wallModel.DrawObject(_camera, position, rotation);
+                    break;
+                case EntityType.Treasure:
+                    _treasureModel.DrawObject(_camera, position, rotation);
+                    break;
+                case EntityType.PredatorFactory:
+                    _predatorFactoryModel.DrawObject(_camera, position, rotation);
+                    break;
+                case EntityType.Bullet:
+                    _bulletModel.DrawObject(_camera, position, rotation);
+                    break;
+                default:
+                    throw new NotSupportedException();
             }
+        }
 
-
-            gameCreature.DrawObject(_camera.View, _camera.Projection);
-
+        private void DrawCreatureInfo(ICreature creature)
+        {
+            var pos = creature.Place.Position;
+            var angle = creature.Place.Angle;
             Color color = creature.CanAttack() ? Color.Black : Color.Red;
 
             var attackMiddle = new Vector2(
@@ -530,39 +498,6 @@ namespace DawnGame
                 (float)(pos.Y + Math.Sin(angle) * creature.CharacterSheet.MeleeRange));
 
             DrawCircle(attackMiddle, creature.CharacterSheet.MeleeRange, color);
-        }
-
-        private void DrawCube(IEntity obstacle)
-        {
-            if (obstacle.Specy == EntityType.Box)
-                DrawGameObject(obstacle.Place, _cubeModel, 25f, 0);
-            if (obstacle.Specy == EntityType.Wall)
-                DrawGameObject(obstacle.Place, _wallModel, 25f, 0);
-            if (obstacle.Specy == EntityType.Treasure)
-                DrawGameObject(obstacle.Place, _treasureModel, 5f, 0);
-            if (obstacle.Specy == EntityType.PredatorFactory)
-                DrawGameObject(obstacle.Place, _predatorFactoryModel, 50f, -50);
-        }
-
-        private void DrawBullet(Bullet bullet)
-        {
-            DrawGameObject(bullet.Placement, _bulletModel, 1.5f, 0);
-        }
-
-        private void DrawGameObject(Placement placement, Model model, float scale, float yOffset)
-        {
-            var gamePlacement = new GameObject();
-
-            var pos = placement.Position;
-            var angle = placement.Angle;
-
-            gamePlacement.model = model;
-            gamePlacement.position = new Vector3(pos.X, yOffset, pos.Y);
-            // MathHelper.PiOver2 correction => geen idee waarom mijn meshes dit nodig hebben, maar ja...
-            gamePlacement.rotation = new Vector3(MathHelper.PiOver2, -(float)angle, 0);
-            gamePlacement.scale = scale;
-
-            gamePlacement.DrawObject(_camera.View, _camera.Projection);
         }
 
         private void DrawPolygon(IList<Vector> points, float time, string curTechniqueName)

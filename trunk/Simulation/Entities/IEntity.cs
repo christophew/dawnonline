@@ -17,7 +17,8 @@ namespace DawnOnline.Simulation.Entities
         Wall,
         Box,
         Treasure,
-        PredatorFactory
+        PredatorFactory,
+        Bullet
     }
 
     public interface IEntity
