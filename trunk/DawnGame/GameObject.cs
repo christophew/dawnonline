@@ -36,6 +36,16 @@ namespace DawnGame
                     effect.World = worldMatrix;
                     effect.Projection = camera.Projection;
                     effect.View = camera.View;
+
+
+                    // testen
+                    effect.FogEnabled = camera.FogEnabled;
+                    effect.FogColor = Color.Gray.ToVector3();
+                    //effect.FogStart = 9.75f;
+                    //effect.FogEnd = 10.25f;
+                    effect.FogStart = 200;
+                    effect.FogEnd = 2000;
+
                 }
                 mesh.Draw();
             }

@@ -8,6 +8,8 @@ namespace DawnGame.Cameras
     {
         public Matrix View { get; private set; }
         public Matrix Projection { get; private set; }
+        public Vector3 Position { get { return _cameraPosition; } }
+        public bool FogEnabled { get { return false; } }
 
         private Vector3 _cameraPosition;
         private float _cameraVelocity;

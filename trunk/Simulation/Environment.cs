@@ -180,6 +180,7 @@ namespace DawnOnline.Simulation
 
             // Update physics
             FarSeerWorld.Step(MathHelper.Min((float)timeDelta, 1f / 30f));
+            //FarSeerWorld.Step((float)timeDelta / 1000);
         }
 
         internal IList<ICreature> GetCreaturesInRange(Vector2 position, double radius)
