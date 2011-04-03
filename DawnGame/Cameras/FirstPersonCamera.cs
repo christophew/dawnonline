@@ -7,6 +7,8 @@ namespace DawnGame.Cameras
     {
         public Matrix View { get; private set; }
         public Matrix Projection { get; private set; }
+        public Vector3 Position { get { return _position; } }
+        public bool FogEnabled { get { return true; } }
 
         //private Matrix World;
 

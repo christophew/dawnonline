@@ -127,9 +127,7 @@ namespace DawnOnline.Simulation.Entities
 
             // Move
             _place.Fixture.Body.ApplyForce(_actionQueue.ForwardMotion + _actionQueue.StrafeMotion);
-            //_place.Fixture.Body.Rotation += (float)(_actionQueue.TurnMotion * toSeconds);
-            //_place.Fixture.Body.ApplyAngularImpulse(((float)(_actionQueue.TurnMotion)));
-            _place.Fixture.Body.AngularVelocity = (float)_actionQueue.TurnMotion;
+            _place.Fixture.Body.AngularVelocity = (float)(_actionQueue.TurnMotion);
 
             // Fatigue
             CharacterSheet.Fatigue.Increase((int)(_actionQueue.FatigueCost * toSeconds));

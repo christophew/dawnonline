@@ -6,6 +6,8 @@ namespace DawnGame.Cameras
     {
         Matrix View { get; }
         Matrix Projection { get; }
+        Vector3 Position { get; }
+        bool FogEnabled { get; }
 
         void Update(GameTime gameTime);
 

@@ -7,6 +7,8 @@ namespace DawnGame.Cameras
     {
         public Matrix View { get; private set; }
         public Matrix Projection { get; private set; }
+        public Vector3 Position { get; private set; }
+        public bool FogEnabled { get { return true; } }
 
         private Matrix World;
 
@@ -62,6 +64,7 @@ namespace DawnGame.Cameras
             Vector3.Transform(ref pos, ref transform, out pos);
 
             View = Matrix.CreateLookAt(pos, Vector3.Zero, Vector3.Up);
+            Position = pos;
         }
     }
 }

@@ -59,6 +59,11 @@ namespace DawnGame
 
         private ICamera _camera;
 
+        Effect effect;
+        Texture2D cloudMap;
+        Model skyDome;
+
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -101,9 +106,9 @@ namespace DawnGame
             _creatureModel_Avatar = new GameObject(Content.Load<Model>(@"directx"), new Vector3(MathHelper.PiOver2, 0, 0), Vector3.Zero, 10f);
             _gunModel = new GameObject(Content.Load<Model>(@"gun"), new Vector3(MathHelper.PiOver2, 0, -MathHelper.PiOver2), Vector3.Zero, 7f);
 
-            _cubeModel = new GameObject(Content.Load<Model>(@"box"), Vector3.Zero, Vector3.Zero, 25f);
-            _wallModel = new GameObject(Content.Load<Model>(@"brickwall"), Vector3.Zero, Vector3.Zero, 25f);
-            _predatorFactoryModel = new GameObject(Content.Load<Model>(@"Factory4"), Vector3.One, new Vector3(0, -50, 0), 50f);
+            _cubeModel = new GameObject(Content.Load<Model>(@"box"), new Vector3(MathHelper.PiOver2, 0, 0), Vector3.Zero, 25f);
+            _wallModel = new GameObject(Content.Load<Model>(@"brickwall"), new Vector3(MathHelper.PiOver2, 0, 0), Vector3.Zero, 25f);
+            _predatorFactoryModel = new GameObject(Content.Load<Model>(@"Factory4"), new Vector3(MathHelper.PiOver2, 0, 0), new Vector3(0, -50, 0), 50f);
 
             //_bulletModel = new GameObject(Content.Load<Model>(@"bullet"), Vector3.Zero, 1f);
             _bulletModel = new GameObject(Content.Load<Model>(@"firebullet"), Vector3.Zero, Vector3.Zero, 1.5f);
@@ -112,6 +117,13 @@ namespace DawnGame
 
 
             _wallTexture = Content.Load<Texture2D>(@"Textures\brickThumb");
+
+
+            // Skydome
+            //effect = Content.Load<Effect>("Series4Effects");
+            skyDome = Content.Load<Model>("dome");
+            //skyDome.Meshes[0].MeshParts[0].Effect = effect.Clone();
+
 
 
             roundLineManager = new RoundLineManager();
@@ -174,16 +186,23 @@ namespace DawnGame
             }
 
             // Move
-            if ((gameTime.TotalGameTime - _lastMove).TotalMilliseconds > 0)
             {
                 _moveTimer.Reset();
                 _moveTimer.Start();
-                //_dawnWorld.ApplyMove((gameTime.TotalGameTime - _lastMove).TotalMilliseconds);
                 _dawnWorld.ApplyMove(gameTime.ElapsedGameTime.TotalMilliseconds);
-
                 _moveTimer.Stop();
-                _lastMove = gameTime.TotalGameTime;
             }
+            //var dt = 33;
+            //if ((gameTime.TotalGameTime - _lastMove).TotalMilliseconds > dt)
+            //{
+            //    _moveTimer.Reset();
+            //    _moveTimer.Start();
+            //    //_dawnWorld.ApplyMove((gameTime.TotalGameTime - _lastMove).TotalMilliseconds);
+            //    _dawnWorld.ApplyMove(dt);
+
+            //    _moveTimer.Stop();
+            //    _lastMove = gameTime.TotalGameTime;
+            //}
 
             // Exit
             if (keyboardState.IsKeyDown(Keys.Escape))
@@ -250,38 +269,10 @@ namespace DawnGame
                 _camera = new BirdsEyeFollowCamera(GraphicsDevice, 800, 500, _dawnWorld.Avatar);
             if (keyboard.IsKeyDown(Keys.F4))
                 _camera = new FirstPersonCamera(Window, 100);
+            if (keyboard.IsKeyDown(Keys.F5))
+                _camera = new AvatarCamera(GraphicsDevice, _dawnWorld.Environment.GetCreatures(EntityType.Predator)[0]);
 
         }
-
-        //private void UpdateDrawOptions(KeyboardState keyboardState)
-        //{
-        //    if (keyboardState.IsKeyDown(Keys.PageUp))
-        //        roundLineManager.BlurThreshold *= 1.001f;
-        //    if (keyboardState.IsKeyDown(Keys.PageDown))
-        //        roundLineManager.BlurThreshold /= 1.001f;
-
-        //    if (roundLineManager.BlurThreshold > 1)
-        //        roundLineManager.BlurThreshold = 1;
-        //}
-
-        //private void UpdateRoundingTechnique(KeyboardState keyboardState)
-        //{
-        //    if (keyboardState.IsKeyDown(Keys.A))
-        //    {
-        //        if (!aButtonDown)
-        //        {
-        //            aButtonDown = true;
-        //            roundLineTechniqueIndex++;
-        //            if (roundLineTechniqueIndex >= roundLineTechniqueNames.Length)
-        //                roundLineTechniqueIndex = 0;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        aButtonDown = false;
-        //    }
-        //}
-
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -317,7 +308,7 @@ namespace DawnGame
             }
 
             DrawTextInfo();
-
+            //DrawSkyDome();
 
             base.Draw(gameTime);
 
@@ -363,23 +354,6 @@ namespace DawnGame
             }
         }
 
-
-        private void Draw2DWorld(GameTime gameTime)
-        {
-            float time = (float)gameTime.TotalGameTime.TotalSeconds;
-            string curTechniqueName = roundLineTechniqueNames[roundLineTechniqueIndex];
-            {
-                var obstacles = _dawnWorld.Environment.GetObstacles();
-                foreach (var current in obstacles)
-                {
-                    var points = current.Place.Form.Shape.Points;
-                    var pos = current.Place.Position;
-
-                    DrawPolygon(points, time, curTechniqueName);
-                }
-            }
-        }
-
         private void DrawCubeWorld()
         {
             var obstacles = _dawnWorld.Environment.GetObstacles();
@@ -396,59 +370,6 @@ namespace DawnGame
             {
                 DrawEntity(current);
             }
-        }
-
-        private List<BasicShape> _worldShapes;
-
-        private void Create3DWorld()
-        {
-            if (_worldShapes != null)
-                return;
-
-            _worldShapes = new List<BasicShape>();
-
-            var obstacles = _dawnWorld.Environment.GetObstacles();
-            foreach (var current in obstacles)
-            {
-                _worldShapes.AddRange(Create3DShape(current.Place.Form.Shape, current.Place.Position));
-            }
-        }
-
-        
-
-        private List<BasicShape> Create3DShape(IPolygon polygon, Vector2 position)
-        {
-            var shape = new List<BasicShape>();
-            //List<Line> lines = new List<Line>();
-
-            for (int i = 0; i < polygon.Points.Count; i++)
-            {
-                DawnOnline.Simulation.Collision.Vector point1 = polygon.Points[i];
-                DawnOnline.Simulation.Collision.Vector point2;
-                if (i + 1 >= polygon.Points.Count)
-                {
-                    point2 = polygon.Points[0];
-                }
-                else
-                {
-                    point2 = polygon.Points[i + 1];
-                }
-
-                var vector1 = new Vector2((float)(point1.X), (float)(point1.Y));
-                var vector2 = new Vector2((float)(point2.X), (float)(point2.Y));
-
-                // Only take into account straight angles
-                bool turn = (point2.X == point1.X);
-                var length = turn ? point2.Y - point1.Y : point2.X - point1.X;
-
-                var wall = new BasicShape(
-                    new Vector3(length, 20, 0.2f),
-                    new Vector3((float)point1.X, 0, (float)point1.Y), 
-                    turn ? MathHelper.PiOver2 : 0);
-                wall.shapeTexture = _wallTexture;
-                shape.Add(wall);
-            }
-            return shape;
         }
 
         private void DrawEntity(IEntity entity)
@@ -498,6 +419,22 @@ namespace DawnGame
                 (float)(pos.Y + Math.Sin(angle) * creature.CharacterSheet.MeleeRange));
 
             DrawCircle(attackMiddle, creature.CharacterSheet.MeleeRange, color);
+        }
+
+        private void Draw2DWorld(GameTime gameTime)
+        {
+            float time = (float)gameTime.TotalGameTime.TotalSeconds;
+            string curTechniqueName = roundLineTechniqueNames[roundLineTechniqueIndex];
+            {
+                var obstacles = _dawnWorld.Environment.GetObstacles();
+                foreach (var current in obstacles)
+                {
+                    var points = current.Place.Form.Shape.Points;
+                    var pos = current.Place.Position;
+
+                    DrawPolygon(points, time, curTechniqueName);
+                }
+            }
         }
 
         private void DrawPolygon(IList<Vector> points, float time, string curTechniqueName)
@@ -559,6 +496,31 @@ namespace DawnGame
 
             roundLineManager.Draw(lines, 1, color, lineWorldMatrix * _viewProjMatrix, time, curTechniqueName);
             //lineManager.Draw(lines, 1, color.ToVector4(), viewMatrix, projMatrix, time, null, lineWorldMatrix, 1);
+        }
+
+        private void DrawSkyDome()
+        {
+            //GraphicsDevice.RenderState.DepthBufferWriteEnable = false;
+
+            Matrix[] modelTransforms = new Matrix[skyDome.Bones.Count];
+            skyDome.CopyAbsoluteBoneTransformsTo(modelTransforms);
+
+            Matrix wMatrix = Matrix.CreateTranslation(0, -0.3f, 0) * Matrix.CreateScale(100) * Matrix.CreateTranslation(_camera.Position);
+            foreach (ModelMesh mesh in skyDome.Meshes)
+            {
+                foreach (Effect currentEffect in mesh.Effects)
+                {
+                    Matrix worldMatrix = modelTransforms[mesh.ParentBone.Index] * wMatrix;
+                    currentEffect.CurrentTechnique = currentEffect.Techniques["SkyDome"];
+                    currentEffect.Parameters["xWorld"].SetValue(worldMatrix);
+                    currentEffect.Parameters["xView"].SetValue(_camera.View);
+                    currentEffect.Parameters["xProjection"].SetValue(_camera.Projection);
+                    currentEffect.Parameters["xTexture0"].SetValue(cloudMap);
+                    currentEffect.Parameters["xEnableLighting"].SetValue(false);
+                }
+                mesh.Draw();
+            }
+            //GraphicsDevice.RenderState.DepthBufferWriteEnable = true;
         }
     }
 }
