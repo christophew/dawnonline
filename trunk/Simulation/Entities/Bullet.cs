@@ -9,7 +9,7 @@ namespace DawnOnline.Simulation.Entities
     internal class Bullet : IEntity
     {
         public Placement Place { get; internal set; }
-        public EntityType Specy { get { return EntityType.Bullet; } }
+        public EntityType Specy { get; internal set; }
 
         public double Damage { get; internal set; }
         public bool Explodes { get; internal set; }

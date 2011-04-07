@@ -34,40 +34,50 @@ namespace DawnGame
 
             foreach (var mesh in _model.Meshes)
             {
-                foreach (BasicEffect effect in mesh.Effects)
+                foreach (Effect effect in mesh.Effects)
                 {
-                    //effect.EnableDefaultLighting();
-                    effect.PreferPerPixelLighting = true;
-                    effect.World = worldMatrix;
-                    effect.Projection = camera.Projection;
-                    effect.View = camera.View;
-
-
-                    // testen
-                    //effect.FogEnabled = camera.FogEnabled;
-                    effect.FogColor = Color.Gray.ToVector3();
-                    //effect.FogStart = 9.75f;
-                    //effect.FogEnd = 10.25f;
-                    effect.FogStart = 100;
-                    effect.FogEnd = 1000;
-
-                    effect.LightingEnabled = true;
-                    //effect.Alpha = 0.5f;
-                    //effect.AmbientLightColor = Color.Black.ToVector3();
-                    //effect.DiffuseColor = Color.Black.ToVector3();
-                    if (emit)
+                    var basicEffect = effect as BasicEffect;
+                    if (basicEffect != null)
                     {
-                        effect.EmissiveColor = Color.Yellow.ToVector3();
-                    }
-                    effect.SpecularPower = 10f;
-                    //effect.SpecularColor = Color.Green.ToVector3();
-                    //effect.PreferPerPixelLighting = true;
+                        //basicEffect.EnableDefaultLighting();
+                        //basicEffect.PreferPerPixelLighting = true;
+                        basicEffect.World = worldMatrix;
+                        basicEffect.Projection = camera.Projection;
+                        basicEffect.View = camera.View;
+                        basicEffect.LightingEnabled = true;
 
-                    effect.DirectionalLight0.Enabled = true;
-                    effect.DirectionalLight0.Direction = new Vector3(1, 0, 0);
-                    //effect.DirectionalLight0.Direction = new Vector3(0.1f, rotation.Y, 0);
-                    //effect.DirectionalLight0.DiffuseColor = Color.DarkRed.ToVector3();
-                    effect.DirectionalLight0.SpecularColor = Color.Beige.ToVector3();
+                        // testen
+                        //basicEffect.FogEnabled = camera.FogEnabled;
+                        basicEffect.FogColor = Color.Gray.ToVector3();
+                        //basicEffect.FogStart = 9.75f;
+                        //basicEffect.FogEnd = 10.25f;
+                        basicEffect.FogStart = 100;
+                        basicEffect.FogEnd = 1000;
+
+                        basicEffect.LightingEnabled = true;
+                        //effect.Alpha = 0.5f;
+                        //effect.AmbientLightColor = Color.Black.ToVector3();
+                        //effect.DiffuseColor = Color.Black.ToVector3();
+                        if (emit)
+                        {
+                            basicEffect.EmissiveColor = Color.Yellow.ToVector3();
+                        }
+                        basicEffect.SpecularPower = 10f;
+                        //effect.SpecularColor = Color.Green.ToVector3();
+                        //effect.PreferPerPixelLighting = true;
+
+                        basicEffect.DirectionalLight0.Enabled = true;
+                        basicEffect.DirectionalLight0.Direction = new Vector3(1, 0, 0);
+                        //effect.DirectionalLight0.Direction = new Vector3(0.1f, rotation.Y, 0);
+                        //effect.DirectionalLight0.DiffuseColor = Color.DarkRed.ToVector3();
+                        basicEffect.DirectionalLight0.SpecularColor = Color.Beige.ToVector3();
+                    }
+                    else
+                    {
+                        effect.Parameters["World"].SetValue(worldMatrix);
+                        effect.Parameters["View"].SetValue(camera.View);
+                        effect.Parameters["Projection"].SetValue(camera.Projection);
+                    }
                 }
                 mesh.Draw();
             }
