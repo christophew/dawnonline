@@ -33,6 +33,7 @@ namespace DawnOnline.Simulation.Brains
             if (creaturesToAttack != null)
             {
                 MyCreature.Attack(creaturesToAttack);
+                MyCreature.WalkForward();
                 return;
             }
 

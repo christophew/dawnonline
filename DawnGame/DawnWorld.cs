@@ -31,6 +31,14 @@ namespace DawnGame
             AddCreatures(EntityType.Turret, 30);
         }
 
+        public Vector2 Center
+        {
+            get
+            {
+                return new Vector2(MaxX/2f, MaxY/2f);
+            }
+        }
+
         private void BuildWorld()
         {
             // World boundaries
