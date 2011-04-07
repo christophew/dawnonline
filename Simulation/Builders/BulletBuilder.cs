@@ -33,6 +33,7 @@ namespace DawnOnline.Simulation.Builders
             bullet.Place = placement;
             bullet.Damage = damage;
             bullet.Explodes = false;
+            bullet.Specy = EntityType.Bullet;
             placement.Fixture.UserData = bullet;
 
             return bullet;
@@ -60,6 +61,7 @@ namespace DawnOnline.Simulation.Builders
             bullet.Place = placement;
             bullet.Damage = damage;
             bullet.Explodes = true;
+            bullet.Specy = EntityType.Rocket;
             placement.Fixture.UserData = bullet;
 
             return bullet;

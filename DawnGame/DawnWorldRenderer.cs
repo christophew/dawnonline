@@ -21,6 +21,7 @@ namespace DawnGame
         private GameObject _cubeModel;
         private GameObject _wallModel;
         private GameObject _bulletModel;
+        private GameObject _rocketModel;
         private GameObject _gunModel;
         private GameObject _treasureModel;
         private GameObject _predatorFactoryModel;
@@ -62,7 +63,8 @@ namespace DawnGame
             _predatorFactoryModel = new GameObject(_game.Content.Load<Model>(@"Factory4"), new Vector3(MathHelper.PiOver2, 0, 0), new Vector3(0, -50, 0), 50f);
 
             //_bulletModel = new GameObject(Content.Load<Model>(@"bullet"), Vector3.Zero, 1f);
-            _bulletModel = new GameObject(_game.Content.Load<Model>(@"firebullet"), Vector3.Zero, Vector3.Zero, 1.5f);
+            _bulletModel = new GameObject(_game.Content.Load<Model>(@"firebullet"), Vector3.Zero, Vector3.Zero, 1f);
+            _rocketModel = new GameObject(_game.Content.Load<Model>(@"firebullet"), Vector3.Zero, Vector3.Zero, 1.5f);
 
             _treasureModel = new GameObject(_game.Content.Load<Model>(@"cube3"), Vector3.Zero, Vector3.Zero, 5f);
 
@@ -174,7 +176,7 @@ namespace DawnGame
                     {
                         //DrawCreature(current, roundLineManager, viewProjMatrix, time, curTechniqueName);
                         DrawEntity(current);
-                        DrawCreatureInfo(current);
+                        //DrawCreatureInfo(current);
                     }
                 }
             }
@@ -230,6 +232,9 @@ namespace DawnGame
                     break;
                 case EntityType.Bullet:
                     _bulletModel.DrawObject(_camera, position, rotation, true);
+                    break;
+                case EntityType.Rocket:
+                    _rocketModel.DrawObject(_camera, position, rotation, true);
                     break;
                 default:
                     throw new NotSupportedException();

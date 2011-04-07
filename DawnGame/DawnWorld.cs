@@ -28,7 +28,7 @@ namespace DawnGame
             //AddCreatures(EntityType.Rabbit, 300);
             //AddCreatures(EntityType.Plant, 300);
             AddCreatures(EntityType.Predator, 50);
-            AddCreatures(EntityType.Turret, 30);
+            //AddCreatures(EntityType.Turret, 30);
         }
 
         public Vector2 Center
