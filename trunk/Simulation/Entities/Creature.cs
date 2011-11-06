@@ -20,12 +20,14 @@ namespace DawnOnline.Simulation.Entities
         private CharacterSheet _characterSheet = new CharacterSheet();
         private AbstractBrain _brain;
 
-        public EntityType Specy { get; set; }
-        public List<EntityType> FoodSpecies { get; set; }
+        public EntityType Specy { get; internal set; }
+        public List<EntityType> FoodSpecies { get; internal set; }
         //public int Age { get; private set; }
 
         public Placement Place { get { return _place; } }
         public CharacterSheet CharacterSheet { get { return _characterSheet; } }
+
+        public IEntity SpawnPoint { get; internal set; }
 
         internal Environment MyEnvironment { get; set; }
         internal ActionQueue MyActionQueue { get { return _actionQueue; } }
@@ -60,7 +62,7 @@ namespace DawnOnline.Simulation.Entities
             _place.Fixture.Body.BodyType = BodyType.Dynamic;
             _place.Fixture.Body.Mass = 5;
             //_place.Fixture.Friction = 0.1f;
-            _place.Fixture.Body.LinearDamping = 1f;
+            _place.Fixture.Body.LinearDamping = 2f;
             _place.Fixture.Body.AngularDamping = 1f;
 
             _place.Fixture.UserData = this;
@@ -316,6 +318,10 @@ namespace DawnOnline.Simulation.Entities
 
             foreach (Creature current in creaturesToAttack)
             {
+                if (this.SpawnPoint != null &&
+                    this.SpawnPoint == current.SpawnPoint)
+                    continue;
+
                 if (!current.Equals(this))
                     return current;
             }
@@ -403,7 +409,7 @@ namespace DawnOnline.Simulation.Entities
             }
             if (entityType == EntityType.Turret)
             {
-                var turret = CreatureBuilder.CreateTurret();
+                var turret = CreatureBuilder.CreateTurret(EntityType.Predator);
                 MyEnvironment.AddCreature(turret, Place.Position, Place.Angle);
                 _actionQueue.LastBuildTime = DateTime.Now;
                 return;

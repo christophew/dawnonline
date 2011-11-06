@@ -104,7 +104,7 @@ namespace DawnGame
             }
 
             // Move
-            if ((gameTime.TotalGameTime - _lastMove).TotalMilliseconds > 75)
+            //if ((gameTime.TotalGameTime - _lastMove).TotalMilliseconds > 75)
             {
                 _moveTimer.Reset();
                 _moveTimer.Start();

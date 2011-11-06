@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using DawnOnline.Simulation.Brains;
@@ -15,6 +16,14 @@ namespace DawnOnline.Simulation.Builders
         private const double _velocityMultiplier = 4;
         //private const double _turnMultiplier = 20000;
         private const double _turnMultiplier = 3;
+
+        public static ICreature CreateCreature(EntityType specy, IEntity spawnPoint)
+        {
+            var creature = CreateCreature(specy) as Creature;
+            Debug.Assert(creature != null);
+            creature.SpawnPoint = spawnPoint;
+            return creature;
+        }
 
         public static ICreature CreateCreature(EntityType specy)
         {
@@ -40,7 +49,7 @@ namespace DawnOnline.Simulation.Builders
 
             critter.Specy = EntityType.Predator;
             //critter.FoodSpecies = new List<EntityType> { EntityType.Turret, EntityType.Avatar };
-            critter.FoodSpecies = new List<EntityType> { EntityType.Avatar };
+            critter.FoodSpecies = new List<EntityType> { EntityType.Avatar, EntityType.Predator, EntityType.SpawnPoint };
 
             //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(100, 150);
             critter.CharacterSheet.WalkingDistance = 30 * _velocityMultiplier;
@@ -120,7 +129,7 @@ namespace DawnOnline.Simulation.Builders
             critter.CharacterSheet.RangeDamage = 2;
             critter.CharacterSheet.MeleeDamage = 0;
 
-            critter.CharacterSheet.VisionDistance = 400;
+            critter.CharacterSheet.VisionDistance = 40;
 
             // Fixed position
             //critter.Place.Fixture.Body.BodyType = BodyType.Static;
@@ -140,6 +149,9 @@ namespace DawnOnline.Simulation.Builders
             spawnPoint.Specy = EntityType.SpawnPoint;
             spawnPoint.Place.Fixture.Body.BodyType = BodyType.Static;
             spawnPoint.Brain = new SpawnPointBrain(spawnType, 30);
+
+            // Make the spawnPoint part of the family
+            spawnPoint.SpawnPoint = spawnPoint;
 
             return spawnPoint;
         }

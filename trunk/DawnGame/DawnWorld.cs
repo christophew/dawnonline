@@ -15,6 +15,8 @@ namespace DawnGame
         private IAvatar _avatar = CreatureBuilder.CreateAvatar();
         Random _randomize = new Random();
 
+        private int _nrOfSpawnPoints = 10;
+
         public IAvatar Avatar { get { return _avatar; } }
         public DawnOnline.Simulation.Environment Environment { get { return _environment; } }
 
@@ -34,7 +36,7 @@ namespace DawnGame
             //AddCreatures(EntityType.Plant, 300);
             //AddCreatures(EntityType.Predator, 10);
             //AddCreatures(EntityType.Turret, 30);
-            AddSpawnPoints(EntityType.Predator, 10);
+            AddSpawnPoints(EntityType.Predator, _nrOfSpawnPoints);
         }
 
         public Vector2 Center
@@ -88,7 +90,7 @@ namespace DawnGame
 
             int grid = 5;
             // walls
-            for (int i = 0; i < 500; )
+            for (int i = 0; i < 100; )
             {
                 var position = new Vector2(_randomize.Next((int)MaxX / grid) * grid, _randomize.Next((int)MaxY / grid) * grid);
 
@@ -114,7 +116,7 @@ namespace DawnGame
             }
 
             // Boxes
-            for (int i = 0; i < 150; )
+            for (int i = 0; i < 50; )
             {
                 var position = new Vector2(_randomize.Next((int)MaxX / grid) * grid, _randomize.Next((int)MaxY / grid) * grid);
                 var box = ObstacleBuilder.CreateObstacleBox(wide, height);
@@ -210,6 +212,17 @@ namespace DawnGame
                 //        _environment.AddCreature(plant, killed.Place.Position, 0);
                 //    }
                 //}
+
+                // Make sure we always have enough spawnpoints
+                var spawnPoints = _environment.GetCreatures(EntityType.SpawnPoint);
+                if (_environment.GetCreatures(EntityType.SpawnPoint).Count < _nrOfSpawnPoints)
+                {
+                    if (spawnPoints.Count == 0)
+                        break;
+
+                    // TODO: find best spawnpoint
+                    var bestspawnPoint = spawnPoints[0];
+                }
             }
 
             // Repopulate
