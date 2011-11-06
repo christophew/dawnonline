@@ -38,16 +38,16 @@ namespace DawnOnline.Simulation.Brains
             }
 
             // Move
-            if (_forwardEye.SeesACreature(MyCreature.FoodSpecies))
+            if (_forwardEye.SeesACreature(MyCreature.FoodSpecies, MyCreature.SpawnPoint))
             {
                 MyCreature.RunForward();
             }
-            if (_leftEye.SeesACreature(MyCreature.FoodSpecies))
+            if (_leftEye.SeesACreature(MyCreature.FoodSpecies, MyCreature.SpawnPoint))
             {
                 MyCreature.TurnLeft();
                 return;
             }
-            if (_rightEye.SeesACreature(MyCreature.FoodSpecies))
+            if (_rightEye.SeesACreature(MyCreature.FoodSpecies, MyCreature.SpawnPoint))
             {
                 MyCreature.TurnRight();
                 return;

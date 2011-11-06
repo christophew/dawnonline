@@ -27,17 +27,22 @@ namespace DawnOnline.Simulation.Senses
         private Environment CreatureEnvironment { get { return _creature.MyEnvironment; } }
         private Placement CreaturePlace { get { return _creature.Place; } }
 
+        internal bool SeesACreature(List<EntityType> species, IEntity spawnPointToExclude)
+        {
+            return species.Any(specy => HasLineOfSight(specy, spawnPointToExclude));
+        }
+
         internal bool SeesACreature(List<EntityType> species)
         {
-            return species.Any(HasLineOfSight);
+            return species.Any(specy => HasLineOfSight(specy, null));
         }
 
         internal bool SeesACreature(EntityType specy)
         {
-            return HasLineOfSight(specy);
+            return HasLineOfSight(specy, null);
         }
 
-        private bool HasLineOfSight(EntityType specy)
+        private bool HasLineOfSight(EntityType specy, IEntity spawnPointToExclude)
         {
             if (specy == EntityType.Unknown)
                 return false;
@@ -45,7 +50,7 @@ namespace DawnOnline.Simulation.Senses
             var creatures = CreatureEnvironment.GetCreatures(specy);
             foreach (Creature current in creatures)
             {
-                var lineOfSight = HasLineOfSight(current);
+                var lineOfSight = HasLineOfSight(current, spawnPointToExclude);
                 if (lineOfSight)
                     return true;
             }
@@ -53,10 +58,15 @@ namespace DawnOnline.Simulation.Senses
             return false;
         }
 
-        private bool HasLineOfSight(Creature current)
+        private bool HasLineOfSight(Creature current, IEntity spawnPointToExclude)
         {
             // It's me
             if (current.Equals(_creature))
+                return false;
+
+            // It's my family
+            if (spawnPointToExclude != null &&
+                spawnPointToExclude == current.SpawnPoint)
                 return false;
 
             // Check distance
