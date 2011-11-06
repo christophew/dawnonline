@@ -93,8 +93,8 @@ namespace DawnGame
             // Dawn
             _dawnWorldRenderer = new DawnWorldRenderer(Game, _dawnWorld);
             _dawnWorldRenderer.LoadContent();
-            _camera = new BirdsEyeFollowCamera(GraphicsDevice, 800, 500, _dawnWorld.Avatar);
-            _floor = new GameObject(Game.Content.Load<Model>(@"floor_metal"), new Vector3(MathHelper.PiOver2, 0, 0), new Vector3(0, -2025, 0), 2000f);
+            _camera = new BirdsEyeFollowCamera(GraphicsDevice, 80, 50, _dawnWorld.Avatar);
+            _floor = new GameObject(Game.Content.Load<Model>(@"floor_metal"), new Vector3(MathHelper.PiOver2, 0, 0), new Vector3(0, -2020, 0), 2000f);
             //_floor = new GameObject(Game.Content.Load<Model>(@"floor4"), new Vector3(MathHelper.PiOver2, 0, 0), new Vector3(0, -2025, 0), 2000f);
 
 
@@ -214,7 +214,7 @@ namespace DawnGame
             DrawPointLight(
                 new Vector3(_dawnWorld.Avatar.Place.Position.X, height, _dawnWorld.Avatar.Place.Position.Y),
                 color,
-                radius,
+                50+radius * (1f - (float)_dawnWorld.Avatar.CharacterSheet.Damage.PercentFilled / 100f),
                 intensity);
         }
 
@@ -266,6 +266,19 @@ namespace DawnGame
             }
         }
 
+        private void DrawExplosions()
+        {
+            var explosions = _dawnWorld.Environment.GetExplosions();
+            foreach (var current in explosions)
+            {
+                DrawPointLight(
+                    new Vector3(current.Position.X, 10, current.Position.Y),
+                    Color.Tomato,
+                    current.Size,
+                    10);
+            }
+        }
+
         private void DrawLights(GameTime gameTime)
         {
             GraphicsDevice.SetRenderTarget(lightRT);
@@ -313,13 +326,15 @@ namespace DawnGame
             //DrawPointLight(new Vector3(0, 25, 0), Color.White, 30, 1);
             //DrawPointLight(new Vector3(0, 0, 70), Color.Wheat, 55 + 10 * (float)Math.Sin(5 * angle), 3);     
 
-            DrawAvatarPointLight(Color.White, 75, 150, 1);
-            DrawObstaclePointLight(EntityType.Treasure, Color.Red, 7, 100, 2);
-            DrawObstaclePointLight(EntityType.PredatorFactory, Color.Blue, 100, 500, 1);
-            DrawCreaturePointLight(EntityType.Turret, Color.LightGreen, 75, 150, 2);
-            //DrawCreaturePointLight(EntityType.Predator, Color.BlueViolet, 75, 100, 1);
-            DrawBulletPointLight(EntityType.Bullet, Color.Firebrick, 3, 15, 20);
-            DrawBulletPointLight(EntityType.Rocket, Color.Firebrick, 5, 25, 10);
+            DrawAvatarPointLight(Color.White, 7.5f, 25.0f, 1);
+            DrawObstaclePointLight(EntityType.Treasure, Color.Red, .7f, 10.0f, 2);
+            DrawObstaclePointLight(EntityType.PredatorFactory, Color.Blue, 10.0f, 50.0f, 1);
+            //DrawCreaturePointLight(EntityType.Turret, Color.LightGreen, 7.5f, 15.0f, 2);
+            DrawCreaturePointLight(EntityType.Predator, Color.BlueViolet, 1.0f, 7.5f, 2);
+            DrawBulletPointLight(EntityType.Bullet, Color.Firebrick, .3f, 1.5f, 20f);
+            DrawBulletPointLight(EntityType.Rocket, Color.Firebrick, .5f, 2.5f, 10f);
+            DrawCreaturePointLight(EntityType.SpawnPoint, Color.GreenYellow, 2.0f, 7.5f, 2f);
+            DrawExplosions();
 
             GraphicsDevice.BlendState = BlendState.Opaque;
             GraphicsDevice.DepthStencilState = DepthStencilState.None;            
@@ -361,13 +376,13 @@ namespace DawnGame
             var keyboard = Keyboard.GetState();
 
             if (keyboard.IsKeyDown(Keys.F1))
-                _camera = new BirdsEyeCamera(GraphicsDevice, new Vector3(1500f, 2800f, 1000f), 500);
+                _camera = new BirdsEyeCamera(GraphicsDevice, new Vector3(150f, 280f, 100f), 50);
             if (keyboard.IsKeyDown(Keys.F2))
                 _camera = new AvatarCamera(GraphicsDevice, _dawnWorld.Avatar);
             if (keyboard.IsKeyDown(Keys.F3))
-                _camera = new BirdsEyeFollowCamera(GraphicsDevice, 800, 500, _dawnWorld.Avatar);
+                _camera = new BirdsEyeFollowCamera(GraphicsDevice, 80, 50, _dawnWorld.Avatar);
             if (keyboard.IsKeyDown(Keys.F4))
-                _camera = new FirstPersonCamera(Game.Window, 100);
+                _camera = new FirstPersonCamera(Game.Window, 10);
             if (keyboard.IsKeyDown(Keys.F5))
                 _camera = new AvatarCamera(GraphicsDevice, _dawnWorld.Environment.GetCreatures(EntityType.Predator)[0]);
         }

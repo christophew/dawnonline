@@ -15,8 +15,9 @@ namespace DawnOnline.Simulation.Entities
         public bool Explodes { get; internal set; }
         //public double Force { get; internal set; }
 
-        internal float Range = 50;
-        private float MaxForce = 100;
+        internal float Range = 5;
+        private float MaxForce = 1;
+        private static float _ricochetteVelocityThreshold = 15;
 
         // State
         public bool Destroyed { get; internal set; }
@@ -25,7 +26,7 @@ namespace DawnOnline.Simulation.Entities
         internal void Launch(Vector2 direction)
         {
             Environment.GetWorld().AddBullet(this, Place.Fixture.Body.Position + direction * 30);
-            Place.Fixture.Body.ApplyLinearImpulse(direction * 300);
+            Place.Fixture.Body.ApplyLinearImpulse(direction * 30);
         }
 
         public static bool OnCollision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
@@ -47,6 +48,12 @@ namespace DawnOnline.Simulation.Entities
             // Experiment: explode
             if (bullet.Explodes)
             {
+                // Add explosion effect
+                {
+                    var explosionEffect = new ExplosionEffect(bullet.Place.Fixture.Body.Position, (float)bullet.Range * 2, 75);
+                    Environment.GetWorld().AddExplosion(explosionEffect);
+                }
+
                 var explosion = new Explosion(Environment.GetWorld().FarSeerWorld);
                 //explosion.IgnoreWhenInsideShape = true;
                 var hits = explosion.Activate(bullet.Place.Fixture.Body.Position, bullet.Range, bullet.MaxForce);
@@ -77,7 +84,7 @@ namespace DawnOnline.Simulation.Entities
             if (!bullet.Explodes)
             {
                 // Ricochette when velocity after collision is high enough
-                if (fixtureA.Body.LinearVelocity.Length() > 150)
+                if (fixtureA.Body.LinearVelocity.Length() > _ricochetteVelocityThreshold)
                     return;
             }
 

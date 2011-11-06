@@ -12,8 +12,8 @@ namespace DawnGame.Cameras
 {
     public class AvatarCamera : ICamera
     {
-        private float _lookatHeight = 14;
-        private float _cameraHeight = 15;
+        private float _lookatHeight = 1.4f;
+        private float _cameraHeight = 1.5f;
 
         public Matrix View { get; private set; }
         public Matrix Projection { get; private set; }

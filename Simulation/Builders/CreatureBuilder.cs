@@ -12,9 +12,9 @@ namespace DawnOnline.Simulation.Builders
 {
     public static class CreatureBuilder
     {
-        private const double _velocityMultiplier = 200;
+        private const double _velocityMultiplier = 4;
         //private const double _turnMultiplier = 20000;
-        private const double _turnMultiplier = 2;
+        private const double _turnMultiplier = 3;
 
         public static ICreature CreateCreature(EntityType specy)
         {
@@ -35,11 +35,12 @@ namespace DawnOnline.Simulation.Builders
 
         public static ICreature CreatePredator()
         {
-            var critter = new Creature(15);
+            var critter = new Creature(1.5);
             critter.Brain = new PredatorBrain();
 
             critter.Specy = EntityType.Predator;
-            critter.FoodSpecies = new List<EntityType> { EntityType.Turret, EntityType.Avatar };
+            //critter.FoodSpecies = new List<EntityType> { EntityType.Turret, EntityType.Avatar };
+            critter.FoodSpecies = new List<EntityType> { EntityType.Avatar };
 
             //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(100, 150);
             critter.CharacterSheet.WalkingDistance = 30 * _velocityMultiplier;
@@ -54,7 +55,7 @@ namespace DawnOnline.Simulation.Builders
 
         public static ICreature CreateRabbit()
         {
-            var critter = new Creature(10);
+            var critter = new Creature(1);
             critter.Brain = new RabbitBrain();
 
             critter.Specy = EntityType.Rabbit;
@@ -72,7 +73,7 @@ namespace DawnOnline.Simulation.Builders
 
         public static ICreature CreatePlant()
         {
-            var critter = new Creature(12);
+            var critter = new Creature(1.2);
             critter.Brain = new PlantBrain();
 
             critter.Specy = EntityType.Plant;
@@ -90,7 +91,7 @@ namespace DawnOnline.Simulation.Builders
 
         public static IAvatar CreateAvatar()
         {
-            var avatar = new Creature(15);
+            var avatar = new Creature(1.5);
 
             avatar.Specy = EntityType.Avatar;
             avatar.CharacterSheet.WalkingDistance = 30 * _velocityMultiplier;
@@ -103,25 +104,44 @@ namespace DawnOnline.Simulation.Builders
 
         public static ICreature CreateTurret()
         {
-            var critter = new Creature(15);
+            return CreateTurret(EntityType.Avatar);
+        }
+
+        public static ICreature CreateTurret(EntityType enemy)
+        {
+            var critter = new Creature(1.5);
 
             critter.Specy = EntityType.Turret;
-            critter.FoodSpecies = new List<EntityType> { EntityType.Predator };
+            critter.FoodSpecies = new List<EntityType> { enemy };
 
-            //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(100, 150);
             critter.CharacterSheet.WalkingDistance = 0;
-            critter.CharacterSheet.TurningAngle = 0.7 * _turnMultiplier;
+            critter.CharacterSheet.TurningAngle = 1 * _turnMultiplier;
             critter.CharacterSheet.AttackCoolDown = 0.3;
-            critter.CharacterSheet.RangeDamage = 5;
+            critter.CharacterSheet.RangeDamage = 2;
             critter.CharacterSheet.MeleeDamage = 0;
 
-            critter.CharacterSheet.VisionDistance = 350;
+            critter.CharacterSheet.VisionDistance = 400;
+
+            // Fixed position
+            //critter.Place.Fixture.Body.BodyType = BodyType.Static;
+            critter.Place.Fixture.Body.LinearDamping = 100f;
 
             critter.Brain = new TurretBrain();
             critter.Brain.InitializeSenses();
 
 
             return critter;
+        }
+
+        public static ICreature CreateSpawnPoint(EntityType spawnType)
+        {
+            var spawnPoint = new Creature(1.0);
+
+            spawnPoint.Specy = EntityType.SpawnPoint;
+            spawnPoint.Place.Fixture.Body.BodyType = BodyType.Static;
+            spawnPoint.Brain = new SpawnPointBrain(spawnType, 30);
+
+            return spawnPoint;
         }
     }
 }

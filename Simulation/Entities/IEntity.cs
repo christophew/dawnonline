@@ -19,7 +19,8 @@ namespace DawnOnline.Simulation.Entities
         Treasure,
         PredatorFactory,
         Bullet,
-        Rocket
+        Rocket,
+        SpawnPoint
     }
 
     public interface IEntity

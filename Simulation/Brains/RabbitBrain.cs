@@ -27,15 +27,13 @@ namespace DawnOnline.Simulation.Brains
 
             // Run from predator
             {
-                if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) &&
-                    _leftEye.SeesACreature(EntityType.Predator))
+                if (_leftEye.SeesACreature(EntityType.Predator))
                 {
                     //MyCreature.TurnRight();
                     MyCreature.RunForward();
                     return;
                 }
-                if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) &&
-                    _rightEye.SeesACreature(EntityType.Predator))
+                if (_rightEye.SeesACreature(EntityType.Predator))
                 {
                     //MyCreature.TurnLeft();
                     MyCreature.RunForward();
@@ -83,19 +81,17 @@ namespace DawnOnline.Simulation.Brains
 
         private void FindPlants()
         {
-            if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) && _forwardEye.SeesACreature(EntityType.Plant))
+            if (_forwardEye.SeesACreature(EntityType.Plant))
             {
                 MyCreature.RunForward();
                 return;
             }
-            if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) &&
-                _leftEye.SeesACreature(EntityType.Plant))
+            if (_leftEye.SeesACreature(EntityType.Plant))
             {
                 MyCreature.TurnLeft();
                 return;
             }
-            if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) &&
-                _rightEye.SeesACreature(EntityType.Plant))
+            if (_rightEye.SeesACreature(EntityType.Plant))
             {
                 MyCreature.TurnRight();
                 return;
