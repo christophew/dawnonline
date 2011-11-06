@@ -77,6 +77,7 @@
     <Compile Include="Brains\AbstractBrain.cs" />
     <Compile Include="Brains\PredatorBrain2.cs" />
     <Compile Include="Brains\RabbitBrain.cs" />
+    <Compile Include="Brains\SpawnPointBrain.cs" />
     <Compile Include="Brains\TurretBrain.cs" />
     <Compile Include="Builders\BulletBuilder.cs" />
     <Compile Include="Builders\CreatureBuilder.cs" />
@@ -88,9 +89,11 @@
     <Compile Include="Collision\Vector.cs" />
     <Compile Include="Entities\Collectable.cs" />
     <Compile Include="Entities\Creature.cs" />
+    <Compile Include="Entities\ExplosionEffect.cs" />
     <Compile Include="Entities\IAvatar.cs" />
     <Compile Include="Entities\ICreature.cs" />
     <Compile Include="Entities\IEntity.cs" />
+    <Compile Include="Entities\IExplosion.cs" />
     <Compile Include="Entities\Obstacle.cs" />
     <Compile Include="Entities\Structure.cs" />
     <Compile Include="Environment.cs" />
@@ -124,9 +127,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Farseer Physics Engine 3.2 XNA\Farseer Physics 3.2 XNA.csproj">
-      <Project>{0A850700-1ABB-4288-A391-6726B90EBEB9}</Project>
-      <Name>Farseer Physics 3.2 XNA</Name>
+    <ProjectReference Include="..\Farseer Physics Engine 3.3.1 XNA\Farseer Physics XNA.csproj">
+      <Project>{DA87EB61-D672-4A20-B0E7-D3E488C69D4C}</Project>
+      <Name>Farseer Physics XNA</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

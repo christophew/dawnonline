@@ -15,7 +15,7 @@ namespace DawnOnline.Simulation.Builders
         {
             var bullet = new Bullet();
 
-            float radius = 1;
+            float radius = 0.1f;
 
             Polygon box = new Polygon();
             box.Points.Add(new Vector(0, 0));
@@ -23,9 +23,9 @@ namespace DawnOnline.Simulation.Builders
 
             var form = new Form { BoundingCircleRadius = radius, Shape = box };
             var placement = new Placement { Form = form };
-            placement.Fixture = FixtureFactory.CreateCircle(Environment.GetWorld().FarSeerWorld, 3, 1);
+            placement.Fixture = BodyFactory.CreateCircle(Environment.GetWorld().FarSeerWorld, radius, 1).FixtureList[0];
             placement.Fixture.Body.BodyType = BodyType.Dynamic;
-            placement.Fixture.Body.Mass = 1f;
+            placement.Fixture.Body.Mass = .1f;
             placement.Fixture.Body.IsBullet = true;
             placement.Fixture.OnCollision += Bullet.OnCollision;
             placement.Fixture.AfterCollision += Bullet.AfterCollision;
@@ -43,7 +43,7 @@ namespace DawnOnline.Simulation.Builders
         {
             var bullet = new Bullet();
 
-            float radius = 1;
+            float radius = 0.2f;
 
             Polygon box = new Polygon();
             box.Points.Add(new Vector(0, 0));
@@ -51,9 +51,9 @@ namespace DawnOnline.Simulation.Builders
 
             var form = new Form { BoundingCircleRadius = radius, Shape = box };
             var placement = new Placement { Form = form };
-            placement.Fixture = FixtureFactory.CreateCircle(Environment.GetWorld().FarSeerWorld, 3, 1);
+            placement.Fixture = BodyFactory.CreateCircle(Environment.GetWorld().FarSeerWorld, radius, 1).FixtureList[0];
             placement.Fixture.Body.BodyType = BodyType.Dynamic;
-            placement.Fixture.Body.Mass = 1f;
+            placement.Fixture.Body.Mass = .2f;
             placement.Fixture.Body.IsBullet = true;
             placement.Fixture.OnCollision += Bullet.OnCollision;
             placement.Fixture.AfterCollision += Bullet.AfterCollision;

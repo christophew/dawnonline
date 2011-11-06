@@ -21,7 +21,7 @@ namespace DawnOnline.Simulation.Brains
             Debug.Assert(_initialized);
 
             // Find something to attack
-            if ((Globals.Radomizer.Next(100) < MyCreature.CharacterSheet.VisionAccuracyPercent) && _forwardEye.SeesACreature(MyCreature.FoodSpecies))
+            if (_forwardEye.SeesACreature(MyCreature.FoodSpecies))
             {
                 //MyCreature.Fire();
                 MyCreature.FireRocket();
@@ -54,13 +54,13 @@ namespace DawnOnline.Simulation.Brains
             _leftEye = new Eye(MyCreature)
             {
                 Angle = -MathTools.ConvertToRadials(90),
-                VisionAngle = MathTools.ConvertToRadials(85),
+                VisionAngle = MathTools.ConvertToRadials(90),
                 VisionDistance = MyCreature.CharacterSheet.VisionDistance
             };
             _rightEye = new Eye(MyCreature)
             {
                 Angle = MathTools.ConvertToRadials(90),
-                VisionAngle = MathTools.ConvertToRadials(85),
+                VisionAngle = MathTools.ConvertToRadials(90),
                 VisionDistance = MyCreature.CharacterSheet.VisionDistance
             };
 

@@ -27,11 +27,11 @@ namespace DawnOnline.Simulation.Builders
 
             var form = new Form { BoundingCircleRadius = radius, Shape = box };
             var placement = new Placement { Form = form };
-            placement.Fixture = FixtureFactory.CreateRectangle(Environment.GetWorld().FarSeerWorld, Math.Max(1, (float)deltaX), Math.Max(1, (float)deltaY), 1f);
+            placement.Fixture = BodyFactory.CreateRectangle(Environment.GetWorld().FarSeerWorld, Math.Max(1, (float)deltaX), Math.Max(1, (float)deltaY), 1f).FixtureList[0];
             placement.Fixture.Body.BodyType = BodyType.Dynamic;
-            placement.Fixture.Body.LinearDamping = 1f;
-            placement.Fixture.Body.AngularDamping = 1f;
-            placement.Fixture.Body.Mass = 1000f;
+            placement.Fixture.Body.LinearDamping = 0.3f;
+            placement.Fixture.Body.AngularDamping = 2f;
+            placement.Fixture.Body.Mass = 300f;
 
             var obstacle = new Obstacle { Place = placement, Specy = EntityType.Box };
             return obstacle;
@@ -53,7 +53,7 @@ namespace DawnOnline.Simulation.Builders
 
             var form = new Form { BoundingCircleRadius = radius, Shape = box };
             var placement = new Placement { Form = form };
-            placement.Fixture = FixtureFactory.CreateRectangle(Environment.GetWorld().FarSeerWorld, Math.Max(1, (float)deltaX), Math.Max(1, (float)deltaY), 1f);
+            placement.Fixture = BodyFactory.CreateRectangle(Environment.GetWorld().FarSeerWorld, Math.Max(1, (float)deltaX), Math.Max(1, (float)deltaY), 1f).FixtureList[0];
             placement.Fixture.Body.BodyType = BodyType.Static;
             placement.Fixture.Body.LinearDamping = 1f;
             placement.Fixture.Body.AngularDamping = 1f;
@@ -67,7 +67,7 @@ namespace DawnOnline.Simulation.Builders
         {
             var treasure = new Collectable();
 
-            float radius = 5;
+            float radius = 0.5f;
 
             Polygon box = new Polygon();
             float halveDeltaX = (float)(radius);
@@ -81,11 +81,11 @@ namespace DawnOnline.Simulation.Builders
 
             var form = new Form { BoundingCircleRadius = radius, Shape = box };
             var placement = new Placement { Form = form };
-            placement.Fixture = FixtureFactory.CreateCircle(Environment.GetWorld().FarSeerWorld, radius, 1);
+            placement.Fixture = BodyFactory.CreateCircle(Environment.GetWorld().FarSeerWorld, radius, 1).FixtureList[0];
             placement.Fixture.Body.BodyType = BodyType.Dynamic;
             placement.Fixture.Body.LinearDamping = 0.5f;
             placement.Fixture.Body.AngularDamping = 0.5f;
-            placement.Fixture.Body.Mass = 10f;
+            placement.Fixture.Body.Mass = 1f;
             placement.Fixture.OnCollision += Collectable.OnCollision;
 
             treasure.Place = placement;
@@ -99,13 +99,14 @@ namespace DawnOnline.Simulation.Builders
         {
             var factory = new Structure();
 
-            float radius = 100;
+            float floorRadius = 15;
+            float radius = 10;
 
             // Temp: untill Polygons are also moved to farseer
             Polygon box = new Polygon();
             {
-                float halveDeltaX = (float) (radius);
-                float halveDeltaY = (float) (radius);
+                float halveDeltaX = (float)(floorRadius);
+                float halveDeltaY = (float)(floorRadius);
 
                 box.Points.Add(new Vector(-halveDeltaX, -halveDeltaY));
                 box.Points.Add(new Vector(halveDeltaX, -halveDeltaY));
@@ -116,7 +117,7 @@ namespace DawnOnline.Simulation.Builders
 
             var form = new Form { BoundingCircleRadius = radius, Shape = box };
             var placement = new Placement { Form = form };
-            placement.Fixture = FixtureFactory.CreateCircle(Environment.GetWorld().FarSeerWorld, radius, 1);
+            placement.Fixture = BodyFactory.CreateCircle(Environment.GetWorld().FarSeerWorld, radius, 1).FixtureList[0];
             placement.Fixture.Body.BodyType = BodyType.Static;
 
             factory.Place = placement;
@@ -124,6 +125,6 @@ namespace DawnOnline.Simulation.Builders
             placement.Fixture.UserData = factory;
 
             return factory;
-        }
+        }   
     }
 }

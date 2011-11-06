@@ -56,11 +56,11 @@ namespace DawnOnline.Simulation.Entities
         internal Creature(double bodyRadius)
         {
             _place.Form = SimulationFactory.CreateCircle(bodyRadius);
-            _place.Fixture = FixtureFactory.CreateCircle(Environment.GetWorld().FarSeerWorld, (float)bodyRadius, 1.0f);
+            _place.Fixture = BodyFactory.CreateCircle(Environment.GetWorld().FarSeerWorld, (float)bodyRadius, 1.0f).FixtureList[0];
             _place.Fixture.Body.BodyType = BodyType.Dynamic;
-            _place.Fixture.Body.Mass = 50;
+            _place.Fixture.Body.Mass = 5;
             //_place.Fixture.Friction = 0.1f;
-            _place.Fixture.Body.LinearDamping = 1.5f;
+            _place.Fixture.Body.LinearDamping = 1f;
             _place.Fixture.Body.AngularDamping = 1f;
 
             _place.Fixture.UserData = this;
@@ -128,6 +128,7 @@ namespace DawnOnline.Simulation.Entities
             // Move
             _place.Fixture.Body.ApplyForce(_actionQueue.ForwardMotion + _actionQueue.StrafeMotion);
             _place.Fixture.Body.AngularVelocity = (float)(_actionQueue.TurnMotion);
+            //_place.Fixture.Body.ApplyAngularImpulse((float)(_actionQueue.TurnMotion) * 5000);
 
             // Fatigue
             CharacterSheet.Fatigue.Increase((int)(_actionQueue.FatigueCost * toSeconds));
@@ -139,8 +140,9 @@ namespace DawnOnline.Simulation.Entities
                 var bullet = BulletBuilder.CreateBullet(CharacterSheet.RangeDamage);
                 //bullet.Launch(bulletAngleVector);
                 {
-                    MyEnvironment.AddBullet(bullet, _place.Fixture.Body.Position + bulletAngleVector * 30);
-                    bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 300);
+                    MyEnvironment.AddBullet(bullet, _place.Fixture.Body.Position + bulletAngleVector * (float)_place.Form.BoundingCircleRadius * 2.0f);
+                    //bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 30);
+                    bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 3);
                 }
 
                 _actionQueue.HasFired = true;
@@ -154,8 +156,9 @@ namespace DawnOnline.Simulation.Entities
                 var bullet = BulletBuilder.CreateRocket(CharacterSheet.RangeDamage);
                 //bullet.Launch(bulletAngleVector);
                 {
-                    MyEnvironment.AddBullet(bullet, _place.Fixture.Body.Position + bulletAngleVector * 30);
-                    bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 200);
+                    MyEnvironment.AddBullet(bullet, _place.Fixture.Body.Position + bulletAngleVector * (float)_place.Form.BoundingCircleRadius * 2.0f);
+                    //bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 20);
+                    bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 3);
                 }
 
                 _actionQueue.HasFired = true;
@@ -229,6 +232,9 @@ namespace DawnOnline.Simulation.Entities
         {
             // TODO: score!
             Environment.GetWorld().RemoveObstacle(collectable);
+
+            // + health
+            _characterSheet.Damage.Decrease(10);
         }
 
         public void TurnLeft()

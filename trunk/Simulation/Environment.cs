@@ -27,6 +27,7 @@ namespace DawnOnline.Simulation
         Dictionary<EntityType, List<ICreature>> _creaturesPerSpecy = new Dictionary<EntityType, List<ICreature>>();
         List<IEntity> _obstacles = new List<IEntity>();
         List<IEntity> _bullets = new List<IEntity>();
+        List<IExplosion> _explosions = new List<IExplosion>();
 
 
         private Environment()
@@ -36,6 +37,11 @@ namespace DawnOnline.Simulation
 
         public bool AddCreature(ICreature creature, Vector2 origin, double angle)
         {
+            return AddCreature(creature, origin, angle, true);
+        }
+
+        public bool AddCreature(ICreature creature, Vector2 origin, double angle, bool checkIntersect)
+        {
             var myCreature = creature as Creature;
             Debug.Assert(myCreature != null);
 
@@ -43,7 +49,7 @@ namespace DawnOnline.Simulation
             (myCreature.Place as Placement).OffsetPosition(origin, angle);
 
             // TODO: use farseer for obstacle collision
-            if (IntersectsWithObstacles(myCreature.Place))
+            if (checkIntersect && IntersectsWithObstacles(myCreature.Place))
             {
                 FarSeerWorld.RemoveBody(creature.Place.Fixture.Body);
                 return false;
@@ -58,6 +64,16 @@ namespace DawnOnline.Simulation
 
             _creaturesPerSpecy[myCreature.Specy].Add(myCreature);
             return true;
+        }
+
+        internal void AddExplosion(IExplosion explosion)
+        {
+            _explosions.Add(explosion);
+        }
+
+        public IList<IExplosion> GetExplosions()
+        {
+            return _explosions;
         }
 
         private bool IntersectsWithObstacles(Placement place)
@@ -81,6 +97,12 @@ namespace DawnOnline.Simulation
         internal void KillCreature(Creature creature)
         {
             Debug.Assert(creature != null);
+
+            // Add explosion
+            {
+                var explosion = new ExplosionEffect(creature.Place.Position, (float)creature.Place.Form.BoundingCircleRadius*10, 75);
+                AddExplosion(explosion);
+            }
 
             creature.Alive = false;
             _creatures.Remove(creature);
@@ -178,8 +200,19 @@ namespace DawnOnline.Simulation
                 //current.ClearActionQueue();
             }
 
+            // Update explosions
+            var remainingExplosions = new List<IExplosion>();
+            foreach (var explosion in _explosions.Cast<ExplosionEffect>())
+            {
+                if (!explosion.IsExpired())
+                    remainingExplosions.Add(explosion);
+            }
+            _explosions = remainingExplosions;
+
             // Update physics
-            FarSeerWorld.Step(MathHelper.Min((float)timeDelta, 1f / 30f));
+            FarSeerWorld.Step((float)timeDelta / 1000);
+            //FarSeerWorld.Step(1f / 30f);
+            //FarSeerWorld.Step(MathHelper.Min((float)timeDelta, 1f / 30f));
             //FarSeerWorld.Step((float)timeDelta / 1000);
         }
 

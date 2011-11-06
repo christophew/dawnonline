@@ -62,7 +62,7 @@ namespace DawnGame
 
             _floor = new GameObject(Game.Content.Load<Model>(@"floor_metal"), new Vector3(MathHelper.PiOver2, 0, 0), new Vector3(0, -2025, 0), 2000f);
 
-            _camera = new BirdsEyeFollowCamera(GraphicsDevice, 800, 500, _dawnWorld.Avatar);
+            _camera = new BirdsEyeFollowCamera(GraphicsDevice, 80, 500, _dawnWorld.Avatar);
         }
 
         /// <summary>
@@ -107,13 +107,13 @@ namespace DawnGame
             var keyboard = Keyboard.GetState();
 
             if (keyboard.IsKeyDown(Keys.F1))
-                _camera = new BirdsEyeCamera(GraphicsDevice, new Vector3(1500f, 2800f, 1000f), 500);
+                _camera = new BirdsEyeCamera(GraphicsDevice, new Vector3(150f, 280f, 100f), 50);
             if (keyboard.IsKeyDown(Keys.F2))
                 _camera = new AvatarCamera(GraphicsDevice, _dawnWorld.Avatar);
             if (keyboard.IsKeyDown(Keys.F3))
-                _camera = new BirdsEyeFollowCamera(GraphicsDevice, 800, 500, _dawnWorld.Avatar);
+                _camera = new BirdsEyeFollowCamera(GraphicsDevice, 80, 50, _dawnWorld.Avatar);
             if (keyboard.IsKeyDown(Keys.F4))
-                _camera = new FirstPersonCamera(Game.Window, 100);
+                _camera = new FirstPersonCamera(Game.Window, 10);
             if (keyboard.IsKeyDown(Keys.F5))
                 _camera = new AvatarCamera(GraphicsDevice, _dawnWorld.Environment.GetCreatures(EntityType.Predator)[0]);
 

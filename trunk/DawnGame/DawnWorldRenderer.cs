@@ -25,6 +25,7 @@ namespace DawnGame
         private GameObject _gunModel;
         private GameObject _treasureModel;
         private GameObject _predatorFactoryModel;
+        private GameObject _spawnPointModel;
 
         private Game _game;
         private DawnWorld _dawnWorld;
@@ -54,19 +55,21 @@ namespace DawnGame
 
         public void LoadContent()
         {
-            _creatureModel = new GameObject(_game.Content.Load<Model>(@"shark"), new Vector3(MathHelper.PiOver2, 0, 0), Vector3.Zero, 10f);
-            _creatureModel_Avatar = new GameObject(_game.Content.Load<Model>(@"directx"), new Vector3(MathHelper.PiOver2, 0, 0), Vector3.Zero, 10f);
-            _gunModel = new GameObject(_game.Content.Load<Model>(@"gun"), new Vector3(MathHelper.PiOver2, 0, -MathHelper.PiOver2), Vector3.Zero, 7f);
+            _creatureModel = new GameObject(_game.Content.Load<Model>(@"shark"), new Vector3(MathHelper.PiOver2, 0, 0), Vector3.Zero, 1f);
+            _creatureModel_Avatar = new GameObject(_game.Content.Load<Model>(@"directx"), new Vector3(MathHelper.PiOver2, 0, 0), Vector3.Zero, 1f);
+            _gunModel = new GameObject(_game.Content.Load<Model>(@"gun"), new Vector3(MathHelper.PiOver2, 0, -MathHelper.PiOver2), Vector3.Zero, 0.7f);
 
-            _cubeModel = new GameObject(_game.Content.Load<Model>(@"box"), new Vector3(MathHelper.PiOver2, 0, 0), Vector3.Zero, 25f);
-            _wallModel = new GameObject(_game.Content.Load<Model>(@"brickwall"), new Vector3(MathHelper.PiOver2, 0, 0), Vector3.Zero, 25f);
-            _predatorFactoryModel = new GameObject(_game.Content.Load<Model>(@"Factory4"), new Vector3(MathHelper.PiOver2, 0, 0), new Vector3(0, -50, 0), 50f);
+            _cubeModel = new GameObject(_game.Content.Load<Model>(@"box"), new Vector3(MathHelper.PiOver2, 0, 0), Vector3.Zero, 2.5f);
+            _wallModel = new GameObject(_game.Content.Load<Model>(@"brickwall"), new Vector3(MathHelper.PiOver2, 0, 0), Vector3.Zero, 2.5f);
+            _predatorFactoryModel = new GameObject(_game.Content.Load<Model>(@"Factory4"), new Vector3(MathHelper.PiOver2, 0, 0), new Vector3(0, -50, 0), 5f);
 
             //_bulletModel = new GameObject(Content.Load<Model>(@"bullet"), Vector3.Zero, 1f);
-            _bulletModel = new GameObject(_game.Content.Load<Model>(@"firebullet"), Vector3.Zero, Vector3.Zero, 1f);
-            _rocketModel = new GameObject(_game.Content.Load<Model>(@"firebullet"), Vector3.Zero, Vector3.Zero, 1.5f);
+            _bulletModel = new GameObject(_game.Content.Load<Model>(@"firebullet"), Vector3.Zero, Vector3.Zero, 0.1f);
+            _rocketModel = new GameObject(_game.Content.Load<Model>(@"firebullet"), Vector3.Zero, Vector3.Zero, 0.15f);
+            //_spawnPointModel = new GameObject(_game.Content.Load<Model>(@"floor3"), new Vector3(MathHelper.PiOver2, 0, 0), new Vector3(0, -28, 0), 1f);
+            _spawnPointModel = new GameObject(_game.Content.Load<Model>(@"cube3"), Vector3.Zero, Vector3.Zero, 1.5f);
 
-            _treasureModel = new GameObject(_game.Content.Load<Model>(@"cube3"), Vector3.Zero, Vector3.Zero, 5f);
+            _treasureModel = new GameObject(_game.Content.Load<Model>(@"cube3"), Vector3.Zero, Vector3.Zero, 0.5f);
 
 
             // RoundlineManager
@@ -101,23 +104,17 @@ namespace DawnGame
             }
 
             // Move
+            if ((gameTime.TotalGameTime - _lastMove).TotalMilliseconds > 75)
             {
                 _moveTimer.Reset();
                 _moveTimer.Start();
-                _dawnWorld.ApplyMove(gameTime.ElapsedGameTime.TotalMilliseconds);
+                Console.WriteLine((gameTime.TotalGameTime - _lastMove).TotalMilliseconds);
+                //_dawnWorld.ApplyMove(gameTime.ElapsedGameTime.TotalMilliseconds);
+                _dawnWorld.ApplyMove((gameTime.TotalGameTime - _lastMove).TotalMilliseconds);
                 _moveTimer.Stop();
-            }
-            //var dt = 33;
-            //if ((gameTime.TotalGameTime - _lastMove).TotalMilliseconds > dt)
-            //{
-            //    _moveTimer.Reset();
-            //    _moveTimer.Start();
-            //    //_dawnWorld.ApplyMove((gameTime.TotalGameTime - _lastMove).TotalMilliseconds);
-            //    _dawnWorld.ApplyMove(dt);
 
-            //    _moveTimer.Stop();
-            //    _lastMove = gameTime.TotalGameTime;
-            //}
+                _lastMove = gameTime.TotalGameTime;
+            }
         }
 
         private void UpdateAvatar()
@@ -235,6 +232,9 @@ namespace DawnGame
                     break;
                 case EntityType.Rocket:
                     _rocketModel.DrawObject(_camera, position, rotation, true);
+                    break;
+                case EntityType.SpawnPoint:
+                    _spawnPointModel.DrawObject(_camera, position, rotation, true);
                     break;
                 default:
                     throw new NotSupportedException();

@@ -16,7 +16,9 @@ namespace SimulationTests
         public void TestMethod1()
         {
             var farSeerWorld = new World(Vector2.Zero);
-            var fixture = FixtureFactory.CreateCircle(farSeerWorld, 10, 1);
+
+            var body = new Body(farSeerWorld);
+            var fixture = FixtureFactory.AttachCircle(10, 1, body);
 
             //fixture.
         }

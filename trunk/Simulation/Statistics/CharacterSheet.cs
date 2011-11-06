@@ -20,9 +20,6 @@ namespace DawnOnline.Simulation.Statistics
         public double AttackCoolDown { get; internal set; }
         public double BuildCoolDown { get; internal set; }
 
-
-        internal int VisionAccuracyPercent { get; set; }
-
         //internal int MaxAge { get; set; }
         internal double FoodValue { get; set; }
 
@@ -45,11 +42,10 @@ namespace DawnOnline.Simulation.Statistics
             // Defaults
             WalkingDistance = 10;
             TurningAngle = 1;
-            VisionAccuracyPercent = 70;
-            VisionDistance = 250;
+            VisionDistance = 25.0;
             FatigueCost = 15;
             FatigueRecovery = 30;
-            MeleeRange = 20;
+            MeleeRange = 2.0;
             MeleeDamage = 25;
             //MaxAge = Int32.MaxValue;
             ReproductionIncreaseAverage = 5;

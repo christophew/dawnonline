@@ -9,7 +9,8 @@ namespace DawnGame
         /// </summary>
         static void Main(string[] args)
         {
-            using (Game2 game = new Game2())
+            using (var game = new Game2())
+            //using (var game = new Game1())
             {
                 game.Run();
             }

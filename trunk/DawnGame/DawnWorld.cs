@@ -10,8 +10,8 @@ namespace DawnGame
     class DawnWorld
     {
         private readonly DawnOnline.Simulation.Environment _environment = SimulationFactory.CreateEnvironment();
-        private const float MaxX = 3000;
-        private const float MaxY = 2000;
+        private const float MaxX = 300;
+        private const float MaxY = 200;
         private IAvatar _avatar = CreatureBuilder.CreateAvatar();
         Random _randomize = new Random();
 
@@ -20,15 +20,21 @@ namespace DawnGame
 
         public DawnWorld()
         {
-            _environment.AddCreature(_avatar,
-                                     new Vector2 { X = _randomize.Next((int)MaxX), Y = _randomize.Next((int)MaxY) }, 0);
-
             BuildWorld2();
+
+            // Add avatar
+            while (!_environment.AddCreature(_avatar,
+                                     new Vector2 { X = _randomize.Next((int)MaxX), Y = _randomize.Next((int)MaxY) }, 0))
+            {
+                 _avatar = CreatureBuilder.CreateAvatar();
+            }
+
 
             //AddCreatures(EntityType.Rabbit, 300);
             //AddCreatures(EntityType.Plant, 300);
-            AddCreatures(EntityType.Predator, 50);
+            //AddCreatures(EntityType.Predator, 10);
             //AddCreatures(EntityType.Turret, 30);
+            AddSpawnPoints(EntityType.Predator, 10);
         }
 
         public Vector2 Center
@@ -42,10 +48,10 @@ namespace DawnGame
         private void BuildWorld()
         {
             // World boundaries
-            _environment.AddObstacle(ObstacleBuilder.CreateWall(MaxX, -20), new Vector2 { X = MaxX / 2.0f, Y = -11 }); // Top
-            _environment.AddObstacle(ObstacleBuilder.CreateWall(MaxX, 20), new Vector2 { X = MaxX / 2.0f, Y = MaxY + 11 }); // Bottom
-            _environment.AddObstacle(ObstacleBuilder.CreateWall(-20, MaxY), new Vector2 { X = -11, Y = MaxY / 2.0f }); // Left
-            _environment.AddObstacle(ObstacleBuilder.CreateWall(20, MaxY), new Vector2 { X = MaxX + 11, Y = MaxY / 2.0f }); // Right
+            _environment.AddObstacle(ObstacleBuilder.CreateWall(MaxX, -2), new Vector2 { X = MaxX / 2.0f, Y = -11 }); // Top
+            _environment.AddObstacle(ObstacleBuilder.CreateWall(MaxX, 2), new Vector2 { X = MaxX / 2.0f, Y = MaxY + 11 }); // Bottom
+            _environment.AddObstacle(ObstacleBuilder.CreateWall(-2, MaxY), new Vector2 { X = -11, Y = MaxY / 2.0f }); // Left
+            _environment.AddObstacle(ObstacleBuilder.CreateWall(2, MaxY), new Vector2 { X = MaxX + 11, Y = MaxY / 2.0f }); // Right
 
             // Randow obstacles
             int maxHeight = 200;
@@ -65,37 +71,36 @@ namespace DawnGame
         private void BuildWorld2()
         {
             // World boundaries
-            _environment.AddObstacle(ObstacleBuilder.CreateWall(MaxX, -20), new Vector2 { X = MaxX / 2.0f, Y = -11 }); // Top
-            _environment.AddObstacle(ObstacleBuilder.CreateWall(MaxX, 20), new Vector2 { X = MaxX / 2.0f, Y = MaxY + 11 }); // Bottom
-            _environment.AddObstacle(ObstacleBuilder.CreateWall(-20, MaxY), new Vector2 { X = -11, Y = MaxY / 2.0f }); // Left
-            _environment.AddObstacle(ObstacleBuilder.CreateWall(20, MaxY), new Vector2 { X = MaxX + 11, Y = MaxY / 2.0f }); // Right
+            _environment.AddObstacle(ObstacleBuilder.CreateWall(MaxX, -2), new Vector2 { X = MaxX / 2.0f, Y = -11 }); // Top
+            _environment.AddObstacle(ObstacleBuilder.CreateWall(MaxX, 2), new Vector2 { X = MaxX / 2.0f, Y = MaxY + 11 }); // Bottom
+            _environment.AddObstacle(ObstacleBuilder.CreateWall(-2, MaxY), new Vector2 { X = -11, Y = MaxY / 2.0f }); // Left
+            _environment.AddObstacle(ObstacleBuilder.CreateWall(2, MaxY), new Vector2 { X = MaxX + 11, Y = MaxY / 2.0f }); // Right
 
-            int height = 48;
-            int wide = 48;
+            double height = 4.8;
+            double wide = 4.8;
 
             // Factories
-            for (int i = 0; i < 1; )
-            {
-                var position = new Vector2(_randomize.Next((int)MaxX / 100) * 100, _randomize.Next((int)MaxY / 100) * 100);
-                var box = ObstacleBuilder.CreatePredatorFactory();
+            //for (int i = 0; i < 1; )
+            //{
+            //    if (CreatePredatorFactory())
+            //        i++;
+            //}
 
-                if (_environment.AddObstacle(box, position))
-                    i++;
-            }
-
+            int grid = 5;
             // walls
             for (int i = 0; i < 500; )
             {
-                var grid = 50;
-                var maxLength = 5;
                 var position = new Vector2(_randomize.Next((int)MaxX / grid) * grid, _randomize.Next((int)MaxY / grid) * grid);
 
+                int maxLength = 5;
+
+                // Horizontal/Vertical switch
                 if (_randomize.Next(2) == 0)
                 {
                     int maxHorizontal = _randomize.Next(maxLength);
                     for (int j = 0; j < maxHorizontal; j++)
                     {
-                        if (_environment.AddObstacle(ObstacleBuilder.CreateWall(wide, height), position + new Vector2(0, 50 * j))) i++;
+                        if (_environment.AddObstacle(ObstacleBuilder.CreateWall(wide, height), position + new Vector2(0, grid * j))) i++;
                     }
                 }
                 else
@@ -103,7 +108,7 @@ namespace DawnGame
                     int maxVertical = _randomize.Next(maxLength);
                     for (int j = 0; j < maxVertical; j++)
                     {
-                        if (_environment.AddObstacle(ObstacleBuilder.CreateWall(wide, height), position + new Vector2(50 * j, 0))) i++;
+                        if (_environment.AddObstacle(ObstacleBuilder.CreateWall(wide, height), position + new Vector2(grid * j, 0))) i++;
                     }
                 }
             }
@@ -111,7 +116,7 @@ namespace DawnGame
             // Boxes
             for (int i = 0; i < 150; )
             {
-                var position = new Vector2(_randomize.Next((int)MaxX / 50) * 50, _randomize.Next((int)MaxY / 50) * 50);
+                var position = new Vector2(_randomize.Next((int)MaxX / grid) * grid, _randomize.Next((int)MaxY / grid) * grid);
                 var box = ObstacleBuilder.CreateObstacleBox(wide, height);
 
                 if (_environment.AddObstacle(box, position))
@@ -121,12 +126,36 @@ namespace DawnGame
             // Treasure
             for (int i = 0; i < 50; )
             {
-                var position = new Vector2(_randomize.Next((int)MaxX / 50) * 50, _randomize.Next((int)MaxY / 50) * 50);
+                var position = new Vector2(_randomize.Next((int)MaxX / grid) * grid, _randomize.Next((int)MaxY / grid) * grid);
                 var box = ObstacleBuilder.CreateTreasure();
 
                 if (_environment.AddObstacle(box, position))
                     i++;
             }
+        }
+
+        private bool CreatePredatorFactory()
+        {
+            var position = new Vector2(_randomize.Next((int)MaxX / 10) * 10, _randomize.Next((int)MaxY / 10) * 10);
+            var box = ObstacleBuilder.CreatePredatorFactory();
+
+            if (!_environment.AddObstacle(box, position))
+                return false;
+
+            // + SpawnPoints
+            var offset = 125;
+            _environment.AddCreature(CreatureBuilder.CreateSpawnPoint(EntityType.Predator), new Vector2(position.X + offset, position.Y), 0, false);
+            _environment.AddCreature(CreatureBuilder.CreateSpawnPoint(EntityType.Predator), new Vector2(position.X - offset, position.Y), 0, false);
+            _environment.AddCreature(CreatureBuilder.CreateSpawnPoint(EntityType.Predator), new Vector2(position.X, position.Y - offset), 0, false);
+            _environment.AddCreature(CreatureBuilder.CreateSpawnPoint(EntityType.Predator), new Vector2(position.X, position.Y - offset), 0, false);
+
+            // + turrets
+            _environment.AddCreature(CreatureBuilder.CreateTurret(EntityType.Avatar), new Vector2(position.X + offset, position.Y + offset), 0, false);
+            _environment.AddCreature(CreatureBuilder.CreateTurret(EntityType.Avatar), new Vector2(position.X - offset, position.Y + offset), 0, false);
+            _environment.AddCreature(CreatureBuilder.CreateTurret(EntityType.Avatar), new Vector2(position.X - offset, position.Y - offset), 0, false);
+            _environment.AddCreature(CreatureBuilder.CreateTurret(EntityType.Avatar), new Vector2(position.X + offset, position.Y - offset), 0, false);
+
+            return true;
         }
 
         public void AddCreatures(EntityType specy, int amount)
@@ -136,6 +165,17 @@ namespace DawnGame
                 if (_environment.AddCreature(CreatureBuilder.CreateCreature(specy),
                                  new Vector2 { X = _randomize.Next((int)MaxX), Y = _randomize.Next((int)MaxY) },
                                  _randomize.Next(6)))
+                    i++;
+            }
+        }
+
+        public void AddSpawnPoints(EntityType spawnType, int amount)
+        {
+            for (int i = 0; i < amount;)
+            {
+                if (_environment.AddCreature(CreatureBuilder.CreateSpawnPoint(spawnType),
+                                 new Vector2(_randomize.Next((int)MaxX), _randomize.Next((int)MaxY)), 
+                                 0))
                     i++;
             }
         }
