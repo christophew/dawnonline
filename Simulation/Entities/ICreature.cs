@@ -18,5 +18,7 @@ namespace DawnOnline.Simulation.Entities
         bool CanAttack();
 
         IEntity SpawnPoint { get; }
+
+        ICreature Replicate();
     }
 }

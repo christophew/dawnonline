@@ -13,7 +13,7 @@ namespace DawnOnline.Simulation.Builders
 {
     public static class CreatureBuilder
     {
-        private const double _velocityMultiplier = 4;
+        private const double _velocityMultiplier = 5;
         //private const double _turnMultiplier = 20000;
         private const double _turnMultiplier = 3;
 
@@ -104,7 +104,7 @@ namespace DawnOnline.Simulation.Builders
 
             avatar.Specy = EntityType.Avatar;
             avatar.CharacterSheet.WalkingDistance = 30 * _velocityMultiplier;
-            avatar.CharacterSheet.TurningAngle = 1 * _turnMultiplier;
+            avatar.CharacterSheet.TurningAngle = 2 * _turnMultiplier;
             avatar.CharacterSheet.RangeDamage = 50;
             avatar.CharacterSheet.MeleeDamage = 50;
 

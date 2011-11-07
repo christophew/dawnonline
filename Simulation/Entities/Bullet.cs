@@ -59,11 +59,21 @@ namespace DawnOnline.Simulation.Entities
                 var hits = explosion.Activate(bullet.Place.Fixture.Body.Position, bullet.Range, bullet.MaxForce);
                 foreach (var hit in hits)
                 {
+                    // Bullets in the explosion area are destroyed
+                    var targetAsBullet = hit.Key.UserData as Bullet;
+                    if ((targetAsBullet != null) && (targetAsBullet != bullet))
+                    {
+                        Environment.GetWorld().RemoveBullet(targetAsBullet);
+                    }
+
+                    // Apply damage to creatures
                     var explosionTarget = hit.Key.UserData as Creature;
                     if (explosionTarget == null)
                         continue;
                     var distance = MathTools.GetDistance(fixtureA.Body.Position, fixtureB.Body.Position);
                     explosionTarget.TakeExplosionDamage(bullet, distance);
+
+                    // TODO: Apply damage to structures?
                 }
             }
 

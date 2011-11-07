@@ -108,7 +108,7 @@ namespace DawnGame
             {
                 _moveTimer.Reset();
                 _moveTimer.Start();
-                Console.WriteLine((gameTime.TotalGameTime - _lastMove).TotalMilliseconds);
+                //Console.WriteLine((gameTime.TotalGameTime - _lastMove).TotalMilliseconds);
                 //_dawnWorld.ApplyMove(gameTime.ElapsedGameTime.TotalMilliseconds);
                 _dawnWorld.ApplyMove((gameTime.TotalGameTime - _lastMove).TotalMilliseconds);
                 _moveTimer.Stop();

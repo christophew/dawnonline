@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DawnGame.Cameras;
 using DawnOnline.Simulation.Entities;
 using DeferredLighting;
@@ -214,7 +215,7 @@ namespace DawnGame
             DrawPointLight(
                 new Vector3(_dawnWorld.Avatar.Place.Position.X, height, _dawnWorld.Avatar.Place.Position.Y),
                 color,
-                50+radius * (1f - (float)_dawnWorld.Avatar.CharacterSheet.Damage.PercentFilled / 100f),
+                radius * (1f - (float)_dawnWorld.Avatar.CharacterSheet.Damage.PercentFilled / 100f),
                 intensity);
         }
 
@@ -241,6 +242,36 @@ namespace DawnGame
             {
                 if (current.Specy == entityType)
                 {
+                    DrawPointLight(
+                        new Vector3(current.Place.Position.X, height, current.Place.Position.Y),
+                        color,
+                        radius,
+                        intensity);
+                }
+            }
+        }
+
+        private static readonly Random _randomize = new Random((int)DateTime.Now.Ticks);
+        Dictionary<IEntity, Color> _familyColorMapper = new Dictionary<IEntity, Color>();
+
+        private void DrawFamilyPointLight(EntityType entityType, float height, float radius, float intensity)
+        {
+            var obstacles = _dawnWorld.Environment.GetCreatures();
+            foreach (var current in obstacles)
+            {
+                if (current.Specy == entityType)
+                {
+                    Color color;
+                    if (!_familyColorMapper.TryGetValue(current.SpawnPoint, out color))
+                    {
+                        var skipColor = _randomize.Next(3);
+                        color = new Color(
+                            skipColor == 0 ? 0 : _randomize.Next(255),
+                            skipColor == 1 ? 0 : _randomize.Next(255),
+                            skipColor == 2 ? 0 : _randomize.Next(255));
+                        _familyColorMapper.Add(current.SpawnPoint, color);
+                    }
+
                     DrawPointLight(
                         new Vector3(current.Place.Position.X, height, current.Place.Position.Y),
                         color,
@@ -286,7 +317,7 @@ namespace DawnGame
             GraphicsDevice.BlendState = BlendState.AlphaBlend;
             GraphicsDevice.DepthStencilState = DepthStencilState.None;
 
-            //DrawDirectionalLight(new Vector3(-1, -1, 0), Color.WhiteSmoke);
+            DrawDirectionalLight(new Vector3(-1, -1, 0), Color.Gray);
 
             Color[] colors = new Color[10];
             //colors[0] = Color.Red; 
@@ -326,15 +357,17 @@ namespace DawnGame
             //DrawPointLight(new Vector3(0, 25, 0), Color.White, 30, 1);
             //DrawPointLight(new Vector3(0, 0, 70), Color.Wheat, 55 + 10 * (float)Math.Sin(5 * angle), 3);     
 
-            DrawAvatarPointLight(Color.White, 7.5f, 25.0f, 1);
+            DrawAvatarPointLight(Color.White, -1f, 50.0f, 1);
             DrawObstaclePointLight(EntityType.Treasure, Color.Red, .7f, 10.0f, 2);
             DrawObstaclePointLight(EntityType.PredatorFactory, Color.Blue, 10.0f, 50.0f, 1);
             //DrawCreaturePointLight(EntityType.Turret, Color.LightGreen, 7.5f, 15.0f, 2);
-            DrawCreaturePointLight(EntityType.Predator, Color.BlueViolet, 1.0f, 7.5f, 2);
+            //DrawCreaturePointLight(EntityType.Predator, Color.BlueViolet, 1.0f, 7.5f, 2);
             DrawBulletPointLight(EntityType.Bullet, Color.Firebrick, .3f, 1.5f, 20f);
             DrawBulletPointLight(EntityType.Rocket, Color.Firebrick, .5f, 2.5f, 10f);
-            DrawCreaturePointLight(EntityType.SpawnPoint, Color.GreenYellow, 2.0f, 7.5f, 2f);
             DrawExplosions();
+
+            DrawFamilyPointLight(EntityType.Predator, 2f, 4f, 2);
+            DrawFamilyPointLight(EntityType.SpawnPoint, 2.0f, 5f, 2f);
 
             GraphicsDevice.BlendState = BlendState.Opaque;
             GraphicsDevice.DepthStencilState = DepthStencilState.None;            
