@@ -27,6 +27,11 @@ namespace DawnOnline.Simulation.Senses
         private Environment CreatureEnvironment { get { return _creature.MyEnvironment; } }
         private Placement CreaturePlace { get { return _creature.Place; } }
 
+        internal bool SeesCreature(Creature creature)
+        {
+            return HasLineOfSight(creature, null);
+        }
+
         internal bool SeesACreature(List<EntityType> species, IEntity spawnPointToExclude)
         {
             return species.Any(specy => HasLineOfSight(specy, spawnPointToExclude));
@@ -73,6 +78,8 @@ namespace DawnOnline.Simulation.Senses
             var visionDistance2 = VisionDistance * VisionDistance;
             {
                 double distance2 = MathTools.GetDistance2(CreaturePlace.Position, current.Place.Position);
+                if (distance2 == 0)
+                    return true;
                 if (distance2 > visionDistance2)
                     return false;
             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DawnOnline.Simulation;
 using DawnOnline.Simulation.Builders;
 using DawnOnline.Simulation.Entities;
@@ -222,6 +223,15 @@ namespace DawnGame
 
                     // TODO: find best spawnpoint
                     var bestspawnPoint = spawnPoints[0];
+                    var newSpawnPoint = bestspawnPoint.Replicate();
+                    var position = new Vector2 {X = _randomize.Next((int) MaxX), Y = _randomize.Next((int) MaxY)};
+                    var ok =_environment.AddCreature(newSpawnPoint, position, 0);
+
+                    Console.WriteLine(ok);
+
+                    //var newSpawnPoint = CreatureBuilder.CreateSpawnPoint(EntityType.Predator);
+                    //var position = new Vector2 {X = _randomize.Next((int) MaxX), Y = _randomize.Next((int) MaxY)};
+                    //_environment.AddCreature(newSpawnPoint, position, 0);
                 }
             }
 

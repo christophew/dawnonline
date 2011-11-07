@@ -62,10 +62,37 @@ namespace DawnOnline.Simulation.Entities
             _place.Fixture.Body.BodyType = BodyType.Dynamic;
             _place.Fixture.Body.Mass = 5;
             //_place.Fixture.Friction = 0.1f;
-            _place.Fixture.Body.LinearDamping = 2f;
-            _place.Fixture.Body.AngularDamping = 1f;
+            _place.Fixture.Body.LinearDamping = 2.5f;
+            _place.Fixture.Body.AngularDamping = 2f;
 
             _place.Fixture.UserData = this;
+        }
+
+        //public ICreature Replicate()
+        //{
+        //    var newCreature = new Creature(_place.Form.BoundingCircleRadius);
+        //    newCreature._characterSheet = (CharacterSheet)CharacterSheet.Clone();
+
+        //    newCreature.Place.Fixture.Body.BodyType = _place.Fixture.Body.BodyType;
+
+        //    newCreature.Specy = Specy;
+        //    if (FoodSpecies != null)
+        //        newCreature.FoodSpecies = new List<EntityType>(FoodSpecies);
+
+        //    newCreature.SpawnPoint = (this.Specy == EntityType.SpawnPoint) ? newCreature : SpawnPoint;
+
+        //    newCreature.Brain = _brain.Replicate();
+
+        //    return newCreature;
+        //}
+
+        public ICreature Replicate()
+        {
+            Debug.Assert(Specy == EntityType.SpawnPoint, "Not implemented for anything else!!");
+
+            var newCreature = CreatureBuilder.CreateSpawnPoint(EntityType.Predator) as Creature;
+            newCreature.Brain = this.Brain.Replicate();
+            return newCreature;
         }
 
         public bool IsTired

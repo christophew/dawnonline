@@ -30,6 +30,9 @@ namespace DawnOnline.Simulation.Builders
             placement.Fixture.OnCollision += Bullet.OnCollision;
             placement.Fixture.AfterCollision += Bullet.AfterCollision;
 
+            // Bullets can't hit bullets (yet)
+            placement.Fixture.CollisionGroup = -1;
+
             bullet.Place = placement;
             bullet.Damage = damage;
             bullet.Explodes = false;
@@ -53,10 +56,13 @@ namespace DawnOnline.Simulation.Builders
             var placement = new Placement { Form = form };
             placement.Fixture = BodyFactory.CreateCircle(Environment.GetWorld().FarSeerWorld, radius, 1).FixtureList[0];
             placement.Fixture.Body.BodyType = BodyType.Dynamic;
-            placement.Fixture.Body.Mass = .2f;
+            placement.Fixture.Body.Mass = .15f;
             placement.Fixture.Body.IsBullet = true;
             placement.Fixture.OnCollision += Bullet.OnCollision;
             placement.Fixture.AfterCollision += Bullet.AfterCollision;
+
+            // Bullets can't hit bullets (yet)
+            placement.Fixture.CollisionGroup = -1;
 
             bullet.Place = placement;
             bullet.Damage = damage;
