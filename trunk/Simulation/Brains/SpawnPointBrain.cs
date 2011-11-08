@@ -45,7 +45,7 @@ namespace DawnOnline.Simulation.Brains
         private void SpawnForager()
         {
             var creature = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature) as Creature;
-            creature.Brain = new PredatorBrain_Forager();
+            creature.Brain = new ForagerBrain();
             creature.Brain.InitializeSenses();
             Environment.GetWorld().AddCreature(creature, MyCreature.Place.Position, Globals.Radomizer.NextDouble() * Math.PI * 2.0, false);
         }
@@ -53,7 +53,7 @@ namespace DawnOnline.Simulation.Brains
         private void SpawnProtector()
         {
             var creature = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature) as Creature;
-            creature.Brain = new PredatorBrain_Protector();
+            creature.Brain = new ProtectorBrain();
             creature.Brain.InitializeSenses();
             Environment.GetWorld().AddCreature(creature, MyCreature.Place.Position, Globals.Radomizer.NextDouble() * Math.PI * 2.0, false);
         }

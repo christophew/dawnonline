@@ -52,7 +52,7 @@ namespace DawnOnline.Simulation.Brains
 
             FindPlants();
 
-            DoRandomAction();
+            DoRandomAction(100);
         }
 
         internal override void InitializeSenses()

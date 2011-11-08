@@ -23,12 +23,12 @@ namespace DawnOnline.Simulation.Brains
         private bool _randomMoveForward;
         private DateTime _randomMoveStart;
 
-        protected void DoRandomAction()
+        protected void DoRandomAction(int milliseconds)
         {
             var now = DateTime.Now;
 
             // keep doing the same thing for a certain amount of milliseconds
-            if ((now - _randomMoveStart).TotalMilliseconds < 100)
+            if ((now - _randomMoveStart).TotalMilliseconds < milliseconds)
             {
                 if (_randomTurningLeft)
                 {

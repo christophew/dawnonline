@@ -72,11 +72,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Brains\PredatorBrain_Protector.cs" />
+    <Compile Include="Brains\ForagerBrain.cs" />
     <Compile Include="Brains\PlantBrain.cs" />
     <Compile Include="Brains\PredatorBrain.cs" />
     <Compile Include="Brains\AbstractBrain.cs" />
-    <Compile Include="Brains\PredatorBrain_Forager.cs" />
+    <Compile Include="Brains\PredatorBrain2.cs" />
+    <Compile Include="Brains\ProtectorBrain.cs" />
     <Compile Include="Brains\RabbitBrain.cs" />
     <Compile Include="Brains\SpawnPointBrain.cs" />
     <Compile Include="Brains\TurretBrain.cs" />

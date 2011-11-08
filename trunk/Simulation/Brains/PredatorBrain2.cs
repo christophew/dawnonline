@@ -51,7 +51,7 @@ namespace DawnOnline.Simulation.Brains
                 return;
             }
 
-            DoRandomAction();
+            DoRandomAction(100);
         }
 
         internal override void InitializeSenses()
