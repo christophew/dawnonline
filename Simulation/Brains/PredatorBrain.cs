@@ -8,22 +8,98 @@ namespace DawnOnline.Simulation.Brains
 {
     internal class PredatorBrain : AbstractBrain
     {
-        private Eye _forwardEye;
-        private Eye _leftEye;
-        private Eye _rightEye;
-        private Bumper _forwardBumper;
-        private bool _initialized;
+        protected Eye _forwardEye;
+        protected Eye _leftEye;
+        protected Eye _rightEye;
+        protected Bumper _forwardBumper;
+        protected bool _initialized;
 
-        private enum EvadeState
+        protected enum EvadeState
         {
             None,
             Left,
             Right
         } ;
-        private EvadeState _evading = EvadeState.None;
-        private DateTime _startEvading;
+        protected EvadeState _evading = EvadeState.None;
+        protected DateTime _startEvading;
+
+        protected DateTime _lastTimeISawAnEnemy = new DateTime();
+
+        protected DateTime? _imPanickingSince = null;
+
 
         internal override void DoSomething()
+        {
+            // Emotional states
+            // * neutral
+            // * adrenaline
+            // * fear
+            // * tired
+
+            if (MyCreature.CharacterSheet.Damage.IsCritical &&
+                (!_imPanickingSince.HasValue || ((DateTime.Now - _imPanickingSince.Value).Milliseconds > 5000)))
+            {
+                FearState();
+                return;
+            }
+            if ((DateTime.Now - _lastTimeISawAnEnemy).TotalMilliseconds < 2000 || ISeeAnEnemy())
+            {
+                AdrenalineState();
+                return;
+            }
+            if (MyCreature.CharacterSheet.Fatigue.PercentFilled != 0)
+            {
+                TiredState();
+                return;
+            }
+
+            NeutralState();
+        }
+
+        protected virtual bool ISeeAnEnemy()
+        {
+            var check = _forwardEye.SeesACreature(MyCreature.FoodSpecies, MyCreature.SpawnPoint) ||
+                        _leftEye.SeesACreature(MyCreature.FoodSpecies, MyCreature.SpawnPoint) ||
+                        _rightEye.SeesACreature(MyCreature.FoodSpecies, MyCreature.SpawnPoint);
+
+            if (check)
+                _lastTimeISawAnEnemy = DateTime.Now;
+            return check;
+        }
+
+        protected virtual void NeutralState()
+        {
+            Debug.Assert(MyCreature != null);
+            Debug.Assert(_initialized);
+
+            // Turn on bumper-hit
+            if (_forwardBumper.Hit)
+            {
+                if (_evading == EvadeState.None)
+                {
+                    // Chose left or right
+                    _evading = Globals.Radomizer.Next(2) == 0 ? EvadeState.Left : EvadeState.Right;
+                    _startEvading = DateTime.Now;
+                }
+
+                if (_evading == EvadeState.Left)
+                    MyCreature.TurnLeft();
+                if (_evading == EvadeState.Right)
+                    MyCreature.TurnRight();
+                return;
+            }
+
+            // Reset evade direction x-seconds after evade
+            if (_evading != EvadeState.None)
+            {
+                if ((DateTime.Now - _startEvading).TotalSeconds > 5)
+                    _evading = EvadeState.None;
+            }
+
+            DoRandomAction(500);
+        }
+
+        protected virtual void AdrenalineState()
         {
             Debug.Assert(MyCreature != null);
             Debug.Assert(_initialized);
@@ -53,40 +129,48 @@ namespace DawnOnline.Simulation.Brains
                 return;
             }
 
-            if (MyCreature.TryReproduce())
-                return;
-
-            if (MyCreature.IsTired)
-            {
-                MyCreature.Rest();
-                return;
-            }
-
-            // Turn on bumper-hit
+            // Circle target
             if (_forwardBumper.Hit)
             {
-                if (_evading == EvadeState.None)
-                {
-                    // Chose left or right
-                    _evading = Globals.Radomizer.Next(2) == 0 ? EvadeState.Left : EvadeState.Right;
-                    _startEvading = DateTime.Now;
-                }
-
-                if (_evading == EvadeState.Left)
-                    MyCreature.TurnLeft();
-                if (_evading == EvadeState.Right)
-                    MyCreature.TurnRight();
+                MyCreature.TurnLeft();
                 return;
             }
 
-            // Reset evade direction x-seconds after evade
-            if (_evading != EvadeState.None)
+
+            // Where is he?
+            DoRandomAction(250);
+        }
+
+        protected virtual void FearState()
+        {
+            if (!_imPanickingSince.HasValue)
+                _imPanickingSince = DateTime.Now;
+
+            // Run away!!!
+            if (_forwardEye.SeesACreature(MyCreature.FoodSpecies, MyCreature.SpawnPoint))
             {
-                if ((DateTime.Now - _startEvading).TotalSeconds > 5)
-                    _evading = EvadeState.None;
+                MyCreature.TurnLeft();
+                return;
+            }
+            if (_leftEye.SeesACreature(MyCreature.FoodSpecies, MyCreature.SpawnPoint))
+            {
+                MyCreature.TurnRight();
+                return;
+            }
+            if (_rightEye.SeesACreature(MyCreature.FoodSpecies, MyCreature.SpawnPoint))
+            {
+                MyCreature.TurnLeft();
+                return;
             }
 
-            DoRandomAction();
+            // All clear!!
+            MyCreature.RunForward();
+        }
+
+        protected virtual void TiredState()
+        {
+            // Rest
+            MyCreature.Rest();
         }
 
         internal override void InitializeSenses()

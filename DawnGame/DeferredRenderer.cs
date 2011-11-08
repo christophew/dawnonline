@@ -317,7 +317,7 @@ namespace DawnGame
             GraphicsDevice.BlendState = BlendState.AlphaBlend;
             GraphicsDevice.DepthStencilState = DepthStencilState.None;
 
-            DrawDirectionalLight(new Vector3(-1, -1, 0), Color.Gray);
+            //DrawDirectionalLight(new Vector3(-1, -1, 0), Color.Gray);
 
             Color[] colors = new Color[10];
             //colors[0] = Color.Red; 

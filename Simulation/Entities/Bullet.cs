@@ -15,8 +15,8 @@ namespace DawnOnline.Simulation.Entities
         public bool Explodes { get; internal set; }
         //public double Force { get; internal set; }
 
-        internal float Range = 5;
-        private float MaxForce = 1;
+        internal float Range = 6;
+        private float MaxForce = 5;
         private static float _ricochetteVelocityThreshold = 15;
 
         // State

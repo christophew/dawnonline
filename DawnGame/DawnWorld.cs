@@ -16,7 +16,7 @@ namespace DawnGame
         private IAvatar _avatar = CreatureBuilder.CreateAvatar();
         Random _randomize = new Random();
 
-        private int _nrOfSpawnPoints = 10;
+        private int _nrOfSpawnPoints = 5;
 
         public IAvatar Avatar { get { return _avatar; } }
         public DawnOnline.Simulation.Environment Environment { get { return _environment; } }
@@ -91,7 +91,7 @@ namespace DawnGame
 
             int grid = 5;
             // walls
-            for (int i = 0; i < 100; )
+            for (int i = 0; i < 300; )
             {
                 var position = new Vector2(_randomize.Next((int)MaxX / grid) * grid, _randomize.Next((int)MaxY / grid) * grid);
 
@@ -117,7 +117,7 @@ namespace DawnGame
             }
 
             // Boxes
-            for (int i = 0; i < 50; )
+            for (int i = 0; i < 150; )
             {
                 var position = new Vector2(_randomize.Next((int)MaxX / grid) * grid, _randomize.Next((int)MaxY / grid) * grid);
                 var box = ObstacleBuilder.CreateObstacleBox(wide, height);
