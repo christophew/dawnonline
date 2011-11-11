@@ -17,13 +17,13 @@ namespace DawnOnline.Simulation.Brains
             Debug.Assert(MyCreature != null);
             Debug.Assert(_initialized);
 
-            if (MyCreature.TryReproduce())
-                return;
+            //if (MyCreature.TryReproduce())
+            //    return;
 
-            if (MyCreature.IsHungry)
-            {
-                FindPlants();
-            }
+            //if (MyCreature.IsHungry)
+            //{
+            //    FindPlants();
+            //}
 
             // Run from predator
             {

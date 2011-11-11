@@ -30,6 +30,9 @@ namespace DawnOnline.Simulation.Brains
 
         internal override void DoSomething()
         {
+            Debug.Assert(MyCreature != null);
+            Debug.Assert(_initialized);
+
             // Emotional states
             // * neutral
             // * adrenaline
@@ -69,9 +72,6 @@ namespace DawnOnline.Simulation.Brains
 
         protected virtual void NeutralState()
         {
-            Debug.Assert(MyCreature != null);
-            Debug.Assert(_initialized);
-
             // Turn on bumper-hit
             if (_forwardBumper.Hit)
             {
@@ -101,9 +101,6 @@ namespace DawnOnline.Simulation.Brains
 
         protected virtual void AdrenalineState()
         {
-            Debug.Assert(MyCreature != null);
-            Debug.Assert(_initialized);
-
             // Find something to attack
             var creaturesToAttack = MyCreature.FindCreatureToAttack(MyCreature.FoodSpecies);
             if (creaturesToAttack != null)

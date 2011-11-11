@@ -49,12 +49,12 @@ namespace DawnOnline.Simulation.Builders
 
             critter.Specy = EntityType.Predator;
             //critter.FoodSpecies = new List<EntityType> { EntityType.Turret, EntityType.Avatar };
-            critter.FoodSpecies = new List<EntityType> { EntityType.Avatar, EntityType.Predator, EntityType.SpawnPoint };
+            //critter.FoodSpecies = new List<EntityType> { EntityType.Avatar, EntityType.Predator, EntityType.SpawnPoint };
+            critter.FoodSpecies = new List<EntityType> { EntityType.Predator, EntityType.SpawnPoint };
 
             //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(100, 150);
             critter.CharacterSheet.WalkingDistance = 30 * _velocityMultiplier;
             critter.CharacterSheet.TurningAngle = 1.5 * _turnMultiplier;
-            critter.CharacterSheet.ReproductionIncreaseAverage = 2;
             critter.CharacterSheet.MeleeDamage = 1;
             critter.CharacterSheet.RangeDamage = 0;
             critter.Brain.InitializeSenses();
@@ -74,7 +74,6 @@ namespace DawnOnline.Simulation.Builders
             critter.CharacterSheet.WalkingDistance = 15 * _velocityMultiplier;
             critter.CharacterSheet.TurningAngle = 1.5 * _turnMultiplier;
             critter.CharacterSheet.FoodValue = 500;
-            critter.CharacterSheet.ReproductionIncreaseAverage = 7;
             critter.Brain.InitializeSenses();
 
             return critter;
@@ -92,7 +91,6 @@ namespace DawnOnline.Simulation.Builders
             critter.CharacterSheet.WalkingDistance = 0;
             critter.CharacterSheet.TurningAngle = 0;
             critter.CharacterSheet.FoodValue = 200;
-            critter.CharacterSheet.ReproductionIncreaseAverage = 7;
             critter.Brain.InitializeSenses();
 
             return critter;
@@ -152,6 +150,8 @@ namespace DawnOnline.Simulation.Builders
 
             // Make the spawnPoint part of the family
             spawnPoint.SpawnPoint = spawnPoint;
+
+            spawnPoint.CharacterSheet.FatigueRecovery = 25;
 
             return spawnPoint;
         }

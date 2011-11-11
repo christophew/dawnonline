@@ -42,8 +42,8 @@ namespace DawnOnline.Simulation.Brains
                 return;
             }
 
-            if (MyCreature.TryReproduce())
-                return;
+            //if (MyCreature.TryReproduce())
+            //    return;
 
             if (MyCreature.IsTired)
             {

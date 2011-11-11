@@ -20,24 +20,19 @@ namespace DawnOnline.Simulation.Statistics
         public double AttackCoolDown { get; internal set; }
         public double BuildCoolDown { get; internal set; }
 
-        //internal int MaxAge { get; set; }
         internal double FoodValue { get; set; }
 
-        internal int ReproductionIncreaseAverage { get; set; }
-
+        // Score
+        public double Score { get; internal set; }
 
         // Monitors
         public Monitor Fatigue { get; internal set; }
         public Monitor Damage { get; internal set; }
-        internal Monitor Hunger { get; set; }
-        internal Monitor Reproduction { get; set; }
 
         internal CharacterSheet()
         {
             Fatigue = new Monitor();
             Damage = new Monitor();
-            Hunger = new Monitor(500);
-            Reproduction = new Monitor(1000);
 
             // Defaults
             WalkingDistance = 10;
@@ -47,12 +42,31 @@ namespace DawnOnline.Simulation.Statistics
             FatigueRecovery = 30;
             MeleeRange = 2.0;
             MeleeDamage = 25;
-            //MaxAge = Int32.MaxValue;
-            ReproductionIncreaseAverage = 5;
 
             FoodValue = 10;
             AttackCoolDown = 0.2; // Seconds
             BuildCoolDown = 5; // Seconds
+        }
+
+        internal CharacterSheet Replicate()
+        {
+            var newCharacterSheet = new CharacterSheet();
+
+            newCharacterSheet.WalkingDistance = WalkingDistance;
+            newCharacterSheet.TurningAngle = TurningAngle;
+            newCharacterSheet.VisionDistance = VisionDistance;
+            newCharacterSheet.FatigueCost = FatigueCost;
+            newCharacterSheet.FatigueRecovery = FatigueRecovery;
+            newCharacterSheet.MeleeRange = MeleeRange;
+            newCharacterSheet.MeleeDamage = MeleeDamage;
+            newCharacterSheet.RangeDamage = RangeDamage;
+
+            newCharacterSheet.AttackCoolDown = AttackCoolDown;
+            newCharacterSheet.BuildCoolDown = BuildCoolDown;
+
+            newCharacterSheet.FoodValue = FoodValue;
+
+            return newCharacterSheet;
         }
 
         #region ICloneable Members
