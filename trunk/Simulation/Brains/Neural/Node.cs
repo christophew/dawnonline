@@ -1,0 +1,18 @@
+﻿namespace DawnOnline.Simulation.Brains.Neural
+{
+    class Node
+    {
+        internal int Threshold { get; set; }
+        internal Edge[] OutGoingEdges { get; set; }
+
+        internal double CurrentValue { get; set; }
+
+        internal void Propagate()
+        {
+            foreach (var edge in OutGoingEdges)
+            {
+                edge.ToNode.CurrentValue += CurrentValue * edge.Multiplier;
+            }
+        }
+    }
+}

@@ -73,6 +73,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Brains\ForagerBrain.cs" />
+    <Compile Include="Brains\Neural\NeuralBrain.cs" />
+    <Compile Include="Brains\Neural\Edge.cs" />
+    <Compile Include="Brains\Neural\NeuralNetwork.cs" />
+    <Compile Include="Brains\Neural\Node.cs" />
     <Compile Include="Brains\PlantBrain.cs" />
     <Compile Include="Brains\PredatorBrain.cs" />
     <Compile Include="Brains\AbstractBrain.cs" />

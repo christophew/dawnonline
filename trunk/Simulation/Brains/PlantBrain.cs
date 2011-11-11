@@ -9,7 +9,7 @@ namespace DawnOnline.Simulation.Brains
     {
         internal override void DoSomething()
         {
-            MyCreature.TryReproduce();
+            //MyCreature.TryReproduce();
         }
     }
 }

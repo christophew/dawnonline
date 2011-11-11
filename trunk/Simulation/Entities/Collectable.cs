@@ -19,11 +19,13 @@ namespace DawnOnline.Simulation.Entities
             if (collectable.Taken)
                 return false;
 
-           var avatar = fixtureB.UserData as Creature;
-            if ((avatar != null) && (avatar.Specy == EntityType.Avatar))
+            var creature = fixtureB.UserData as Creature;
+            //if ((creature != null) && (creature.Specy == EntityType.Avatar))
+            // Everybody can take
+            if (creature != null)
             {
                 collectable.Taken = true;
-                avatar.Take(collectable);
+                creature.Take(collectable);
             }
 
             return true;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DawnOnline.Simulation.Brains.Neural;
 using DawnOnline.Simulation.Builders;
 using DawnOnline.Simulation.Entities;
 
@@ -14,23 +15,40 @@ namespace DawnOnline.Simulation.Brains
         private double _interval;
         private DateTime _lastSpawn;
 
+        internal ICreature PrototypeNeuralForager { get; set; }
+
         internal SpawnPointBrain(EntityType spawnType, double interval)
         {
             _spawnType = spawnType;
             _maxInterval = interval;
+
+            var _prototype = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature) as Creature;
+            _prototype.Brain = new NeuralBrain();
+            _prototype.Brain.InitializeSenses();
+            PrototypeNeuralForager = _prototype;
         }
 
         internal override void DoSomething()
         {
+            // Need new energy
+            if (MyCreature.IsTired)
+                return;
+
             if ((DateTime.Now - _lastSpawn).TotalSeconds < _interval)
                 return;
 
-            var randomizer = new Random((int) DateTime.Now.Ticks);
-            var choice = randomizer.Next(2);
-            if (choice == 0)
-                SpawnHunter();
-            if (choice == 1)
-                SpawnProtector();
+            // Score increase when we spawn
+            MyCreature.CharacterSheet.Score += 1;
+
+            SpawnNeuralForager();
+
+            //var choice = Globals.Radomizer.Next(3);
+            //if (choice == 0 || choice == 1)
+            //    SpawnForager();
+            //if (choice == 2)
+            //    SpawnProtector();
+
+            MyCreature.CharacterSheet.Fatigue.Increase(20);
 
             _lastSpawn = DateTime.Now;
             _interval = Globals.Radomizer.NextDouble()*_maxInterval;
@@ -39,7 +57,7 @@ namespace DawnOnline.Simulation.Brains
         private void SpawnHunter()
         {
             var creature = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature);
-            Environment.GetWorld().AddCreature(creature, MyCreature.Place.Position, Globals.Radomizer.NextDouble() * Math.PI * 2.0, false);
+            AddToWorld(creature);
         }
 
         private void SpawnForager()
@@ -47,7 +65,15 @@ namespace DawnOnline.Simulation.Brains
             var creature = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature) as Creature;
             creature.Brain = new ForagerBrain();
             creature.Brain.InitializeSenses();
-            Environment.GetWorld().AddCreature(creature, MyCreature.Place.Position, Globals.Radomizer.NextDouble() * Math.PI * 2.0, false);
+            AddToWorld(creature);
+        }
+
+        private void SpawnNeuralForager()
+        {
+            var replicatedCreature = PrototypeNeuralForager.Replicate() as Creature;
+            replicatedCreature.SpawnPoint = MyCreature;
+
+            AddToWorld(replicatedCreature);
         }
 
         private void SpawnProtector()
@@ -55,12 +81,22 @@ namespace DawnOnline.Simulation.Brains
             var creature = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature) as Creature;
             creature.Brain = new ProtectorBrain();
             creature.Brain.InitializeSenses();
+            AddToWorld(creature);
+        }
+
+        private void AddToWorld(ICreature creature)
+        {
             Environment.GetWorld().AddCreature(creature, MyCreature.Place.Position, Globals.Radomizer.NextDouble() * Math.PI * 2.0, false);
         }
 
         internal override AbstractBrain Replicate()
         {
-            return new SpawnPointBrain(_spawnType, _maxInterval);
+            var newBrain = new SpawnPointBrain(_spawnType, _maxInterval);
+            newBrain.PrototypeNeuralForager = PrototypeNeuralForager.Replicate();
+
+            // TODO: MUTATE 
+
+            return newBrain;
         }
     }
 }

@@ -68,32 +68,34 @@ namespace DawnOnline.Simulation.Entities
             _place.Fixture.UserData = this;
         }
 
-        //public ICreature Replicate()
-        //{
-        //    var newCreature = new Creature(_place.Form.BoundingCircleRadius);
-        //    newCreature._characterSheet = (CharacterSheet)CharacterSheet.Clone();
-
-        //    newCreature.Place.Fixture.Body.BodyType = _place.Fixture.Body.BodyType;
-
-        //    newCreature.Specy = Specy;
-        //    if (FoodSpecies != null)
-        //        newCreature.FoodSpecies = new List<EntityType>(FoodSpecies);
-
-        //    newCreature.SpawnPoint = (this.Specy == EntityType.SpawnPoint) ? newCreature : SpawnPoint;
-
-        //    newCreature.Brain = _brain.Replicate();
-
-        //    return newCreature;
-        //}
-
         public ICreature Replicate()
         {
-            Debug.Assert(Specy == EntityType.SpawnPoint, "Not implemented for anything else!!");
+            var newCreature = new Creature(_place.Form.BoundingCircleRadius);
+            newCreature._characterSheet = CharacterSheet.Replicate();
 
-            var newCreature = CreatureBuilder.CreateSpawnPoint(EntityType.Predator) as Creature;
-            newCreature.Brain = this.Brain.Replicate();
+            newCreature.Place.Fixture.Body.BodyType = _place.Fixture.Body.BodyType;
+
+            newCreature.Specy = Specy;
+            if (FoodSpecies != null)
+                newCreature.FoodSpecies = new List<EntityType>(FoodSpecies);
+
+            newCreature.SpawnPoint = (this.Specy == EntityType.SpawnPoint) ? newCreature : SpawnPoint;
+
+            newCreature.Brain = _brain.Replicate();
+            newCreature.Brain.InitializeSenses();
+
             return newCreature;
         }
+
+        //public ICreature Replicate()
+        //{
+        //    Debug.Assert(Specy == EntityType.SpawnPoint, "Not implemented for anything else!!");
+
+        //    var newCreature = CreatureBuilder.CreateSpawnPoint(EntityType.Predator) as Creature;
+        //    newCreature.Brain = this.Brain.Replicate();
+        //    newCreature.Brain.InitializeSenses();
+        //    return newCreature;
+        //}
 
         public bool IsTired
         {
@@ -108,14 +110,6 @@ namespace DawnOnline.Simulation.Entities
             get
             {
                 return CharacterSheet.Damage.IsCritical;
-            }
-        }
-
-        public bool IsHungry
-        {
-            get
-            {
-                return CharacterSheet.Hunger.IsCritical;
             }
         }
 
@@ -264,6 +258,14 @@ namespace DawnOnline.Simulation.Entities
 
             // + health
             _characterSheet.Damage.Decrease(10);
+
+            // + spawnPoint energy
+            if (SpawnPoint != null)
+            {
+                var spawnPointCreature = SpawnPoint as Creature;
+                Debug.Assert(spawnPointCreature != null);
+                spawnPointCreature.Rest();
+            }
         }
 
         public void TurnLeft()
@@ -307,30 +309,11 @@ namespace DawnOnline.Simulation.Entities
 
             ClearActionQueue();
 
-            //if (Age++ > _characterSheet.MaxAge)
-            //{
-            //    MyEnvironment.KillCreature(this);
-            //    return;
-            //}
-            CharacterSheet.Reproduction.Increase(Globals.Radomizer.Next(0, CharacterSheet.ReproductionIncreaseAverage * 2));
 
-            int necessaryFood = Globals.Radomizer.Next(3);
-
-            //if (Specy == CreatureType.Plant) necessaryFood = 1;
-
-            //if (!_characterSheet.Hunger.CanIncrease(necessaryFood))
-            //{
-            //    MyEnvironment.KillCreature(this);
-            //    return;
-            //}
 
             Brain.DoSomething();
             Brain.ClearState();
 
-            // TESTING: 
-            {
-                _characterSheet.Hunger.Increase(necessaryFood);
-            }
         }
 
         internal Creature FindCreatureToAttack(List<EntityType> ofTypes)
@@ -395,29 +378,6 @@ namespace DawnOnline.Simulation.Entities
         {
             var rangeMinusDistance = Math.Max(Math.Abs(bullet.Range - distance), 0);
             this.MyActionQueue.Damage += bullet.Damage * rangeMinusDistance * rangeMinusDistance / bullet.Range / bullet.Range;
-        }
-
-        public bool TryReproduce()
-        {
-            return false;
-            if (!CharacterSheet.Reproduction.IsFilled)
-                return false;
-
-
-            Creature child = CreatureBuilder.CreateCreature(Specy) as Creature;
-
-            MyEnvironment.AddCreature(
-                child,
-                MathTools.OffsetCoordinate(
-                    _place.Position,
-                    _place.Angle + Math.PI,
-                    _place.Form.BoundingCircleRadius + 5),
-                Globals.Radomizer.Next(7));
-
-
-            CharacterSheet.Reproduction.Clear();
-
-            return true;
         }
 
         public void BuildEntity(EntityType entityType)

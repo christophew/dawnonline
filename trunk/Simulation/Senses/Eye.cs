@@ -47,6 +47,22 @@ namespace DawnOnline.Simulation.Senses
             return HasLineOfSight(specy, null);
         }
 
+        internal bool SeesAnObstacle(EntityType entityType)
+        {
+            var obstacles = CreatureEnvironment.GetObstacles().Where(o => o.Specy == entityType);
+
+            foreach (var obstacle in obstacles)
+            {
+                if (obstacle.Specy != entityType)
+                    continue;
+
+                if (HasLineOfSight(obstacle))
+                    return true;
+            }
+
+            return false;
+        }
+
         private bool HasLineOfSight(EntityType specy, IEntity spawnPointToExclude)
         {
             if (specy == EntityType.Unknown)
@@ -74,8 +90,13 @@ namespace DawnOnline.Simulation.Senses
                 spawnPointToExclude == current.SpawnPoint)
                 return false;
 
+            return HasLineOfSight(current);
+        }
+
+        private bool HasLineOfSight(IEntity current)
+        {
             // Check distance
-            var visionDistance2 = VisionDistance * VisionDistance;
+            var visionDistance2 = VisionDistance*VisionDistance;
             {
                 double distance2 = MathTools.GetDistance2(CreaturePlace.Position, current.Place.Position);
                 if (distance2 == 0)
@@ -95,10 +116,10 @@ namespace DawnOnline.Simulation.Senses
 
             // Check obstacles
             {
-                _creatureToFind = current;
-                _creatureBlocked = false;
+                _entityToFind = current;
+                _entityBlocked = false;
                 Environment.GetWorld().FarSeerWorld.RayCast(this.RayCastCallback2, _creature.Place.Position, current.Place.Position);
-                if (!_creatureBlocked)
+                if (!_entityBlocked)
                     return true;
             }
 
@@ -106,8 +127,8 @@ namespace DawnOnline.Simulation.Senses
             return false;
         }
 
-        private Creature _creatureToFind;
-        private bool _creatureBlocked;
+        private IEntity _entityToFind;
+        private bool _entityBlocked;
 
         internal float RayCastCallback2(Fixture fixture, Vector2 point, Vector2 normal, float fraction)
         {
@@ -116,11 +137,11 @@ namespace DawnOnline.Simulation.Senses
             //return fraction: clip the ray to this point
             //return 1: don't clip the ray and continue
 
-            var creature = fixture.UserData as Creature;
+            var entity = fixture.UserData as IEntity;
             //if ((creature != _creatureToFind) && (creature != _creature))
-            if (creature != _creatureToFind)
+            if (entity != _entityToFind)
             {
-                _creatureBlocked = true;
+                _entityBlocked = true;
                 return 0;
             }
             return -1;

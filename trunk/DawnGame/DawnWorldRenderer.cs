@@ -93,18 +93,19 @@ namespace DawnGame
             }
 
             // Think = Decide where to move
-            if ((gameTime.TotalGameTime - _lastThink).TotalMilliseconds > 0)
+            if ((gameTime.TotalGameTime - _lastThink).TotalMilliseconds > 50)
             {
                 _thinkTimer.Reset();
                 _thinkTimer.Start();
                 _dawnWorld.MoveAll();
                 _thinkTimer.Stop();
+                Console.WriteLine("_thinkTimer: " + _thinkTimer.ElapsedMilliseconds);
 
                 _lastThink = gameTime.TotalGameTime;
             }
 
             // Move
-            //if ((gameTime.TotalGameTime - _lastMove).TotalMilliseconds > 75)
+            if ((gameTime.TotalGameTime - _lastMove).TotalMilliseconds > 0)
             {
                 _moveTimer.Reset();
                 _moveTimer.Start();
@@ -112,9 +113,12 @@ namespace DawnGame
                 //_dawnWorld.ApplyMove(gameTime.ElapsedGameTime.TotalMilliseconds);
                 _dawnWorld.ApplyMove((gameTime.TotalGameTime - _lastMove).TotalMilliseconds);
                 _moveTimer.Stop();
+                Console.WriteLine("_moveTimer: " + _moveTimer.ElapsedMilliseconds);
 
                 _lastMove = gameTime.TotalGameTime;
             }
+
+            Console.WriteLine("ElapsedGameTime: " + gameTime.ElapsedGameTime.TotalMilliseconds);
         }
 
         private void UpdateAvatar()

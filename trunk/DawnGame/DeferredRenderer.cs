@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DawnGame.Cameras;
 using DawnOnline.Simulation.Entities;
 using DeferredLighting;
@@ -272,10 +273,13 @@ namespace DawnGame
                         _familyColorMapper.Add(current.SpawnPoint, color);
                     }
 
+                    var creature = current as ICreature;
+                    Debug.Assert(creature != null);
+
                     DrawPointLight(
                         new Vector3(current.Place.Position.X, height, current.Place.Position.Y),
                         color,
-                        radius,
+                        radius * (1f - (float)creature.CharacterSheet.Damage.PercentFilled / 100f),
                         intensity);
                 }
             }
@@ -317,8 +321,39 @@ namespace DawnGame
             GraphicsDevice.BlendState = BlendState.AlphaBlend;
             GraphicsDevice.DepthStencilState = DepthStencilState.None;
 
-            //DrawDirectionalLight(new Vector3(-1, -1, 0), Color.Gray);
+            DrawDirectionalLight(new Vector3(-1, -1, 0), Color.Gray);
 
+            MovingPointLights(gameTime, 0);
+
+            DrawAvatarPointLight(Color.White, -1f, 50.0f, 1);
+            DrawObstaclePointLight(EntityType.Treasure, Color.Red, .7f, 10.0f, 2);
+            DrawObstaclePointLight(EntityType.PredatorFactory, Color.Blue, 10.0f, 50.0f, 1);
+            //DrawCreaturePointLight(EntityType.Turret, Color.LightGreen, 7.5f, 15.0f, 2);
+            //DrawCreaturePointLight(EntityType.Predator, Color.BlueViolet, 1.0f, 7.5f, 2);
+            DrawBulletPointLight(EntityType.Bullet, Color.Firebrick, .3f, 1.5f, 20f);
+            DrawBulletPointLight(EntityType.Rocket, Color.Firebrick, .5f, 2.5f, 10f);
+            DrawExplosions();
+
+            DrawFamilyPointLight(EntityType.Predator, 3f, 10f, 2);
+            DrawFamilyPointLight(EntityType.SpawnPoint, 3f, 20f, 2f);
+
+            GraphicsDevice.BlendState = BlendState.Opaque;
+            GraphicsDevice.DepthStencilState = DepthStencilState.None;            
+            GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
+
+            GraphicsDevice.SetRenderTarget(null);
+            
+            //Combine everything
+            finalCombineEffect.Parameters["colorMap"].SetValue(colorRT);
+            finalCombineEffect.Parameters["lightMap"].SetValue(lightRT);
+            finalCombineEffect.Parameters["halfPixel"].SetValue(halfPixel);
+
+            finalCombineEffect.Techniques[0].Passes[0].Apply();            
+            quadRenderer.Render(Vector2.One * -1, Vector2.One);
+        }
+
+        private void MovingPointLights(GameTime gameTime, int nrOfLight)
+        {
             Color[] colors = new Color[10];
             //colors[0] = Color.Red; 
             colors[0] = Color.Gold; 
@@ -328,13 +363,11 @@ namespace DawnGame
             colors[6] = Color.Crimson; colors[7] = Color.SkyBlue;
             colors[8] = Color.Red; colors[9] = Color.ForestGreen;
             float angle = (float)gameTime.TotalGameTime.TotalSeconds;
-            //int n = 15;            
-            int n = 0;
 
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < nrOfLight; i++)
             {
-                var x = (float) Math.Sin(i*MathHelper.TwoPi/n + angle)*500 + 1000;
-                var y = (float) Math.Cos(i*MathHelper.TwoPi/n + angle)*500 + 1000;
+                var x = (float)Math.Sin(i * MathHelper.TwoPi / nrOfLight + angle) * 500 + 1000;
+                var y = (float)Math.Cos(i * MathHelper.TwoPi / nrOfLight + angle) * 500 + 1000;
 
                 Vector3 pos = new Vector3(x, 75, y);
                 DrawPointLight(pos, colors[i % 10], 1000, 1);
@@ -352,41 +385,6 @@ namespace DawnGame
                 //pos = new Vector3((float)Math.Cos(i * MathHelper.TwoPi / n + angle), -0.3f, (float)Math.Sin(i * MathHelper.TwoPi / n + angle));
                 //DrawPointLight(pos * 20, colors[i % 10], 20, 2);
             }
-
-            //DrawPointLight(new Vector3(0, (float)Math.Sin(angle * 0.8) * 40, 0), Color.Red, 30, 5);
-            //DrawPointLight(new Vector3(0, 25, 0), Color.White, 30, 1);
-            //DrawPointLight(new Vector3(0, 0, 70), Color.Wheat, 55 + 10 * (float)Math.Sin(5 * angle), 3);     
-
-            DrawAvatarPointLight(Color.White, -1f, 50.0f, 1);
-            DrawObstaclePointLight(EntityType.Treasure, Color.Red, .7f, 10.0f, 2);
-            DrawObstaclePointLight(EntityType.PredatorFactory, Color.Blue, 10.0f, 50.0f, 1);
-            //DrawCreaturePointLight(EntityType.Turret, Color.LightGreen, 7.5f, 15.0f, 2);
-            //DrawCreaturePointLight(EntityType.Predator, Color.BlueViolet, 1.0f, 7.5f, 2);
-            DrawBulletPointLight(EntityType.Bullet, Color.Firebrick, .3f, 1.5f, 20f);
-            DrawBulletPointLight(EntityType.Rocket, Color.Firebrick, .5f, 2.5f, 10f);
-            DrawExplosions();
-
-            DrawFamilyPointLight(EntityType.Predator, 2f, 4f, 2);
-            DrawFamilyPointLight(EntityType.SpawnPoint, 2.0f, 5f, 2f);
-
-            GraphicsDevice.BlendState = BlendState.Opaque;
-            GraphicsDevice.DepthStencilState = DepthStencilState.None;            
-            GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
-
-            GraphicsDevice.SetRenderTarget(null);
-            
-            //Combine everything
-            finalCombineEffect.Parameters["colorMap"].SetValue(colorRT);
-            finalCombineEffect.Parameters["lightMap"].SetValue(lightRT);
-            finalCombineEffect.Parameters["halfPixel"].SetValue(halfPixel);
-
-            finalCombineEffect.Techniques[0].Passes[0].Apply();            
-            quadRenderer.Render(Vector2.One * -1, Vector2.One);
-
-            //Output FPS and 'credits'
-            double fps = (1000 / gameTime.ElapsedGameTime.TotalMilliseconds);
-            fps = Math.Round(fps, 0);
-            Game.Window.Title = "Deferred Rendering by Catalin Zima, converted to XNA4 by Roy Triesscheijn. Drawing " + (n * 4 + 3) + " lights at " + fps.ToString()  + " FPS";            
         }
 
         /// <summary>
