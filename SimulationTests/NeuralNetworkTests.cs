@@ -59,6 +59,37 @@ namespace SimulationTests
         }
 
         [TestMethod]
+        public void Threshold()
+        {
+            var neuralNetwork = new NeuralNetwork(4, 3, 2);
+
+            neuralNetwork.InputNodes[0].CurrentValue = 10;
+            neuralNetwork.InputNodes[0].OutGoingEdges[0].Multiplier = 1;
+            neuralNetwork.LayerNodes[0].OutGoingEdges[0].Multiplier = 1;
+            neuralNetwork.InputNodes[0].Threshold = 11;
+            neuralNetwork.Propagate();
+
+            Assert.AreEqual(0, neuralNetwork.LayerNodes[0].CurrentValue);
+            Assert.AreEqual(0, neuralNetwork.LayerNodes[1].CurrentValue);
+            Assert.AreEqual(0, neuralNetwork.LayerNodes[2].CurrentValue);
+
+            Assert.AreEqual(0, neuralNetwork.OutputNodes[0].CurrentValue);
+            Assert.AreEqual(0, neuralNetwork.OutputNodes[1].CurrentValue);
+
+            neuralNetwork.Clear();
+            neuralNetwork.InputNodes[0].CurrentValue = 10;
+            neuralNetwork.InputNodes[0].Threshold = 10;
+            neuralNetwork.Propagate();
+
+            Assert.AreEqual(10, neuralNetwork.LayerNodes[0].CurrentValue);
+            Assert.AreEqual(0, neuralNetwork.LayerNodes[1].CurrentValue);
+            Assert.AreEqual(0, neuralNetwork.LayerNodes[2].CurrentValue);
+
+            Assert.AreEqual(10, neuralNetwork.OutputNodes[0].CurrentValue);
+            Assert.AreEqual(0, neuralNetwork.OutputNodes[1].CurrentValue);
+        }
+
+        [TestMethod]
         public void PropagateAll()
         {
             var neuralNetwork = new NeuralNetwork(4, 3, 2);

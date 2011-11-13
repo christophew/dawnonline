@@ -17,10 +17,12 @@ namespace DawnOnline.Simulation
         internal bool HasAttacked { get; set; }
         internal bool HasFired { get; set; }
         internal EntityType BuildEntityOfType { get; set; }
+        internal bool Rest { get; set; }
 
         // Timers: not cleared
         internal DateTime LastAttackTime { get; set; }
         internal DateTime LastBuildTime { get; set; }
+        internal DateTime LastRestTime { get; set; }
 
         internal void ClearForRound()
         {
@@ -31,6 +33,8 @@ namespace DawnOnline.Simulation
             HasAttacked = false;
             HasFired = false;
             BuildEntityOfType = EntityType.Unknown;
+            Rest = false;
         }
+
     }
 }

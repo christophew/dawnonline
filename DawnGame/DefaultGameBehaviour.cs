@@ -134,7 +134,6 @@ namespace DawnGame
 
             _dawnWorldRenderer.Draw(gameTime, _camera);
 
-            //DrawSkyDome();
             _floor.DrawObject(_camera, new Vector3(_dawnWorld.Center.X, 0, _dawnWorld.Center.Y), Vector3.Zero);
 
 

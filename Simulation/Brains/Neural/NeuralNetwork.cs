@@ -1,4 +1,6 @@
-﻿namespace DawnOnline.Simulation.Brains.Neural
+﻿using System;
+
+namespace DawnOnline.Simulation.Brains.Neural
 {
     class NeuralNetwork
     {
@@ -105,5 +107,76 @@
                 newNode.OutGoingEdges[j].Multiplier = oldNode.OutGoingEdges[j].Multiplier;
             }
         }
+
+        private static int _mutationRate = 10;
+
+        internal void Mutate()
+        {
+            Console.WriteLine("old: ");
+            Console.WriteLine(DebugInfo());
+
+            for (int i = 0; i < _inputNodes.Length; i++)
+            {
+                if (Globals.Radomizer.Next(_mutationRate) == 0)
+                    _inputNodes[i].Threshold += Globals.Radomizer.Next(3) - 1;
+                MutateEdges(_inputNodes[i]);
+            }
+
+            for (int i = 0; i < _layerNodes.Length; i++)
+            {
+                if (Globals.Radomizer.Next(_mutationRate) == 0)
+                    _layerNodes[i].Threshold += Globals.Radomizer.Next(3) - 1;
+                MutateEdges(_layerNodes[i]);
+            }
+
+            Console.WriteLine("new: ");
+            Console.WriteLine(DebugInfo());
+        }
+
+        private static void MutateEdges(Node node)
+        {
+            for (var j = 0; j < node.OutGoingEdges.Length; j++)
+            {
+                if (Globals.Radomizer.Next(_mutationRate) == 0)
+                    node.OutGoingEdges[j].Multiplier += (Globals.Radomizer.Next(3) - 1) / 10.0;
+            }
+        }
+
+        public string DebugInfo()
+        {
+            string info = "";
+            for (int i = 0; i < _inputNodes.Length; i++)
+            {
+                info += string.Format("[ {0}: {1} ] ", i, DebugInfo(_inputNodes[i]));
+            }
+            info += "\n";
+            for (int i = 0; i < _layerNodes.Length; i++)
+            {
+                info += string.Format("[ {0}: {1} ] ", i, DebugInfo(_layerNodes[i]));
+            }
+            info += "\n";
+            for (int i = 0; i < _outputNodes.Length; i++)
+            {
+                info += string.Format("[ {0}: {1} ] ", i, DebugInfo(_outputNodes[i]));
+            }
+            return info;
+        }
+
+        private static string DebugInfo(Node node)
+        {
+            string em = "[";
+            if (node.OutGoingEdges != null)
+            {
+                for (var j = 0; j < node.OutGoingEdges.Length; j++)
+                {
+                    em += node.OutGoingEdges[j].Multiplier + ";";
+                }
+            }
+            em += "]";
+
+            string info = string.Format("[ th: {0}, em: {1} ]", node.Threshold, em);
+            return info;
+        }
+
     }
 }

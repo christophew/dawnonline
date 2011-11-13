@@ -93,7 +93,7 @@ namespace DawnGame
             }
 
             // Think = Decide where to move
-            if ((gameTime.TotalGameTime - _lastThink).TotalMilliseconds > 50)
+            if ((gameTime.TotalGameTime - _lastThink).TotalMilliseconds > 100)
             {
                 _thinkTimer.Reset();
                 _thinkTimer.Start();
@@ -105,7 +105,7 @@ namespace DawnGame
             }
 
             // Move
-            if ((gameTime.TotalGameTime - _lastMove).TotalMilliseconds > 0)
+            if ((gameTime.TotalGameTime - _lastMove).TotalMilliseconds > 100)
             {
                 _moveTimer.Reset();
                 _moveTimer.Start();

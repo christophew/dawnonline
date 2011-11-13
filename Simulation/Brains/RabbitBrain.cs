@@ -45,7 +45,7 @@ namespace DawnOnline.Simulation.Brains
 
             if (MyCreature.IsTired)
             {
-                MyCreature.Rest();
+                MyCreature.RegisterRest();
                 return;
             }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using DawnOnline.Simulation;
@@ -19,8 +20,12 @@ namespace DawnGame
 
         private int _grid = 5;
 
-        private int _nrOfSpawnPoints = 5;
-        private int _nrOfTreasures = 25;
+        private int _nrOfSpawnPoints = 30;
+        private int _nrOfTreasures = 75;
+        private int _nrOfWalls = 0;
+        private int _nrOfBoxes = 0;
+
+        private int _nrOfSpawnPointsReplicated = 0;
 
         public IAvatar Avatar { get { return _avatar; } }
         public DawnOnline.Simulation.Environment Environment { get { return _environment; } }
@@ -104,7 +109,7 @@ namespace DawnGame
             //}
 
             // walls
-            for (int i = 0; i < 300; )
+            for (int i = 0; i < _nrOfWalls; )
             {
                 var position = new Vector2(_randomize.Next((int)MaxX / _grid) * _grid, _randomize.Next((int)MaxY / _grid) * _grid);
 
@@ -130,7 +135,7 @@ namespace DawnGame
             }
 
             // Boxes
-            for (int i = 0; i < 150; )
+            for (int i = 0; i < _nrOfBoxes; )
             {
                 var position = new Vector2(_randomize.Next((int)MaxX / _grid) * _grid, _randomize.Next((int)MaxY / _grid) * _grid);
                 var box = ObstacleBuilder.CreateObstacleBox(wallWide, wallHeight);
@@ -193,6 +198,8 @@ namespace DawnGame
 
         public void MoveAll()
         {
+            Console.WriteLine(GetWorldInformation());
+
             var creatures = new List<ICreature>(_environment.GetCreatures());
 
             foreach (var current in creatures)
@@ -221,21 +228,23 @@ namespace DawnGame
                 var spawnPoints = _environment.GetCreatures(EntityType.SpawnPoint);
                 if (_environment.GetCreatures(EntityType.SpawnPoint).Count < _nrOfSpawnPoints)
                 {
-                    if (spawnPoints.Count == 0)
-                        break;
+                    ICreature bestspawnPoint;
 
-                    // find best spawnpoint
-                    var bestspawnPoint = spawnPoints[0];
-                    foreach (var spawnPoint in spawnPoints)
+                    if (spawnPoints.Count == 0)
                     {
-                        if (spawnPoint.CharacterSheet.Score > bestspawnPoint.CharacterSheet.Score)
-                            bestspawnPoint = spawnPoint;
+                        bestspawnPoint = CreatureBuilder.CreateSpawnPoint(EntityType.Predator);
+                    }
+                    else
+                    {
+                        // find best spawnpoint
+                        bestspawnPoint = GetBestspawnPoint(spawnPoints);
                     }
 
                     // Replicate
                     var newSpawnPoint = bestspawnPoint.Replicate();
                     var position = new Vector2 {X = _randomize.Next((int) MaxX), Y = _randomize.Next((int) MaxY)};
                     _environment.AddCreature(newSpawnPoint, position, 0);
+                    _nrOfSpawnPointsReplicated++;
                 }
 
                 // Make sure we always have enough Treasure
@@ -245,6 +254,34 @@ namespace DawnGame
                     var position = new Vector2(_randomize.Next((int)MaxX / _grid) * _grid, _randomize.Next((int)MaxY / _grid) * _grid);
                     var box = ObstacleBuilder.CreateTreasure();
                     _environment.AddObstacle(box, position);
+                }
+            }
+        }
+
+        private static ICreature GetBestspawnPoint(IList<ICreature> spawnPoints)
+        {
+            // Absolute
+
+            //ICreature bestspawnPoint = spawnPoints[0];
+            //foreach (var spawnPoint in spawnPoints)
+            //{
+            //    if (spawnPoint.CharacterSheet.Score > bestspawnPoint.CharacterSheet.Score)
+            //    {
+            //        bestspawnPoint = spawnPoint;
+            //    }
+            //}
+            //return bestspawnPoint;
+
+            // By better chance
+            var randomizer = new Random((int)DateTime.Now.Ticks);
+            var tempSpawnPoints = new List<ICreature>(spawnPoints);
+            tempSpawnPoints.OrderByDescending(sp => sp.CharacterSheet.Score);
+            for (; ; )
+            {
+                foreach (var sp in tempSpawnPoints)
+                {
+                    if (randomizer.Next(3) == 0)
+                        return sp;
                 }
             }
         }
@@ -270,7 +307,7 @@ namespace DawnGame
             }
 
             //return string.Format("Plant: {0}; Rabbits: {1}; Predators:{2}", nrOfPlants, nrOfRabbits, nrOfPredators);
-            return string.Format("Turret: {0}; Predators:{1}", nrOfTurrets, nrOfPredators);
+            return string.Format("Turret: {0}; Predators: {1}; SpawnPointsReplicated: {2}", nrOfTurrets, nrOfPredators, _nrOfSpawnPointsReplicated);
         }
     }
 }
