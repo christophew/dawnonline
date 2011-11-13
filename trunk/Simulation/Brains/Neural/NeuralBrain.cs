@@ -70,9 +70,12 @@ namespace DawnOnline.Simulation.Brains.Neural
             var newBrain = new NeuralBrain();
             newBrain._neutralModeNetwork = _neutralModeNetwork.Replicate();
 
-            // TODO: MUTATE
-
             return newBrain;
+        }
+
+        internal override void Mutate()
+        {
+            _neutralModeNetwork.Mutate();
         }
     }
 }

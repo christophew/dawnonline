@@ -38,7 +38,7 @@ namespace DawnOnline.Simulation.Brains
                 return;
 
             // Score increase when we spawn
-            MyCreature.CharacterSheet.Score += 1;
+            //MyCreature.CharacterSheet.Score += 5;
 
             SpawnNeuralForager();
 
@@ -91,10 +91,13 @@ namespace DawnOnline.Simulation.Brains
 
         internal override AbstractBrain Replicate()
         {
+            Console.WriteLine("Generation: " + MyCreature.CharacterSheet.Generation);
+
             var newBrain = new SpawnPointBrain(_spawnType, _maxInterval);
             newBrain.PrototypeNeuralForager = PrototypeNeuralForager.Replicate();
 
-            // TODO: MUTATE 
+            // MUTATE 
+            newBrain.PrototypeNeuralForager.Mutate();
 
             return newBrain;
         }

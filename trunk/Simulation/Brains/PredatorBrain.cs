@@ -167,7 +167,7 @@ namespace DawnOnline.Simulation.Brains
         protected virtual void TiredState()
         {
             // Rest
-            MyCreature.Rest();
+            MyCreature.RegisterRest();
         }
 
         internal override void InitializeSenses()

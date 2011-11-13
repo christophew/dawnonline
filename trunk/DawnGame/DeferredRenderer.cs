@@ -99,7 +99,8 @@ namespace DawnGame
             _floor = new GameObject(Game.Content.Load<Model>(@"floor_metal"), new Vector3(MathHelper.PiOver2, 0, 0), new Vector3(0, -2020, 0), 2000f);
             //_floor = new GameObject(Game.Content.Load<Model>(@"floor4"), new Vector3(MathHelper.PiOver2, 0, 0), new Vector3(0, -2025, 0), 2000f);
 
-
+            // Text info
+            //font = Game.Content.Load<SpriteFont>(@"fonts\MyFont");
 
             base.LoadContent();
         }
@@ -207,7 +208,9 @@ namespace DawnGame
 
             ResolveGBuffer();
             DrawLights(gameTime);
-            
+
+            //DrawTextInfo();
+
             base.Draw(gameTime);
         }
 
@@ -417,5 +420,46 @@ namespace DawnGame
             if (keyboard.IsKeyDown(Keys.F5))
                 _camera = new AvatarCamera(GraphicsDevice, _dawnWorld.Environment.GetCreatures(EntityType.Predator)[0]);
         }
+
+        //private SpriteFont font;
+        //private void DrawTextInfo()
+        //{
+        //    spriteBatch.Begin();
+
+        //    var worldInformation = _dawnWorld.GetWorldInformation();
+        //    spriteBatch.DrawString(font, worldInformation, new Vector2(100f, 100f), Color.Green);
+
+        //    //string technicalInformation = string.Format("Think: {0:0000}ms; Move: {1:0000}ms; Update: {2:0000}ms; Draw: {3:0000}ms",
+        //    //                                            _dawnWorldRenderer.ThinkTime, _dawnWorldRenderer.MoveTime, _updateTimer.ElapsedMilliseconds, _lastDrawTime);
+        //    string technicalInformation = string.Format("Think: {0:0000}ms; Move: {1:0000}ms",
+        //                                                _dawnWorldRenderer.ThinkTime, _dawnWorldRenderer.MoveTime);
+        //    spriteBatch.DrawString(font, technicalInformation, new Vector2(100f, 150f), Color.Green);
+
+        //    if (_dawnWorld.Avatar != null)
+        //    {
+        //        string stats = string.Format("Damage: {0}%; Velocity: {1:000.0}",
+        //            _dawnWorld.Avatar.CharacterSheet.Damage.PercentFilled,
+        //            _dawnWorld.Avatar.Place.Velocity);
+        //        spriteBatch.DrawString(font, stats, new Vector2(100f, 200f), Color.Green);
+        //    }
+
+        //    spriteBatch.DrawString(font, _camera.GetDebugString(), new Vector2(100f, 250f), Color.Green);
+
+        //    spriteBatch.End();
+
+
+        //    // Fix Spritebatch problems
+        //    {
+        //        GraphicsDevice.BlendState = BlendState.AlphaBlend;
+        //        GraphicsDevice.DepthStencilState = DepthStencilState.None;
+        //        GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
+        //        GraphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
+
+        //        GraphicsDevice.BlendState = BlendState.Opaque;
+        //        GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+
+        //        GraphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
+        //    }
+        //}
     }
 }

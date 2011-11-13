@@ -19,11 +19,13 @@ namespace DawnOnline.Simulation.Statistics
 
         public double AttackCoolDown { get; internal set; }
         public double BuildCoolDown { get; internal set; }
+        public double RestCoolDown { get; internal set; }
 
         internal double FoodValue { get; set; }
 
-        // Score
+        // Personal during livetime
         public double Score { get; internal set; }
+        public int Generation { get; internal set; }
 
         // Monitors
         public Monitor Fatigue { get; internal set; }
@@ -46,6 +48,7 @@ namespace DawnOnline.Simulation.Statistics
             FoodValue = 10;
             AttackCoolDown = 0.2; // Seconds
             BuildCoolDown = 5; // Seconds
+            RestCoolDown = 1; // Seconds
         }
 
         internal CharacterSheet Replicate()
@@ -63,8 +66,12 @@ namespace DawnOnline.Simulation.Statistics
 
             newCharacterSheet.AttackCoolDown = AttackCoolDown;
             newCharacterSheet.BuildCoolDown = BuildCoolDown;
+            newCharacterSheet.RestCoolDown = RestCoolDown;
 
             newCharacterSheet.FoodValue = FoodValue;
+
+            // Increase generation
+            newCharacterSheet.Generation = Generation + 1;
 
             return newCharacterSheet;
         }

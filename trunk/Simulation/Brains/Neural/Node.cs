@@ -9,6 +9,9 @@
 
         internal void Propagate()
         {
+            if (CurrentValue < Threshold)
+                return;
+
             foreach (var edge in OutGoingEdges)
             {
                 edge.ToNode.CurrentValue += CurrentValue * edge.Multiplier;

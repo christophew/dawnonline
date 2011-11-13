@@ -85,5 +85,9 @@ namespace DawnOnline.Simulation.Brains
         {
             throw new NotImplementedException();
         }
+
+        internal virtual void Mutate()
+        {
+        }
     }
 }

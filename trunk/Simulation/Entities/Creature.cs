@@ -87,6 +87,11 @@ namespace DawnOnline.Simulation.Entities
             return newCreature;
         }
 
+        public void Mutate()
+        {
+            Brain.Mutate();
+        }
+
         //public ICreature Replicate()
         //{
         //    Debug.Assert(Specy == EntityType.SpawnPoint, "Not implemented for anything else!!");
@@ -113,9 +118,17 @@ namespace DawnOnline.Simulation.Entities
             }
         }
 
-        public void Rest()
+        internal void RegisterRest()
+        {
+            if ((DateTime.Now - _actionQueue.LastRestTime).TotalSeconds < CharacterSheet.RestCoolDown)
+                return;
+            _actionQueue.Rest = true;
+        }
+
+        internal void DoRest()
         {
             CharacterSheet.Fatigue.Decrease((int)CharacterSheet.FatigueRecovery);
+            _actionQueue.LastRestTime = DateTime.Now;
         }
 
         public void ClearActionQueue()
@@ -199,6 +212,12 @@ namespace DawnOnline.Simulation.Entities
             {
                 DoBuildEntity(_actionQueue.BuildEntityOfType);
             }
+
+            // Rest
+            if (_actionQueue.Rest)
+            {
+                DoRest();
+            }
         }
 
         public void WalkForward()
@@ -232,7 +251,7 @@ namespace DawnOnline.Simulation.Entities
             _actionQueue.ForwardMotion = new Vector2((float)(Math.Cos(_place.Angle) * CharacterSheet.RunningDistance),
                                                  (float)(Math.Sin(_place.Angle)*CharacterSheet.RunningDistance));
 
-            _actionQueue.FatigueCost = CharacterSheet.FatigueCost;
+            _actionQueue.FatigueCost += CharacterSheet.FatigueCost;
         }
 
         public void Fire()
@@ -241,6 +260,7 @@ namespace DawnOnline.Simulation.Entities
                 return;
 
             _actionQueue.Fire = true;
+            _actionQueue.FatigueCost += CharacterSheet.FatigueCost;
         }
 
         public void FireRocket()
@@ -249,6 +269,7 @@ namespace DawnOnline.Simulation.Entities
                 return;
 
             _actionQueue.FireRocket = true;
+            _actionQueue.FatigueCost += CharacterSheet.FatigueCost * 2;
         }
 
         internal void Take(Collectable collectable)
@@ -264,7 +285,8 @@ namespace DawnOnline.Simulation.Entities
             {
                 var spawnPointCreature = SpawnPoint as Creature;
                 Debug.Assert(spawnPointCreature != null);
-                spawnPointCreature.Rest();
+                spawnPointCreature.RegisterRest();
+                //spawnPointCreature.CharacterSheet.Score += 5;
             }
         }
 
@@ -366,7 +388,14 @@ namespace DawnOnline.Simulation.Entities
             Debug.Assert(Alive);
 
             _actionQueue.HasAttacked = true;
+            _actionQueue.FatigueCost += CharacterSheet.FatigueCost;
             target.MyActionQueue.Damage = _characterSheet.MeleeDamage;
+
+            // Score
+            if (SpawnPoint != null)
+            {
+                (SpawnPoint as Creature).CharacterSheet.Score += 1;
+            }
         }
 
         internal void TakeBulletDamage(Bullet bullet)
