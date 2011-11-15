@@ -27,6 +27,20 @@ namespace DawnOnline.Simulation.Senses
         private Environment CreatureEnvironment { get { return _creature.MyEnvironment; } }
         private Placement CreaturePlace { get { return _creature.Place; } }
 
+        internal double DistanceToFirstVisible(List<IEntity> sortedEntities)
+        {
+            foreach (var entity in sortedEntities)
+            {
+                // sortedEntitities should be descended sorted on distance
+                if (_OutOfRange(entity))
+                    break;
+
+                if (_HasLineOfSight(entity))
+                    return MathTools.GetDistance(CreaturePlace.Position, entity.Place.Position);
+            }
+            return -1;
+        }
+
         internal bool SeesCreature(Creature creature)
         {
             return HasLineOfSight(creature, null);
@@ -55,8 +69,10 @@ namespace DawnOnline.Simulation.Senses
             {
                 if (obstacle.Specy != entityType)
                     continue;
+                if (_OutOfRange(obstacle))
+                    continue;
 
-                if (HasLineOfSight(obstacle))
+                if (_HasLineOfSight(obstacle))
                     return true;
             }
 
@@ -90,21 +106,21 @@ namespace DawnOnline.Simulation.Senses
                 spawnPointToExclude == current.SpawnPoint)
                 return false;
 
-            return HasLineOfSight(current);
+            if (_OutOfRange(current))
+                return false;
+
+            return _HasLineOfSight(current);
         }
 
-        private bool HasLineOfSight(IEntity current)
+        private  bool _OutOfRange(IEntity current)
         {
-            // Check distance
             var visionDistance2 = VisionDistance*VisionDistance;
-            {
-                double distance2 = MathTools.GetDistance2(CreaturePlace.Position, current.Place.Position);
-                if (distance2 == 0)
-                    return true;
-                if (distance2 > visionDistance2)
-                    return false;
-            }
+            double distance2 = MathTools.GetDistance2(CreaturePlace.Position, current.Place.Position);
+            return (distance2 > visionDistance2);
+        }
 
+        private bool _HasLineOfSight(IEntity current)
+        {
             // Check angle
             {
                 double angle = MathTools.GetAngle(CreaturePlace.Position.X, CreaturePlace.Position.Y,

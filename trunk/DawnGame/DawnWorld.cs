@@ -193,69 +193,55 @@ namespace DawnGame
 
         public void ApplyMove(double timeDelta)
         {
-            _environment.Update(timeDelta);
+            _environment.ApplyActions(timeDelta);
+
+
+            // Make sure we always have enough spawnpoints
+            var spawnPoints = _environment.GetCreatures(EntityType.SpawnPoint);
+            if (_environment.GetCreatures(EntityType.SpawnPoint).Count < _nrOfSpawnPoints)
+            {
+                ICreature bestspawnPoint;
+
+                if (spawnPoints.Count == 0)
+                {
+                    bestspawnPoint = CreatureBuilder.CreateSpawnPoint(EntityType.Predator);
+                }
+                else
+                {
+                    // find best spawnpoint
+                    bestspawnPoint = GetBestspawnPoint(spawnPoints);
+                }
+
+                // Replicate
+                var newSpawnPoint = bestspawnPoint.Replicate();
+                var position = new Vector2 { X = _randomize.Next((int)MaxX), Y = _randomize.Next((int)MaxY) };
+                _environment.AddCreature(newSpawnPoint, position, 0);
+                _nrOfSpawnPointsReplicated++;
+            }
+
+            // Make sure we always have enough Treasure
+            var obstacles = _environment.GetObstacles();
+            if (obstacles.Where(o => o.Specy == EntityType.Treasure).Count() < _nrOfTreasures)
+            {
+                var position = new Vector2(_randomize.Next((int)MaxX / _grid) * _grid, _randomize.Next((int)MaxY / _grid) * _grid);
+                var box = ObstacleBuilder.CreateTreasure();
+                _environment.AddObstacle(box, position);
+            }
         }
 
-        public void MoveAll()
+        public void ThinkAll(double maxThinkTime)
         {
             Console.WriteLine(GetWorldInformation());
 
-            var creatures = new List<ICreature>(_environment.GetCreatures());
+            // Keep population at bay
+            int moved = _environment.Think(maxThinkTime);
+            if (moved < _environment.GetCreatures().Count / 2 && _environment.GetCreatures().Count > 200)
+                _environment.Armageddon(_environment.GetCreatures().Count / 2);
+        }
 
-            foreach (var current in creatures)
-            {
-                if (!current.Alive)
-                    continue;
-
-                current.Move();
-
-                // Died of old age..
-                if (!current.Alive)
-                    continue;
-
-
-                // TEST: grow on organic waste
-                //if ((killed != null) && (killed.Specy != CreatureType.Plant))
-                //{
-                //    if (_randomize.Next(5) == 0)
-                //    {
-                //        var plant = SimulationFactory.CreatePlant();
-                //        _environment.AddCreature(plant, killed.Place.Position, 0);
-                //    }
-                //}
-
-                // Make sure we always have enough spawnpoints
-                var spawnPoints = _environment.GetCreatures(EntityType.SpawnPoint);
-                if (_environment.GetCreatures(EntityType.SpawnPoint).Count < _nrOfSpawnPoints)
-                {
-                    ICreature bestspawnPoint;
-
-                    if (spawnPoints.Count == 0)
-                    {
-                        bestspawnPoint = CreatureBuilder.CreateSpawnPoint(EntityType.Predator);
-                    }
-                    else
-                    {
-                        // find best spawnpoint
-                        bestspawnPoint = GetBestspawnPoint(spawnPoints);
-                    }
-
-                    // Replicate
-                    var newSpawnPoint = bestspawnPoint.Replicate();
-                    var position = new Vector2 {X = _randomize.Next((int) MaxX), Y = _randomize.Next((int) MaxY)};
-                    _environment.AddCreature(newSpawnPoint, position, 0);
-                    _nrOfSpawnPointsReplicated++;
-                }
-
-                // Make sure we always have enough Treasure
-                var obstacles = _environment.GetObstacles();
-                if (obstacles.Where(o => o.Specy == EntityType.Treasure).Count() < _nrOfTreasures)
-                {
-                    var position = new Vector2(_randomize.Next((int)MaxX / _grid) * _grid, _randomize.Next((int)MaxY / _grid) * _grid);
-                    var box = ObstacleBuilder.CreateTreasure();
-                    _environment.AddObstacle(box, position);
-                }
-            }
+        public void UpdatePhysics(double timeDelta)
+        {
+            _environment.UpdatePhysics(timeDelta);
         }
 
         private static ICreature GetBestspawnPoint(IList<ICreature> spawnPoints)
@@ -274,8 +260,7 @@ namespace DawnGame
 
             // By better chance
             var randomizer = new Random((int)DateTime.Now.Ticks);
-            var tempSpawnPoints = new List<ICreature>(spawnPoints);
-            tempSpawnPoints.OrderByDescending(sp => sp.CharacterSheet.Score);
+            var tempSpawnPoints = spawnPoints.OrderByDescending(sp => sp.CharacterSheet.Score);
             for (; ; )
             {
                 foreach (var sp in tempSpawnPoints)

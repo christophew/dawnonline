@@ -1,8 +1,11 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System;
+using DawnOnline.Simulation.Entities;
 using DawnOnline.Simulation.Senses;
 using DawnOnline.Simulation.Tools;
 using Microsoft.Xna.Framework;
+using System.Linq;
 
 namespace DawnOnline.Simulation.Brains
 {
@@ -13,6 +16,9 @@ namespace DawnOnline.Simulation.Brains
         protected Eye _rightEye;
         protected Bumper _forwardBumper;
         protected bool _initialized;
+
+        protected Dictionary<Eye, double> _eyeSee = new Dictionary<Eye, double>();
+
 
         protected enum EvadeState
         {
@@ -32,6 +38,9 @@ namespace DawnOnline.Simulation.Brains
         {
             Debug.Assert(MyCreature != null);
             Debug.Assert(_initialized);
+
+            // Fill eye buffer
+            See();
 
             // Emotional states
             // * neutral
@@ -61,9 +70,7 @@ namespace DawnOnline.Simulation.Brains
 
         protected virtual bool ISeeAnEnemy()
         {
-            var check = _forwardEye.SeesACreature(MyCreature.FoodSpecies, MyCreature.SpawnPoint) ||
-                        _leftEye.SeesACreature(MyCreature.FoodSpecies, MyCreature.SpawnPoint) ||
-                        _rightEye.SeesACreature(MyCreature.FoodSpecies, MyCreature.SpawnPoint);
+            var check = _eyeSee[_forwardEye] > 0 || _eyeSee[_leftEye] > 0 || _eyeSee[_rightEye] > 0;
 
             if (check)
                 _lastTimeISawAnEnemy = DateTime.Now;
@@ -111,16 +118,16 @@ namespace DawnOnline.Simulation.Brains
             }
 
             // Move
-            if (_forwardEye.SeesACreature(MyCreature.FoodSpecies, MyCreature.SpawnPoint))
+            if (_eyeSee[_forwardEye] > 0)
             {
                 MyCreature.RunForward();
             }
-            if (_leftEye.SeesACreature(MyCreature.FoodSpecies, MyCreature.SpawnPoint))
+            if (_eyeSee[_leftEye] > 0)
             {
                 MyCreature.TurnLeft();
                 return;
             }
-            if (_rightEye.SeesACreature(MyCreature.FoodSpecies, MyCreature.SpawnPoint))
+            if (_eyeSee[_rightEye] > 0)
             {
                 MyCreature.TurnRight();
                 return;
@@ -144,17 +151,17 @@ namespace DawnOnline.Simulation.Brains
                 _imPanickingSince = DateTime.Now;
 
             // Run away!!!
-            if (_forwardEye.SeesACreature(MyCreature.FoodSpecies, MyCreature.SpawnPoint))
+            if (_eyeSee[_forwardEye] > 0)
             {
                 MyCreature.TurnLeft();
                 return;
             }
-            if (_leftEye.SeesACreature(MyCreature.FoodSpecies, MyCreature.SpawnPoint))
+            if (_eyeSee[_leftEye] > 0)
             {
                 MyCreature.TurnRight();
                 return;
             }
-            if (_rightEye.SeesACreature(MyCreature.FoodSpecies, MyCreature.SpawnPoint))
+            if (_eyeSee[_rightEye] > 0)
             {
                 MyCreature.TurnLeft();
                 return;
@@ -168,6 +175,32 @@ namespace DawnOnline.Simulation.Brains
         {
             // Rest
             MyCreature.RegisterRest();
+        }
+
+        protected void See()
+        {
+            var creatures = MyCreature.MyEnvironment.GetCreatures(MyCreature.FoodSpecies);
+
+            // sort on distance
+            var sortedOnDistance = creatures.OrderBy(c => MathTools.GetDistance2(c.Place.Position, MyCreature.Place.Position));
+
+            // Filter
+            var filtered = new List<IEntity>();
+            foreach(var entity in sortedOnDistance)
+            {
+                if (entity == MyCreature)
+                    continue;
+                if (entity == MyCreature.SpawnPoint)
+                    continue;
+
+                filtered.Add(entity);
+            }
+
+            _eyeSee.Clear();
+
+            _eyeSee.Add(_forwardEye, _forwardEye.DistanceToFirstVisible(filtered));
+            _eyeSee.Add(_leftEye, _leftEye.DistanceToFirstVisible(filtered));
+            _eyeSee.Add(_rightEye, _rightEye.DistanceToFirstVisible(filtered));
         }
 
         internal override void InitializeSenses()

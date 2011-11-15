@@ -14,7 +14,7 @@ namespace DawnOnline.Simulation.Entities
 
         void ApplyActionQueue(double timeDelta);
         void ClearActionQueue();
-        void Move();
+        void Think();
         bool CanAttack();
 
         IEntity SpawnPoint { get; }

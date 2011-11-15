@@ -66,7 +66,7 @@ namespace FrontEnd
                 if (!current.Alive)
                     continue;
 
-                current.Move();
+                current.Think();
 
                 // Died of old age..
                 if (!current.Alive)
