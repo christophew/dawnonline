@@ -54,9 +54,8 @@ namespace DawnGame
         /// </summary>
         public override void Initialize()
         {
-            // TODO: Add your initialization code here
-
             base.Initialize();
+
             //camera = new Camera(Game);
             //camera.CameraArc = -30;
             //camera.CameraDistance = 50;

@@ -14,13 +14,13 @@ namespace DawnOnline.Simulation.Brains.Neural
         {
             _neutralModeNetwork = new NeuralNetwork(3, 3, 2);
 
-            _neutralModeNetwork.InputNodes[0].OutGoingEdges[0].Multiplier = 1;
-            _neutralModeNetwork.InputNodes[1].OutGoingEdges[1].Multiplier = 1;
-            _neutralModeNetwork.InputNodes[2].OutGoingEdges[2].Multiplier = 1;
+            _neutralModeNetwork.InputNodes[0].OutGoingEdges[0].Multiplier = 1.5;
+            _neutralModeNetwork.InputNodes[1].OutGoingEdges[1].Multiplier = 1.5;
+            _neutralModeNetwork.InputNodes[2].OutGoingEdges[2].Multiplier = 1.5;
 
-            _neutralModeNetwork.LayerNodes[0].OutGoingEdges[0].Multiplier = -1;
-            _neutralModeNetwork.LayerNodes[1].OutGoingEdges[1].Multiplier = 1;
-            _neutralModeNetwork.LayerNodes[2].OutGoingEdges[0].Multiplier = 1;
+            _neutralModeNetwork.LayerNodes[0].OutGoingEdges[0].Multiplier = -1.5;
+            _neutralModeNetwork.LayerNodes[1].OutGoingEdges[1].Multiplier = 1.5;
+            _neutralModeNetwork.LayerNodes[2].OutGoingEdges[0].Multiplier = 1.5;
         }
 
         internal override void ClearState()
@@ -39,30 +39,20 @@ namespace DawnOnline.Simulation.Brains.Neural
             }
 
             // Init network with input values
-            var leftEyeCheck = _leftEye.SeesACreature(MyCreature.FoodSpecies, MyCreature.SpawnPoint);
-            var forwardEyeCheck = _forwardEye.SeesACreature(MyCreature.FoodSpecies, MyCreature.SpawnPoint);
-            var rightEyeCheck = _rightEye.SeesACreature(MyCreature.FoodSpecies, MyCreature.SpawnPoint);
+            var leftEyeCheck = _eyeSee[_leftEye] < 0 ? 0 : 100.0 * (_leftEye.VisionDistance - _eyeSee[_leftEye]) / _leftEye.VisionDistance;
+            var forwardEyeCheck = _eyeSee[_forwardEye] < 0 ? 0 : 100.0 * (_forwardEye.VisionDistance - _eyeSee[_forwardEye]) / _forwardEye.VisionDistance;
+            var rightEyeCheck = _eyeSee[_rightEye] < 0 ? 0 : 100.0 * (_rightEye.VisionDistance - _eyeSee[_rightEye]) / _rightEye.VisionDistance;
 
-            _neutralModeNetwork.InputNodes[0].CurrentValue = leftEyeCheck ? 10 : 0;
-            _neutralModeNetwork.InputNodes[1].CurrentValue = forwardEyeCheck ? 10 : 0;
-            _neutralModeNetwork.InputNodes[2].CurrentValue = rightEyeCheck ? 10 : 0;
+            _neutralModeNetwork.InputNodes[0].CurrentValue = leftEyeCheck;
+            _neutralModeNetwork.InputNodes[1].CurrentValue = forwardEyeCheck;
+            _neutralModeNetwork.InputNodes[2].CurrentValue = rightEyeCheck;
 
             // Process
             _neutralModeNetwork.Propagate();
 
             // Feed output to creature
-            if (_neutralModeNetwork.OutputNodes[0].CurrentValue > 0)
-            {
-                MyCreature.TurnRight();
-            }
-            if (_neutralModeNetwork.OutputNodes[0].CurrentValue < 0)
-            {
-                MyCreature.TurnLeft();
-            }
-            if (_neutralModeNetwork.OutputNodes[1].CurrentValue > 0)
-            {
-                MyCreature.RunForward();
-            }
+            MyCreature.Turn(_neutralModeNetwork.OutputNodes[0].CurrentValue / 100);
+            MyCreature.Thrust(_neutralModeNetwork.OutputNodes[1].CurrentValue / 100);
         }
 
         internal override AbstractBrain Replicate()

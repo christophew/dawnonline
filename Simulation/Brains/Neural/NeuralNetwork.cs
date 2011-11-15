@@ -118,14 +118,14 @@ namespace DawnOnline.Simulation.Brains.Neural
             for (int i = 0; i < _inputNodes.Length; i++)
             {
                 if (Globals.Radomizer.Next(_mutationRate) == 0)
-                    _inputNodes[i].Threshold += Globals.Radomizer.Next(3) - 1;
+                    _inputNodes[i].Threshold += Globals.Radomizer.Next(5) - 2;
                 MutateEdges(_inputNodes[i]);
             }
 
             for (int i = 0; i < _layerNodes.Length; i++)
             {
                 if (Globals.Radomizer.Next(_mutationRate) == 0)
-                    _layerNodes[i].Threshold += Globals.Radomizer.Next(3) - 1;
+                    _layerNodes[i].Threshold += Globals.Radomizer.Next(5) - 2;
                 MutateEdges(_layerNodes[i]);
             }
 
@@ -138,7 +138,7 @@ namespace DawnOnline.Simulation.Brains.Neural
             for (var j = 0; j < node.OutGoingEdges.Length; j++)
             {
                 if (Globals.Radomizer.Next(_mutationRate) == 0)
-                    node.OutGoingEdges[j].Multiplier += (Globals.Radomizer.Next(3) - 1) / 10.0;
+                    node.OutGoingEdges[j].Multiplier += (Globals.Radomizer.Next(5) - 2) / 10.0;
             }
         }
 

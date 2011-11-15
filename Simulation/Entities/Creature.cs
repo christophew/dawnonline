@@ -32,6 +32,8 @@ namespace DawnOnline.Simulation.Entities
         internal Environment MyEnvironment { get; set; }
         internal ActionQueue MyActionQueue { get { return _actionQueue; } }
 
+        internal DateTime LatestThinkTime { get; set; }
+
         public bool Alive
         {
             get { return _alive; }
@@ -224,8 +226,8 @@ namespace DawnOnline.Simulation.Entities
         {
             Debug.Assert(MyEnvironment != null);
 
-            _actionQueue.ForwardMotion = new Vector2((float)(Math.Cos(_place.Angle) * CharacterSheet.WalkingDistance),
-                                                (float)(Math.Sin(_place.Angle) * CharacterSheet.WalkingDistance));
+            _actionQueue.ForwardMotion += new Vector2((float) (Math.Cos(_place.Angle)*CharacterSheet.WalkingDistance),
+                                                      (float) (Math.Sin(_place.Angle)*CharacterSheet.WalkingDistance));
             _actionQueue.FatigueCost = 0;
         }
 
@@ -233,8 +235,8 @@ namespace DawnOnline.Simulation.Entities
         {
             Debug.Assert(MyEnvironment != null);
 
-            _actionQueue.ForwardMotion = new Vector2((float)(Math.Cos(_place.Angle) * CharacterSheet.WalkingDistance),
-                                                (float)(Math.Sin(_place.Angle) * CharacterSheet.WalkingDistance)) * -0.5f;
+            _actionQueue.ForwardMotion += new Vector2((float) (Math.Cos(_place.Angle)*CharacterSheet.WalkingDistance),
+                                                      (float) (Math.Sin(_place.Angle)*CharacterSheet.WalkingDistance))*-0.5f;
             _actionQueue.FatigueCost = 0;
         }
 
@@ -248,10 +250,10 @@ namespace DawnOnline.Simulation.Entities
                 return;
             }
 
-            _actionQueue.ForwardMotion = new Vector2((float)(Math.Cos(_place.Angle) * CharacterSheet.RunningDistance),
-                                                 (float)(Math.Sin(_place.Angle)*CharacterSheet.RunningDistance));
+            _actionQueue.ForwardMotion += new Vector2((float) (Math.Cos(_place.Angle)*CharacterSheet.RunningDistance),
+                                                      (float) (Math.Sin(_place.Angle)*CharacterSheet.RunningDistance));
 
-            _actionQueue.FatigueCost += CharacterSheet.FatigueCost;
+            //_actionQueue.FatigueCost += CharacterSheet.FatigueCost;
         }
 
         public void Fire()
@@ -290,52 +292,63 @@ namespace DawnOnline.Simulation.Entities
             }
         }
 
+        internal void Turn(double percent)
+        {
+            _actionQueue.TurnMotion += CharacterSheet.TurningAngle*percent;
+        }
+
+        internal void Thrust(double percent)
+        {
+            _actionQueue.ForwardMotion += new Vector2((float)(Math.Cos(_place.Angle) * CharacterSheet.RunningDistance),
+                                                      (float)(Math.Sin(_place.Angle) * CharacterSheet.RunningDistance)) * (float)percent;
+
+            // TODO: fatigue cost
+        }
+
         public void TurnLeft()
         {
-            _actionQueue.TurnMotion = -CharacterSheet.TurningAngle;
+            _actionQueue.TurnMotion += -CharacterSheet.TurningAngle;
         }
 
         public void TurnRight()
         {
-            _actionQueue.TurnMotion = CharacterSheet.TurningAngle;
+            _actionQueue.TurnMotion += CharacterSheet.TurningAngle;
         }
 
         public void TurnLeftSlow()
         {
-            _actionQueue.TurnMotion = -CharacterSheet.TurningAngle / 3.0;
+            _actionQueue.TurnMotion += -CharacterSheet.TurningAngle / 3.0;
         }
 
         public void TurnRightSlow()
         {
-            _actionQueue.TurnMotion = CharacterSheet.TurningAngle / 3.0;
+            _actionQueue.TurnMotion += CharacterSheet.TurningAngle / 3.0;
         }
 
         public void StrafeLeft()
         {
-            _actionQueue.StrafeMotion = new Vector2((float)(Math.Cos(_place.Angle - MathHelper.PiOver2) * CharacterSheet.WalkingDistance / 2f),
+            _actionQueue.StrafeMotion += new Vector2((float)(Math.Cos(_place.Angle - MathHelper.PiOver2) * CharacterSheet.WalkingDistance / 2f),
                                                (float)(Math.Sin(_place.Angle - MathHelper.PiOver2) * CharacterSheet.WalkingDistance / 2f));
         }
 
         public void StrafeRight()
         {
-            _actionQueue.StrafeMotion = new Vector2((float)(Math.Cos(_place.Angle + MathHelper.PiOver2) * CharacterSheet.WalkingDistance / 2f),
+            _actionQueue.StrafeMotion += new Vector2((float)(Math.Cos(_place.Angle + MathHelper.PiOver2) * CharacterSheet.WalkingDistance / 2f),
                                                (float)(Math.Sin(_place.Angle + MathHelper.PiOver2) * CharacterSheet.WalkingDistance / 2f));
         }
 
-        public void Move()
+        public void Think()
         {
             Debug.Assert(Alive);
 
             if (!HasBrain)
                 return;
 
+            // Clear action queue: the brain will select new actions
             ClearActionQueue();
-
-
 
             Brain.DoSomething();
             Brain.ClearState();
-
         }
 
         internal Creature FindCreatureToAttack(List<EntityType> ofTypes)

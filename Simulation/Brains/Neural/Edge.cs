@@ -7,7 +7,23 @@
         //    Multiplier = 0;
         //}
 
-        internal double Multiplier { get; set; }
+        private double _multiplier;
+        internal double Multiplier
+        {
+            get { return _multiplier; }
+            set
+            {
+                _multiplier = value;
+
+                // [-2, 2]
+                if (_multiplier > 2)
+                    _multiplier = 2;
+                if (_multiplier < -2)
+                    _multiplier = -2;
+            }
+        }
+
+
         internal Node ToNode { get; set; }
     }
 }

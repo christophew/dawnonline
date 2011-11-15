@@ -73,6 +73,9 @@ namespace DawnGame
 
             _dawnWorldRenderer = new DawnWorldRenderer(this, _dawnWorld);
 
+            TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 100);
+            IsFixedTimeStep = false;
+
             base.Initialize();
         }
 

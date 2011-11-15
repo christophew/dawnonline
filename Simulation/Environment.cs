@@ -187,7 +187,7 @@ namespace DawnOnline.Simulation
             return _bullets;
         }
 
-        public void Update(double timeDelta)
+        public void ApplyActions(double timeDelta)
         {
             // Perform actions
             var creatures = new List<ICreature>(GetCreatures());
@@ -208,12 +208,43 @@ namespace DawnOnline.Simulation
                     remainingExplosions.Add(explosion);
             }
             _explosions = remainingExplosions;
+        }
 
+        public void UpdatePhysics(double timeDelta)
+        {
             // Update physics
             FarSeerWorld.Step((float)timeDelta / 1000);
             //FarSeerWorld.Step(1f / 30f);
             //FarSeerWorld.Step(MathHelper.Min((float)timeDelta, 1f / 30f));
             //FarSeerWorld.Step((float)timeDelta / 1000);
+        }
+
+        public int Think(double maxTimeDelta)
+        {
+            var startTime = DateTime.Now;
+            var maxTime = startTime + new TimeSpan(0, 0, 0, 0, (int)maxTimeDelta);
+
+            var creatures = GetCreatures().OrderBy(c => (c as Creature).LatestThinkTime);
+
+            int counter = 0;
+            foreach (Creature current in creatures)
+            {
+                if (!current.Alive)
+                    continue;
+
+                counter++;
+                current.Think();
+
+                var currentNow = DateTime.Now;
+                current.LatestThinkTime = currentNow;
+
+                if (currentNow > maxTime)
+                    break;
+            }
+
+            Console.WriteLine(string.Format("#Think: {0} - Time: {1}", counter, (DateTime.Now - startTime).TotalMilliseconds));
+
+            return counter;
         }
 
         internal IList<ICreature> GetCreaturesInRange(Vector2 position, double radius)
@@ -241,5 +272,21 @@ namespace DawnOnline.Simulation
             return list;
         }
 
+        public void Armageddon(int survivors)
+        {
+            for (;;)
+            {
+                if (GetCreatures().Count <= survivors)
+                    break;
+
+                var creature = GetCreatures()[Globals.Radomizer.Next(GetCreatures().Count)] as Creature;
+                if (creature.Specy == EntityType.Avatar)
+                    continue;
+
+                KillCreature(creature);
+            }
+
+            Console.WriteLine("ARMAGEDDON");
+        }
     }
 }

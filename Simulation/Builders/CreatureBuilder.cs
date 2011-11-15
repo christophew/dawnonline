@@ -146,7 +146,7 @@ namespace DawnOnline.Simulation.Builders
 
             spawnPoint.Specy = EntityType.SpawnPoint;
             spawnPoint.Place.Fixture.Body.BodyType = BodyType.Static;
-            spawnPoint.Brain = new SpawnPointBrain(spawnType, 30);
+            spawnPoint.Brain = new SpawnPointBrain(spawnType, 10);
 
             // Make the spawnPoint part of the family
             spawnPoint.SpawnPoint = spawnPoint;

@@ -43,8 +43,10 @@ namespace DawnGame
 
         private readonly Stopwatch _thinkTimer = new Stopwatch();
         private readonly Stopwatch _moveTimer = new Stopwatch();
+        private readonly Stopwatch _updateTimer = new Stopwatch();
         public long ThinkTime { get { return _thinkTimer.ElapsedMilliseconds; } }
         public long MoveTime { get { return _moveTimer.ElapsedMilliseconds; } }
+        public long UpdateTime { get { return _updateTimer.ElapsedMilliseconds; } }
 
 
         public DawnWorldRenderer(Game game, DawnWorld world)
@@ -93,30 +95,48 @@ namespace DawnGame
             }
 
             // Think = Decide where to move
-            if ((gameTime.TotalGameTime - _lastThink).TotalMilliseconds > 100)
-            {
-                _thinkTimer.Reset();
-                _thinkTimer.Start();
-                _dawnWorld.MoveAll();
-                _thinkTimer.Stop();
-                Console.WriteLine("_thinkTimer: " + _thinkTimer.ElapsedMilliseconds);
+            //bool doMove = true;
+            //if ((gameTime.TotalGameTime - _lastThink).TotalMilliseconds > 100)
+            //{
+            //    _thinkTimer.Reset();
+            //    _thinkTimer.Start();
+            //    _dawnWorld.ThinkAll(30);
+            //    _thinkTimer.Stop();
+            //    Console.WriteLine("_thinkTimer: " + _thinkTimer.ElapsedMilliseconds);
 
-                _lastThink = gameTime.TotalGameTime;
-            }
+            //    _lastThink = gameTime.TotalGameTime;
 
-            // Move
-            if ((gameTime.TotalGameTime - _lastMove).TotalMilliseconds > 100)
-            {
-                _moveTimer.Reset();
-                _moveTimer.Start();
-                //Console.WriteLine((gameTime.TotalGameTime - _lastMove).TotalMilliseconds);
-                //_dawnWorld.ApplyMove(gameTime.ElapsedGameTime.TotalMilliseconds);
-                _dawnWorld.ApplyMove((gameTime.TotalGameTime - _lastMove).TotalMilliseconds);
-                _moveTimer.Stop();
-                Console.WriteLine("_moveTimer: " + _moveTimer.ElapsedMilliseconds);
+            //    // No think & move in the same turn
+            //    doMove = false;
+            //}
 
-                _lastMove = gameTime.TotalGameTime;
-            }
+            _thinkTimer.Reset();
+            _thinkTimer.Start();
+            //_dawnWorld.ThinkAll(MathHelper.Max(20, (float)(gameTime.ElapsedGameTime.TotalMilliseconds / 2.0)));
+            _dawnWorld.ThinkAll(30);
+            _thinkTimer.Stop();
+            Console.WriteLine("_thinkTimer: " + _thinkTimer.ElapsedMilliseconds);
+
+            //// Move
+            //if (doMove && (gameTime.TotalGameTime - _lastMove).TotalMilliseconds > 100)
+            //{
+            //    _moveTimer.Reset();
+            //    _moveTimer.Start();
+            //    _dawnWorld.ApplyMove((gameTime.TotalGameTime - _lastMove).TotalMilliseconds);
+            //    _moveTimer.Stop();
+            //    Console.WriteLine("_moveTimer: " + _moveTimer.ElapsedMilliseconds);
+
+            //    _lastMove = gameTime.TotalGameTime;
+            //}
+
+            // Update physics
+            _updateTimer.Reset();
+            _updateTimer.Start();
+            _dawnWorld.ApplyMove(gameTime.ElapsedGameTime.TotalMilliseconds);
+            _dawnWorld.UpdatePhysics(MathHelper.Min(100, (float)gameTime.ElapsedGameTime.TotalMilliseconds));
+            _updateTimer.Stop();
+            Console.WriteLine("_updateTimer: " + _updateTimer.ElapsedMilliseconds);
+
 
             Console.WriteLine("ElapsedGameTime: " + gameTime.ElapsedGameTime.TotalMilliseconds);
         }
@@ -128,7 +148,12 @@ namespace DawnGame
             _dawnWorld.Avatar.ClearActionQueue();
 
             if (keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Keys.Z))
-                _dawnWorld.Avatar.WalkForward();
+            {
+                if (keyboardState.IsKeyDown(Keys.LeftShift))
+                    _dawnWorld.Avatar.WalkForward();
+                else
+                    _dawnWorld.Avatar.RunForward();
+            }
             if (keyboardState.IsKeyDown(Keys.Down) || keyboardState.IsKeyDown(Keys.S))
                 _dawnWorld.Avatar.WalkBackward();
             if (keyboardState.IsKeyDown(Keys.Left) || keyboardState.IsKeyDown(Keys.Q))
