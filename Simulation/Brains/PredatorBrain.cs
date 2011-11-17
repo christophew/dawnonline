@@ -34,7 +34,7 @@ namespace DawnOnline.Simulation.Brains
         protected DateTime? _imPanickingSince = null;
 
 
-        internal override void DoSomething()
+        internal override void DoSomething(TimeSpan timeDelta)
         {
             Debug.Assert(MyCreature != null);
             Debug.Assert(_initialized);
@@ -48,36 +48,49 @@ namespace DawnOnline.Simulation.Brains
             // * fear
             // * tired
 
+            // AAAAAA... I'm about to die!!
             if (MyCreature.CharacterSheet.Damage.IsCritical &&
                 (!_imPanickingSince.HasValue || ((DateTime.Now - _imPanickingSince.Value).Milliseconds > 5000)))
             {
-                FearState();
+                FearState(timeDelta);
                 return;
             }
             if ((DateTime.Now - _lastTimeISawAnEnemy).TotalMilliseconds < 2000 || ISeeAnEnemy())
             {
-                AdrenalineState();
+                if (MyCreature.CharacterSheet.Fatigue.IsCritical)
+                {
+                    // Shit! I'm tired & more enemies are coming!
+                    // RUN AWAY!!
+                    FearState(timeDelta);
+                    return;
+                }
+
+                // CHAAAAARGE!
+                AdrenalineState(timeDelta);
                 return;
             }
+            // REST
             if (MyCreature.CharacterSheet.Fatigue.PercentFilled != 0)
             {
-                TiredState();
+                TiredState(timeDelta);
                 return;
             }
 
-            NeutralState();
+            NeutralState(timeDelta);
         }
 
         protected virtual bool ISeeAnEnemy()
         {
-            var check = _eyeSee[_forwardEye] > 0 || _eyeSee[_leftEye] > 0 || _eyeSee[_rightEye] > 0;
+            //var check = _eyeSee[_forwardEye] > 0 || _eyeSee[_leftEye] > 0 || _eyeSee[_rightEye] > 0;
+            // get a good look!
+            var check = _eyeSee[_forwardEye] > 5 || _eyeSee[_leftEye] > 5 || _eyeSee[_rightEye] > 5;
 
             if (check)
                 _lastTimeISawAnEnemy = DateTime.Now;
             return check;
         }
 
-        protected virtual void NeutralState()
+        protected virtual void NeutralState(TimeSpan timeDelta)
         {
             // Turn on bumper-hit
             if (_forwardBumper.Hit)
@@ -106,7 +119,7 @@ namespace DawnOnline.Simulation.Brains
             DoRandomAction(500);
         }
 
-        protected virtual void AdrenalineState()
+        protected virtual void AdrenalineState(TimeSpan timeDelta)
         {
             // Find something to attack
             var creaturesToAttack = MyCreature.FindCreatureToAttack(MyCreature.FoodSpecies);
@@ -145,7 +158,7 @@ namespace DawnOnline.Simulation.Brains
             DoRandomAction(250);
         }
 
-        protected virtual void FearState()
+        protected virtual void FearState(TimeSpan timeDelta)
         {
             if (!_imPanickingSince.HasValue)
                 _imPanickingSince = DateTime.Now;
@@ -171,7 +184,7 @@ namespace DawnOnline.Simulation.Brains
             MyCreature.RunForward();
         }
 
-        protected virtual void TiredState()
+        protected virtual void TiredState(TimeSpan timeDelta)
         {
             // Rest
             MyCreature.RegisterRest();
@@ -228,7 +241,7 @@ namespace DawnOnline.Simulation.Brains
                             };
 
             // Bumpers
-            _forwardBumper = new Bumper(MyCreature, new Vector2(15, 0));
+            _forwardBumper = new Bumper(MyCreature, new Vector2((float)MyCreature.Place.Form.BoundingCircleRadius, 0));
 
 
             _initialized = true;

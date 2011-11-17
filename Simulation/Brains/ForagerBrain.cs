@@ -8,7 +8,7 @@ namespace DawnOnline.Simulation.Brains
 {
     internal class ForagerBrain : PredatorBrain
     {
-        protected override void NeutralState()
+        protected override void NeutralState(TimeSpan timeDelta)
         {
             // Forage
             if (_forwardEye.SeesAnObstacle(EntityType.Treasure))

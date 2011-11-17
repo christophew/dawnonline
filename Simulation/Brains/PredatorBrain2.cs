@@ -12,7 +12,7 @@ namespace DawnOnline.Simulation.Brains
         private Eye _rightEye;
         private bool _initialized;
 
-        internal override void DoSomething()
+        internal override void DoSomething(TimeSpan timeDelta)
         {
             Debug.Assert(MyCreature != null);
             Debug.Assert(_initialized);

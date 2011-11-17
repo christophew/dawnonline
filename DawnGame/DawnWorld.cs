@@ -12,18 +12,20 @@ namespace DawnGame
 {
     class DawnWorld
     {
+        public const float MaxX = 500;
+        public const float MaxY = 300;
+
         private readonly DawnOnline.Simulation.Environment _environment = SimulationFactory.CreateEnvironment();
-        private const float MaxX = 300;
-        private const float MaxY = 200;
         private IAvatar _avatar = CreatureBuilder.CreateAvatar();
         Random _randomize = new Random();
 
         private int _grid = 5;
 
-        private int _nrOfSpawnPoints = 30;
-        private int _nrOfTreasures = 75;
-        private int _nrOfWalls = 0;
+        private int _nrOfSpawnPoints = 40;
+        private int _nrOfTreasures = 100;
+        private int _nrOfWalls = 600;
         private int _nrOfBoxes = 0;
+        private int _stablePopulationSize = 200;
 
         private int _nrOfSpawnPointsReplicated = 0;
 
@@ -195,11 +197,12 @@ namespace DawnGame
         {
             _environment.ApplyActions(timeDelta);
 
-
             // Make sure we always have enough spawnpoints
             var spawnPoints = _environment.GetCreatures(EntityType.SpawnPoint);
             if (_environment.GetCreatures(EntityType.SpawnPoint).Count < _nrOfSpawnPoints)
             {
+                var timer = new Stopwatch();
+                timer.Start();
                 ICreature bestspawnPoint;
 
                 if (spawnPoints.Count == 0)
@@ -215,9 +218,12 @@ namespace DawnGame
                 // Replicate
                 //AddSpawnPoints(EntityType.Predator, 1);
                 var newSpawnPoint = bestspawnPoint.Replicate();
-                var position = new Vector2 { X = _randomize.Next((int)MaxX), Y = _randomize.Next((int)MaxY) };
+                var position = new Vector2 {X = _randomize.Next((int) MaxX), Y = _randomize.Next((int) MaxY)};
                 _environment.AddCreature(newSpawnPoint, position, 0);
                 _nrOfSpawnPointsReplicated++;
+
+                timer.Stop();
+                Console.WriteLine("Replicate.timer: " + timer.ElapsedMilliseconds);
             }
 
             // Make sure we always have enough Treasure
@@ -230,13 +236,13 @@ namespace DawnGame
             }
         }
 
-        public void ThinkAll(double maxThinkTime)
+        public void ThinkAll(double maxThinkTime, TimeSpan timeDelta)
         {
             Console.WriteLine(GetWorldInformation());
 
             // Keep population at bay
-            int moved = _environment.Think(maxThinkTime);
-            if (moved < _environment.GetCreatures().Count / 2 && _environment.GetCreatures().Count > 200)
+            int moved = _environment.Think(maxThinkTime, timeDelta);
+            if (moved < _environment.GetCreatures().Count / 2 && _environment.GetCreatures().Count > _stablePopulationSize)
             {
                 //_environment.Armageddon(_environment.GetCreatures().Count/2);
                 _environment.WrathOfGod(10);
@@ -270,7 +276,10 @@ namespace DawnGame
                 foreach (var sp in tempSpawnPoints)
                 {
                     if (randomizer.Next(3) == 0)
+                    {
+                        Console.WriteLine("Score to replicate: " + sp.CharacterSheet.Score);
                         return sp;
+                    }
                 }
             }
         }

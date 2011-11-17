@@ -409,11 +409,11 @@ namespace DawnGame
             var keyboard = Keyboard.GetState();
 
             if (keyboard.IsKeyDown(Keys.F1))
-                _camera = new BirdsEyeCamera(GraphicsDevice, new Vector3(150f, 280f, 100f), 50);
+                _camera = new BirdsEyeCamera(GraphicsDevice, new Vector3(DawnWorld.MaxX / 2f, 430, DawnWorld.MaxY / 2f), 100);
             if (keyboard.IsKeyDown(Keys.F2))
                 _camera = new AvatarCamera(GraphicsDevice, _dawnWorld.Avatar);
             if (keyboard.IsKeyDown(Keys.F3))
-                _camera = new BirdsEyeFollowCamera(GraphicsDevice, 80, 50, _dawnWorld.Avatar);
+                _camera = new BirdsEyeFollowCamera(GraphicsDevice, 100, 50, _dawnWorld.Avatar);
             if (keyboard.IsKeyDown(Keys.F4))
                 _camera = new FirstPersonCamera(Game.Window, 10);
             if (keyboard.IsKeyDown(Keys.F5))

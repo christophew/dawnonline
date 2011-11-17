@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using DawnOnline.Simulation.Entities;
 using DawnOnline.Simulation.Senses;
 using DawnOnline.Simulation.Tools;
@@ -12,7 +13,7 @@ namespace DawnOnline.Simulation.Brains
         private Eye _rightEye;
         private bool _initialized;
 
-        internal override void DoSomething()
+        internal override void DoSomething(TimeSpan timeDelta)
         {
             Debug.Assert(MyCreature != null);
             Debug.Assert(_initialized);

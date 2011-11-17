@@ -27,7 +27,7 @@ namespace DawnOnline.Simulation.Brains
             PrototypeNeuralForager = _prototype;
         }
 
-        internal override void DoSomething()
+        internal override void DoSomething(TimeSpan timeDelta)
         {
             // Need new energy
             if (MyCreature.IsTired)

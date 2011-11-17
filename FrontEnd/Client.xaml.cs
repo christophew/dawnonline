@@ -66,7 +66,8 @@ namespace FrontEnd
                 if (!current.Alive)
                     continue;
 
-                current.Think();
+                throw new NotImplementedException("review when still needed");
+                //current.Think();
 
                 // Died of old age..
                 if (!current.Alive)
