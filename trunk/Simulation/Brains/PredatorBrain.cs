@@ -188,9 +188,11 @@ namespace DawnOnline.Simulation.Brains
             var filtered = new List<IEntity>();
             foreach(var entity in sortedOnDistance)
             {
+                // Not me
                 if (entity == MyCreature)
                     continue;
-                if (entity == MyCreature.SpawnPoint)
+                // Not my family
+                if (entity.SpawnPoint == MyCreature.SpawnPoint)
                     continue;
 
                 filtered.Add(entity);

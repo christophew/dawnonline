@@ -60,6 +60,11 @@ namespace DawnOnline.Simulation.Entities
         internal Creature(double bodyRadius)
         {
             _place.Form = SimulationFactory.CreateCircle(bodyRadius);
+        }
+
+        internal void AddToPhysicsEngine()
+        {
+            var bodyRadius = _place.Form.BoundingCircleRadius;
             _place.Fixture = BodyFactory.CreateCircle(Environment.GetWorld().FarSeerWorld, (float)bodyRadius, 1.0f).FixtureList[0];
             _place.Fixture.Body.BodyType = BodyType.Dynamic;
             _place.Fixture.Body.Mass = 5;
@@ -68,6 +73,11 @@ namespace DawnOnline.Simulation.Entities
             _place.Fixture.Body.AngularDamping = 2f;
 
             _place.Fixture.UserData = this;
+
+            if (_brain != null)
+            {
+                _brain.InitializeSenses();
+            }
         }
 
         public ICreature Replicate()
@@ -75,7 +85,7 @@ namespace DawnOnline.Simulation.Entities
             var newCreature = new Creature(_place.Form.BoundingCircleRadius);
             newCreature._characterSheet = CharacterSheet.Replicate();
 
-            newCreature.Place.Fixture.Body.BodyType = _place.Fixture.Body.BodyType;
+            //newCreature.Place.Fixture.Body.BodyType = _place.Fixture.Body.BodyType;
 
             newCreature.Specy = Specy;
             if (FoodSpecies != null)
@@ -84,7 +94,6 @@ namespace DawnOnline.Simulation.Entities
             newCreature.SpawnPoint = (this.Specy == EntityType.SpawnPoint) ? newCreature : SpawnPoint;
 
             newCreature.Brain = _brain.Replicate();
-            newCreature.Brain.InitializeSenses();
 
             return newCreature;
         }

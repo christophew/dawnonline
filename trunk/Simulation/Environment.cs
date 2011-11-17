@@ -45,6 +45,9 @@ namespace DawnOnline.Simulation
             var myCreature = creature as Creature;
             Debug.Assert(myCreature != null);
 
+            // Add to FarSeer
+            myCreature.AddToPhysicsEngine();
+
             myCreature.MyEnvironment = this;
             (myCreature.Place as Placement).OffsetPosition(origin, angle);
 
@@ -63,6 +66,7 @@ namespace DawnOnline.Simulation
             }
 
             _creaturesPerSpecy[myCreature.Specy].Add(myCreature);
+
             return true;
         }
 
@@ -272,8 +276,29 @@ namespace DawnOnline.Simulation
             return list;
         }
 
+        public void WrathOfGod(int nrKilled)
+        {
+            Console.WriteLine("***********************************");
+            Console.WriteLine("WrathOfGod: " + nrKilled);
+
+            for (int i=0; i < nrKilled; i++)
+            {
+                if (GetCreatures().Count == 0)
+                    break;
+
+                var creature = GetCreatures()[Globals.Radomizer.Next(GetCreatures().Count)] as Creature;
+                if (creature.Specy == EntityType.Avatar)
+                    continue;
+
+                KillCreature(creature);
+            }
+        }
+
         public void Armageddon(int survivors)
         {
+            Console.WriteLine("***********************************");
+            Console.WriteLine("ARMAGEDDON: " + survivors);
+
             for (;;)
             {
                 if (GetCreatures().Count <= survivors)
@@ -285,8 +310,6 @@ namespace DawnOnline.Simulation
 
                 KillCreature(creature);
             }
-
-            Console.WriteLine("ARMAGEDDON");
         }
     }
 }

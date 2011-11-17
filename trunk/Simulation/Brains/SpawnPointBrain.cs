@@ -24,7 +24,6 @@ namespace DawnOnline.Simulation.Brains
 
             var _prototype = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature) as Creature;
             _prototype.Brain = new NeuralBrain();
-            _prototype.Brain.InitializeSenses();
             PrototypeNeuralForager = _prototype;
         }
 
@@ -64,7 +63,6 @@ namespace DawnOnline.Simulation.Brains
         {
             var creature = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature) as Creature;
             creature.Brain = new ForagerBrain();
-            creature.Brain.InitializeSenses();
             AddToWorld(creature);
         }
 
@@ -80,7 +78,6 @@ namespace DawnOnline.Simulation.Brains
         {
             var creature = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature) as Creature;
             creature.Brain = new ProtectorBrain();
-            creature.Brain.InitializeSenses();
             AddToWorld(creature);
         }
 
