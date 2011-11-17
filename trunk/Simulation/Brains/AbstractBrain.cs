@@ -10,7 +10,7 @@ namespace DawnOnline.Simulation.Brains
     {
         internal Creature MyCreature { get; set; }
 
-        internal abstract void DoSomething();
+        internal abstract void DoSomething(TimeSpan timeDelta);
 
         internal virtual void InitializeSenses()
         {}

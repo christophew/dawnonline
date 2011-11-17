@@ -23,7 +23,7 @@ namespace DawnOnline.Simulation.Brains
             return check;
         }
 
-        protected override void NeutralState()
+        protected override void NeutralState(TimeSpan timeDelta)
         {
             Debug.Assert(MyCreature != null);
             Debug.Assert(_initialized);

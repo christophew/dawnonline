@@ -223,10 +223,10 @@ namespace DawnOnline.Simulation
             //FarSeerWorld.Step((float)timeDelta / 1000);
         }
 
-        public int Think(double maxTimeDelta)
+        public int Think(double maxThinkTime, TimeSpan timeDelta)
         {
             var startTime = DateTime.Now;
-            var maxTime = startTime + new TimeSpan(0, 0, 0, 0, (int)maxTimeDelta);
+            var maxTime = startTime + new TimeSpan(0, 0, 0, 0, (int)maxThinkTime);
 
             var creatures = GetCreatures().OrderBy(c => (c as Creature).LatestThinkTime);
 
@@ -237,7 +237,7 @@ namespace DawnOnline.Simulation
                     continue;
 
                 counter++;
-                current.Think();
+                current.Think(timeDelta);
 
                 var currentNow = DateTime.Now;
                 current.LatestThinkTime = currentNow;

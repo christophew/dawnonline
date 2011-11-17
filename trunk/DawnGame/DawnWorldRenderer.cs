@@ -113,7 +113,7 @@ namespace DawnGame
             _thinkTimer.Reset();
             _thinkTimer.Start();
             //_dawnWorld.ThinkAll(MathHelper.Max(20, (float)(gameTime.ElapsedGameTime.TotalMilliseconds / 2.0)));
-            _dawnWorld.ThinkAll(30);
+            _dawnWorld.ThinkAll(30, gameTime.ElapsedGameTime);
             _thinkTimer.Stop();
             Console.WriteLine("_thinkTimer: " + _thinkTimer.ElapsedMilliseconds);
 

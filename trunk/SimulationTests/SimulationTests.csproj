@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FarseerTest.cs" />
+    <Compile Include="MemoryNodeTests.cs" />
     <Compile Include="NeuralNetworkTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

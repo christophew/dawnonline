@@ -13,7 +13,7 @@ namespace DawnOnline.Simulation.Senses
     internal class Bumper
     {
         private Fixture _fixture = null;
-        private float _radius = 0.5f;
+        private float _radius = 0.1f;
 
         internal bool Hit { get; private set; }
 

@@ -346,7 +346,7 @@ namespace DawnOnline.Simulation.Entities
                                                (float)(Math.Sin(_place.Angle + MathHelper.PiOver2) * CharacterSheet.WalkingDistance / 2f));
         }
 
-        public void Think()
+        public void Think(TimeSpan timeDelta)
         {
             Debug.Assert(Alive);
 
@@ -356,7 +356,7 @@ namespace DawnOnline.Simulation.Entities
             // Clear action queue: the brain will select new actions
             ClearActionQueue();
 
-            Brain.DoSomething();
+            Brain.DoSomething(timeDelta);
             Brain.ClearState();
         }
 

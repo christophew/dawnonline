@@ -48,7 +48,7 @@ namespace SimulationTests
             neuralNetwork.InputNodes[0].CurrentValue = 10;
             neuralNetwork.InputNodes[0].OutGoingEdges[0].Multiplier = 1;
             neuralNetwork.LayerNodes[0].OutGoingEdges[0].Multiplier = 1;
-            neuralNetwork.Propagate();
+            neuralNetwork.Propagate(new TimeSpan());
 
             Assert.AreEqual(10, neuralNetwork.LayerNodes[0].CurrentValue);
             Assert.AreEqual(0, neuralNetwork.LayerNodes[1].CurrentValue);
@@ -67,7 +67,7 @@ namespace SimulationTests
             neuralNetwork.InputNodes[0].OutGoingEdges[0].Multiplier = 1;
             neuralNetwork.LayerNodes[0].OutGoingEdges[0].Multiplier = 1;
             neuralNetwork.InputNodes[0].Threshold = 11;
-            neuralNetwork.Propagate();
+            neuralNetwork.Propagate(new TimeSpan());
 
             Assert.AreEqual(0, neuralNetwork.LayerNodes[0].CurrentValue);
             Assert.AreEqual(0, neuralNetwork.LayerNodes[1].CurrentValue);
@@ -76,10 +76,10 @@ namespace SimulationTests
             Assert.AreEqual(0, neuralNetwork.OutputNodes[0].CurrentValue);
             Assert.AreEqual(0, neuralNetwork.OutputNodes[1].CurrentValue);
 
-            neuralNetwork.Clear();
+            neuralNetwork.Reset();
             neuralNetwork.InputNodes[0].CurrentValue = 10;
             neuralNetwork.InputNodes[0].Threshold = 10;
-            neuralNetwork.Propagate();
+            neuralNetwork.Propagate(new TimeSpan());
 
             Assert.AreEqual(10, neuralNetwork.LayerNodes[0].CurrentValue);
             Assert.AreEqual(0, neuralNetwork.LayerNodes[1].CurrentValue);
@@ -96,7 +96,7 @@ namespace SimulationTests
 
             InitEdgesTo1(neuralNetwork);
             neuralNetwork.InputNodes[0].CurrentValue = 10;
-            neuralNetwork.Propagate();
+            neuralNetwork.Propagate(new TimeSpan());
 
             Assert.AreEqual(10, neuralNetwork.LayerNodes[0].CurrentValue);
             Assert.AreEqual(10, neuralNetwork.LayerNodes[1].CurrentValue);
@@ -114,7 +114,7 @@ namespace SimulationTests
             InitEdgesTo1(neuralNetwork);
             neuralNetwork.InputNodes[0].CurrentValue = 10;
             neuralNetwork.InputNodes[0].OutGoingEdges[0].Multiplier = 2;
-            neuralNetwork.Propagate();
+            neuralNetwork.Propagate(new TimeSpan());
 
             Assert.AreEqual(20, neuralNetwork.LayerNodes[0].CurrentValue);
             Assert.AreEqual(10, neuralNetwork.LayerNodes[1].CurrentValue);
@@ -130,8 +130,8 @@ namespace SimulationTests
             var neuralNetwork = new NeuralNetwork(4, 3, 2);
 
             neuralNetwork.InputNodes[0].CurrentValue = 10;
-            neuralNetwork.Propagate();
-            neuralNetwork.Clear();
+            neuralNetwork.Propagate(new TimeSpan());
+            neuralNetwork.Reset();
 
             foreach (var inputNode in neuralNetwork.InputNodes)
             {
