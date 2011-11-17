@@ -136,9 +136,6 @@ namespace DawnGame
             _dawnWorld.UpdatePhysics(MathHelper.Min(100, (float)gameTime.ElapsedGameTime.TotalMilliseconds));
             _updateTimer.Stop();
             Console.WriteLine("_updateTimer: " + _updateTimer.ElapsedMilliseconds);
-
-
-            Console.WriteLine("ElapsedGameTime: " + gameTime.ElapsedGameTime.TotalMilliseconds);
         }
 
         private void UpdateAvatar()

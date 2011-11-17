@@ -57,7 +57,6 @@ namespace DawnOnline.Simulation.Builders
             critter.CharacterSheet.TurningAngle = 1.5 * _turnMultiplier;
             critter.CharacterSheet.MeleeDamage = 1;
             critter.CharacterSheet.RangeDamage = 0;
-            critter.Brain.InitializeSenses();
 
             return critter;
         }
@@ -74,7 +73,6 @@ namespace DawnOnline.Simulation.Builders
             critter.CharacterSheet.WalkingDistance = 15 * _velocityMultiplier;
             critter.CharacterSheet.TurningAngle = 1.5 * _turnMultiplier;
             critter.CharacterSheet.FoodValue = 500;
-            critter.Brain.InitializeSenses();
 
             return critter;
         }
@@ -91,7 +89,6 @@ namespace DawnOnline.Simulation.Builders
             critter.CharacterSheet.WalkingDistance = 0;
             critter.CharacterSheet.TurningAngle = 0;
             critter.CharacterSheet.FoodValue = 200;
-            critter.Brain.InitializeSenses();
 
             return critter;
         }
@@ -134,7 +131,6 @@ namespace DawnOnline.Simulation.Builders
             critter.Place.Fixture.Body.LinearDamping = 100f;
 
             critter.Brain = new TurretBrain();
-            critter.Brain.InitializeSenses();
 
 
             return critter;
@@ -145,7 +141,7 @@ namespace DawnOnline.Simulation.Builders
             var spawnPoint = new Creature(1.0);
 
             spawnPoint.Specy = EntityType.SpawnPoint;
-            spawnPoint.Place.Fixture.Body.BodyType = BodyType.Static;
+            //pawnPoint.Place.Fixture.Body.BodyType = BodyType.Static;
             spawnPoint.Brain = new SpawnPointBrain(spawnType, 10);
 
             // Make the spawnPoint part of the family

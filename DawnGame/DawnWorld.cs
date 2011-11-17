@@ -213,6 +213,7 @@ namespace DawnGame
                 }
 
                 // Replicate
+                //AddSpawnPoints(EntityType.Predator, 1);
                 var newSpawnPoint = bestspawnPoint.Replicate();
                 var position = new Vector2 { X = _randomize.Next((int)MaxX), Y = _randomize.Next((int)MaxY) };
                 _environment.AddCreature(newSpawnPoint, position, 0);
@@ -236,7 +237,10 @@ namespace DawnGame
             // Keep population at bay
             int moved = _environment.Think(maxThinkTime);
             if (moved < _environment.GetCreatures().Count / 2 && _environment.GetCreatures().Count > 200)
-                _environment.Armageddon(_environment.GetCreatures().Count / 2);
+            {
+                //_environment.Armageddon(_environment.GetCreatures().Count/2);
+                _environment.WrathOfGod(10);
+            }
         }
 
         public void UpdatePhysics(double timeDelta)

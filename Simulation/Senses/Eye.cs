@@ -121,6 +121,12 @@ namespace DawnOnline.Simulation.Senses
 
         private bool _HasLineOfSight(IEntity current)
         {
+            // same position
+            if (_creature.Place.Position == current.Place.Position)
+            {
+                return true;
+            }
+
             // Check angle
             {
                 double angle = MathTools.GetAngle(CreaturePlace.Position.X, CreaturePlace.Position.Y,

@@ -593,6 +593,7 @@ namespace FarseerPhysics.Dynamics
                 foreach (Body body in _bodyAddList)
                 {
                     // Add to world list.
+                    Console.WriteLine("BodyList.Count: " + BodyList.Count);
                     BodyList.Add(body);
 
                     if (BodyAdded != null)

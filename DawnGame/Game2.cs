@@ -102,6 +102,12 @@ namespace DawnGame
             }
 
             base.Update(gameTime);
+
+
+            // FPS
+            Console.WriteLine("Update ElapsedGameTime: " + gameTime.ElapsedGameTime.TotalMilliseconds);
+            Console.WriteLine("Update per second: " + 1.0 / gameTime.ElapsedGameTime.TotalSeconds);
+            this.Window.Title = "Dawn: " + (int)(1.0/gameTime.ElapsedGameTime.TotalSeconds);
         }
 
         /// <summary>

@@ -23,6 +23,7 @@
 * 3. This notice may not be removed or altered from any source distribution. 
 */
 
+using System;
 using System.Collections.Generic;
 using FarseerPhysics.Collision;
 using FarseerPhysics.Dynamics.Contacts;
@@ -230,6 +231,7 @@ namespace FarseerPhysics.Dynamics
 
         internal void Collide()
         {
+            Console.WriteLine("ContactList.Count: " + ContactList.Count);
             // Update awake contacts.
             for (int i = 0; i < ContactList.Count; i++)
             {
