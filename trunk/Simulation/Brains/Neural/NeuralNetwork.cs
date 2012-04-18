@@ -144,7 +144,7 @@ namespace DawnOnline.Simulation.Brains.Neural
             }
         }
 
-        private static int _mutationRate = 10;
+        private static int _mutationRate = 100;
 
         internal void Mutate()
         {

@@ -38,6 +38,7 @@ namespace DawnGame
 
         private ICamera _camera;
 
+
         public DefaultGameBehaviour(Game game)
             : base(game)
         {
@@ -126,10 +127,10 @@ namespace DawnGame
         {
             _drawTimer.Reset();
             _drawTimer.Start();
-
+            
 
             //GraphicsDevice.Clear(Color.WhiteSmoke);
-            GraphicsDevice.Clear(Color.Black);
+            //GraphicsDevice.Clear(Color.Black);
 
             _dawnWorldRenderer.Draw(gameTime, _camera);
 
