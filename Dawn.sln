@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeferredPipeline", "DawnGam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Farseer Physics XNA", "Farseer Physics Engine 3.3.1 XNA\Farseer Physics XNA.csproj", "{DA87EB61-D672-4A20-B0E7-D3E488C69D4C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MogreFrontEnd", "MogreFrontEnd\MogreFrontEnd.csproj", "{AA0A0DCE-3FB8-4202-BDC4-CFD8E0FF27EA}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Dawn.vsmdi
@@ -103,6 +105,16 @@ Global
 		{DA87EB61-D672-4A20-B0E7-D3E488C69D4C}.Release|Mixed Platforms.Build.0 = Release|x86
 		{DA87EB61-D672-4A20-B0E7-D3E488C69D4C}.Release|x86.ActiveCfg = Release|x86
 		{DA87EB61-D672-4A20-B0E7-D3E488C69D4C}.Release|x86.Build.0 = Release|x86
+		{AA0A0DCE-3FB8-4202-BDC4-CFD8E0FF27EA}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{AA0A0DCE-3FB8-4202-BDC4-CFD8E0FF27EA}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{AA0A0DCE-3FB8-4202-BDC4-CFD8E0FF27EA}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{AA0A0DCE-3FB8-4202-BDC4-CFD8E0FF27EA}.Debug|x86.ActiveCfg = Debug|x86
+		{AA0A0DCE-3FB8-4202-BDC4-CFD8E0FF27EA}.Debug|x86.Build.0 = Debug|x86
+		{AA0A0DCE-3FB8-4202-BDC4-CFD8E0FF27EA}.Release|Any CPU.ActiveCfg = Release|x86
+		{AA0A0DCE-3FB8-4202-BDC4-CFD8E0FF27EA}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{AA0A0DCE-3FB8-4202-BDC4-CFD8E0FF27EA}.Release|Mixed Platforms.Build.0 = Release|x86
+		{AA0A0DCE-3FB8-4202-BDC4-CFD8E0FF27EA}.Release|x86.ActiveCfg = Release|x86
+		{AA0A0DCE-3FB8-4202-BDC4-CFD8E0FF27EA}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

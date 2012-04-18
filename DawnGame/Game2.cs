@@ -26,6 +26,10 @@ namespace DawnGame
     {
         GraphicsDeviceManager graphics;
 
+        Viewport defaultViewport;
+        Viewport leftViewport;
+        Viewport rightViewport;
+
 
         public Game2()
         {
@@ -40,9 +44,8 @@ namespace DawnGame
 
             Content.RootDirectory = "Content";
 
-            //var renderer = new DefaultGameBehaviour(this);
-            var renderer = new DeferredRenderer(this);
-            Components.Add(renderer);
+            //Components.Add(new DefaultGameBehaviour(this));
+            Components.Add(new DeferredRenderer(this));
         }
 
         /// <summary>
@@ -73,7 +76,16 @@ namespace DawnGame
         /// </summary>
         protected override void LoadContent()
         {
-  
+            // Viewports
+            defaultViewport = graphics.GraphicsDevice.Viewport;
+            leftViewport = defaultViewport;
+            rightViewport = defaultViewport;
+            leftViewport.Width = leftViewport.Width / 2;
+            rightViewport.Width = rightViewport.Width / 2;
+            rightViewport.X = leftViewport.Width;
+
+            // Default to leftViewport
+            graphics.GraphicsDevice.Viewport = leftViewport;
         }
 
         /// <summary>

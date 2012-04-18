@@ -47,6 +47,10 @@ namespace DawnGame
         private ICamera _camera;
 
 
+        Viewport defaultViewport;
+        Viewport leftViewport;
+        Viewport rightViewport;
+
 
         public Game1()
         {
@@ -97,11 +101,16 @@ namespace DawnGame
 
             _floor = new GameObject(Content.Load<Model>(@"floor_metal"), new Vector3(MathHelper.PiOver2, 0, 0), new Vector3(0, -2025, 0), 2000f);
 
-
-
-
-
             _camera = new BirdsEyeFollowCamera(GraphicsDevice, 80, 50, _dawnWorld.Avatar);
+
+
+            // Viewports
+            defaultViewport = GraphicsDevice.Viewport;
+            leftViewport = defaultViewport;
+            rightViewport = defaultViewport;
+            leftViewport.Width = leftViewport.Width / 2;
+            rightViewport.Width = rightViewport.Width / 2;
+            rightViewport.X = leftViewport.Width;
         }
 
         /// <summary>
@@ -174,22 +183,32 @@ namespace DawnGame
             _drawTimer.Reset();
             _drawTimer.Start();
 
-
-            //GraphicsDevice.Clear(Color.WhiteSmoke);
+            // Viewports
+            GraphicsDevice.Viewport = defaultViewport;
             GraphicsDevice.Clear(Color.Black);
 
-            _dawnWorldRenderer.Draw(gameTime, _camera);
+            GraphicsDevice.Viewport = leftViewport;
+            _camera = new AvatarCamera(GraphicsDevice, _dawnWorld.Avatar);
+            DrawScene(gameTime);
 
-            //DrawSkyDome();
-            _floor.DrawObject(_camera, new Vector3(_dawnWorld.Center.X, 0, _dawnWorld.Center.Y), Vector3.Zero);
-
-
-            DrawTextInfo();
+            GraphicsDevice.Viewport = rightViewport;
+            _camera = new BirdsEyeFollowCamera(GraphicsDevice, 100, 50, _dawnWorld.Avatar);
+            DrawScene(gameTime);
 
             base.Draw(gameTime);
 
             _drawTimer.Stop();
             _lastDrawTime = _drawTimer.ElapsedMilliseconds;
+        }
+
+        private void DrawScene(GameTime gameTime)
+        {
+            _dawnWorldRenderer.Draw(gameTime, _camera);
+
+            //DrawSkyDome();
+            _floor.DrawObject(_camera, new Vector3(_dawnWorld.Center.X, 0, _dawnWorld.Center.Y), Vector3.Zero);
+
+            DrawTextInfo();
         }
 
         private void DrawTextInfo()

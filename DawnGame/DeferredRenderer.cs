@@ -38,9 +38,8 @@ namespace DawnGame
 
         private Effect finalCombineEffect;
 
-        private SpriteBatch spriteBatch;
-
         private Vector2 halfPixel;
+
 
         public DeferredRenderer(Game game)
             : base(game)
@@ -89,8 +88,6 @@ namespace DawnGame
             pointLightEffect = Game.Content.Load<Effect>(@"DeferredLighting\PointLight");
             sphereModel = Game.Content.Load<Model>(@"DeferredLighting\sphere");
            
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-
             // Dawn
             _dawnWorldRenderer = new DawnWorldRenderer(Game, _dawnWorld);
             _dawnWorldRenderer.LoadContent();
@@ -100,6 +97,8 @@ namespace DawnGame
 
             // Text info
             //font = Game.Content.Load<SpriteFont>(@"fonts\MyFont");
+
+
 
             base.LoadContent();
         }
@@ -191,13 +190,18 @@ namespace DawnGame
         }
         
         public override void Draw(GameTime gameTime)
-        {            
-            SetGBuffer();            
+        {
+            DrawScene(gameTime);
+        }
+
+        private void DrawScene(GameTime gameTime)
+        {
+            SetGBuffer();
             ClearGBuffer();
 
-            Game.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-            Game.GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
-            Game.GraphicsDevice.BlendState = BlendState.Opaque;
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
+            GraphicsDevice.BlendState = BlendState.Opaque;
             _dawnWorldRenderer.Draw(gameTime, _camera);
 
             _floor.DrawObject(_camera, new Vector3(_dawnWorld.Center.X, 0, _dawnWorld.Center.Y), Vector3.Zero);
@@ -207,10 +211,6 @@ namespace DawnGame
 
             ResolveGBuffer();
             DrawLights(gameTime);
-
-            //DrawTextInfo();
-
-            base.Draw(gameTime);
         }
 
         private void DrawAvatarPointLight(Color color, float height, float radius, float intensity)
@@ -352,6 +352,8 @@ namespace DawnGame
 
             finalCombineEffect.Techniques[0].Passes[0].Apply();            
             quadRenderer.Render(Vector2.One * -1, Vector2.One);
+            //quadRenderer.Render(Vector2.One * -1, new Vector2(0, 1f));
+            //quadRenderer.Render(new Vector2(0, -1f), Vector2.One);
         }
 
         private void MovingPointLights(GameTime gameTime, int nrOfLight)
@@ -419,46 +421,5 @@ namespace DawnGame
             if (keyboard.IsKeyDown(Keys.F5))
                 _camera = new AvatarCamera(GraphicsDevice, _dawnWorld.Environment.GetCreatures(EntityType.Predator)[0]);
         }
-
-        //private SpriteFont font;
-        //private void DrawTextInfo()
-        //{
-        //    spriteBatch.Begin();
-
-        //    var worldInformation = _dawnWorld.GetWorldInformation();
-        //    spriteBatch.DrawString(font, worldInformation, new Vector2(100f, 100f), Color.Green);
-
-        //    //string technicalInformation = string.Format("Think: {0:0000}ms; Move: {1:0000}ms; Update: {2:0000}ms; Draw: {3:0000}ms",
-        //    //                                            _dawnWorldRenderer.ThinkTime, _dawnWorldRenderer.MoveTime, _updateTimer.ElapsedMilliseconds, _lastDrawTime);
-        //    string technicalInformation = string.Format("Think: {0:0000}ms; Move: {1:0000}ms",
-        //                                                _dawnWorldRenderer.ThinkTime, _dawnWorldRenderer.MoveTime);
-        //    spriteBatch.DrawString(font, technicalInformation, new Vector2(100f, 150f), Color.Green);
-
-        //    if (_dawnWorld.Avatar != null)
-        //    {
-        //        string stats = string.Format("Damage: {0}%; Velocity: {1:000.0}",
-        //            _dawnWorld.Avatar.CharacterSheet.Damage.PercentFilled,
-        //            _dawnWorld.Avatar.Place.Velocity);
-        //        spriteBatch.DrawString(font, stats, new Vector2(100f, 200f), Color.Green);
-        //    }
-
-        //    spriteBatch.DrawString(font, _camera.GetDebugString(), new Vector2(100f, 250f), Color.Green);
-
-        //    spriteBatch.End();
-
-
-        //    // Fix Spritebatch problems
-        //    {
-        //        GraphicsDevice.BlendState = BlendState.AlphaBlend;
-        //        GraphicsDevice.DepthStencilState = DepthStencilState.None;
-        //        GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
-        //        GraphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
-
-        //        GraphicsDevice.BlendState = BlendState.Opaque;
-        //        GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-
-        //        GraphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
-        //    }
-        //}
     }
 }
