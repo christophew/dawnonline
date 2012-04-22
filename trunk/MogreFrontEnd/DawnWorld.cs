@@ -46,7 +46,7 @@ namespace DawnGame
 
             //AddCreatures(EntityType.Rabbit, 300);
             //AddCreatures(EntityType.Plant, 300);
-            //AddCreatures(EntityType.Predator, 10);
+            //AddCreatures(EntityType.Predator, 1);
             //AddCreatures(EntityType.Turret, 30);
             AddSpawnPoints(EntityType.Predator, _nrOfSpawnPoints);
         }
