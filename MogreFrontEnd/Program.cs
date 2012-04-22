@@ -1,4 +1,7 @@
-﻿using DawnGame;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using DawnGame;
+using DawnOnline.Simulation.Entities;
 using Mogre;
 using Mogre.TutorialFramework;
 using System;
@@ -22,26 +25,7 @@ namespace Mogre.Tutorials
             mSceneMgr.AmbientLight = ColourValue.Black;
             mSceneMgr.ShadowTechnique = ShadowTechnique.SHADOWTYPE_NONE;
 
-            int counter = 0;
-            //var texture = TextureManager.Singleton.Load("Dirt.jpg", ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME);
-            foreach (var obstacle in _dawnWorld.Environment.GetObstacles())
-            {
-                var box = mSceneMgr.CreateEntity("obstacle" + counter++, "cube.mesh");
-                var node = mSceneMgr.RootSceneNode.CreateChildSceneNode(new Vector3(obstacle.Place.Position.X, 0, obstacle.Place.Position.Y));
-                node.AttachObject(box);
-                //node.Scale(0.1f, 0.1f, 0.1f);
-                node.Scale(2.5f, 2.5f, 2.5f);
-            }
-
-            foreach (var creature in _dawnWorld.Environment.GetCreatures())
-            {
-                var box = mSceneMgr.CreateEntity("obstacle" + counter++, "ogrehead.mesh");
-                //box.SetMaterial(material);
-                var node = mSceneMgr.RootSceneNode.CreateChildSceneNode(new Vector3(creature.Place.Position.X, 0, creature.Place.Position.Y));
-                node.AttachObject(box);
-                node.Scale(0.07f, 0.07f, 0.07f);
-                //node.Scale(2.5f, 2.5f, 2.5f);
-            }
+            SimulationToOgre();
 
             // Ground
             Plane plane = new Plane(Vector3.UNIT_Y, 0);
@@ -69,14 +53,124 @@ namespace Mogre.Tutorials
             pointLight2.Position = new Vector3(100, 150, 250);
             pointLight2.DiffuseColour = ColourValue.Blue;
             pointLight2.SpecularColour = ColourValue.Blue;
+        }
 
+        protected override void CreateFrameListeners()
+        {
+            base.CreateFrameListeners();
+            mRoot.FrameRenderingQueued += UpdateSimulation;
+        }
+
+        protected bool UpdateSimulation(FrameEvent evt)
+        {
+            long millisecondsSinceLastFrame = (long)(evt.timeSinceLastFrame*1000.0);
+
+            _dawnWorld.ThinkAll(30, new TimeSpan(millisecondsSinceLastFrame));
+            _dawnWorld.ApplyMove(millisecondsSinceLastFrame);
+            _dawnWorld.UpdatePhysics(millisecondsSinceLastFrame);
+
+            SimulationToOgre();
+
+            return true;
+        }
+
+        private void SimulationToOgre()
+        {
+            //var texture = TextureManager.Singleton.Load("Chrome.jpg", ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME);
+            //MaterialPtr material = MaterialManager.Singleton.Create("MyMaterial", ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME);
+            //var pass = material.GetTechnique(0).GetPass(0);
+            //var unitState = pass.CreateTextureUnitState();
+            //pass.SetDiffuse(0.5f, 0f, 0f, 0f);
+            ////unitState.SetTextureName(texture.Name);
+
+            int counter = 0;
+            foreach (var obstacle in _dawnWorld.Environment.GetObstacles())
+            {
+                if (obstacle.Specy == EntityType.Treasure)
+                    continue;
+
+                SceneNode node = FindSceneNode(obstacle);
+                if (node == null)
+                {
+                    var box = mSceneMgr.CreateEntity("cube.mesh");
+                    //box.SetMaterial(material);
+                    node = mSceneMgr.RootSceneNode.CreateChildSceneNode();
+                    node.AttachObject(box);
+                    //node.Scale(0.1f, 0.1f, 0.1f);
+                    node.Scale(2.5f, 2.5f, 2.5f);
+                    
+                    _entities.Add(obstacle, node);
+                }
+
+                node.SetPosition(obstacle.Place.Position.X, 0, obstacle.Place.Position.Y);
+            }
+
+            foreach (var creature in _dawnWorld.Environment.GetCreatures())
+            {
+                SceneNode node = FindSceneNode(creature);
+                if (node == null)
+                {
+                    //var box = mSceneMgr.CreateEntity("obstacle" + counter++, "ogrehead.mesh");
+                    var box = mSceneMgr.CreateEntity("ogrehead.mesh");
+                    node = mSceneMgr.RootSceneNode.CreateChildSceneNode();
+                    node.AttachObject(box);
+                    node.Scale(0.07f, 0.07f, 0.07f);
+
+                    _entities.Add(creature, node);
+                }
+
+                const float ogreHeadInitialAngle = Math.HALF_PI;
+                float angle = creature.Place.Angle + ogreHeadInitialAngle;
+                ////while (angle > Math.TWO_PI)
+                ////    angle -= Math.TWO_PI;
+                ////while (angle < 0)
+                ////    angle += Math.TWO_PI;
+
+
+                node.SetOrientation(creature.Place.Angle, 0, 1, 0);
+                //node.Rotate(Vector3.UNIT_Y, Math.DegreesToRadians(creature.Place.Angle));
+                node.SetPosition(creature.Place.Position.X, 0, creature.Place.Position.Y);
+            }
+        }
+
+        private static readonly Random _randomize = new Random((int)DateTime.Now.Ticks);
+        Dictionary<IEntity, ColourValue> _familyColorMapper = new Dictionary<IEntity, ColourValue>();
+
+        private ColourValue GetFamilyColour(IEntity entity)
+        {
+            var creature = entity as ICreature;
+            if (creature == null)
+                return ColourValue.White;
+
+            ColourValue color;
+            if (!_familyColorMapper.TryGetValue(creature.SpawnPoint, out color))
+            {
+                var skipColor = _randomize.Next(3);
+                color = new ColourValue(
+                    skipColor == 0 ? 0 : _randomize.Next(255),
+                    skipColor == 1 ? 0 : _randomize.Next(255),
+                    skipColor == 2 ? 0 : _randomize.Next(255));
+                _familyColorMapper.Add(creature.SpawnPoint, color);
+            }
+
+            return color;
+        }
+
+        private Dictionary<IEntity, SceneNode> _entities = new Dictionary<IEntity, SceneNode>();
+
+        private SceneNode FindSceneNode(IEntity entity)
+        {
+            SceneNode node;
+            if (_entities.TryGetValue(entity, out node))
+                return node;
+            return null;
         }
 
         protected override void CreateCamera()
         {
             mCamera = mSceneMgr.CreateCamera("PlayerCam");
-            mCamera.Position = new Vector3(0, 10, 500);
-            mCamera.LookAt(Vector3.ZERO);
+            mCamera.Position = new Vector3(200, 100, 300);
+            mCamera.LookAt(new Vector3(200, 0, 100));
             mCamera.NearClipDistance = 5;
             mCameraMan = new CameraMan(mCamera);
         }
