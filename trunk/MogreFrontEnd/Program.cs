@@ -181,18 +181,7 @@ namespace Mogre.Tutorials
                 SceneNode node = FindSceneNode(creature);
                 if (node == null)
                 {
-                    //var box = mSceneMgr.CreateEntity("obstacle" + counter++, "ogrehead.mesh");
-                    var box = mSceneMgr.CreateEntity("ogrehead.mesh");
-                    node = mSceneMgr.RootSceneNode.CreateChildSceneNode();
-                    node.AttachObject(box);
-                    node.Scale(0.07f, 0.07f, 0.07f);
-
-                    var box2 = mSceneMgr.CreateEntity("cube.mesh");
-                    var node2 = node.CreateChildSceneNode(new Vector3(0, -50, 0));
-                    node2.AttachObject(box2);
-                    node2.Scale(20f, 0.1f, 20f);
-
-                    box2.SetMaterial(GetFamilyMaterial(creature));
+                    node = CreatePredatorNode(creature);
 
                     _entities.Add(creature, node);
                 }
@@ -226,6 +215,52 @@ namespace Mogre.Tutorials
                     mSceneMgr.RootSceneNode.RemoveAndDestroyChild(entity.Value.Name);
                 }
             }
+        }
+
+        private SceneNode CreatePredatorNode(IEntity entity)
+        {
+            var rootNode = mSceneMgr.RootSceneNode.CreateChildSceneNode();
+            rootNode.Scale(1.5f, 1.5f, 1.5f);
+
+            var material = GetFamilyMaterial(entity);
+
+
+            {
+                //var box = mSceneMgr.CreateEntity("obstacle" + counter++, "ogrehead.mesh");
+                //var box = mSceneMgr.CreateEntity("ogrehead.mesh");
+                var box = mSceneMgr.CreateEntity("Cube.mesh");
+                var node = rootNode.CreateChildSceneNode();
+                node.AttachObject(box);
+                //node.Scale(0.07f, 0.07f, 0.07f);
+                node.Scale(1f, 0.2f, 1f);
+
+                box.SetMaterial(material);
+            }
+
+            {
+                var wheel = mSceneMgr.CreateEntity("Cylinder.mesh");
+                var wheelNode = rootNode.CreateChildSceneNode(new Vector3(-1, 0, 0));
+                wheelNode.AttachObject(wheel);
+                wheelNode.Pitch(Math.HALF_PI);
+                wheelNode.Roll(Math.HALF_PI);
+                wheelNode.Scale(1f, 0.2f, 0.5f);
+            }
+            {
+                var wheel = mSceneMgr.CreateEntity("Cylinder.mesh");
+                var wheelNode = rootNode.CreateChildSceneNode(new Vector3(1, 0, 0));
+                wheelNode.AttachObject(wheel);
+                wheelNode.Pitch(Math.HALF_PI);
+                wheelNode.Roll(Math.HALF_PI);
+                wheelNode.Scale(1f, 0.2f, 0.5f);
+            }
+
+            //var box2 = mSceneMgr.CreateEntity("cube.mesh");
+            //var node2 = node.CreateChildSceneNode(new Vector3(0, -50, 0));
+            //node2.AttachObject(box2);
+            //node2.Scale(20f, 0.1f, 20f);
+            //box2.SetMaterial(GetFamilyMaterial(creature));
+
+            return rootNode;
         }
 
         private static readonly Random _randomize = new Random((int)DateTime.Now.Ticks);
