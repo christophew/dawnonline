@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace DawnOnline.Simulation.Brains.Neural
@@ -145,43 +146,60 @@ namespace DawnOnline.Simulation.Brains.Neural
         }
 
         private static int _mutationRate = 100;
+        private static int _mutationImpact = 10;
 
         internal void Mutate()
         {
             //Console.WriteLine("old: ");
             //Console.WriteLine(DebugInfo());
 
-            for (int i = 0; i < _inputNodes.Length; i++)
-            {
-                if (Globals.Radomizer.Next(_mutationRate) == 0)
-                    _inputNodes[i].Threshold += Globals.Radomizer.Next(11) - 5;
-                MutateEdges(_inputNodes[i]);
-            }
-
-            for (int i = 0; i < _reinforcementInputNodes.Length; i++)
-            {
-                if (Globals.Radomizer.Next(_mutationRate) == 0)
-                    _reinforcementInputNodes[i].Threshold += Globals.Radomizer.Next(11) - 5;
-                MutateEdges(_reinforcementInputNodes[i]);
-            }
-
-            for (int i = 0; i < _layerNodes.Length; i++)
-            {
-                if (Globals.Radomizer.Next(_mutationRate) == 0)
-                    _layerNodes[i].Threshold += Globals.Radomizer.Next(11) - 5;
-                MutateEdges(_layerNodes[i]);
-            }
+            MutateNodes(_inputNodes);
+            MutateNodes(_reinforcementInputNodes);
+            MutateNodes(_layerNodes);
 
             //Console.WriteLine("new: ");
             //Console.WriteLine(DebugInfo());
         }
 
+        private static void MutateNodes(IEnumerable<Node> nodes)
+        {
+            foreach (var node in nodes)
+            {
+                MutateThreshold(node);
+                MutateEdges(node);
+            }
+        }
+
+        private static void MutateThreshold(Node node)
+        {
+            if (Globals.Radomizer.Next(_mutationRate) != 0)
+                return;
+
+            var impact = Globals.Radomizer.Next(_mutationImpact + 1) - _mutationImpact / 2;
+            if (impact == 0)
+            {
+                // Reset thresHold
+                node.Threshold = 0;
+                return;
+            }
+            node.Threshold += impact;
+        }
+
         private static void MutateEdges(Node node)
         {
-            for (var j = 0; j < node.OutGoingEdges.Length; j++)
+            foreach (var edge in node.OutGoingEdges)
             {
                 if (Globals.Radomizer.Next(_mutationRate) == 0)
-                    node.OutGoingEdges[j].Multiplier += (Globals.Radomizer.Next(5) - 2) / 10.0;
+                {
+                    var impact = Globals.Radomizer.Next(_mutationImpact + 1) - _mutationImpact / 2;
+                    if (impact == 0)
+                    {
+                        // Reset edge
+                        edge.Multiplier = 0;
+                        continue;
+                    }
+                    edge.Multiplier += impact / 10.0;
+                }
             }
         }
 
