@@ -128,7 +128,7 @@ namespace DawnOnline.Simulation.Builders
 
             // Fixed position
             //critter.Place.Fixture.Body.BodyType = BodyType.Static;
-            critter.Place.Fixture.Body.LinearDamping = 100f;
+            //critter.Place.Fixture.Body.LinearDamping = 100f;
 
             critter.Brain = new TurretBrain();
 

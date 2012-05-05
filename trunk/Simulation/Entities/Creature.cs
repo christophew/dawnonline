@@ -187,7 +187,10 @@ namespace DawnOnline.Simulation.Entities
                 var bullet = BulletBuilder.CreateBullet(CharacterSheet.RangeDamage);
                 //bullet.Launch(bulletAngleVector);
                 {
-                    MyEnvironment.AddBullet(bullet, _place.Fixture.Body.Position + bulletAngleVector * (float)_place.Form.BoundingCircleRadius * 2.0f);
+                    MyEnvironment.AddBullet(
+                        bullet, 
+                        _place.Fixture.Body.Position + bulletAngleVector * (float)_place.Form.BoundingCircleRadius * 2.0f,
+                        _place.Angle);
                     //bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 30);
                     bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 3);
                 }
@@ -203,7 +206,10 @@ namespace DawnOnline.Simulation.Entities
                 var bullet = BulletBuilder.CreateRocket(CharacterSheet.RangeDamage);
                 //bullet.Launch(bulletAngleVector);
                 {
-                    MyEnvironment.AddBullet(bullet, _place.Fixture.Body.Position + bulletAngleVector * (float)_place.Form.BoundingCircleRadius * 2.0f);
+                    MyEnvironment.AddBullet(
+                        bullet, 
+                        _place.Fixture.Body.Position + bulletAngleVector * (float)_place.Form.BoundingCircleRadius * 2.0f,
+                        _place.Angle);
                     //bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 20);
                     bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 3);
                 }

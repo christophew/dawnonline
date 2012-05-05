@@ -43,6 +43,51 @@ namespace MogreFrontEnd
             }
         }
 
+        internal SceneNode GetAvatorNode()
+        {
+            return EntityToNode(_dawnWorld.Avatar, null);
+        }
+
+        internal void UpdateAvatar(MOIS.Keyboard keyboard)
+        {
+            _dawnWorld.Avatar.ClearActionQueue();
+
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_UP) || keyboard.IsKeyDown(MOIS.KeyCode.KC_Z) || keyboard.IsKeyDown(MOIS.KeyCode.KC_NUMPAD8))
+            {
+                if (keyboard.IsKeyDown(MOIS.KeyCode.KC_LSHIFT))
+                    _dawnWorld.Avatar.WalkForward();
+                else
+                    _dawnWorld.Avatar.RunForward();
+            }
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_DOWN) || keyboard.IsKeyDown(MOIS.KeyCode.KC_S) || keyboard.IsKeyDown(MOIS.KeyCode.KC_NUMPAD2))
+                _dawnWorld.Avatar.WalkBackward();
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_LEFT) || keyboard.IsKeyDown(MOIS.KeyCode.KC_Q) || keyboard.IsKeyDown(MOIS.KeyCode.KC_NUMPAD4))
+            {
+                if (keyboard.IsKeyDown(MOIS.KeyCode.KC_LSHIFT))
+                    _dawnWorld.Avatar.TurnLeftSlow();
+                else
+                    _dawnWorld.Avatar.TurnLeft();
+            }
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_RIGHT) || keyboard.IsKeyDown(MOIS.KeyCode.KC_D) || keyboard.IsKeyDown(MOIS.KeyCode.KC_NUMPAD6))
+            {
+                if (keyboard.IsKeyDown(MOIS.KeyCode.KC_LSHIFT))
+                    _dawnWorld.Avatar.TurnRightSlow();
+                else
+                    _dawnWorld.Avatar.TurnRight();
+            }
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_A))
+                _dawnWorld.Avatar.StrafeLeft();
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_E))
+                _dawnWorld.Avatar.StrafeRight();
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_SPACE))
+                _dawnWorld.Avatar.Fire();
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_LCONTROL))
+                _dawnWorld.Avatar.FireRocket();
+
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_T))
+                _dawnWorld.Avatar.BuildEntity(EntityType.Turret);
+        }
+
         private void CubeWorldNodes(Dictionary<IEntity, bool> currentNodes)
         {
             var entities = _dawnWorld.Environment.GetObstacles();
@@ -70,7 +115,7 @@ namespace MogreFrontEnd
             }
         }
 
-        private void EntityToNode(IEntity entity, Dictionary<IEntity, bool> currentNodes)
+        private SceneNode EntityToNode(IEntity entity, Dictionary<IEntity, bool> currentNodes)
         {
             SceneNode node = null;
             float initialAngle = -Math.HALF_PI;
@@ -80,7 +125,7 @@ namespace MogreFrontEnd
                 switch (entity.Specy)
                 {
                     case EntityType.Avatar:
-                        node = CreateDummyNode(entity);
+                        node = CreateAvatorNode(entity);
                         break;
                     case EntityType.Predator:
                         node = CreatePredatorNode(entity);
@@ -101,10 +146,10 @@ namespace MogreFrontEnd
                         node = CreateDummyNode(entity);
                         break;
                     case EntityType.Bullet:
-                        node = CreateDummyNode(entity);
+                        node = CreateBulletNode(entity);
                         break;
                     case EntityType.Rocket:
-                        node = CreateDummyNode(entity);
+                        node = CreateRocketNode(entity);
                         break;
                     case EntityType.SpawnPoint:
                         node = CreateDummyNode(entity);
@@ -123,7 +168,13 @@ namespace MogreFrontEnd
             node.Yaw(-angle);
 
             node.SetPosition(entity.Place.Position.X, 0, entity.Place.Position.Y);
-            currentNodes.Add(entity, true);
+
+            if (currentNodes != null)
+            {
+                currentNodes.Add(entity, true);
+            }
+
+            return node;
         }
 
         private SceneNode CreateDummyNode(IEntity entity)
@@ -134,6 +185,95 @@ namespace MogreFrontEnd
             node.Scale(2.5f, 2.5f, 2.5f);
 
             return node;
+        }
+
+        private SceneNode CreateBulletNode(IEntity entity)
+        {
+            var box = mSceneMgr.CreateEntity("sphere.mesh");
+            SceneNode node = mSceneMgr.RootSceneNode.CreateChildSceneNode();
+            node.AttachObject(box);
+            node.Scale(0.1f, 0.1f, 0.1f);
+
+            return node;
+        }
+
+        private SceneNode CreateRocketNode(IEntity entity)
+        {
+            var box = mSceneMgr.CreateEntity("cone.mesh");
+            SceneNode rootNode = mSceneMgr.RootSceneNode.CreateChildSceneNode();
+
+            // Use a subnode, because the orientation of the main node will be reset
+            SceneNode node = rootNode.CreateChildSceneNode();
+            node.AttachObject(box);
+            node.Scale(0.1f, 0.3f, 0.1f);
+            node.Pitch(Math.HALF_PI);
+
+            return rootNode;
+        }
+
+
+
+        private SceneNode CreateAvatorNode(IEntity entity)
+        {
+            var rootNode = mSceneMgr.RootSceneNode.CreateChildSceneNode();
+            rootNode.Scale(1.5f, 1.5f, 1.5f);
+
+            var material = GetFamilyMaterial(entity);
+
+
+            {
+                var box = mSceneMgr.CreateEntity("Cube.mesh");
+                var node = rootNode.CreateChildSceneNode();
+                node.AttachObject(box);
+                node.Scale(1f, 0.2f, 1f);
+
+                box.SetMaterial(material);
+            }
+
+            {
+                var wheel = mSceneMgr.CreateEntity("Cylinder.mesh");
+                var wheelNode = rootNode.CreateChildSceneNode(new Vector3(-1, 0, 0.5f));
+                wheelNode.AttachObject(wheel);
+                wheelNode.Pitch(Math.HALF_PI);
+                wheelNode.Roll(Math.HALF_PI);
+                wheelNode.Scale(0.3f, 0.2f, 0.3f);
+            }
+            {
+                var wheel = mSceneMgr.CreateEntity("Cylinder.mesh");
+                var wheelNode = rootNode.CreateChildSceneNode(new Vector3(-1, 0, -0.5f));
+                wheelNode.AttachObject(wheel);
+                wheelNode.Pitch(Math.HALF_PI);
+                wheelNode.Roll(Math.HALF_PI);
+                wheelNode.Scale(0.3f, 0.2f, 0.3f);
+            }
+            {
+                var wheel = mSceneMgr.CreateEntity("Cylinder.mesh");
+                var wheelNode = rootNode.CreateChildSceneNode(new Vector3(1, 0, 0.5f));
+                wheelNode.AttachObject(wheel);
+                wheelNode.Pitch(Math.HALF_PI);
+                wheelNode.Roll(Math.HALF_PI);
+                wheelNode.Scale(0.3f, 0.2f, 0.3f);
+            }
+            {
+                var wheel = mSceneMgr.CreateEntity("Cylinder.mesh");
+                var wheelNode = rootNode.CreateChildSceneNode(new Vector3(1, 0, -0.5f));
+                wheelNode.AttachObject(wheel);
+                wheelNode.Pitch(Math.HALF_PI);
+                wheelNode.Roll(Math.HALF_PI);
+                wheelNode.Scale(0.3f, 0.2f, 0.3f);
+            }
+
+            // Light 2
+            Light avatorSpot = mSceneMgr.CreateLight("avatorSpotLight");
+            avatorSpot.Type = Light.LightTypes.LT_SPOTLIGHT;
+            avatorSpot.Position = new Vector3(0, 0, -10);
+            avatorSpot.DiffuseColour = ColourValue.White;
+            avatorSpot.SpecularColour = ColourValue.Blue;
+            avatorSpot.Direction = new Vector3(0, 0, 10);
+
+            rootNode.AttachObject(avatorSpot);
+
+            return rootNode;
         }
 
         private SceneNode CreatePredatorNode(IEntity entity)
@@ -169,6 +309,15 @@ namespace MogreFrontEnd
                 wheelNode.Roll(Math.HALF_PI);
                 wheelNode.Scale(1f, 0.2f, 0.5f);
             }
+
+            //// Light 2
+            //Light light = mSceneMgr.CreateLight();
+            //light.Type = Light.LightTypes.LT_POINT;
+            //light.Position = new Vector3(0, 0, 0);
+            //light.DiffuseColour = ColourValue.Red;
+            //light.SpecularColour = ColourValue.Blue;
+            //light.Direction = new Vector3(0, 0, 10);
+            //rootNode.AttachObject(light);
 
             return rootNode;
         }

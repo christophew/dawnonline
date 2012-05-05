@@ -163,9 +163,9 @@ namespace DawnOnline.Simulation
             _obstacles.Remove(obstacle);
         }
 
-        internal bool AddBullet(Bullet bullet, Vector2 origin)
+        internal bool AddBullet(Bullet bullet, Vector2 origin, double angle)
         {
-            bullet.Place.OffsetPosition(origin, 0.0);
+            bullet.Place.OffsetPosition(origin, angle);
 
             //if (IntersectsWithObstacles(obstacle))
             //    return false;
