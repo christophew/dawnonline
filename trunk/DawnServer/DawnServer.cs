@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using DawnGame;
+using ExitGames.Client.Photon;
+using ExitGames.Client.Photon.Lite;
 
 namespace DawnServer
 {
@@ -75,6 +77,13 @@ namespace DawnServer
 
                 var evData = new Hashtable();
                 evData[(byte)1] = _dawnWorld.GetWorldInformation();
+
+                if (_dawnWorld.Environment.GetCreatures().Count > 0)
+                {
+                    var serverEntity = new DawnServerEntity(_dawnWorld.Environment.GetCreatures()[0]);
+                    evData[(byte)2] = serverEntity;
+                }
+
                 opParams[LiteOpKey.Data] = evData;
                 _peer.OpCustom(LiteOpCode.RaiseEvent, opParams, true);
             }
