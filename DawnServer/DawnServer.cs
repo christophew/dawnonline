@@ -5,8 +5,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using DawnGame;
-using ExitGames.Client.Photon;
-using ExitGames.Client.Photon.Lite;
 
 namespace DawnServer
 {
@@ -61,15 +59,25 @@ namespace DawnServer
             //peer.Disconnect(); //<- uncomment this line to see a faster disconnect/leave on the other clients.
         }
 
-        private bool UpdateSimulation(long millisecondsSinceLastUpdate)
+        private void UpdateSimulation(long millisecondsSinceLastUpdate)
         {
             _dawnWorld.ThinkAll(30, new TimeSpan(millisecondsSinceLastUpdate));
             _dawnWorld.ApplyMove(millisecondsSinceLastUpdate);
             _dawnWorld.UpdatePhysics(millisecondsSinceLastUpdate);
 
             // Send simulation to Photon
+            if (_serverOnline)
+            {
+                // Send stats
 
-            return true;
+                var opParams = new Dictionary<byte, object>();
+                opParams[LiteOpKey.Code] = (byte)101;
+
+                var evData = new Hashtable();
+                evData[(byte)1] = _dawnWorld.GetWorldInformation();
+                opParams[LiteOpKey.Data] = evData;
+                _peer.OpCustom(LiteOpCode.RaiseEvent, opParams, true);
+            }
         }
 
 
