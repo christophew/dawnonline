@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Farseer Physics XNA", "Fars
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MogreFrontEnd", "MogreFrontEnd\MogreFrontEnd.csproj", "{AA0A0DCE-3FB8-4202-BDC4-CFD8E0FF27EA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DawnServer", "DawnServer\DawnServer.csproj", "{4ED8F7C6-3CED-4F07-A126-79B3C8FE51B0}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Dawn.vsmdi
@@ -115,6 +117,16 @@ Global
 		{AA0A0DCE-3FB8-4202-BDC4-CFD8E0FF27EA}.Release|Mixed Platforms.Build.0 = Release|x86
 		{AA0A0DCE-3FB8-4202-BDC4-CFD8E0FF27EA}.Release|x86.ActiveCfg = Release|x86
 		{AA0A0DCE-3FB8-4202-BDC4-CFD8E0FF27EA}.Release|x86.Build.0 = Release|x86
+		{4ED8F7C6-3CED-4F07-A126-79B3C8FE51B0}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{4ED8F7C6-3CED-4F07-A126-79B3C8FE51B0}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{4ED8F7C6-3CED-4F07-A126-79B3C8FE51B0}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{4ED8F7C6-3CED-4F07-A126-79B3C8FE51B0}.Debug|x86.ActiveCfg = Debug|x86
+		{4ED8F7C6-3CED-4F07-A126-79B3C8FE51B0}.Debug|x86.Build.0 = Debug|x86
+		{4ED8F7C6-3CED-4F07-A126-79B3C8FE51B0}.Release|Any CPU.ActiveCfg = Release|x86
+		{4ED8F7C6-3CED-4F07-A126-79B3C8FE51B0}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{4ED8F7C6-3CED-4F07-A126-79B3C8FE51B0}.Release|Mixed Platforms.Build.0 = Release|x86
+		{4ED8F7C6-3CED-4F07-A126-79B3C8FE51B0}.Release|x86.ActiveCfg = Release|x86
+		{4ED8F7C6-3CED-4F07-A126-79B3C8FE51B0}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

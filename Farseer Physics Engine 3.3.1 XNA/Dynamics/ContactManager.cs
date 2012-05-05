@@ -231,7 +231,6 @@ namespace FarseerPhysics.Dynamics
 
         internal void Collide()
         {
-            Console.WriteLine("ContactList.Count: " + ContactList.Count);
             // Update awake contacts.
             for (int i = 0; i < ContactList.Count; i++)
             {
