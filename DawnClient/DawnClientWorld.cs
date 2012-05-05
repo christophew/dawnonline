@@ -7,5 +7,6 @@ namespace DawnClient
 {
     public class DawnClientWorld
     {
+        public string WorldInformation { get; internal set; }
     }
 }

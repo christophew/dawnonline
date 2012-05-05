@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DawnServer", "DawnServer\Da
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DawnClient", "DawnClient\DawnClient.csproj", "{4471FB48-DF80-44F5-B2A0-65BC98B2C2F3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DawnClientConsole", "DawnClientConsole\DawnClientConsole.csproj", "{A2BA7EC7-CBC5-4FC7-B14A-71F6501EF8D3}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Dawn.vsmdi
@@ -139,6 +141,16 @@ Global
 		{4471FB48-DF80-44F5-B2A0-65BC98B2C2F3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{4471FB48-DF80-44F5-B2A0-65BC98B2C2F3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{4471FB48-DF80-44F5-B2A0-65BC98B2C2F3}.Release|x86.ActiveCfg = Release|Any CPU
+		{A2BA7EC7-CBC5-4FC7-B14A-71F6501EF8D3}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{A2BA7EC7-CBC5-4FC7-B14A-71F6501EF8D3}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{A2BA7EC7-CBC5-4FC7-B14A-71F6501EF8D3}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{A2BA7EC7-CBC5-4FC7-B14A-71F6501EF8D3}.Debug|x86.ActiveCfg = Debug|x86
+		{A2BA7EC7-CBC5-4FC7-B14A-71F6501EF8D3}.Debug|x86.Build.0 = Debug|x86
+		{A2BA7EC7-CBC5-4FC7-B14A-71F6501EF8D3}.Release|Any CPU.ActiveCfg = Release|x86
+		{A2BA7EC7-CBC5-4FC7-B14A-71F6501EF8D3}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{A2BA7EC7-CBC5-4FC7-B14A-71F6501EF8D3}.Release|Mixed Platforms.Build.0 = Release|x86
+		{A2BA7EC7-CBC5-4FC7-B14A-71F6501EF8D3}.Release|x86.ActiveCfg = Release|x86
+		{A2BA7EC7-CBC5-4FC7-B14A-71F6501EF8D3}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
