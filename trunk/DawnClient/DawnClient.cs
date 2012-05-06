@@ -26,12 +26,12 @@ namespace DawnClient
             //DebugLevel should usally be ERROR or Warning - ALL lets you "see" more details of what the sdk is doing.
             //Output is passed to you in the DebugReturn callback
             _peer.DebugOut = DebugLevel.ALL;
-            if (_peer.Connect("127.0.0.1:5055", "Lite"))
+            if (_peer.Connect("127.0.0.1:5055", "DawnServer"))
             {
                 do
                 {
                     _peer.Service();
-                    System.Threading.Thread.Sleep(25);
+                    System.Threading.Thread.Sleep(1000);
 
                     // Test
                     Console.WriteLine(DawnWorld.WorldInformation);
@@ -72,9 +72,11 @@ namespace DawnClient
 
                 case 101:
                     //int sourceActorNr = (int)eventData.Parameters[LiteEventKey.ActorNr];
-                    Hashtable evData = (Hashtable)eventData.Parameters[LiteEventKey.Data];
-                    
-                    var data = evData[(byte) 1];
+                    //Hashtable evData = (Hashtable)eventData.Parameters[LiteEventKey.Data];
+                    //var data = evData[(byte) 1];
+
+                    var data = eventData.Parameters.First().Value;
+
                     DawnWorld.WorldInformation = (string)data;
 
                     break;
