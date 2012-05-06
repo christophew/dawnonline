@@ -1,0 +1,91 @@
+<Configuration>
+  <SettingsComponent>
+    <string />
+    <integer />
+    <boolean>
+      <setting name="SolutionAnalysisEnabled">False</setting>
+    </boolean>
+  </SettingsComponent>
+  <RecentFiles>
+    <RecentFiles>
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGameCache.cs" caret="0" fromTop="0" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/d:Operations/f:Enums.cs" caret="207" fromTop="9" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:DawnWorld.cs" caret="4192" fromTop="18" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/d:Operations/f:MyEchoRequest.cs" caret="0" fromTop="0" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/d:Operations/f:MyEchoResponse.cs" caret="0" fromTop="0" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyPeer.cs" caret="766" fromTop="7" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyApplication.cs" caret="0" fromTop="0" />
+      <File id="E1F918F4-F581-4280-9D91-3CF77B24C290/f:LiteGame.cs" caret="29505" fromTop="18" />
+      <File id="E1F918F4-F581-4280-9D91-3CF77B24C290/f:Room.cs" caret="10789" fromTop="18" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="1617" fromTop="23" />
+    </RecentFiles>
+    <RecentEdits>
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="608" fromTop="21" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="1238" fromTop="32" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyApplication.cs" caret="1237" fromTop="24" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:DawnWorld.cs" caret="1125" fromTop="21" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="1238" fromTop="20" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="386" fromTop="8" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="1509" fromTop="21" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="1157" fromTop="17" />
+    </RecentEdits>
+  </RecentFiles>
+  <NAntValidationSettings>
+    <NAntPath value="" />
+  </NAntValidationSettings>
+  <UnitTestRunner>
+    <Providers />
+  </UnitTestRunner>
+  <UnitTestRunnerNUnit>
+    <NUnitInstallDir>C:\Program Files (x86)\NUnit 2.4.8\bin\net-2.0\</NUnitInstallDir>
+    <UseAddins>Never</UseAddins>
+  </UnitTestRunnerNUnit>
+  <CompletionStatisticsManager>
+    <ItemStatistics item="Default">
+      <Item value="this" priority="7" />
+      <Item value="new" priority="4" />
+      <Item value="DawnWorld" priority="0" />
+      <Item value="private" priority="2" />
+      <Item value="void" priority="1" />
+      <Item value="static" priority="0" />
+      <Item value="DateTime`0" priority="2" />
+      <Item value="var" priority="1" />
+      <Item value="now" priority="1" />
+      <Item value="long" priority="0" />
+      <Item value="_lastUpdateTime" priority="0" />
+      <Item value="message" priority="0" />
+      <Item value="byte" priority="1" />
+      <Item value="throw" priority="0" />
+      <Item value="NotImplementedException" priority="0" />
+      <Item value="MyPeer`0" priority="1" />
+      <Item value="EventData`0" priority="0" />
+      <Item value="EventData" priority="0" />
+      <Item value="object" priority="0" />
+      <Item value="data" priority="0" />
+      <Item value="eData" priority="1" />
+      <Item value="SendParameters`0" priority="0" />
+      <Item value="sendParameters" priority="0" />
+      <Item value="SendParameters" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:MyApplication.MyGame">
+      <Item value="ScheduleMessage`0" priority="1" />
+      <Item value="ExecutionFiber" priority="1" />
+      <Item value="HandleRaiseEventOperation`0" priority="0" />
+      <Item value="PublishEvent`0" priority="2" />
+      <Item value="RemovePeerFromGame`0" priority="0" />
+      <Item value="Actors" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:@System.DateTime">
+      <Item value="Now" priority="1" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.TimeSpan">
+      <Item value="TotalMilliseconds" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:ExitGames.Concurrency.Fibers.PoolFiber">
+      <Item value="ScheduleOnInterval`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Collections.Generic.Dictionary`2">
+      <Item value="Indexer" priority="0" />
+    </ItemStatistics>
+  </CompletionStatisticsManager>
+</Configuration>
