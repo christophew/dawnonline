@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using DawnGame;
-using DawnOnline.Simulation.Entities;
+using System.Runtime.Remoting;
 using Mogre;
 using Mogre.TutorialFramework;
 using System;
@@ -13,7 +12,7 @@ namespace Mogre.Tutorials
 {
     class Tutorial : BaseApplication
     {
-        private DawnWorld _dawnWorld = new DawnWorld();
+        private DawnClient.DawnClient _dawnClient = new DawnClient.DawnClient();
         private DawnToMogre _mogreModel;
 
         protected MOIS.InputManager mInputMgr;
@@ -27,9 +26,14 @@ namespace Mogre.Tutorials
 
         protected override void CreateScene()
         {
-            _mogreModel = new DawnToMogre(mSceneMgr, _dawnWorld);
+            if (!_dawnClient.Connect())
+            {
+                throw new ServerException("Dawn server not found");
+            }
+
+            _mogreModel = new DawnToMogre(mSceneMgr, _dawnClient.DawnWorld);
             _mogreModel.SimulationToOgre();
-            _mogreModel.GetAvatorNode().AttachObject(mCamera);
+            //_mogreModel.GetAvatorNode().AttachObject(mCamera);
     
             
             mSceneMgr.AmbientLight = ColourValue.Black;
@@ -83,19 +87,22 @@ namespace Mogre.Tutorials
             mKeyboard.Capture();
             mMouse.Capture();
 
-            _mogreModel.UpdateAvatar(mKeyboard);
+            //_mogreModel.UpdateAvatar(mKeyboard);
 
             return true;
         }
 
         protected bool UpdateSimulation(FrameEvent evt)
         {
-            long millisecondsSinceLastFrame = (long)(evt.timeSinceLastFrame*1000.0);
+            //long millisecondsSinceLastFrame = (long)(evt.timeSinceLastFrame*1000.0);
 
-            _dawnWorld.ThinkAll(30, new TimeSpan(millisecondsSinceLastFrame));
-            _dawnWorld.ApplyMove(millisecondsSinceLastFrame);
-            _dawnWorld.UpdatePhysics(millisecondsSinceLastFrame);
+            //_dawnWorld.ThinkAll(30, new TimeSpan(millisecondsSinceLastFrame));
+            //_dawnWorld.ApplyMove(millisecondsSinceLastFrame);
+            //_dawnWorld.UpdatePhysics(millisecondsSinceLastFrame);
 
+            //_mogreModel.SimulationToOgre();
+
+            _dawnClient.Update();
             _mogreModel.SimulationToOgre();
 
             return true;
