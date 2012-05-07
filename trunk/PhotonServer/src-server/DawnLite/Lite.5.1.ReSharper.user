@@ -10,24 +10,41 @@
     <RecentFiles>
       <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGameCache.cs" caret="0" fromTop="0" />
       <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/d:Operations/f:Enums.cs" caret="207" fromTop="9" />
-      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:DawnWorld.cs" caret="4192" fromTop="18" />
       <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/d:Operations/f:MyEchoRequest.cs" caret="0" fromTop="0" />
       <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/d:Operations/f:MyEchoResponse.cs" caret="0" fromTop="0" />
       <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyPeer.cs" caret="766" fromTop="7" />
       <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyApplication.cs" caret="0" fromTop="0" />
       <File id="E1F918F4-F581-4280-9D91-3CF77B24C290/f:LiteGame.cs" caret="29505" fromTop="18" />
       <File id="E1F918F4-F581-4280-9D91-3CF77B24C290/f:Room.cs" caret="10789" fromTop="18" />
-      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="1617" fromTop="23" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:DawnWorld.cs" caret="819" fromTop="0" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="4137" fromTop="9" />
     </RecentFiles>
     <RecentEdits>
-      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="608" fromTop="21" />
-      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="1238" fromTop="32" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="607" fromTop="21" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="1296" fromTop="32" />
       <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyApplication.cs" caret="1237" fromTop="24" />
-      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:DawnWorld.cs" caret="1125" fromTop="21" />
-      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="1238" fromTop="20" />
-      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="386" fromTop="8" />
-      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="1509" fromTop="21" />
-      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="1157" fromTop="17" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:DawnWorld.cs" caret="1124" fromTop="21" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="1296" fromTop="20" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="1567" fromTop="21" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="1215" fromTop="17" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="2510" fromTop="22" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="2346" fromTop="21" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="3236" fromTop="28" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:DawnWorld.cs" caret="392" fromTop="15" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="1061" fromTop="35" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="1061" fromTop="20" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:DawnWorld.cs" caret="819" fromTop="8" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="1897" fromTop="16" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="493" fromTop="9" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="4128" fromTop="36" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="3575" fromTop="29" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="3575" fromTop="12" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="2217" fromTop="17" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="3935" fromTop="20" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="5744" fromTop="22" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="3350" fromTop="27" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="3525" fromTop="35" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/f:MyGame.cs" caret="4917" fromTop="28" />
     </RecentEdits>
   </RecentFiles>
   <NAntValidationSettings>
@@ -45,11 +62,11 @@
       <Item value="this" priority="7" />
       <Item value="new" priority="4" />
       <Item value="DawnWorld" priority="0" />
-      <Item value="private" priority="2" />
-      <Item value="void" priority="1" />
+      <Item value="private" priority="9" />
+      <Item value="void" priority="3" />
       <Item value="static" priority="0" />
       <Item value="DateTime`0" priority="2" />
-      <Item value="var" priority="1" />
+      <Item value="var" priority="4" />
       <Item value="now" priority="1" />
       <Item value="long" priority="0" />
       <Item value="_lastUpdateTime" priority="0" />
@@ -66,6 +83,16 @@
       <Item value="SendParameters`0" priority="0" />
       <Item value="sendParameters" priority="0" />
       <Item value="SendParameters" priority="0" />
+      <Item value="if" priority="2" />
+      <Item value="_sendCounter" priority="0" />
+      <Item value="continue" priority="1" />
+      <Item value="int" priority="5" />
+      <Item value="entity" priority="0" />
+      <Item value="Unknown" priority="0" />
+      <Item value="for" priority="0" />
+      <Item value="i" priority="1" />
+      <Item value="_sendWallIndex" priority="2" />
+      <Item value="_maxSendWalls" priority="0" />
     </ItemStatistics>
     <ItemStatistics item="Qualified:MyApplication.MyGame">
       <Item value="ScheduleMessage`0" priority="1" />
@@ -86,6 +113,15 @@
     </ItemStatistics>
     <ItemStatistics item="Qualified:System.Collections.Generic.Dictionary`2">
       <Item value="Indexer" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:DawnOnline.Simulation.Entities.IEntity">
+      <Item value="Specy" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:@DawnOnline.Simulation.Entities.EntityType">
+      <Item value="Wall" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Collections.Generic.IList`1">
+      <Item value="Count" priority="0" />
     </ItemStatistics>
   </CompletionStatisticsManager>
 </Configuration>

@@ -12,8 +12,8 @@ namespace DawnGame
 {
     class DawnWorld
     {
-        public const float MaxX = 400;
-        public const float MaxY = 300;
+        public const float MaxX = 500;
+        public const float MaxY = 400;
 
         private readonly DawnOnline.Simulation.Environment _environment = SimulationFactory.CreateEnvironment();
         private IAvatar _avatar = CreatureBuilder.CreateAvatar();
@@ -22,7 +22,7 @@ namespace DawnGame
         private int _grid = 5;
 
         private int _nrOfSpawnPoints = 30;
-        private int _nrOfTreasures = 100;
+        private int _nrOfTreasures = 50;
         private int _nrOfWalls = 500;
         private int _nrOfBoxes = 100;
         private int _stablePopulationSize = 200;

@@ -192,6 +192,17 @@ namespace MogreFrontEnd
 
             node.SetPosition(entity.PlaceX, 0, entity.PlaceY);
 
+
+            //Vector3 mDestination = new Vector3(entity.PlaceX, 0, entity.PlaceY);                    // mDestination is the next location
+            //Vector3 mDirection = mDestination - node.Position;                                      // B-A = A->B (see vector questions above)
+            //Vector3 src = node.Orientation * Vector3.UNIT_X;                                        // see (1)
+            //var mDistance = mDirection.Normalise();                                                 // strip out distance, we only want direction
+            //Quaternion quat = src.GetRotationTo(mDirection);                                        // Get a quaternion rotation operation 
+            //node.Rotate(quat);                                                                      // Actually rotate the object
+
+
+
+
             if (currentEntities != null)
             {
                 currentEntities.Add(entity.Id);
@@ -287,14 +298,14 @@ namespace MogreFrontEnd
             }
 
             // Light 2
-            Light avatorSpot = mSceneMgr.CreateLight("avatorSpotLight");
-            avatorSpot.Type = Light.LightTypes.LT_SPOTLIGHT;
-            avatorSpot.Position = new Vector3(0, 0, -10);
-            avatorSpot.DiffuseColour = ColourValue.White;
-            avatorSpot.SpecularColour = ColourValue.Blue;
-            avatorSpot.Direction = new Vector3(0, 0, 10);
+            //Light avatorSpot = mSceneMgr.CreateLight("avatorSpotLight");
+            //avatorSpot.Type = Light.LightTypes.LT_SPOTLIGHT;
+            //avatorSpot.Position = new Vector3(0, 0, -10);
+            //avatorSpot.DiffuseColour = ColourValue.White;
+            //avatorSpot.SpecularColour = ColourValue.Blue;
+            //avatorSpot.Direction = new Vector3(0, 0, 10);
 
-            rootNode.AttachObject(avatorSpot);
+            //rootNode.AttachObject(avatorSpot);
 
             return rootNode;
         }
