@@ -18,12 +18,12 @@ namespace MyApplication
     {
         private DawnWorld _dawnWorld = new DawnWorld();
         private DateTime _lastUpdateTime = DateTime.Now;
-        private HashSet<int> _previousEntities = new HashSet<int>(); 
+        private HashSet<int> _previousEntities = new HashSet<int>();
 
         private void UpdateDawnWorld()
         {
             var now = DateTime.Now;
-            long millisecondsSinceLastFrame = (long)(now - _lastUpdateTime).TotalMilliseconds;
+            long millisecondsSinceLastFrame = (long) (now - _lastUpdateTime).TotalMilliseconds;
             _lastUpdateTime = now;
 
             //Debug.WriteLine("ms: " + millisecondsSinceLastFrame);
@@ -31,8 +31,10 @@ namespace MyApplication
             _dawnWorld.ThinkAll(30, new TimeSpan(millisecondsSinceLastFrame));
             _dawnWorld.ApplyMove(millisecondsSinceLastFrame);
             _dawnWorld.UpdatePhysics(millisecondsSinceLastFrame);
+        }
 
-
+        private void SendDawnWorld()
+        {
             // Broadcast changes
             {
                 // 101 = WorldInformation
@@ -50,21 +52,21 @@ namespace MyApplication
                 {
                     foreach (var entity in _dawnWorld.Environment.GetCreatures())
                     {
-                        SendEntityEvent(entity);
                         currentEntities.Add(entity.Id);
+                        SendEntityEvent(entity);
                     }
                     foreach (var entity in _dawnWorld.Environment.GetObstacles())
                     {
-                        // Ignore walls
+                        currentEntities.Add(entity.Id);
+
                         //if (entity.Specy == EntityType.Wall)
                         //    continue;
-                        SendEntityEvent(entity);
-                        currentEntities.Add(entity.Id);
+                        //SendEntityEvent(entity);
                     }
                     foreach (var entity in _dawnWorld.Environment.GetBullets())
                     {
-                        SendEntityEvent(entity);
                         currentEntities.Add(entity.Id);
+                        SendEntityEvent(entity);
                     }
                 }
 
@@ -85,9 +87,32 @@ namespace MyApplication
                 }
 
                 _previousEntities = currentEntities;
+
+                // Walls
+                SendWalls();
             }
 
-            this.ExecutionFiber.Schedule(UpdateDawnWorld, 25);
+            this.ExecutionFiber.Schedule(SendDawnWorld, 50);
+        }
+
+
+        private int _sendWallIndex = 0;
+        private int _maxSendWalls = 20;
+
+        private void SendWalls()
+        {
+            var entities = _dawnWorld.Environment.GetObstacles();
+            int max = _sendWallIndex + _maxSendWalls;
+            for (_sendWallIndex = 0; _sendWallIndex < entities.Count && _sendWallIndex < max; _sendWallIndex++)
+            {
+                var entity = entities[_sendWallIndex];
+                //if (entity.Specy == EntityType.Wall)
+                    SendEntityEvent(entity);
+            }
+
+            // Re-start loop when done
+            if (_sendWallIndex == entities.Count)
+                _sendWallIndex = 0;
         }
 
         // TODO: refactor into seperate data contract
@@ -108,7 +133,6 @@ namespace MyApplication
             this.PublishEvent(eData, this.Actors, sendParameters);
         }
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MyGame"/> class.
         /// </summary>
@@ -126,8 +150,9 @@ namespace MyApplication
             //    SendEntityEvent(entity, false);
             //}
 
-            this.ExecutionFiber.Schedule(UpdateDawnWorld, 1000);
-            //this.ExecutionFiber.ScheduleOnInterval(UpdateDawnWorld, 1000, 100);
+            this.ExecutionFiber.Schedule(SendDawnWorld, 1500);
+            this.ExecutionFiber.ScheduleOnInterval(UpdateDawnWorld, 1000, 50);
+            //this.ExecutionFiber.ScheduleOnInterval(SendWalls, 800, 75);
         }
 
         /// <summary>
