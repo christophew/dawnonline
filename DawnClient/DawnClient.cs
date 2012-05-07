@@ -66,8 +66,15 @@ namespace DawnClient
 
                     break;
                 case 102:
+                    // Position update
                     var entity = new DawnClientEntity(eventData.Parameters);
                     DawnWorld.UpdateEntity(entity);
+
+                    break;
+
+                case 103:
+                    // Killed
+                    DawnWorld.RemoveEntity((int)eventData.Parameters[0]);
 
                     break;
             }

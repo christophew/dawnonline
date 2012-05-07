@@ -18,6 +18,7 @@ namespace MyApplication
     {
         private DawnWorld _dawnWorld = new DawnWorld();
         private DateTime _lastUpdateTime = DateTime.Now;
+        private HashSet<int> _previousEntities = new HashSet<int>(); 
 
         private void UpdateDawnWorld()
         {
@@ -43,11 +44,14 @@ namespace MyApplication
                     this.PublishEvent(eData, this.Actors, sendParameters);
                 }
 
+                var currentEntities = new HashSet<int>();
+
                 // 102 = position update
                 {
                     foreach (var entity in _dawnWorld.Environment.GetCreatures())
                     {
                         SendEntityEvent(entity);
+                        currentEntities.Add(entity.Id);
                     }
                     foreach (var entity in _dawnWorld.Environment.GetObstacles())
                     {
@@ -55,12 +59,32 @@ namespace MyApplication
                         //if (entity.Specy == EntityType.Wall)
                         //    continue;
                         SendEntityEvent(entity);
+                        currentEntities.Add(entity.Id);
                     }
                     foreach (var entity in _dawnWorld.Environment.GetBullets())
                     {
                         SendEntityEvent(entity);
+                        currentEntities.Add(entity.Id);
                     }
                 }
+
+                // 103 = destroyed
+                {
+                    foreach (var previousEntity in _previousEntities)
+                    {
+                        if (!currentEntities.Contains(previousEntity))
+                        {
+                            // Send killed reliable
+                            var data = new Dictionary<byte, object>();
+                            data[0] = previousEntity;
+                            var eData = new EventData(103, data);
+                            var sendParameters = new SendParameters { Unreliable = false };
+                            this.PublishEvent(eData, this.Actors, sendParameters);
+                        }
+                    }
+                }
+
+                _previousEntities = currentEntities;
             }
 
             this.ExecutionFiber.Schedule(UpdateDawnWorld, 25);
