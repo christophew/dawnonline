@@ -11,7 +11,7 @@ namespace DawnClient
         public string WorldInformation { get; internal set; }
 
         private Dictionary<int, DawnClientEntity> _entities = new Dictionary<int, DawnClientEntity>();
-        public void UpdateEntity(DawnClientEntity entity)
+        internal void UpdateEntity(DawnClientEntity entity)
         {
             lock (this)
             {
@@ -19,6 +19,14 @@ namespace DawnClient
             }
         }    
     
+        internal void RemoveEntity(int id)
+        {
+            lock (this)
+            {
+                _entities.Remove(id);
+            }
+        }
+
         public ReadOnlyCollection<DawnClientEntity> GetEntities()
         {
             lock (this)

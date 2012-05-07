@@ -23,10 +23,24 @@ namespace MogreFrontEnd
 
         internal void SimulationToOgre()
         {
+            var currentEntities = new HashSet<int>();
+
             var entities = _dawnWorld.GetEntities();
             foreach (var current in entities)
             {
-                EntityToNode(current);
+                EntityToNode(current, currentEntities);
+            }
+
+
+            // Remove destroyed entities
+            var entitiesCopy = _entities.ToList();
+            foreach (var entity in entitiesCopy)
+            {
+                if (!currentEntities.Contains(entity.Key))
+                {
+                    _entities.Remove(entity.Key);
+                    mSceneMgr.RootSceneNode.RemoveAndDestroyChild(entity.Value.Name);
+                }
             }
         }
 
@@ -124,7 +138,7 @@ namespace MogreFrontEnd
         //}
 
         //private SceneNode EntityToNode(DawnClientEntity entity, Dictionary<IEntity, bool> currentNodes)
-        private SceneNode EntityToNode(DawnClientEntity entity)
+        private SceneNode EntityToNode(DawnClientEntity entity, HashSet<int> currentEntities)
         {
             SceneNode node = null;
             float initialAngle = -Math.HALF_PI;
@@ -178,10 +192,10 @@ namespace MogreFrontEnd
 
             node.SetPosition(entity.PlaceX, 0, entity.PlaceY);
 
-            //if (currentNodes != null)
-            //{
-            //    currentNodes.Add(entity, true);
-            //}
+            if (currentEntities != null)
+            {
+                currentEntities.Add(entity.Id);
+            }
 
             return node;
         }
