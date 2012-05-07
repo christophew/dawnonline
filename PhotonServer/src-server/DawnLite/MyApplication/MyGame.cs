@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DawnGame;
 using DawnOnline.Simulation.Entities;
 using Lite.Messages;
@@ -23,6 +24,8 @@ namespace MyApplication
             var now = DateTime.Now;
             long millisecondsSinceLastFrame = (long)(now - _lastUpdateTime).TotalMilliseconds;
             _lastUpdateTime = now;
+
+            //Debug.WriteLine("ms: " + millisecondsSinceLastFrame);
 
             _dawnWorld.ThinkAll(30, new TimeSpan(millisecondsSinceLastFrame));
             _dawnWorld.ApplyMove(millisecondsSinceLastFrame);
