@@ -13,7 +13,6 @@ namespace DawnClient
         public DawnClientWorld DawnWorld { get; private set; }
 
         private PhotonPeer _peer;
-        private bool _stopped;
 
         public DawnClient()
         {
@@ -21,34 +20,22 @@ namespace DawnClient
             DawnWorld = new DawnClientWorld();
         }
 
-        public void Run()
+        public bool Connect()
         {
             //DebugLevel should usally be ERROR or Warning - ALL lets you "see" more details of what the sdk is doing.
             //Output is passed to you in the DebugReturn callback
             _peer.DebugOut = DebugLevel.ALL;
-            if (_peer.Connect("127.0.0.1:5055", "DawnServer"))
-            {
-                do
-                {
-                    _peer.Service();
-                    System.Threading.Thread.Sleep(1000);
-
-                    // Test
-                    Console.WriteLine(DawnWorld.WorldInformation);
-                }
-                while (!_stopped);
-            }
-            else
-            {
-                Console.WriteLine("Unknown hostname!");
-            }
-
-            _peer.Disconnect(); //<- uncomment this line to see a faster disconnect/leave on the other clients.
+            return _peer.Connect("127.0.0.1:5055", "DawnServer");
         }
 
-        public void Stop()
+        public void Update()
         {
-            _stopped = true;
+            _peer.Service();
+        }
+
+        public void Disconnect()
+        {
+            _peer.Disconnect();
         }
 
         #region IPhotonPeerListener Members
@@ -75,9 +62,12 @@ namespace DawnClient
                     //Hashtable evData = (Hashtable)eventData.Parameters[LiteEventKey.Data];
                     //var data = evData[(byte) 1];
 
-                    var data = eventData.Parameters.First().Value;
+                    DawnWorld.WorldInformation = (string)eventData.Parameters[0];
 
-                    DawnWorld.WorldInformation = (string)data;
+                    break;
+                case 102:
+                    var entity = new DawnClientEntity(eventData.Parameters);
+                    DawnWorld.UpdateEntity(entity);
 
                     break;
             }
@@ -90,7 +80,7 @@ namespace DawnClient
 
         public void OnStatusChanged(StatusCode statusCode)
         {
-            Console.WriteLine("\n---OnStatusChanged:" + statusCode);
+            //Console.WriteLine("\n---OnStatusChanged:" + statusCode);
             switch (statusCode)
             {
                 case StatusCode.Connect:

@@ -8,6 +8,9 @@ namespace DawnOnline.Simulation.Entities
 {
     internal class Bullet : IEntity
     {
+        private readonly int _id = Globals.GenerateUniqueId();
+        public int Id { get { return _id; } }
+
         public Placement Place { get; internal set; }
         public EntityType Specy { get; internal set; }
 

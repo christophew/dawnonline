@@ -25,6 +25,7 @@ namespace DawnOnline.Simulation.Entities
 
     public interface IEntity
     {
+        int Id { get; }
         EntityType Specy { get; }
         Placement Place { get; }
     }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using DawnGame;
+using DawnOnline.Simulation.Entities;
 using Lite.Messages;
 
 namespace MyApplication
@@ -16,7 +17,6 @@ namespace MyApplication
     {
         private DawnWorld _dawnWorld = new DawnWorld();
         private DateTime _lastUpdateTime = DateTime.Now;
-        private MyPeer _peer;
 
         private void UpdateDawnWorld()
         {
@@ -30,11 +30,54 @@ namespace MyApplication
 
 
             // Broadcast changes
-            //this.HandleRaiseEventOperation(this.);
+            {
+                // 101 = WorldInformation
+                {
+                    var data = new Dictionary<byte, object>();
+                    data[0] = _dawnWorld.GetWorldInformation();
+                    var eData = new EventData(101, data);
+                    var sendParameters = new SendParameters {Unreliable = true};
+                    this.PublishEvent(eData, this.Actors, sendParameters);
+                }
+
+                // 102 = position update
+                {
+                    foreach (var entity in _dawnWorld.Environment.GetCreatures())
+                    {
+                        SendEntityEvent(entity);
+                    }
+                    foreach (var entity in _dawnWorld.Environment.GetObstacles())
+                    {
+                        // Ignore walls
+                        //if (entity.Specy == EntityType.Wall)
+                        //    continue;
+                        SendEntityEvent(entity);
+                    }
+                    foreach (var entity in _dawnWorld.Environment.GetBullets())
+                    {
+                        SendEntityEvent(entity);
+                    }
+                }
+            }
+
+            this.ExecutionFiber.Schedule(UpdateDawnWorld, 25);
+        }
+
+        // TODO: refactor into seperate data contract
+        private void SendEntityEvent(IEntity entity, bool unreliable = true)
+        {
             var data = new Dictionary<byte, object>();
-            data[(byte)1] = _dawnWorld.GetWorldInformation();
-            EventData eData = new EventData(101, data);
-            SendParameters sendParameters = new SendParameters();
+            data[0] = entity.Id;
+            data[1] = entity.Specy;
+            data[2] = entity.Place.Position.X;
+            data[3] = entity.Place.Position.Y;
+            data[4] = entity.Place.Angle;
+
+            var creature = entity as ICreature;
+            data[5] = creature != null && creature.SpawnPoint != null ? creature.SpawnPoint.Id : 0;
+
+            var eData = new EventData(102, data);
+            var sendParameters = new SendParameters { Unreliable = unreliable };
             this.PublishEvent(eData, this.Actors, sendParameters);
         }
 
@@ -46,10 +89,18 @@ namespace MyApplication
         public MyGame(string gameName)
             : base(gameName)
         {
-            //this.ScheduleDawnWorldUpdate();
-            this.ExecutionFiber.ScheduleOnInterval(UpdateDawnWorld, 1000, 50);
+            // TODO: do this when a player joined!
+            //// Initial update => send static obstacles
+            //foreach (var entity in _dawnWorld.Environment.GetObstacles())
+            //{
+            //    // Ignore walls
+            //    if (entity.Specy != EntityType.Wall)
+            //        continue;
+            //    SendEntityEvent(entity, false);
+            //}
 
-            System.Diagnostics.Debugger.Launch(); 
+            this.ExecutionFiber.Schedule(UpdateDawnWorld, 1000);
+            //this.ExecutionFiber.ScheduleOnInterval(UpdateDawnWorld, 1000, 100);
         }
 
         /// <summary>
