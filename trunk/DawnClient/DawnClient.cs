@@ -58,23 +58,24 @@ namespace DawnClient
                     break;
 
                 case 101:
-                    //int sourceActorNr = (int)eventData.Parameters[LiteEventKey.ActorNr];
-                    //Hashtable evData = (Hashtable)eventData.Parameters[LiteEventKey.Data];
-                    //var data = evData[(byte) 1];
+                    {
+                        // World information
+                        DawnWorld.WorldInformation = (string) eventData.Parameters[0];
 
-                    DawnWorld.WorldInformation = (string)eventData.Parameters[0];
+                        break;
+                    }
+                case 104:
+                    {
+                        // Position update: compressed
+                        var entities = eventData.Parameters.Select(kvp => new DawnClientEntity((Hashtable) kvp.Value)).ToList();
+                        DawnWorld.UpdateEntities(entities);
 
-                    break;
-                case 102:
-                    // Position update
-                    var entity = new DawnClientEntity(eventData.Parameters);
-                    DawnWorld.UpdateEntity(entity);
-
-                    break;
+                        break;
+                    }
 
                 case 103:
                     // Killed
-                    DawnWorld.RemoveEntity((int)eventData.Parameters[0]);
+                    DawnWorld.RemoveEntities((Hashtable)eventData.Parameters[0]);
 
                     break;
             }
