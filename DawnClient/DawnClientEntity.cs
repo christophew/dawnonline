@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,7 +33,7 @@ namespace DawnClient
         public float Angle { get; private set; }
         public int SpawnPointId { get; private set; }
 
-        internal DawnClientEntity(Dictionary<byte, object> eventData)
+        internal DawnClientEntity(Hashtable eventData)
         {
             this.Id = (int)eventData[0];
             this.Specy = (EntityType)eventData[1];

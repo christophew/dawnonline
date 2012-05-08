@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -19,11 +20,25 @@ namespace DawnClient
             }
         }    
     
-        internal void RemoveEntity(int id)
+        internal void UpdateEntities(List<DawnClientEntity> entities)
         {
             lock (this)
             {
-                _entities.Remove(id);
+                foreach (var entity in entities)
+                {
+                    _entities[entity.Id] = entity;
+                }
+            }
+        }    
+    
+        internal void RemoveEntities(Hashtable ids)
+        {
+            lock (this)
+            {
+                foreach (int id in ids.Values)
+                {
+                    _entities.Remove(id);
+                }
             }
         }
 

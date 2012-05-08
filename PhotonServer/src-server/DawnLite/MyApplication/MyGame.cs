@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using DawnGame;
@@ -42,18 +43,20 @@ namespace MyApplication
                     var data = new Dictionary<byte, object>();
                     data[0] = _dawnWorld.GetWorldInformation();
                     var eData = new EventData(101, data);
-                    var sendParameters = new SendParameters {Unreliable = true};
+                    var sendParameters = new SendParameters { Unreliable = true };
                     this.PublishEvent(eData, this.Actors, sendParameters);
                 }
 
                 var currentEntities = new HashSet<int>();
 
-                // 102 = position update
+                // 104 = compressed position update
                 {
+                    var positionData = new List<Hashtable>();
+
                     foreach (var entity in _dawnWorld.Environment.GetCreatures())
                     {
                         currentEntities.Add(entity.Id);
-                        SendEntityEvent(entity);
+                        positionData.Add(CreateEntityData(entity));
                     }
                     foreach (var entity in _dawnWorld.Environment.GetObstacles())
                     {
@@ -61,76 +64,96 @@ namespace MyApplication
 
                         //if (entity.Specy == EntityType.Wall)
                         //    continue;
-                        //SendEntityEvent(entity);
+                        positionData.Add(CreateEntityData(entity));
                     }
                     foreach (var entity in _dawnWorld.Environment.GetBullets())
                     {
                         currentEntities.Add(entity.Id);
-                        SendEntityEvent(entity);
+                        positionData.Add(CreateEntityData(entity));
                     }
+
+                    SendPositionsEvent(positionData);
                 }
 
                 // 103 = destroyed
                 {
+                    var killedHash = new Hashtable();
+
+                    int index = 0;
                     foreach (var previousEntity in _previousEntities)
                     {
                         if (!currentEntities.Contains(previousEntity))
                         {
-                            // Send killed reliable
-                            var data = new Dictionary<byte, object>();
-                            data[0] = previousEntity;
-                            var eData = new EventData(103, data);
-                            var sendParameters = new SendParameters { Unreliable = false };
-                            this.PublishEvent(eData, this.Actors, sendParameters);
+                            // TODO: optimize second parameter
+                            killedHash.Add(index++, previousEntity);
                         }
+                    }
+
+                    if (killedHash.Count > 0)
+                    {
+                        // Send killed reliable
+                        var data = new Dictionary<byte, object>();
+                        data[0] = killedHash;
+                        var eData = new EventData(103, data);
+                        var sendParameters = new SendParameters { Unreliable = false };
+                        this.PublishEvent(eData, this.Actors, sendParameters);
                     }
                 }
 
                 _previousEntities = currentEntities;
 
                 // Walls
-                SendWalls();
+                //SendWalls();
             }
 
             this.ExecutionFiber.Schedule(SendDawnWorld, 50);
         }
 
-
-        private int _sendWallIndex = 0;
-        private int _maxSendWalls = 20;
-
-        private void SendWalls()
+        private void SendPositionsEvent(List<Hashtable> positions)
         {
-            var entities = _dawnWorld.Environment.GetObstacles();
-            int max = _sendWallIndex + _maxSendWalls;
-            for (_sendWallIndex = 0; _sendWallIndex < entities.Count && _sendWallIndex < max; _sendWallIndex++)
+            // TODO: warnings when we exceed the max packet-size!
+
+            var sendParameters = new SendParameters { Unreliable = true };
+
+            // Split the list into fragments
+            const int fragmentSize = 10;
+
+            byte index = 0;
+            var currentDataList = new Dictionary<byte, object>();
+            foreach (var position in positions)
             {
-                var entity = entities[_sendWallIndex];
-                //if (entity.Specy == EntityType.Wall)
-                    SendEntityEvent(entity);
+                currentDataList.Add(index++, position);
+
+                if (index > fragmentSize)
+                {
+                    var eData = new EventData(104, currentDataList);
+                    this.PublishEvent(eData, this.Actors, sendParameters);
+
+                    index = 0;
+                    currentDataList = new Dictionary<byte, object>();
+                }
             }
 
-            // Re-start loop when done
-            if (_sendWallIndex == entities.Count)
-                _sendWallIndex = 0;
+            // Send remainder
+            if (currentDataList.Count > 0)
+            {
+                var eData = new EventData(104, currentDataList);
+                this.PublishEvent(eData, this.Actors, sendParameters);
+            }
         }
 
-        // TODO: refactor into seperate data contract
-        private void SendEntityEvent(IEntity entity, bool unreliable = true)
+        private Hashtable CreateEntityData(IEntity entity)
         {
-            var data = new Dictionary<byte, object>();
-            data[0] = entity.Id;
-            data[1] = entity.Specy;
-            data[2] = entity.Place.Position.X;
-            data[3] = entity.Place.Position.Y;
-            data[4] = entity.Place.Angle;
+            var dawnEntity = new Hashtable();
+            dawnEntity[0] = entity.Id;
+            dawnEntity[1] = entity.Specy;
+            dawnEntity[2] = entity.Place.Position.X;
+            dawnEntity[3] = entity.Place.Position.Y;
+            dawnEntity[4] = entity.Place.Angle;
 
             var creature = entity as ICreature;
-            data[5] = creature != null && creature.SpawnPoint != null ? creature.SpawnPoint.Id : 0;
-
-            var eData = new EventData(102, data);
-            var sendParameters = new SendParameters { Unreliable = unreliable };
-            this.PublishEvent(eData, this.Actors, sendParameters);
+            dawnEntity[5] = creature != null && creature.SpawnPoint != null ? creature.SpawnPoint.Id : 0;
+            return dawnEntity;
         }
 
         /// <summary>
