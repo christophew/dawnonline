@@ -99,7 +99,7 @@ namespace DawnOnline.Simulation.Builders
 
             avatar.Specy = EntityType.Avatar;
             avatar.CharacterSheet.WalkingDistance = 30 * _velocityMultiplier;
-            avatar.CharacterSheet.TurningAngle = 2 * _turnMultiplier;
+            avatar.CharacterSheet.TurningAngle = 1.5 * _turnMultiplier;
             avatar.CharacterSheet.RangeDamage = 50;
             avatar.CharacterSheet.MeleeDamage = 50;
 
