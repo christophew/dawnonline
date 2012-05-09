@@ -15,7 +15,7 @@ namespace DawnOnline.Simulation.Builders
     {
         private const double _velocityMultiplier = 5;
         //private const double _turnMultiplier = 20000;
-        private const double _turnMultiplier = 3;
+        private const double _turnMultiplier = 2;
 
         public static ICreature CreateCreature(EntityType specy, IEntity spawnPoint)
         {

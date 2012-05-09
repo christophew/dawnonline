@@ -247,13 +247,9 @@ namespace MogreFrontEnd
                     // Is this out avatar?
                     if (entity.Id == _dawnClient.AvatarId)
                     {
-                        // FP-Camera
-                        if (entity.Id == _dawnClient.AvatarId)
+                        if (_fpCamera != null)
                         {
-                            if (_fpCamera != null)
-                            {
-                                node.AttachObject(_fpCamera);
-                            }
+                            node.AttachObject(_fpCamera);
                         }
                     }
                 }
