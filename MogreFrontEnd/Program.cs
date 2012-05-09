@@ -31,11 +31,10 @@ namespace Mogre.Tutorials
                 throw new ServerException("Dawn server not found");
             }
 
-            _mogreModel = new DawnToMogre(mSceneMgr, _dawnClient);
+            _mogreModel = new DawnToMogre(mSceneMgr, _dawnClient, mCamera);
             _mogreModel.SimulationToOgre();
-            //_mogreModel.GetAvatorNode().AttachObject(mCamera);
-    
-            
+
+
             mSceneMgr.AmbientLight = ColourValue.Black;
             mSceneMgr.ShadowTechnique = ShadowTechnique.SHADOWTYPE_NONE;
             //mSceneMgr.ShadowTechnique = ShadowTechnique.SHADOWTYPE_STENCIL_MODULATIVE;
@@ -54,13 +53,22 @@ namespace Mogre.Tutorials
             //groundEnt.SetMaterialName("Examples/Rockwall");
             //groundEnt.CastShadows = false;
 
-            // Light
-            Light pointLight = mSceneMgr.CreateLight("pointLight");
-            pointLight.Type = Light.LightTypes.LT_POINT;
-            pointLight.Position = new Vector3(0, 150, 250);
-            pointLight.DiffuseColour = ColourValue.White;
-            pointLight.SpecularColour = ColourValue.White;
-
+            {
+                // Light
+                Light pointLight = mSceneMgr.CreateLight();
+                pointLight.Type = Light.LightTypes.LT_POINT;
+                pointLight.Position = new Vector3(0, 150, 250);
+                pointLight.DiffuseColour = ColourValue.White;
+                pointLight.SpecularColour = ColourValue.White;
+            }
+            {
+                // Light
+                Light pointLight = mSceneMgr.CreateLight();
+                pointLight.Type = Light.LightTypes.LT_POINT;
+                pointLight.Position = new Vector3(500, 150, 250);
+                pointLight.DiffuseColour = ColourValue.White;
+                pointLight.SpecularColour = ColourValue.White;
+            }
         }
 
         protected override void InitializeInput()
@@ -87,7 +95,7 @@ namespace Mogre.Tutorials
             mKeyboard.Capture();
             mMouse.Capture();
 
-            //_mogreModel.UpdateAvatar(mKeyboard);
+            _mogreModel.UpdateAvatar(mKeyboard);
 
             return true;
         }
@@ -110,17 +118,17 @@ namespace Mogre.Tutorials
 
         protected override void CreateCamera()
         {
-            mCamera = mSceneMgr.CreateCamera("PlayerCam");
-            mCamera.Position = new Vector3(200, 100, 300);
-            mCamera.LookAt(new Vector3(200, 0, 100));
-            mCamera.NearClipDistance = 5;
-            mCameraMan = new CameraMan(mCamera);
-
-            //mCamera = mSceneMgr.CreateCamera("FirstPersonCam");
-            //mCamera.Position = new Vector3(0, 1, 0);
-            //mCamera.LookAt(new Vector3(0, 0, 10));
-            //mCamera.NearClipDistance = 1;
+            //mCamera = mSceneMgr.CreateCamera("PlayerCam");
+            //mCamera.Position = new Vector3(200, 100, 300);
+            //mCamera.LookAt(new Vector3(200, 0, 100));
+            //mCamera.NearClipDistance = 5;
             //mCameraMan = new CameraMan(mCamera);
+
+            mCamera = mSceneMgr.CreateCamera("FirstPersonCam");
+            mCamera.Position = new Vector3(0, 1, 0);
+            mCamera.LookAt(new Vector3(0, 0, 10));
+            mCamera.NearClipDistance = 1;
+            mCameraMan = new CameraMan(mCamera);
         }
 
         protected override void CreateViewports()

@@ -14,6 +14,7 @@ namespace DawnClient
 
         private LitePeer _peer;
         private DateTime _lastUpdateTime = DateTime.Now;
+        private HashSet<AvatarCommand> _avatarCommands = new HashSet<AvatarCommand>();
 
         public DawnClient()
         {
@@ -39,6 +40,17 @@ namespace DawnClient
 
             _lastUpdateTime = now;
 
+            // Send avatar command
+            if (_avatarCommands.Count > 0)
+            {
+                var eData = new Dictionary<byte, object>();
+                var commands = _avatarCommands.Select(command => (byte)command).ToArray();
+                eData[0] = commands;
+                // 102 = OperationCode.AvatarCommand
+                var result = _peer.OpCustom((byte) 102, eData, false);
+                _avatarCommands.Clear();
+            }
+
             _peer.Service();
         }
 
@@ -49,14 +61,7 @@ namespace DawnClient
 
         public void SendAvatorCommand(AvatarCommand command)
         {
-            //var data = new Hashtable();
-            //data.Add(0, (byte)command);
-            //_peer.OpRaiseEvent(101, data, false);
-
-            var eData = new Dictionary<byte, object>();
-            eData[0] = (byte)command;
-            // 102 = OperationCode.AvatarCommand
-            var result = _peer.OpCustom((byte)102, eData, false);
+            _avatarCommands.Add(command);
         }
 
 

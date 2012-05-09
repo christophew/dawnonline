@@ -18,17 +18,18 @@ namespace MyApplication
 
     public enum AvatarCommand
     {
-        TurnRight,
-        TurnLeft,
-        TurnRightSlow,
-        TurnLeftSlow,
-        RunForward,
-        WalkForward,
-        WalkBackward,
-        StrafeRight,
-        StrafeLeft,
-        Fire,
-        FireRocket
+        Unknown = 0,
+        TurnRight = 1,
+        TurnLeft = 2,
+        TurnRightSlow = 3,
+        TurnLeftSlow = 4,
+        RunForward = 5,
+        WalkForward = 6,
+        WalkBackward = 7,
+        StrafeRight = 8,
+        StrafeLeft = 9,
+        Fire = 10,
+        FireRocket = 11
     }
 
 
@@ -43,6 +44,7 @@ namespace MyApplication
         {
             var now = DateTime.Now;
             long millisecondsSinceLastFrame = (long) (now - _lastUpdateTime).TotalMilliseconds;
+            //millisecondsSinceLastFrame /= 2; // Time-diliation
             _lastUpdateTime = now;
 
             //Debug.WriteLine("ms: " + millisecondsSinceLastFrame);
@@ -50,6 +52,9 @@ namespace MyApplication
             _dawnWorldInstance.ThinkAll(30, new TimeSpan(millisecondsSinceLastFrame));
             _dawnWorldInstance.ApplyMove(millisecondsSinceLastFrame);
             _dawnWorldInstance.UpdatePhysics(millisecondsSinceLastFrame);
+
+            _dawnWorldInstance.Avatar.ClearActionQueue();
+
         }
 
         private void SendDawnWorld()
@@ -124,7 +129,7 @@ namespace MyApplication
                 //SendWalls();
             }
 
-            this.ExecutionFiber.Schedule(SendDawnWorld, 50);
+            this.ExecutionFiber.Schedule(SendDawnWorld, 100);
         }
 
         private void SendPositionsEvent(List<Hashtable> positions)
@@ -209,16 +214,46 @@ namespace MyApplication
 
                 case MyOperationCodes.AvatarCommand:
                     {
-                        _dawnWorldInstance.Avatar.ClearActionQueue();
-                        var command = (AvatarCommand)operationRequest.Parameters[0];
-                        switch (command)
+                        var commands = (byte[])operationRequest.Parameters[0];
+                        foreach (var byteCommand in commands)
                         {
-                            case AvatarCommand.RunForward: _dawnWorldInstance.Avatar.RunForward();
-                                break;
-                            case AvatarCommand.TurnLeft: _dawnWorldInstance.Avatar.TurnLeft();
-                                break;
-                            case AvatarCommand.TurnRight: _dawnWorldInstance.Avatar.TurnRight();
-                                break;
+                            var command = (AvatarCommand) byteCommand;
+                            switch (command)
+                            {
+                                case AvatarCommand.RunForward:
+                                    _dawnWorldInstance.Avatar.RunForward();
+                                    break;
+                                case AvatarCommand.WalkForward:
+                                    _dawnWorldInstance.Avatar.WalkForward();
+                                    break;
+                                case AvatarCommand.WalkBackward:
+                                    _dawnWorldInstance.Avatar.WalkBackward();
+                                    break;
+                                case AvatarCommand.TurnLeft:
+                                    _dawnWorldInstance.Avatar.TurnLeft();
+                                    break;
+                                case AvatarCommand.TurnRight:
+                                    _dawnWorldInstance.Avatar.TurnRight();
+                                    break;
+                                case AvatarCommand.StrafeLeft:
+                                    _dawnWorldInstance.Avatar.StrafeLeft();
+                                    break;
+                                case AvatarCommand.StrafeRight:
+                                    _dawnWorldInstance.Avatar.StrafeRight();
+                                    break;
+                                case AvatarCommand.TurnLeftSlow:
+                                    _dawnWorldInstance.Avatar.TurnLeftSlow();
+                                    break;
+                                case AvatarCommand.TurnRightSlow:
+                                    _dawnWorldInstance.Avatar.TurnRightSlow();
+                                    break;
+                                case AvatarCommand.Fire:
+                                    _dawnWorldInstance.Avatar.Fire();
+                                    break;
+                                case AvatarCommand.FireRocket:
+                                    _dawnWorldInstance.Avatar.FireRocket();
+                                    break;
+                            }
                         }
 
 

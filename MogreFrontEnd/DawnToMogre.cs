@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using DawnClient;
 using Mogre;
+using Mogre.TutorialFramework;
 using Math = Mogre.Math;
 
 namespace MogreFrontEnd
@@ -14,13 +15,15 @@ namespace MogreFrontEnd
         internal DawnClientWorld _dawnWorld;
         internal DawnClient.DawnClient _dawnClient;
         private Dictionary<int, SceneNode> _entities = new Dictionary<int, SceneNode>();
+        private Camera _fpCamera;
 
 
-        internal DawnToMogre(SceneManager sceneManager, DawnClient.DawnClient dawnClient)
+        internal DawnToMogre(SceneManager sceneManager, DawnClient.DawnClient dawnClient, Camera fpCamera)
         {
             mSceneMgr = sceneManager;
             _dawnClient = dawnClient;
             _dawnWorld = dawnClient.DawnWorld;
+            _fpCamera = fpCamera;
         }
 
         internal void SimulationToOgre()
@@ -69,26 +72,59 @@ namespace MogreFrontEnd
 
         //internal SceneNode GetAvatorNode()
         //{
-        //    return EntityToNode(_dawnWorld.Avatar, null);
+        //    return EntityToNode(_dawnWorld.GetAvatar(), null);
         //}
 
         internal void UpdateAvatar(MOIS.Keyboard keyboard)
         {
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_I))
+            {
+                _dawnClient.SendAvatorCommand(keyboard.IsKeyDown(MOIS.KeyCode.KC_LSHIFT)
+                                                  ? AvatarCommand.WalkForward
+                                                  : AvatarCommand.RunForward);
+            }
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_K))
+                _dawnClient.SendAvatorCommand(AvatarCommand.WalkBackward);
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_J))
+            {
+                _dawnClient.SendAvatorCommand(keyboard.IsKeyDown(MOIS.KeyCode.KC_LSHIFT)
+                                                  ? AvatarCommand.TurnLeftSlow
+                                                  : AvatarCommand.TurnLeft);
+            }
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_L))
+            {
+                _dawnClient.SendAvatorCommand(keyboard.IsKeyDown(MOIS.KeyCode.KC_LSHIFT)
+                                                  ? AvatarCommand.TurnRightSlow
+                                                  : AvatarCommand.TurnRight);
+            }
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_U))
+                _dawnClient.SendAvatorCommand(AvatarCommand.StrafeLeft);
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_O))
+                _dawnClient.SendAvatorCommand(AvatarCommand.StrafeRight);
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_SPACE))
+                _dawnClient.SendAvatorCommand(AvatarCommand.Fire);
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_LCONTROL))
+                _dawnClient.SendAvatorCommand(AvatarCommand.FireRocket);
+
+            //if (keyboard.IsKeyDown(MOIS.KeyCode.KC_T))
+            //    _dawnWorld.Avatar.BuildEntity(EntityType.Turret);
+        }
+
+        internal void UpdateAvatar_old(MOIS.Keyboard keyboard)
+        {
             if (keyboard.IsKeyDown(MOIS.KeyCode.KC_UP) || keyboard.IsKeyDown(MOIS.KeyCode.KC_Z) || keyboard.IsKeyDown(MOIS.KeyCode.KC_NUMPAD8))
             {
-                if (keyboard.IsKeyDown(MOIS.KeyCode.KC_LSHIFT))
-                    _dawnClient.SendAvatorCommand(AvatarCommand.WalkForward);
-                else
-                    _dawnClient.SendAvatorCommand(AvatarCommand.RunForward);
+                _dawnClient.SendAvatorCommand(keyboard.IsKeyDown(MOIS.KeyCode.KC_LSHIFT)
+                                                  ? AvatarCommand.WalkForward
+                                                  : AvatarCommand.RunForward);
             }
             if (keyboard.IsKeyDown(MOIS.KeyCode.KC_DOWN) || keyboard.IsKeyDown(MOIS.KeyCode.KC_S) || keyboard.IsKeyDown(MOIS.KeyCode.KC_NUMPAD2))
                 _dawnClient.SendAvatorCommand(AvatarCommand.WalkBackward);
             if (keyboard.IsKeyDown(MOIS.KeyCode.KC_LEFT) || keyboard.IsKeyDown(MOIS.KeyCode.KC_Q) || keyboard.IsKeyDown(MOIS.KeyCode.KC_NUMPAD4))
             {
-                if (keyboard.IsKeyDown(MOIS.KeyCode.KC_LSHIFT))
-                    _dawnClient.SendAvatorCommand(AvatarCommand.TurnLeftSlow);
-                else
-                    _dawnClient.SendAvatorCommand(AvatarCommand.TurnLeft);
+                _dawnClient.SendAvatorCommand(keyboard.IsKeyDown(MOIS.KeyCode.KC_LSHIFT)
+                                                  ? AvatarCommand.TurnLeftSlow
+                                                  : AvatarCommand.TurnLeft);
             }
             if (keyboard.IsKeyDown(MOIS.KeyCode.KC_RIGHT) || keyboard.IsKeyDown(MOIS.KeyCode.KC_D) || keyboard.IsKeyDown(MOIS.KeyCode.KC_NUMPAD6))
             {
@@ -306,6 +342,12 @@ namespace MogreFrontEnd
             //avatorSpot.Direction = new Vector3(0, 0, 10);
 
             //rootNode.AttachObject(avatorSpot);
+
+            // FP-Camera
+            if (_fpCamera != null)
+            {
+                rootNode.AttachObject(_fpCamera);
+            }
 
             return rootNode;
         }
