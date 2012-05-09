@@ -13,8 +13,12 @@ namespace DawnClient
         public DawnClientWorld DawnWorld { get; private set; }
 
         private LitePeer _peer;
+        private int _actorId;
+
         private DateTime _lastUpdateTime = DateTime.Now;
         private HashSet<AvatarCommand> _avatarCommands = new HashSet<AvatarCommand>();
+        private int _avatarId;
+        public int AvatarId { get { return _avatarId; } }
 
         public DawnClient()
         {
@@ -46,6 +50,7 @@ namespace DawnClient
                 var eData = new Dictionary<byte, object>();
                 var commands = _avatarCommands.Select(command => (byte)command).ToArray();
                 eData[0] = commands;
+                eData[1] = _avatarId;
                 // 102 = OperationCode.AvatarCommand
                 var result = _peer.OpCustom((byte) 102, eData, false);
                 _avatarCommands.Clear();
@@ -110,7 +115,42 @@ namespace DawnClient
 
         public void OnOperationResponse(OperationResponse operationResponse)
         {
-            //throw new NotImplementedException();
+            if (operationResponse.ReturnCode != 0)
+            {
+                Console.WriteLine("\n---OnOperationResponse: NOK - " + operationResponse.OperationCode + "(" + operationResponse.OperationCode + ")\n ->ReturnCode=" + operationResponse.ReturnCode + " DebugMessage=" + operationResponse.DebugMessage);
+                return;
+            }
+
+            switch (operationResponse.OperationCode)
+            {
+                case (byte)LiteOpCode.Join:
+                    {
+                        _actorId = (int) operationResponse.Parameters[LiteOpKey.ActorNr];
+                        Console.WriteLine(" ->My PlayerNr (or ActorNr) is: " + _actorId);
+
+                        Console.WriteLine("Calling LoadWorld operation");
+                        //var opParams = new Dictionary<byte, object>();
+                        //opParams[LiteOpKey.Code] = (byte)103;
+                        _peer.OpCustom(103, null, true);
+                        break;
+                    }
+                // Return from LoadWorld
+                case (byte)103:
+                    {
+                        // Get avatorId
+                        _avatarId = (int)operationResponse.Parameters[0];
+                        Console.WriteLine(" ->My AvatarId is: " + _avatarId);
+
+                        // Get static world objects
+                        var entityParam = (Hashtable[])operationResponse.Parameters[1];
+                        var staticEntities = entityParam.Select(param => new DawnClientEntity(param)).ToList();
+                        Console.WriteLine(" ->Starting entities: " + staticEntities.Count);
+                        DawnWorld.UpdateEntities(staticEntities);
+
+                        break;
+                    }
+
+            }
         }
 
         public void OnStatusChanged(StatusCode statusCode)

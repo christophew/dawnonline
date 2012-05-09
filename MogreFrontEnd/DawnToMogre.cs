@@ -237,6 +237,27 @@ namespace MogreFrontEnd
             //node.Rotate(quat);                                                                      // Actually rotate the object
 
 
+            // Attach FP-camera when possible
+            // Cannot be done on creation (we are not always sure about our avatarId)
+            if (entity.Specy == DawnClientEntity.EntityType.Avatar)
+            {
+                // Check if camera is already attached
+                if (_fpCamera != null && !_fpCamera.IsAttached)
+                {
+                    // Is this out avatar?
+                    if (entity.Id == _dawnClient.AvatarId)
+                    {
+                        // FP-Camera
+                        if (entity.Id == _dawnClient.AvatarId)
+                        {
+                            if (_fpCamera != null)
+                            {
+                                node.AttachObject(_fpCamera);
+                            }
+                        }
+                    }
+                }
+            }
 
 
             if (currentEntities != null)
@@ -342,12 +363,6 @@ namespace MogreFrontEnd
             //avatorSpot.Direction = new Vector3(0, 0, 10);
 
             //rootNode.AttachObject(avatorSpot);
-
-            // FP-Camera
-            if (_fpCamera != null)
-            {
-                rootNode.AttachObject(_fpCamera);
-            }
 
             return rootNode;
         }
