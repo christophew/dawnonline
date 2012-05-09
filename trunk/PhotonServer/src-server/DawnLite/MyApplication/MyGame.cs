@@ -15,9 +15,27 @@ namespace MyApplication
 
     using Photon.SocketServer;
 
+
+    public enum AvatarCommand
+    {
+        TurnRight,
+        TurnLeft,
+        TurnRightSlow,
+        TurnLeftSlow,
+        RunForward,
+        WalkForward,
+        WalkBackward,
+        StrafeRight,
+        StrafeLeft,
+        Fire,
+        FireRocket
+    }
+
+
     public class MyGame : LiteGame
     {
-        private DawnWorld _dawnWorld = new DawnWorld();
+        private static DawnWorld _dawnWorldInstance = new DawnWorld();
+
         private DateTime _lastUpdateTime = DateTime.Now;
         private HashSet<int> _previousEntities = new HashSet<int>();
 
@@ -29,9 +47,9 @@ namespace MyApplication
 
             //Debug.WriteLine("ms: " + millisecondsSinceLastFrame);
 
-            _dawnWorld.ThinkAll(30, new TimeSpan(millisecondsSinceLastFrame));
-            _dawnWorld.ApplyMove(millisecondsSinceLastFrame);
-            _dawnWorld.UpdatePhysics(millisecondsSinceLastFrame);
+            _dawnWorldInstance.ThinkAll(30, new TimeSpan(millisecondsSinceLastFrame));
+            _dawnWorldInstance.ApplyMove(millisecondsSinceLastFrame);
+            _dawnWorldInstance.UpdatePhysics(millisecondsSinceLastFrame);
         }
 
         private void SendDawnWorld()
@@ -41,7 +59,7 @@ namespace MyApplication
                 // 101 = WorldInformation
                 {
                     var data = new Dictionary<byte, object>();
-                    data[0] = _dawnWorld.GetWorldInformation();
+                    data[0] = _dawnWorldInstance.GetWorldInformation();
                     var eData = new EventData(101, data);
                     var sendParameters = new SendParameters { Unreliable = true };
                     this.PublishEvent(eData, this.Actors, sendParameters);
@@ -53,12 +71,12 @@ namespace MyApplication
                 {
                     var positionData = new List<Hashtable>();
 
-                    foreach (var entity in _dawnWorld.Environment.GetCreatures())
+                    foreach (var entity in _dawnWorldInstance.Environment.GetCreatures())
                     {
                         currentEntities.Add(entity.Id);
                         positionData.Add(CreateEntityData(entity));
                     }
-                    foreach (var entity in _dawnWorld.Environment.GetObstacles())
+                    foreach (var entity in _dawnWorldInstance.Environment.GetObstacles())
                     {
                         currentEntities.Add(entity.Id);
 
@@ -66,7 +84,7 @@ namespace MyApplication
                         //    continue;
                         positionData.Add(CreateEntityData(entity));
                     }
-                    foreach (var entity in _dawnWorld.Environment.GetBullets())
+                    foreach (var entity in _dawnWorldInstance.Environment.GetBullets())
                     {
                         currentEntities.Add(entity.Id);
                         positionData.Add(CreateEntityData(entity));
@@ -152,7 +170,10 @@ namespace MyApplication
             dawnEntity[4] = entity.Place.Angle;
 
             var creature = entity as ICreature;
-            dawnEntity[5] = creature != null && creature.SpawnPoint != null ? creature.SpawnPoint.Id : 0;
+            if (creature != null && creature.SpawnPoint != null)
+            {
+                dawnEntity[5] = creature.SpawnPoint.Id;
+            }
             return dawnEntity;
         }
 
@@ -163,20 +184,11 @@ namespace MyApplication
         public MyGame(string gameName)
             : base(gameName)
         {
-            // TODO: do this when a player joined!
-            //// Initial update => send static obstacles
-            //foreach (var entity in _dawnWorld.Environment.GetObstacles())
-            //{
-            //    // Ignore walls
-            //    if (entity.Specy != EntityType.Wall)
-            //        continue;
-            //    SendEntityEvent(entity, false);
-            //}
 
             this.ExecutionFiber.Schedule(SendDawnWorld, 1500);
             this.ExecutionFiber.ScheduleOnInterval(UpdateDawnWorld, 1000, 50);
-            //this.ExecutionFiber.ScheduleOnInterval(SendWalls, 800, 75);
         }
+
 
         /// <summary>
         /// Called for each operation in the execution queue.
@@ -194,6 +206,24 @@ namespace MyApplication
                 case MyOperationCodes.GameOperation:
                     this.HandleMyGameOperation(peer, operationRequest, sendParameters);
                     break;
+
+                case MyOperationCodes.AvatarCommand:
+                    {
+                        _dawnWorldInstance.Avatar.ClearActionQueue();
+                        var command = (AvatarCommand)operationRequest.Parameters[0];
+                        switch (command)
+                        {
+                            case AvatarCommand.RunForward: _dawnWorldInstance.Avatar.RunForward();
+                                break;
+                            case AvatarCommand.TurnLeft: _dawnWorldInstance.Avatar.TurnLeft();
+                                break;
+                            case AvatarCommand.TurnRight: _dawnWorldInstance.Avatar.TurnRight();
+                                break;
+                        }
+
+
+                        break;
+                    }
 
                 default:
                     // all other operations will be handled by the LiteGame implementation

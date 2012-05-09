@@ -40,7 +40,11 @@ namespace DawnClient
             this.PlaceX = (float)eventData[2];
             this.PlaceY = (float)eventData[3];
             this.Angle = (float)eventData[4];
-            this.SpawnPointId = (int)eventData[5];
+
+            if (eventData.ContainsKey(5))
+            {
+                this.SpawnPointId = (int) eventData[5];
+            }
         }
     }
 }

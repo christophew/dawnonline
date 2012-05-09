@@ -72,6 +72,12 @@ namespace MyApplication
                         break;
                     }
 
+                case (byte)MyOperationCodes.AvatarCommand:
+                    {
+                        HandleGameOperation(operationRequest, sendParameters);
+                        break;
+                    }
+
                 default:
                     {
                         // for this example all other operations will handled by the base class

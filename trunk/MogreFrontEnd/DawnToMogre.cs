@@ -12,13 +12,15 @@ namespace MogreFrontEnd
     {
         private SceneManager mSceneMgr;
         internal DawnClientWorld _dawnWorld;
+        internal DawnClient.DawnClient _dawnClient;
         private Dictionary<int, SceneNode> _entities = new Dictionary<int, SceneNode>();
 
 
-        internal DawnToMogre(SceneManager sceneManager, DawnClientWorld dawnWorld)
+        internal DawnToMogre(SceneManager sceneManager, DawnClient.DawnClient dawnClient)
         {
             mSceneMgr = sceneManager;
-            _dawnWorld = dawnWorld;
+            _dawnClient = dawnClient;
+            _dawnWorld = dawnClient.DawnWorld;
         }
 
         internal void SimulationToOgre()
@@ -70,45 +72,43 @@ namespace MogreFrontEnd
         //    return EntityToNode(_dawnWorld.Avatar, null);
         //}
 
-        //internal void UpdateAvatar(MOIS.Keyboard keyboard)
-        //{
-        //    _dawnWorld.Avatar.ClearActionQueue();
+        internal void UpdateAvatar(MOIS.Keyboard keyboard)
+        {
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_UP) || keyboard.IsKeyDown(MOIS.KeyCode.KC_Z) || keyboard.IsKeyDown(MOIS.KeyCode.KC_NUMPAD8))
+            {
+                if (keyboard.IsKeyDown(MOIS.KeyCode.KC_LSHIFT))
+                    _dawnClient.SendAvatorCommand(AvatarCommand.WalkForward);
+                else
+                    _dawnClient.SendAvatorCommand(AvatarCommand.RunForward);
+            }
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_DOWN) || keyboard.IsKeyDown(MOIS.KeyCode.KC_S) || keyboard.IsKeyDown(MOIS.KeyCode.KC_NUMPAD2))
+                _dawnClient.SendAvatorCommand(AvatarCommand.WalkBackward);
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_LEFT) || keyboard.IsKeyDown(MOIS.KeyCode.KC_Q) || keyboard.IsKeyDown(MOIS.KeyCode.KC_NUMPAD4))
+            {
+                if (keyboard.IsKeyDown(MOIS.KeyCode.KC_LSHIFT))
+                    _dawnClient.SendAvatorCommand(AvatarCommand.TurnLeftSlow);
+                else
+                    _dawnClient.SendAvatorCommand(AvatarCommand.TurnLeft);
+            }
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_RIGHT) || keyboard.IsKeyDown(MOIS.KeyCode.KC_D) || keyboard.IsKeyDown(MOIS.KeyCode.KC_NUMPAD6))
+            {
+                if (keyboard.IsKeyDown(MOIS.KeyCode.KC_LSHIFT))
+                    _dawnClient.SendAvatorCommand(AvatarCommand.TurnRightSlow);
+                else
+                    _dawnClient.SendAvatorCommand(AvatarCommand.TurnRight);
+            }
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_A))
+                _dawnClient.SendAvatorCommand(AvatarCommand.StrafeLeft);
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_E))
+                _dawnClient.SendAvatorCommand(AvatarCommand.StrafeRight);
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_SPACE))
+                _dawnClient.SendAvatorCommand(AvatarCommand.Fire);
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_LCONTROL))
+                _dawnClient.SendAvatorCommand(AvatarCommand.FireRocket);
 
-        //    if (keyboard.IsKeyDown(MOIS.KeyCode.KC_UP) || keyboard.IsKeyDown(MOIS.KeyCode.KC_Z) || keyboard.IsKeyDown(MOIS.KeyCode.KC_NUMPAD8))
-        //    {
-        //        if (keyboard.IsKeyDown(MOIS.KeyCode.KC_LSHIFT))
-        //            _dawnWorld.Avatar.WalkForward();
-        //        else
-        //            _dawnWorld.Avatar.RunForward();
-        //    }
-        //    if (keyboard.IsKeyDown(MOIS.KeyCode.KC_DOWN) || keyboard.IsKeyDown(MOIS.KeyCode.KC_S) || keyboard.IsKeyDown(MOIS.KeyCode.KC_NUMPAD2))
-        //        _dawnWorld.Avatar.WalkBackward();
-        //    if (keyboard.IsKeyDown(MOIS.KeyCode.KC_LEFT) || keyboard.IsKeyDown(MOIS.KeyCode.KC_Q) || keyboard.IsKeyDown(MOIS.KeyCode.KC_NUMPAD4))
-        //    {
-        //        if (keyboard.IsKeyDown(MOIS.KeyCode.KC_LSHIFT))
-        //            _dawnWorld.Avatar.TurnLeftSlow();
-        //        else
-        //            _dawnWorld.Avatar.TurnLeft();
-        //    }
-        //    if (keyboard.IsKeyDown(MOIS.KeyCode.KC_RIGHT) || keyboard.IsKeyDown(MOIS.KeyCode.KC_D) || keyboard.IsKeyDown(MOIS.KeyCode.KC_NUMPAD6))
-        //    {
-        //        if (keyboard.IsKeyDown(MOIS.KeyCode.KC_LSHIFT))
-        //            _dawnWorld.Avatar.TurnRightSlow();
-        //        else
-        //            _dawnWorld.Avatar.TurnRight();
-        //    }
-        //    if (keyboard.IsKeyDown(MOIS.KeyCode.KC_A))
-        //        _dawnWorld.Avatar.StrafeLeft();
-        //    if (keyboard.IsKeyDown(MOIS.KeyCode.KC_E))
-        //        _dawnWorld.Avatar.StrafeRight();
-        //    if (keyboard.IsKeyDown(MOIS.KeyCode.KC_SPACE))
-        //        _dawnWorld.Avatar.Fire();
-        //    if (keyboard.IsKeyDown(MOIS.KeyCode.KC_LCONTROL))
-        //        _dawnWorld.Avatar.FireRocket();
-
-        //    if (keyboard.IsKeyDown(MOIS.KeyCode.KC_T))
-        //        _dawnWorld.Avatar.BuildEntity(EntityType.Turret);
-        //}
+            //if (keyboard.IsKeyDown(MOIS.KeyCode.KC_T))
+            //    _dawnWorld.Avatar.BuildEntity(EntityType.Turret);
+        }
 
         //private void CubeWorldNodes(Dictionary<IEntity, bool> currentNodes)
         //{

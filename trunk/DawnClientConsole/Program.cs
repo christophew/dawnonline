@@ -33,6 +33,8 @@ namespace DawnClientConsole
                                                allEntities.Count, walls, boxes, predators, spawnpoints);
 
                     Console.WriteLine(_dawnClient.DawnWorld.WorldInformation + " --> " + myInfo);
+
+                    _dawnClient.SendAvatorCommand(AvatarCommand.RunForward);
                 }
                 while (!Console.KeyAvailable);
             }
