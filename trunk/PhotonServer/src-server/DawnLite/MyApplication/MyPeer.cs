@@ -57,6 +57,7 @@ namespace MyApplication
 
             switch (operationRequest.OperationCode)
             {
+                // Tutorial commands
                 case (byte)MyOperationCodes.EchoOperation:
                     {
                         // The echo operation one is handled immediately because it does not require the client to join a game.
@@ -72,7 +73,9 @@ namespace MyApplication
                         break;
                     }
 
+                // DawnCommands
                 case (byte)MyOperationCodes.AvatarCommand:
+                case (byte)MyOperationCodes.LoadWorld:
                     {
                         HandleGameOperation(operationRequest, sendParameters);
                         break;

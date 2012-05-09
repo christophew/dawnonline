@@ -16,32 +16,23 @@ namespace DawnGame
         public const float MaxY = 400;
 
         private readonly DawnOnline.Simulation.Environment _environment = SimulationFactory.CreateEnvironment();
-        private IAvatar _avatar = CreatureBuilder.CreateAvatar();
         Random _randomize = new Random();
 
         private int _grid = 5;
 
         private int _nrOfSpawnPoints = 30;
         private int _nrOfTreasures = 50;
-        private int _nrOfWalls = 0;
+        private int _nrOfWalls = 1000;
         private int _nrOfBoxes = 0;
         private int _stablePopulationSize = 200;
 
         private int _nrOfSpawnPointsReplicated = 0;
 
-        public IAvatar Avatar { get { return _avatar; } }
         public DawnOnline.Simulation.Environment Environment { get { return _environment; } }
 
         public DawnWorld()
         {
             BuildWorld2();
-
-            // Add avatar
-            while (!_environment.AddCreature(_avatar,
-                                     new Vector2 { X = _randomize.Next((int)MaxX), Y = _randomize.Next((int)MaxY) }, 0))
-            {
-                 _avatar = CreatureBuilder.CreateAvatar();
-            }
 
 
             //AddCreatures(EntityType.Rabbit, 300);
@@ -49,6 +40,24 @@ namespace DawnGame
             //AddCreatures(EntityType.Predator, 1);
             //AddCreatures(EntityType.Turret, 30);
             AddSpawnPoints(EntityType.Predator, _nrOfSpawnPoints);
+        }
+
+        public IAvatar AddAvatar()
+        {
+            IAvatar avatar = CreatureBuilder.CreateAvatar();
+            while (!_environment.AddCreature(avatar,
+                                     new Vector2 { X = _randomize.Next((int)MaxX), Y = _randomize.Next((int)MaxY) }, 0))
+            {
+                avatar = CreatureBuilder.CreateAvatar();
+            }
+
+            return avatar;
+        }
+
+        public IAvatar GetAvatar(int id)
+        {
+            var avatar = _environment.GetCreatures(EntityType.Avatar).FirstOrDefault(a => a.Id == id);
+            return avatar as IAvatar;
         }
 
         public Vector2 Center

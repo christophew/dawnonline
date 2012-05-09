@@ -1,8 +1,8 @@
-﻿
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using DawnGame;
 using DawnOnline.Simulation.Entities;
 using Lite.Messages;
@@ -53,8 +53,11 @@ namespace MyApplication
             _dawnWorldInstance.ApplyMove(millisecondsSinceLastFrame);
             _dawnWorldInstance.UpdatePhysics(millisecondsSinceLastFrame);
 
-            _dawnWorldInstance.Avatar.ClearActionQueue();
-
+            var avatars = _dawnWorldInstance.Environment.GetCreatures(EntityType.Avatar);
+            foreach (var avatar in avatars)
+            {
+                avatar.ClearActionQueue();
+            }
         }
 
         private void SendDawnWorld()
@@ -85,8 +88,9 @@ namespace MyApplication
                     {
                         currentEntities.Add(entity.Id);
 
-                        //if (entity.Specy == EntityType.Wall)
-                        //    continue;
+                        // Ignore walls,they are send on WorldLoad
+                        if (entity.Specy == EntityType.Wall)
+                            continue;
                         positionData.Add(CreateEntityData(entity));
                     }
                     foreach (var entity in _dawnWorldInstance.Environment.GetBullets())
@@ -214,48 +218,23 @@ namespace MyApplication
 
                 case MyOperationCodes.AvatarCommand:
                     {
-                        var commands = (byte[])operationRequest.Parameters[0];
-                        foreach (var byteCommand in commands)
-                        {
-                            var command = (AvatarCommand) byteCommand;
-                            switch (command)
-                            {
-                                case AvatarCommand.RunForward:
-                                    _dawnWorldInstance.Avatar.RunForward();
-                                    break;
-                                case AvatarCommand.WalkForward:
-                                    _dawnWorldInstance.Avatar.WalkForward();
-                                    break;
-                                case AvatarCommand.WalkBackward:
-                                    _dawnWorldInstance.Avatar.WalkBackward();
-                                    break;
-                                case AvatarCommand.TurnLeft:
-                                    _dawnWorldInstance.Avatar.TurnLeft();
-                                    break;
-                                case AvatarCommand.TurnRight:
-                                    _dawnWorldInstance.Avatar.TurnRight();
-                                    break;
-                                case AvatarCommand.StrafeLeft:
-                                    _dawnWorldInstance.Avatar.StrafeLeft();
-                                    break;
-                                case AvatarCommand.StrafeRight:
-                                    _dawnWorldInstance.Avatar.StrafeRight();
-                                    break;
-                                case AvatarCommand.TurnLeftSlow:
-                                    _dawnWorldInstance.Avatar.TurnLeftSlow();
-                                    break;
-                                case AvatarCommand.TurnRightSlow:
-                                    _dawnWorldInstance.Avatar.TurnRightSlow();
-                                    break;
-                                case AvatarCommand.Fire:
-                                    _dawnWorldInstance.Avatar.Fire();
-                                    break;
-                                case AvatarCommand.FireRocket:
-                                    _dawnWorldInstance.Avatar.FireRocket();
-                                    break;
-                            }
-                        }
+                        HandleAvatorCommand(operationRequest);
+                        break;
+                    }
 
+                case MyOperationCodes.LoadWorld:
+                    {
+                        var avatar = _dawnWorldInstance.AddAvatar();
+                        var walls =
+                            _dawnWorldInstance.Environment.GetObstacles().Where(o => o.Specy == EntityType.Wall).ToList();
+                        var wallsParam = walls.Select(CreateEntityData).ToArray();
+
+                        // Send response
+                        var eData = new Dictionary<byte, object>();
+                        eData[0] = avatar.Id;
+                        eData[1] = wallsParam;
+                        var response = new OperationResponse((byte)MyOperationCodes.LoadWorld, eData);
+                        peer.SendOperationResponse(response, new SendParameters{Unreliable = false});
 
                         break;
                     }
@@ -264,6 +243,58 @@ namespace MyApplication
                     // all other operations will be handled by the LiteGame implementation
                     base.ExecuteOperation(peer, operationRequest, sendParameters);
                     break;
+            }
+        }
+
+        private static void HandleAvatorCommand(OperationRequest operationRequest)
+        {
+            var avatarId = (int) operationRequest.Parameters[1];
+            var avatar = _dawnWorldInstance.GetAvatar(avatarId);
+            if (avatar == null)
+            {
+                throw new NotImplementedException("TODO: client notifications");
+            }
+
+            var commands = (byte[]) operationRequest.Parameters[0];
+            foreach (var byteCommand in commands)
+            {
+                var command = (AvatarCommand) byteCommand;
+                switch (command)
+                {
+                    case AvatarCommand.RunForward:
+                        avatar.RunForward();
+                        break;
+                    case AvatarCommand.WalkForward:
+                        avatar.WalkForward();
+                        break;
+                    case AvatarCommand.WalkBackward:
+                        avatar.WalkBackward();
+                        break;
+                    case AvatarCommand.TurnLeft:
+                        avatar.TurnLeft();
+                        break;
+                    case AvatarCommand.TurnRight:
+                        avatar.TurnRight();
+                        break;
+                    case AvatarCommand.StrafeLeft:
+                        avatar.StrafeLeft();
+                        break;
+                    case AvatarCommand.StrafeRight:
+                        avatar.StrafeRight();
+                        break;
+                    case AvatarCommand.TurnLeftSlow:
+                        avatar.TurnLeftSlow();
+                        break;
+                    case AvatarCommand.TurnRightSlow:
+                        avatar.TurnRightSlow();
+                        break;
+                    case AvatarCommand.Fire:
+                        avatar.Fire();
+                        break;
+                    case AvatarCommand.FireRocket:
+                        avatar.FireRocket();
+                        break;
+                }
             }
         }
 
