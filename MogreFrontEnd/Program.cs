@@ -31,7 +31,7 @@ namespace Mogre.Tutorials
                 throw new ServerException("Dawn server not found");
             }
 
-            _mogreModel = new DawnToMogre(mSceneMgr, _dawnClient.DawnWorld);
+            _mogreModel = new DawnToMogre(mSceneMgr, _dawnClient);
             _mogreModel.SimulationToOgre();
             //_mogreModel.GetAvatorNode().AttachObject(mCamera);
     

@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AvatarCommand.cs" />
     <Compile Include="DawnClient.cs" />
     <Compile Include="DawnClientEntity.cs" />
     <Compile Include="DawnClientWorld.cs" />

@@ -8,6 +8,7 @@ namespace MyApplication.Operations
     {
         EchoOperation = 100,
         GameOperation = 101,
+        AvatarCommand = 102
     }
 
     /// <summary>

@@ -12,11 +12,12 @@ namespace DawnClient
     {
         public DawnClientWorld DawnWorld { get; private set; }
 
-        private PhotonPeer _peer;
+        private LitePeer _peer;
+        private DateTime _lastUpdateTime = DateTime.Now;
 
         public DawnClient()
         {
-            _peer = new PhotonPeer(this, ConnectionProtocol.Udp);
+            _peer = new LitePeer(this, ConnectionProtocol.Udp);
             DawnWorld = new DawnClientWorld();
         }
 
@@ -30,6 +31,14 @@ namespace DawnClient
 
         public void Update()
         {
+            var now = DateTime.Now;
+            long millisecondsSinceLastFrame = (long)(now - _lastUpdateTime).TotalMilliseconds;
+
+            if (millisecondsSinceLastFrame < 50)
+                return;
+
+            _lastUpdateTime = now;
+
             _peer.Service();
         }
 
@@ -37,6 +46,19 @@ namespace DawnClient
         {
             _peer.Disconnect();
         }
+
+        public void SendAvatorCommand(AvatarCommand command)
+        {
+            //var data = new Hashtable();
+            //data.Add(0, (byte)command);
+            //_peer.OpRaiseEvent(101, data, false);
+
+            var eData = new Dictionary<byte, object>();
+            eData[0] = (byte)command;
+            // 102 = OperationCode.AvatarCommand
+            var result = _peer.OpCustom((byte)102, eData, false);
+        }
+
 
         #region IPhotonPeerListener Members
 
@@ -96,6 +118,7 @@ namespace DawnClient
                     var opParams = new Dictionary<byte, object>();
                     opParams[LiteOpKey.GameId] = "Dawn";
                     _peer.OpCustom(LiteOpCode.Join, opParams, true);
+
                     break;
                 default:
                     break;
