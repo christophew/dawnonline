@@ -101,6 +101,9 @@
     <Reference Include="mscorlib">
       <Private>False</Private>
     </Reference>
+    <Reference Include="Photon3DotNet">
+      <HintPath>..\Lib\PhotonLibs\Debug\Photon3DotNet.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
@@ -123,7 +126,6 @@
     <Compile Include="Cameras\AvatarCamera.cs" />
     <Compile Include="Cameras\BirdsEyeCamera.cs" />
     <Compile Include="Cameras\BirdsEyeFollowCamera.cs" />
-    <Compile Include="DawnWorld.cs" />
     <Compile Include="Cameras\FirstPersonCamera.cs" />
     <Compile Include="DawnWorldRenderer.cs" />
     <Compile Include="DefaultGameBehaviour.cs" />
@@ -152,9 +154,9 @@
     </NestedContentProject>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Simulation\Simulation.csproj">
-      <Project>{4F463D41-EA2D-4B41-A4C8-656DDD16F4C7}</Project>
-      <Name>Simulation</Name>
+    <ProjectReference Include="..\DawnClient\DawnClient.csproj">
+      <Project>{4471FB48-DF80-44F5-B2A0-65BC98B2C2F3}</Project>
+      <Name>DawnClient</Name>
     </ProjectReference>
     <ProjectReference Include="Content\DawnGameContent.contentproj">
       <Project>{DDD79452-E55B-4AC5-8E7F-81F9F918169D}</Project>

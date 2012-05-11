@@ -60,6 +60,27 @@ namespace MyApplication
             }
         }
 
+        private void SendAvatarUpdates()
+        {
+            // Broadcast changes
+            {
+                // 104 = compressed position update
+                {
+                    var positionData = new List<Hashtable>();
+
+                    foreach (var entity in _dawnWorldInstance.Environment.GetCreatures())
+                    {
+                        if (entity.Specy == EntityType.Avatar)
+                            positionData.Add(CreateEntityData(entity));
+                    }
+
+                    SendPositionsEvent(positionData);
+                }
+            }
+
+            this.ExecutionFiber.Schedule(SendAvatarUpdates, 50);
+        }
+
         private void SendDawnWorld()
         {
             // Broadcast changes
@@ -91,6 +112,7 @@ namespace MyApplication
                         // Ignore walls,they are send on WorldLoad
                         if (entity.Specy == EntityType.Wall)
                             continue;
+
                         positionData.Add(CreateEntityData(entity));
                     }
                     foreach (var entity in _dawnWorldInstance.Environment.GetBullets())
@@ -195,6 +217,7 @@ namespace MyApplication
         {
 
             this.ExecutionFiber.Schedule(SendDawnWorld, 1500);
+            this.ExecutionFiber.Schedule(SendAvatarUpdates, 1500);
             this.ExecutionFiber.ScheduleOnInterval(UpdateDawnWorld, 1000, 50);
         }
 

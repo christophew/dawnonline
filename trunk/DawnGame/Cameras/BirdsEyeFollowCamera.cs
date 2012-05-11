@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using DawnOnline.Simulation;
-using DawnOnline.Simulation.Entities;
+using DawnClient;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -20,11 +19,11 @@ namespace DawnGame.Cameras
         private Vector3 _cameraPosition;
         private float _cameraVelocity;
         private float _pan;
-        private ICreature _creature;
+        private DawnClientEntity _creature;
 
-        public BirdsEyeFollowCamera(GraphicsDevice device, float height, float velocity, ICreature creature)
+        public BirdsEyeFollowCamera(GraphicsDevice device, float height, float velocity, DawnClientEntity creature)
         {
-            _cameraPosition = new Vector3(creature.Place.Position.X, height, creature.Place.Position.Y);
+            _cameraPosition = new Vector3(creature.PlaceX, height, creature.PlaceY);
             _cameraVelocity = velocity;
             _creature = creature;
 
@@ -47,8 +46,8 @@ namespace DawnGame.Cameras
             KeyboardState keyboardState = Keyboard.GetState();
             float timeScale = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            _cameraPosition.X = _creature.Place.Position.X;
-            _cameraPosition.Z = _creature.Place.Position.Y;
+            _cameraPosition.X = _creature.PlaceX;
+            _cameraPosition.Z = _creature.PlaceY;
 
             // In/Out
             if (keyboardState.IsKeyDown(Keys.NumPad7))

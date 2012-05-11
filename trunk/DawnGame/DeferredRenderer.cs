@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using DawnClient;
 using DawnGame.Cameras;
-using DawnOnline.Simulation.Entities;
 using DeferredLighting;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Linq;
 
 namespace DawnGame
 {
@@ -16,7 +18,9 @@ namespace DawnGame
     public class DeferredRenderer : DrawableGameComponent
     {
         private ICamera _camera;
-        private DawnWorld _dawnWorld = new DawnWorld();
+        private DawnClient.DawnClient _dawnClient;
+        private ReadOnlyCollection<DawnClientEntity> _currentEntities;
+
         private DawnWorldRenderer _dawnWorldRenderer;
         private GameObject _floor;
 
@@ -45,6 +49,8 @@ namespace DawnGame
             : base(game)
         {
             _scene = new Scene(Game);
+
+            _dawnClient = new DawnClient.DawnClient();
         }
 
         /// <summary>
@@ -61,6 +67,9 @@ namespace DawnGame
             quadRenderer = new QuadRenderComponent(Game);
             //Game.Components.Add(camera);
             Game.Components.Add(quadRenderer);
+
+
+            _dawnClient.Connect();
         }
 
         protected override void LoadContent()
@@ -89,9 +98,10 @@ namespace DawnGame
             sphereModel = Game.Content.Load<Model>(@"DeferredLighting\sphere");
            
             // Dawn
-            _dawnWorldRenderer = new DawnWorldRenderer(Game, _dawnWorld);
+            _dawnWorldRenderer = new DawnWorldRenderer(Game, _dawnClient);
             _dawnWorldRenderer.LoadContent();
-            _camera = new BirdsEyeFollowCamera(GraphicsDevice, 80, 50, _dawnWorld.Avatar);
+            //_camera = new FirstPersonCamera(Game.Window, 10);
+            _camera = new BirdsEyeFollowCamera(GraphicsDevice, 80, 50, _dawnClient.Avatar);
             _floor = new GameObject(Game.Content.Load<Model>(@"floor_metal"), new Vector3(MathHelper.PiOver2, 0, 0), new Vector3(0, -2020, 0), 2000f);
             //_floor = new GameObject(Game.Content.Load<Model>(@"floor4"), new Vector3(MathHelper.PiOver2, 0, 0), new Vector3(0, -2025, 0), 2000f);
 
@@ -204,7 +214,7 @@ namespace DawnGame
             GraphicsDevice.BlendState = BlendState.Opaque;
             _dawnWorldRenderer.Draw(gameTime, _camera);
 
-            _floor.DrawObject(_camera, new Vector3(_dawnWorld.Center.X, 0, _dawnWorld.Center.Y), Vector3.Zero);
+            //_floor.DrawObject(_camera, new Vector3(_dawnWorld.Center.X, 0, _dawnWorld.Center.Y), Vector3.Zero);
 
             //_scene.DrawScene(_camera, gameTime);
 
@@ -215,22 +225,26 @@ namespace DawnGame
 
         private void DrawAvatarPointLight(Color color, float height, float radius, float intensity)
         {
+            var avatar = _dawnClient.Avatar;
+            if (avatar == null)
+                return;
+
             DrawPointLight(
-                new Vector3(_dawnWorld.Avatar.Place.Position.X, height, _dawnWorld.Avatar.Place.Position.Y),
+                new Vector3(avatar.PlaceX, height, avatar.PlaceY),
                 color,
-                radius * (1f - (float)_dawnWorld.Avatar.CharacterSheet.Damage.PercentFilled / 100f),
+                radius, //radius * (1f - (float)_dawnWorld.Avatar.CharacterSheet.Damage.PercentFilled / 100f),
                 intensity);
         }
 
-        private void DrawObstaclePointLight(EntityType entityType, Color color, float height, float radius, float intensity)
+        private void DrawObstaclePointLight(DawnClientEntity.EntityType entityType, Color color, float height, float radius, float intensity)
         {
-            var obstacles = _dawnWorld.Environment.GetObstacles();
+            var obstacles = _currentEntities;
             foreach (var current in obstacles)
             {
                 if (current.Specy == entityType)
                 {
                     DrawPointLight(
-                        new Vector3(current.Place.Position.X, height, current.Place.Position.Y),
+                        new Vector3(current.PlaceX, height, current.PlaceY),
                         color,
                         radius,
                         intensity);
@@ -238,15 +252,15 @@ namespace DawnGame
             }
         }
 
-        private void DrawCreaturePointLight(EntityType entityType, Color color, float height, float radius, float intensity)
+        private void DrawCreaturePointLight(DawnClientEntity.EntityType entityType, Color color, float height, float radius, float intensity)
         {
-            var obstacles = _dawnWorld.Environment.GetCreatures();
+            var obstacles = _currentEntities;
             foreach (var current in obstacles)
             {
                 if (current.Specy == entityType)
                 {
                     DrawPointLight(
-                        new Vector3(current.Place.Position.X, height, current.Place.Position.Y),
+                        new Vector3(current.PlaceX, height, current.PlaceY),
                         color,
                         radius,
                         intensity);
@@ -255,47 +269,47 @@ namespace DawnGame
         }
 
         private static readonly Random _randomize = new Random((int)DateTime.Now.Ticks);
-        Dictionary<IEntity, Color> _familyColorMapper = new Dictionary<IEntity, Color>();
+        Dictionary<int, Color> _familyColorMapper = new Dictionary<int, Color>();
 
-        private void DrawFamilyPointLight(EntityType entityType, float height, float radius, float intensity)
+        private void DrawFamilyPointLight(DawnClientEntity.EntityType entityType, float height, float radius, float intensity)
         {
-            var obstacles = _dawnWorld.Environment.GetCreatures();
+            var obstacles = _currentEntities;
             foreach (var current in obstacles)
             {
                 if (current.Specy == entityType)
                 {
                     Color color;
-                    if (!_familyColorMapper.TryGetValue(current.SpawnPoint, out color))
+                    if (!_familyColorMapper.TryGetValue(current.SpawnPointId, out color))
                     {
                         var skipColor = _randomize.Next(3);
                         color = new Color(
                             skipColor == 0 ? 0 : _randomize.Next(255),
                             skipColor == 1 ? 0 : _randomize.Next(255),
                             skipColor == 2 ? 0 : _randomize.Next(255));
-                        _familyColorMapper.Add(current.SpawnPoint, color);
+                        _familyColorMapper.Add(current.SpawnPointId, color);
                     }
 
-                    var creature = current as ICreature;
-                    Debug.Assert(creature != null);
+                    //var creature = current as ICreature;
+                    //Debug.Assert(creature != null);
 
                     DrawPointLight(
-                        new Vector3(current.Place.Position.X, height, current.Place.Position.Y),
+                        new Vector3(current.PlaceX, height, current.PlaceY),
                         color,
-                        radius * (1f - (float)creature.CharacterSheet.Damage.PercentFilled / 100f),
+                        radius, //radius * (1f - (float)creature.CharacterSheet.Damage.PercentFilled / 100f),
                         intensity);
                 }
             }
         }
 
-        private void DrawBulletPointLight(EntityType entityType, Color color, float height, float radius, float intensity)
+        private void DrawBulletPointLight(DawnClientEntity.EntityType entityType, Color color, float height, float radius, float intensity)
         {
-            var obstacles = _dawnWorld.Environment.GetBullets();
+            var obstacles = _currentEntities;
             foreach (var current in obstacles)
             {
                 if (current.Specy == entityType)
                 {
                     DrawPointLight(
-                        new Vector3(current.Place.Position.X, height, current.Place.Position.Y),
+                        new Vector3(current.PlaceX, height, current.PlaceY),
                         color,
                         radius,
                         intensity);
@@ -305,15 +319,17 @@ namespace DawnGame
 
         private void DrawExplosions()
         {
-            var explosions = _dawnWorld.Environment.GetExplosions();
-            foreach (var current in explosions)
-            {
-                DrawPointLight(
-                    new Vector3(current.Position.X, 10, current.Position.Y),
-                    Color.Tomato,
-                    current.Size,
-                    10);
-            }
+            // TODO
+
+            //var explosions = _dawnClient.DawnWorld.GetEntities();
+            //foreach (var current in explosions)
+            //{
+            //    DrawPointLight(
+            //        new Vector3(current.Position.X, 10, current.Position.Y),
+            //        Color.Tomato,
+            //        current.Size,
+            //        10);
+            //}
         }
 
         private void DrawLights(GameTime gameTime)
@@ -327,17 +343,19 @@ namespace DawnGame
 
             MovingPointLights(gameTime, 0);
 
+            _currentEntities = _dawnClient.DawnWorld.GetEntities();
+
             DrawAvatarPointLight(Color.White, -1f, 50.0f, 1);
-            DrawObstaclePointLight(EntityType.Treasure, Color.Red, .7f, 10.0f, 2);
-            DrawObstaclePointLight(EntityType.PredatorFactory, Color.Blue, 10.0f, 50.0f, 1);
+            DrawObstaclePointLight(DawnClientEntity.EntityType.Treasure, Color.Red, .7f, 10.0f, 2);
+            DrawObstaclePointLight(DawnClientEntity.EntityType.PredatorFactory, Color.Blue, 10.0f, 50.0f, 1);
             //DrawCreaturePointLight(EntityType.Turret, Color.LightGreen, 7.5f, 15.0f, 2);
             //DrawCreaturePointLight(EntityType.Predator, Color.BlueViolet, 1.0f, 7.5f, 2);
-            DrawBulletPointLight(EntityType.Bullet, Color.Firebrick, .3f, 1.5f, 20f);
-            DrawBulletPointLight(EntityType.Rocket, Color.Firebrick, .5f, 2.5f, 10f);
+            DrawBulletPointLight(DawnClientEntity.EntityType.Bullet, Color.Firebrick, .3f, 1.5f, 20f);
+            DrawBulletPointLight(DawnClientEntity.EntityType.Rocket, Color.Firebrick, .5f, 2.5f, 10f);
             DrawExplosions();
 
-            DrawFamilyPointLight(EntityType.Predator, 3f, 10f, 2);
-            DrawFamilyPointLight(EntityType.SpawnPoint, 3f, 20f, 2f);
+            DrawFamilyPointLight(DawnClientEntity.EntityType.Predator, 3f, 10f, 2);
+            DrawFamilyPointLight(DawnClientEntity.EntityType.SpawnPoint, 3f, 20f, 2f);
 
             GraphicsDevice.BlendState = BlendState.Opaque;
             GraphicsDevice.DepthStencilState = DepthStencilState.None;            
@@ -410,16 +428,16 @@ namespace DawnGame
         {
             var keyboard = Keyboard.GetState();
 
-            if (keyboard.IsKeyDown(Keys.F1))
-                _camera = new BirdsEyeCamera(GraphicsDevice, new Vector3(DawnWorld.MaxX / 2f, 430, DawnWorld.MaxY / 2f), 100);
+            //if (keyboard.IsKeyDown(Keys.F1))
+            //    _camera = new BirdsEyeCamera(GraphicsDevice, new Vector3(DawnWorld.MaxX / 2f, 430, DawnWorld.MaxY / 2f), 100);
             if (keyboard.IsKeyDown(Keys.F2))
-                _camera = new AvatarCamera(GraphicsDevice, _dawnWorld.Avatar);
+                _camera = new AvatarCamera(GraphicsDevice, _dawnClient.Avatar);
             if (keyboard.IsKeyDown(Keys.F3))
-                _camera = new BirdsEyeFollowCamera(GraphicsDevice, 100, 50, _dawnWorld.Avatar);
+                _camera = new BirdsEyeFollowCamera(GraphicsDevice, 100, 50, _dawnClient.Avatar);
             if (keyboard.IsKeyDown(Keys.F4))
                 _camera = new FirstPersonCamera(Game.Window, 10);
             if (keyboard.IsKeyDown(Keys.F5))
-                _camera = new AvatarCamera(GraphicsDevice, _dawnWorld.Environment.GetCreatures(EntityType.Predator)[0]);
+                _camera = new AvatarCamera(GraphicsDevice, _dawnClient.DawnWorld.GetEntities().FirstOrDefault(e => e.Specy == DawnClientEntity.EntityType.Predator));
         }
     }
 }

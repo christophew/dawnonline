@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using DawnOnline.Simulation;
-using DawnOnline.Simulation.Entities;
+using DawnClient;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -41,9 +40,9 @@ namespace DawnGame.Cameras
             UpdateViewMatrix();
         }
 
-        private ICreature _creature;
+        private DawnClientEntity _creature;
 
-        internal AvatarCamera(GraphicsDevice device, ICreature creature)
+        internal AvatarCamera(GraphicsDevice device, DawnClientEntity creature)
         {
             _creature = creature;
 
@@ -58,8 +57,8 @@ namespace DawnGame.Cameras
 
         private void UpdateViewMatrix()
         {
-            var pos = _creature.Place.Position;
-            var angle = _creature.Place.Angle;
+            var pos = new Vector2(_creature.PlaceX, _creature.PlaceY);
+            var angle = _creature.Angle;
 
             Position = new Vector3((float)(pos.X), _cameraHeight, (float)(pos.Y));
             var cameraLookAt = new Vector3((float)(pos.X + Math.Cos(angle) * 10), _lookatHeight, (float)(pos.Y + Math.Sin(angle) * 10));

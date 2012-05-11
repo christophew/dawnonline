@@ -17,8 +17,13 @@ namespace DawnClient
 
         private DateTime _lastUpdateTime = DateTime.Now;
         private HashSet<AvatarCommand> _avatarCommands = new HashSet<AvatarCommand>();
+
         private int _avatarId;
         public int AvatarId { get { return _avatarId; } }
+
+        private DawnClientEntity _avatarProxy = new DawnClientEntity();
+        public DawnClientEntity Avatar { get { return _avatarProxy; } }
+
 
         public DawnClient()
         {
@@ -32,6 +37,7 @@ namespace DawnClient
             //Output is passed to you in the DebugReturn callback
             _peer.DebugOut = DebugLevel.ALL;
             return _peer.Connect("127.0.0.1:5055", "DawnServer");
+            //return _peer.Connect("192.168.1.105:5055", "DawnServer");
         }
 
         public void Update()
@@ -101,6 +107,16 @@ namespace DawnClient
                         // Position update: compressed
                         var entities = eventData.Parameters.Select(kvp => new DawnClientEntity((Hashtable) kvp.Value)).ToList();
                         DawnWorld.UpdateEntities(entities);
+
+                        // Update avatarProxy
+                        if (_avatarId != 0)
+                        {
+                            var avatar = entities.FirstOrDefault(e => e.Id == _avatarId);
+                            if (avatar != null)
+                            {
+                                _avatarProxy.UpdateFrom(avatar);
+                            }
+                        }
 
                         break;
                     }
