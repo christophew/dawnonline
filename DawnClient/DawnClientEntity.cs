@@ -33,6 +33,9 @@ namespace DawnClient
         public float Angle { get; private set; }
         public int SpawnPointId { get; private set; }
 
+        internal DawnClientEntity()
+        {}
+
         internal DawnClientEntity(Hashtable eventData)
         {
             this.Id = (int)eventData[0];
@@ -45,6 +48,16 @@ namespace DawnClient
             {
                 this.SpawnPointId = (int) eventData[5];
             }
+        }
+
+        internal void UpdateFrom(DawnClientEntity original)
+        {
+            this.Id = original.Id;
+            this.Specy = original.Specy;
+            this.PlaceX = original.PlaceX;
+            this.PlaceY = original.PlaceY;
+            this.Angle = original.Angle;
+            this.SpawnPointId = original.SpawnPointId;
         }
     }
 }

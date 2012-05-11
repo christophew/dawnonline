@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
 using DawnGame.Cameras;
-using DawnOnline.Simulation;
-using DawnOnline.Simulation.Collision;
-using DawnOnline.Simulation.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;

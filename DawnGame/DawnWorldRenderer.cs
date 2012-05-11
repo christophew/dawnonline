@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using DawnClient;
 using DawnGame.Cameras;
-using DawnOnline.Simulation.Collision;
-using DawnOnline.Simulation.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -28,7 +27,8 @@ namespace DawnGame
         private GameObject _spawnPointModel;
 
         private Game _game;
-        private DawnWorld _dawnWorld;
+        private DawnClient.DawnClient _dawnClient;
+        private DawnClient.DawnClientWorld _dawnWorld;
         private ICamera _camera;
 
         RoundLineManager roundLineManager;
@@ -49,10 +49,11 @@ namespace DawnGame
         public long UpdateTime { get { return _updateTimer.ElapsedMilliseconds; } }
 
 
-        public DawnWorldRenderer(Game game, DawnWorld world)
+        public DawnWorldRenderer(Game game, DawnClient.DawnClient dawnClient)
         {
             _game = game;
-            _dawnWorld = world;
+            _dawnClient = dawnClient;
+            _dawnWorld = dawnClient.DawnWorld;
         }
 
         public void LoadContent()
@@ -88,96 +89,55 @@ namespace DawnGame
             UpdateAvatar();
 
             // World
-            if (keyboardState.IsKeyDown(Keys.P) && ((DateTime.Now - _creaturesAddedAt).TotalSeconds > 5))
-            {
-                _dawnWorld.AddCreatures(EntityType.Predator, 10);
-                _creaturesAddedAt = DateTime.Now;
-            }
-
-            // Think = Decide where to move
-            //bool doMove = true;
-            //if ((gameTime.TotalGameTime - _lastThink).TotalMilliseconds > 100)
+            //if (keyboardState.IsKeyDown(Keys.P) && ((DateTime.Now - _creaturesAddedAt).TotalSeconds > 5))
             //{
-            //    _thinkTimer.Reset();
-            //    _thinkTimer.Start();
-            //    _dawnWorld.ThinkAll(30);
-            //    _thinkTimer.Stop();
-            //    Console.WriteLine("_thinkTimer: " + _thinkTimer.ElapsedMilliseconds);
-
-            //    _lastThink = gameTime.TotalGameTime;
-
-            //    // No think & move in the same turn
-            //    doMove = false;
+            //    _dawnWorld.AddCreatures(EntityType.Predator, 10);
+            //    _creaturesAddedAt = DateTime.Now;
             //}
 
-            _thinkTimer.Reset();
-            _thinkTimer.Start();
-            //_dawnWorld.ThinkAll(MathHelper.Max(20, (float)(gameTime.ElapsedGameTime.TotalMilliseconds / 2.0)));
-            _dawnWorld.ThinkAll(30, gameTime.ElapsedGameTime);
-            _thinkTimer.Stop();
-            Console.WriteLine("_thinkTimer: " + _thinkTimer.ElapsedMilliseconds);
+            _dawnClient.Update();
 
-            //// Move
-            //if (doMove && (gameTime.TotalGameTime - _lastMove).TotalMilliseconds > 100)
-            //{
-            //    _moveTimer.Reset();
-            //    _moveTimer.Start();
-            //    _dawnWorld.ApplyMove((gameTime.TotalGameTime - _lastMove).TotalMilliseconds);
-            //    _moveTimer.Stop();
-            //    Console.WriteLine("_moveTimer: " + _moveTimer.ElapsedMilliseconds);
-
-            //    _lastMove = gameTime.TotalGameTime;
-            //}
-
-            // Update physics
-            _updateTimer.Reset();
-            _updateTimer.Start();
-            _dawnWorld.ApplyMove(gameTime.ElapsedGameTime.TotalMilliseconds);
-            _dawnWorld.UpdatePhysics(MathHelper.Min(100, (float)gameTime.ElapsedGameTime.TotalMilliseconds));
-            _updateTimer.Stop();
-            Console.WriteLine("_updateTimer: " + _updateTimer.ElapsedMilliseconds);
         }
 
         private void UpdateAvatar()
         {
             var keyboardState = Keyboard.GetState();
 
-            _dawnWorld.Avatar.ClearActionQueue();
-
             if (keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Keys.Z))
             {
                 if (keyboardState.IsKeyDown(Keys.LeftShift))
-                    _dawnWorld.Avatar.WalkForward();
+                    _dawnClient.SendAvatorCommand(AvatarCommand.WalkForward);
                 else
-                    _dawnWorld.Avatar.RunForward();
+                     _dawnClient.SendAvatorCommand(AvatarCommand.RunForward);
             }
             if (keyboardState.IsKeyDown(Keys.Down) || keyboardState.IsKeyDown(Keys.S))
-                _dawnWorld.Avatar.WalkBackward();
+                     _dawnClient.SendAvatorCommand(AvatarCommand.WalkBackward);
             if (keyboardState.IsKeyDown(Keys.Left) || keyboardState.IsKeyDown(Keys.Q))
             {
                 if (keyboardState.IsKeyDown(Keys.LeftShift))
-                    _dawnWorld.Avatar.TurnLeftSlow();
+                     _dawnClient.SendAvatorCommand(AvatarCommand.TurnLeftSlow);
                 else
-                    _dawnWorld.Avatar.TurnLeft();
+                     _dawnClient.SendAvatorCommand(AvatarCommand.TurnLeft);
             }
             if (keyboardState.IsKeyDown(Keys.Right) || keyboardState.IsKeyDown(Keys.D))
             {
                 if (keyboardState.IsKeyDown(Keys.LeftShift))
-                    _dawnWorld.Avatar.TurnRightSlow();
+                    _dawnClient.SendAvatorCommand(AvatarCommand.TurnRightSlow);
                 else
-                    _dawnWorld.Avatar.TurnRight();
+                    _dawnClient.SendAvatorCommand(AvatarCommand.TurnRight);
             }
             if (keyboardState.IsKeyDown(Keys.A))
-                _dawnWorld.Avatar.StrafeLeft();
+                _dawnClient.SendAvatorCommand(AvatarCommand.StrafeLeft);
             if (keyboardState.IsKeyDown(Keys.E))
-                _dawnWorld.Avatar.StrafeRight();
+                _dawnClient.SendAvatorCommand(AvatarCommand.StrafeRight);
             if (keyboardState.IsKeyDown(Keys.Space))
-                _dawnWorld.Avatar.Fire();
+                _dawnClient.SendAvatorCommand(AvatarCommand.Fire);
             if (keyboardState.IsKeyDown(Keys.LeftControl))
-                _dawnWorld.Avatar.FireRocket();
+                _dawnClient.SendAvatorCommand(AvatarCommand.FireRocket);
 
-            if (keyboardState.IsKeyDown(Keys.T))
-                _dawnWorld.Avatar.BuildEntity(EntityType.Turret);
+            //if (keyboardState.IsKeyDown(Keys.T))
+            //         _dawnClient.SendAvatorCommand(AvatarCommand.WalkForward);
+            //   _dawnWorld.Avatar.BuildEntity(EntityType.Turret);
         }
 
         public void Draw(GameTime gameTime, ICamera camera)
@@ -194,7 +154,7 @@ namespace DawnGame
 
                 // Draw creatures
                 {
-                    var creatures = _dawnWorld.Environment.GetCreatures();
+                    var creatures = _dawnWorld.GetEntities();
                     foreach (var current in creatures)
                     {
                         //DrawCreature(current, roundLineManager, viewProjMatrix, time, curTechniqueName);
@@ -209,7 +169,7 @@ namespace DawnGame
 
         private void DrawCubeWorld()
         {
-            var obstacles = _dawnWorld.Environment.GetObstacles();
+            var obstacles = _dawnWorld.GetEntities();
             foreach (var current in obstacles)
             {
                 DrawEntity(current);
@@ -218,48 +178,48 @@ namespace DawnGame
 
         private void DrawBullets()
         {
-            var obstacles = _dawnWorld.Environment.GetBullets();
+            var obstacles = _dawnWorld.GetEntities();
             foreach (var current in obstacles)
             {
                 DrawEntity(current);
             }
         }
 
-        private void DrawEntity(IEntity entity)
+        private void DrawEntity(DawnClientEntity entity)
         {
-            var rotation = new Vector3(0, -entity.Place.Angle, 0);
-            var position = new Vector3(entity.Place.Position.X, 0f, entity.Place.Position.Y);
+            var rotation = new Vector3(0, -entity.Angle, 0);
+            var position = new Vector3(entity.PlaceX, 0f, entity.PlaceY);
 
             switch (entity.Specy)
             {
-                case EntityType.Avatar:
+                case DawnClientEntity.EntityType.Avatar:
                     _creatureModel_Avatar.DrawObject(_camera, position, rotation);
                     break;
-                case EntityType.Predator:
+                case DawnClientEntity.EntityType.Predator:
                     _creatureModel.DrawObject(_camera, position, rotation);
                     break;
-                case EntityType.Turret:
+                case DawnClientEntity.EntityType.Turret:
                     _gunModel.DrawObject(_camera, position, rotation);
                     break;
-                case EntityType.Box:
+                case DawnClientEntity.EntityType.Box:
                     _cubeModel.DrawObject(_camera, position, rotation);
                     break;
-                case EntityType.Wall:
+                case DawnClientEntity.EntityType.Wall:
                     _wallModel.DrawObject(_camera, position, rotation);
                     break;
-                case EntityType.Treasure:
+                case DawnClientEntity.EntityType.Treasure:
                     _treasureModel.DrawObject(_camera, position, rotation, true);
                     break;
-                case EntityType.PredatorFactory:
+                case DawnClientEntity.EntityType.PredatorFactory:
                     _predatorFactoryModel.DrawObject(_camera, position, rotation);
                     break;
-                case EntityType.Bullet:
+                case DawnClientEntity.EntityType.Bullet:
                     _bulletModel.DrawObject(_camera, position, rotation, true);
                     break;
-                case EntityType.Rocket:
+                case DawnClientEntity.EntityType.Rocket:
                     _rocketModel.DrawObject(_camera, position, rotation, true);
                     break;
-                case EntityType.SpawnPoint:
+                case DawnClientEntity.EntityType.SpawnPoint:
                     _spawnPointModel.DrawObject(_camera, position, rotation, true);
                     break;
                 default:
@@ -267,65 +227,65 @@ namespace DawnGame
             }
         }
 
-        private void DrawCreatureInfo(ICreature creature)
-        {
-            var pos = creature.Place.Position;
-            var angle = creature.Place.Angle;
-            Color color = creature.CanAttack() ? Color.Black : Color.Red;
+        //private void DrawCreatureInfo(ICreature creature)
+        //{
+        //    var pos = creature.Place.Position;
+        //    var angle = creature.Place.Angle;
+        //    Color color = creature.CanAttack() ? Color.Black : Color.Red;
 
-            var attackMiddle = new Vector2(
-                (float)(pos.X + Math.Cos(angle) * creature.CharacterSheet.MeleeRange),
-                (float)(pos.Y + Math.Sin(angle) * creature.CharacterSheet.MeleeRange));
+        //    var attackMiddle = new Vector2(
+        //        (float)(pos.X + Math.Cos(angle) * creature.CharacterSheet.MeleeRange),
+        //        (float)(pos.Y + Math.Sin(angle) * creature.CharacterSheet.MeleeRange));
 
-            DrawCircle(attackMiddle, creature.CharacterSheet.MeleeRange, color);
-        }
+        //    DrawCircle(attackMiddle, creature.CharacterSheet.MeleeRange, color);
+        //}
 
-        private void Draw2DWorld(GameTime gameTime)
-        {
-            float time = (float)gameTime.TotalGameTime.TotalSeconds;
-            string curTechniqueName = roundLineTechniqueNames[roundLineTechniqueIndex];
-            {
-                var obstacles = _dawnWorld.Environment.GetObstacles();
-                foreach (var current in obstacles)
-                {
-                    var points = current.Place.Form.Shape.Points;
-                    var pos = current.Place.Position;
+        //private void Draw2DWorld(GameTime gameTime)
+        //{
+        //    float time = (float)gameTime.TotalGameTime.TotalSeconds;
+        //    string curTechniqueName = roundLineTechniqueNames[roundLineTechniqueIndex];
+        //    {
+        //        var obstacles = _dawnWorld.Environment.GetObstacles();
+        //        foreach (var current in obstacles)
+        //        {
+        //            var points = current.Place.Form.Shape.Points;
+        //            var pos = current.Place.Position;
 
-                    DrawPolygon(points, time, curTechniqueName);
-                }
-            }
-        }
+        //            DrawPolygon(points, time, curTechniqueName);
+        //        }
+        //    }
+        //}
 
-        private void DrawPolygon(IList<Vector> points, float time, string curTechniqueName)
-        {
-            List<RoundLine> lines = new List<RoundLine>();
-            //List<Line> lines = new List<Line>();
+        //private void DrawPolygon(IList<Vector> points, float time, string curTechniqueName)
+        //{
+        //    List<RoundLine> lines = new List<RoundLine>();
+        //    //List<Line> lines = new List<Line>();
 
-            for (int i = 0; i < points.Count; i++)
-            {
-                DawnOnline.Simulation.Collision.Vector point1 = points[i];
-                DawnOnline.Simulation.Collision.Vector point2;
-                if (i + 1 >= points.Count)
-                {
-                    point2 = points[0];
-                }
-                else
-                {
-                    point2 = points[i + 1];
-                }
-                //var vector1 = new Vector2((float)(point1.X + position.X), (float)(point1.Y + position.Y));
-                //var vector2 = new Vector2((float)(point2.X + position.X), (float)(point2.Y + position.Y));
-                var vector1 = new Vector2((float)(point1.X), (float)(point1.Y));
-                var vector2 = new Vector2((float)(point2.X), (float)(point2.Y));
+        //    for (int i = 0; i < points.Count; i++)
+        //    {
+        //        DawnOnline.Simulation.Collision.Vector point1 = points[i];
+        //        DawnOnline.Simulation.Collision.Vector point2;
+        //        if (i + 1 >= points.Count)
+        //        {
+        //            point2 = points[0];
+        //        }
+        //        else
+        //        {
+        //            point2 = points[i + 1];
+        //        }
+        //        //var vector1 = new Vector2((float)(point1.X + position.X), (float)(point1.Y + position.Y));
+        //        //var vector2 = new Vector2((float)(point2.X + position.X), (float)(point2.Y + position.Y));
+        //        var vector1 = new Vector2((float)(point1.X), (float)(point1.Y));
+        //        var vector2 = new Vector2((float)(point2.X), (float)(point2.Y));
 
-                RoundLine line = new RoundLine(vector1, vector2);
-                //Line line = new Line(vector1, vector2);
-                lines.Add(line);
-            }
+        //        RoundLine line = new RoundLine(vector1, vector2);
+        //        //Line line = new Line(vector1, vector2);
+        //        lines.Add(line);
+        //    }
 
-            roundLineManager.Draw(lines, 3, Color.Black, lineWorldMatrix * _viewProjMatrix, time, curTechniqueName);
-            //lineManager.Draw(lines, 3, Color.Black.ToVector4(), viewMatrix, projMatrix, time, null, lineWorldMatrix, 0.97f);
-        }
+        //    roundLineManager.Draw(lines, 3, Color.Black, lineWorldMatrix * _viewProjMatrix, time, curTechniqueName);
+        //    //lineManager.Draw(lines, 3, Color.Black.ToVector4(), viewMatrix, projMatrix, time, null, lineWorldMatrix, 0.97f);
+        //}
 
         private void DrawCircle(Vector2 centre, double radius, Color color)
         {
