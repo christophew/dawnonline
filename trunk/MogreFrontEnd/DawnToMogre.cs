@@ -14,7 +14,7 @@ namespace MogreFrontEnd
         private SceneManager mSceneMgr;
         internal DawnClientWorld _dawnWorld;
         internal DawnClient.DawnClient _dawnClient;
-        private Dictionary<int, SceneNode> _entities = new Dictionary<int, SceneNode>();
+        private Dictionary<int, SlerpNode> _entities = new Dictionary<int, SlerpNode>();
         private Camera _fpCamera;
 
 
@@ -44,7 +44,7 @@ namespace MogreFrontEnd
                 if (!currentEntities.Contains(entity.Key))
                 {
                     _entities.Remove(entity.Key);
-                    mSceneMgr.RootSceneNode.RemoveAndDestroyChild(entity.Value.Name);
+                    mSceneMgr.RootSceneNode.RemoveAndDestroyChild(entity.Value.Node.Name);
                 }
             }
         }
@@ -174,13 +174,22 @@ namespace MogreFrontEnd
         //}
 
         //private SceneNode EntityToNode(DawnClientEntity entity, Dictionary<IEntity, bool> currentNodes)
-        private SceneNode EntityToNode(DawnClientEntity entity, HashSet<int> currentEntities)
+        private void EntityToNode(DawnClientEntity entity, HashSet<int> currentEntities)
         {
-            SceneNode node = null;
+            SlerpNode slerpNode = null;
             float initialAngle = -Math.HALF_PI;
 
-            if (!_entities.TryGetValue(entity.Id, out node))
+            float angle = entity.Angle + initialAngle;
+            Vector2 position = new Vector2(entity.PlaceX, entity.PlaceY);
+
+            if (_entities.TryGetValue(entity.Id, out slerpNode))
             {
+                slerpNode.Update(position, angle);
+            }
+            else
+            {
+                SceneNode node = null;
+
                 switch (entity.Specy)
                 {
                     case DawnClientEntity.EntityType.Avatar:
@@ -217,24 +226,10 @@ namespace MogreFrontEnd
                         throw new NotSupportedException();
                 }
 
-                _entities.Add(entity.Id, node);
+                slerpNode = new SlerpNode(node, position, angle);
+
+                _entities.Add(entity.Id, slerpNode);
             }
-
-            Radian angle = entity.Angle + initialAngle;
-
-            //node.SetOrientation(0, 0, 0, 0);
-            node.ResetOrientation();
-            node.Yaw(-angle);
-
-            node.SetPosition(entity.PlaceX, 0, entity.PlaceY);
-
-
-            //Vector3 mDestination = new Vector3(entity.PlaceX, 0, entity.PlaceY);                    // mDestination is the next location
-            //Vector3 mDirection = mDestination - node.Position;                                      // B-A = A->B (see vector questions above)
-            //Vector3 src = node.Orientation * Vector3.UNIT_X;                                        // see (1)
-            //var mDistance = mDirection.Normalise();                                                 // strip out distance, we only want direction
-            //Quaternion quat = src.GetRotationTo(mDirection);                                        // Get a quaternion rotation operation 
-            //node.Rotate(quat);                                                                      // Actually rotate the object
 
 
             // Attach FP-camera when possible
@@ -247,10 +242,7 @@ namespace MogreFrontEnd
                     // Is this out avatar?
                     if (entity.Id == _dawnClient.AvatarId)
                     {
-                        if (_fpCamera != null)
-                        {
-                            node.AttachObject(_fpCamera);
-                        }
+                        slerpNode.Node.AttachObject(_fpCamera);
                     }
                 }
             }
@@ -260,8 +252,6 @@ namespace MogreFrontEnd
             {
                 currentEntities.Add(entity.Id);
             }
-
-            return node;
         }
 
         private SceneNode CreateDummyNode(DawnClientEntity entity)
