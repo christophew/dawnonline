@@ -423,10 +423,10 @@ namespace DawnOnline.Simulation.Entities
             target.MyActionQueue.Damage = _characterSheet.MeleeDamage;
 
             // Score
-            if (SpawnPoint != null)
-            {
-                (SpawnPoint as Creature).CharacterSheet.Score += 1;
-            }
+            //if (SpawnPoint != null)
+            //{
+            //    (SpawnPoint as Creature).CharacterSheet.Score += 1;
+            //}
         }
 
         internal void TakeBulletDamage(Bullet bullet)

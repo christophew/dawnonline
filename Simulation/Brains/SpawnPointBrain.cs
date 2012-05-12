@@ -72,6 +72,9 @@ namespace DawnOnline.Simulation.Brains
             replicatedCreature.SpawnPoint = MyCreature;
 
             AddToWorld(replicatedCreature);
+
+            // Score
+            this.MyCreature.CharacterSheet.Score += 10;
         }
 
         private void SpawnProtector()
