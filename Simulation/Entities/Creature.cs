@@ -195,7 +195,7 @@ namespace DawnOnline.Simulation.Entities
                         _place.Fixture.Body.Position + bulletAngleVector * (float)_place.Form.BoundingCircleRadius * 2.0f,
                         _place.Angle);
                     //bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 30);
-                    bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 3);
+                    bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 10);
                 }
 
                 _actionQueue.HasFired = true;
@@ -214,7 +214,7 @@ namespace DawnOnline.Simulation.Entities
                         _place.Fixture.Body.Position + bulletAngleVector * (float)_place.Form.BoundingCircleRadius * 2.0f,
                         _place.Angle);
                     //bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 20);
-                    bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 3);
+                    bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 5);
                 }
 
                 _actionQueue.HasFired = true;
