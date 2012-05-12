@@ -55,7 +55,7 @@ namespace DawnOnline.Simulation.Builders
             //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(100, 150);
             critter.CharacterSheet.WalkingDistance = 30 * _velocityMultiplier;
             critter.CharacterSheet.TurningAngle = 1.5 * _turnMultiplier;
-            critter.CharacterSheet.MeleeDamage = 2;
+            critter.CharacterSheet.MeleeDamage = 10;
             critter.CharacterSheet.RangeDamage = 0;
 
             return critter;
@@ -121,7 +121,7 @@ namespace DawnOnline.Simulation.Builders
             critter.CharacterSheet.WalkingDistance = 0;
             critter.CharacterSheet.TurningAngle = 1 * _turnMultiplier;
             critter.CharacterSheet.AttackCoolDown = 0.3;
-            critter.CharacterSheet.RangeDamage = 2;
+            critter.CharacterSheet.RangeDamage = 10;
             critter.CharacterSheet.MeleeDamage = 0;
 
             critter.CharacterSheet.VisionDistance = 40;
