@@ -88,12 +88,13 @@ namespace DawnOnline.Simulation.Entities
             if (bullet.Destroyed)
                 return;
 
-            if (!bullet.Explodes)
-            {
-                // Ricochette when velocity after collision is high enough
-                if (fixtureA.Body.LinearVelocity.Length() > _ricochetteVelocityThreshold)
-                    return;
-            }
+            // Possible ricochette
+            //if (!bullet.Explodes)
+            //{
+            //    // Ricochette when velocity after collision is high enough
+            //    if (fixtureA.Body.LinearVelocity.Length() > _ricochetteVelocityThreshold)
+            //        return;
+            //}
 
             // Destroy on impact
             bullet.Destroyed = true;

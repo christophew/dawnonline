@@ -39,7 +39,7 @@ namespace DawnClient
         internal DawnClientEntity(Hashtable eventData)
         {
             this.Id = (int)eventData[0];
-            this.Specy = (EntityType)eventData[1];
+            this.Specy = (EntityType)(byte)eventData[1];
             this.PlaceX = (float)eventData[2];
             this.PlaceY = (float)eventData[3];
             this.Angle = (float)eventData[4];

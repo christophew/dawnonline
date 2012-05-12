@@ -202,7 +202,7 @@ namespace MogreFrontEnd
                         node = CreateDummyNode(entity);
                         break;
                     case DawnClientEntity.EntityType.Box:
-                        node = CreateWallNode(entity);
+                        node = CreateBoxNode(entity);
                         break;
                     case DawnClientEntity.EntityType.Wall:
                         node = CreateWallNode(entity);
@@ -220,7 +220,7 @@ namespace MogreFrontEnd
                         node = CreateRocketNode(entity);
                         break;
                     case DawnClientEntity.EntityType.SpawnPoint:
-                        node = CreateDummyNode(entity);
+                        node = CreateSpawnPointNode(entity);
                         break;
                     default:
                         throw new NotSupportedException();
@@ -260,6 +260,19 @@ namespace MogreFrontEnd
             SceneNode node = mSceneMgr.RootSceneNode.CreateChildSceneNode();
             node.AttachObject(box);
             node.Scale(2.5f, 2.5f, 2.5f);
+
+            return node;
+        }
+
+        private SceneNode CreateSpawnPointNode(DawnClientEntity entity)
+        {
+            var box = mSceneMgr.CreateEntity("cone.mesh");
+            SceneNode node = mSceneMgr.RootSceneNode.CreateChildSceneNode();
+            node.AttachObject(box);
+            node.Scale(2.5f, 2.5f, 2.5f);
+
+            var material = GetFamilyMaterial(entity);
+            box.SetMaterial(material);
 
             return node;
         }
@@ -339,6 +352,15 @@ namespace MogreFrontEnd
                 wheelNode.Roll(Math.HALF_PI);
                 wheelNode.Scale(0.3f, 0.2f, 0.3f);
             }
+            // Nose
+            {
+                var nose = mSceneMgr.CreateEntity("cone.mesh");
+                var noseNode = rootNode.CreateChildSceneNode(new Vector3(0, 0, 1));
+                noseNode.AttachObject(nose);
+                noseNode.Pitch(Math.HALF_PI);
+                //noseNode.Roll(Math.HALF_PI);
+                noseNode.Scale(0.2f, 0.2f, 0.2f);
+            }
 
             // Light 2
             //Light avatorSpot = mSceneMgr.CreateLight("avatorSpotLight");
@@ -387,6 +409,16 @@ namespace MogreFrontEnd
                 wheelNode.Scale(1f, 0.2f, 0.5f);
             }
 
+            // Nose
+            {
+                var nose = mSceneMgr.CreateEntity("cone.mesh");
+                var noseNode = rootNode.CreateChildSceneNode(new Vector3(0, 0, 1.1f));
+                noseNode.AttachObject(nose);
+                noseNode.Pitch(Math.HALF_PI);
+                //noseNode.Roll(Math.HALF_PI);
+                noseNode.Scale(0.2f, 0.2f, 0.2f);
+            }
+
             //// Light 2
             //Light light = mSceneMgr.CreateLight();
             //light.Type = Light.LightTypes.LT_POINT;
@@ -399,12 +431,28 @@ namespace MogreFrontEnd
             return rootNode;
         }
 
+        private static MaterialPtr _boxMaterial = CreateMaterial(new ColourValue(0.7f, 0.7f, 0.7f));
+        private SceneNode CreateBoxNode(DawnClientEntity entity)
+        {
+            var box = mSceneMgr.CreateEntity("cube.mesh");
+            SceneNode node = mSceneMgr.RootSceneNode.CreateChildSceneNode();
+            node.AttachObject(box);
+            node.Scale(2.5f, 2.5f, 2.5f);
+
+            box.SetMaterial(_boxMaterial); 
+
+            return node;
+        }
+
+        private static MaterialPtr _wallMaterial = CreateMaterial(new ColourValue(0.3f, 0.3f, 0.3f));
         private SceneNode CreateWallNode(DawnClientEntity entity)
         {
             var box = mSceneMgr.CreateEntity("cube.mesh");
             SceneNode node = mSceneMgr.RootSceneNode.CreateChildSceneNode();
             node.AttachObject(box);
             node.Scale(2.5f, 2.5f, 2.5f);
+
+            box.SetMaterial(_wallMaterial); 
 
             return node;
         }
@@ -430,22 +478,29 @@ namespace MogreFrontEnd
             MaterialPtr material;
             if (!_familyColorMapper.TryGetValue(entity.SpawnPointId, out material))
             {
-                var skipColor = _randomize.Next(3);
+                //var skipColor = _randomize.Next(3);
+                var skipColor = -1;
                 var color = new ColourValue(
-                    skipColor == 0 ? 0 : _randomize.Next(255),
-                    skipColor == 1 ? 0 : _randomize.Next(255),
-                    skipColor == 2 ? 0 : _randomize.Next(255));
+                    skipColor == 0 ? 0 : _randomize.Next(255) / 255f,
+                    skipColor == 1 ? 0 : _randomize.Next(255) / 255f,
+                    skipColor == 2 ? 0 : _randomize.Next(255) / 255f);
 
                 //var texture = TextureManager.Singleton.Load("Chrome.jpg", ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME);
-                material = MaterialManager.Singleton.Create("MyMaterial", ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME);
-                var pass = material.GetTechnique(0).GetPass(0);
-                //var unitState = pass.CreateTextureUnitState();
-                pass.SetDiffuse(color.r, color.g, color.b, 1.0f);
-                //unitState.SetTextureName(texture.Name);
+                material = CreateMaterial(color);
 
                 _familyColorMapper.Add(entity.SpawnPointId, material);
             }
 
+            return material;
+        }
+
+        private static MaterialPtr CreateMaterial(ColourValue color)
+        {
+            MaterialPtr material = MaterialManager.Singleton.Create("MyMaterial", ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME);
+            var pass = material.GetTechnique(0).GetPass(0);
+            //var unitState = pass.CreateTextureUnitState();
+            pass.SetDiffuse(color.r, color.g, color.b, 1.0f);
+            //unitState.SetTextureName(texture.Name);
             return material;
         }
     }

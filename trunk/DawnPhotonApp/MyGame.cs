@@ -6,6 +6,7 @@ using System.Linq;
 using DawnGame;
 using DawnOnline.Simulation.Entities;
 using Lite.Messages;
+using Microsoft.Xna.Framework;
 
 namespace MyApplication
 {
@@ -38,7 +39,7 @@ namespace MyApplication
         private static DawnWorld _dawnWorldInstance = new DawnWorld();
 
         private DateTime _lastUpdateTime = DateTime.Now;
-        private HashSet<int> _previousEntities = new HashSet<int>();
+        private Dictionary<int, Vector2> _previousEntities = new Dictionary<int, Vector2>();
 
         private void UpdateDawnWorld()
         {
@@ -94,7 +95,7 @@ namespace MyApplication
                     this.PublishEvent(eData, this.Actors, sendParameters);
                 }
 
-                var currentEntities = new HashSet<int>();
+                var currentEntities = new Dictionary<int, Vector2>();
 
                 // 104 = compressed position update
                 {
@@ -102,22 +103,38 @@ namespace MyApplication
 
                     foreach (var entity in _dawnWorldInstance.Environment.GetCreatures())
                     {
-                        currentEntities.Add(entity.Id);
+                        currentEntities.Add(entity.Id, entity.Place.Position);
+
+                        // Do not send updates when the object hasn't moved
+                        Vector2 previousPosition;
+                        if (_previousEntities.TryGetValue(entity.Id, out previousPosition))
+                        {
+                            if (entity.Place.Position == previousPosition)
+                                continue;
+                        }
+
                         positionData.Add(CreateEntityData(entity));
                     }
                     foreach (var entity in _dawnWorldInstance.Environment.GetObstacles())
                     {
-                        currentEntities.Add(entity.Id);
+                        currentEntities.Add(entity.Id, entity.Place.Position);
 
+                        // Do not send updates when the object hasn't moved
+                        Vector2 previousPosition;
+                        if (_previousEntities.TryGetValue(entity.Id, out previousPosition))
+                        {
+                            if (entity.Place.Position == previousPosition)
+                                continue;
+                        }
                         // Ignore walls,they are send on WorldLoad
-                        if (entity.Specy == EntityType.Wall)
-                            continue;
+                        //if (entity.Specy == EntityType.Wall)
+                        //    continue;
 
                         positionData.Add(CreateEntityData(entity));
                     }
                     foreach (var entity in _dawnWorldInstance.Environment.GetBullets())
                     {
-                        currentEntities.Add(entity.Id);
+                        currentEntities.Add(entity.Id, entity.Place.Position);
                         positionData.Add(CreateEntityData(entity));
                     }
 
@@ -129,9 +146,9 @@ namespace MyApplication
                     var killedHash = new Hashtable();
 
                     int index = 0;
-                    foreach (var previousEntity in _previousEntities)
+                    foreach (var previousEntity in _previousEntities.Keys)
                     {
-                        if (!currentEntities.Contains(previousEntity))
+                        if (!currentEntities.ContainsKey(previousEntity))
                         {
                             // TODO: optimize second parameter
                             killedHash.Add(index++, previousEntity);
@@ -165,7 +182,7 @@ namespace MyApplication
             var sendParameters = new SendParameters { Unreliable = true };
 
             // Split the list into fragments
-            const int fragmentSize = 10;
+            const int fragmentSize = 15;
 
             byte index = 0;
             var currentDataList = new Dictionary<byte, object>();
@@ -195,7 +212,7 @@ namespace MyApplication
         {
             var dawnEntity = new Hashtable();
             dawnEntity[0] = entity.Id;
-            dawnEntity[1] = entity.Specy;
+            dawnEntity[1] = (byte)entity.Specy;
             dawnEntity[2] = entity.Place.Position.X;
             dawnEntity[3] = entity.Place.Position.Y;
             dawnEntity[4] = entity.Place.Angle;
@@ -248,14 +265,16 @@ namespace MyApplication
                 case MyOperationCodes.LoadWorld:
                     {
                         var avatar = _dawnWorldInstance.AddAvatar();
-                        var walls =
-                            _dawnWorldInstance.Environment.GetObstacles().Where(o => o.Specy == EntityType.Wall).ToList();
-                        var wallsParam = walls.Select(CreateEntityData).ToArray();
+                        //var slowObjects = _dawnWorldInstance.Environment.GetObstacles().Where(o => o.Specy == EntityType.Wall).ToList();
+                        var slowObjects = _dawnWorldInstance.Environment.GetObstacles().ToList();
+                        var slowCreatures = _dawnWorldInstance.Environment.GetCreatures(EntityType.SpawnPoint);
+                        slowObjects.AddRange(slowCreatures);
+                        var slowObjectsParam = slowObjects.Select(CreateEntityData).ToArray();
 
                         // Send response
                         var eData = new Dictionary<byte, object>();
                         eData[0] = avatar.Id;
-                        eData[1] = wallsParam;
+                        eData[1] = slowObjectsParam;
                         var response = new OperationResponse((byte)MyOperationCodes.LoadWorld, eData);
                         peer.SendOperationResponse(response, new SendParameters{Unreliable = false});
 
