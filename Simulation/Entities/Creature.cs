@@ -170,7 +170,14 @@ namespace DawnOnline.Simulation.Entities
 
             if (_characterSheet.Damage.IsFilled)
             {
+                var position = this.Place.Position;
+
                 MyEnvironment.KillCreature(this);
+
+                // Add treasure where creature is killed
+                var treasure = ObstacleBuilder.CreateTreasure();
+                MyEnvironment.AddObstacle(treasure, position);
+
                 return;
             }
 
