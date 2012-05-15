@@ -17,7 +17,9 @@ namespace DawnOnline.Simulation.Brains
         protected Bumper _forwardBumper;
         protected bool _initialized;
 
-        protected Dictionary<Eye, double> _eyeSee = new Dictionary<Eye, double>();
+        protected Dictionary<Eye, double> _eyeSeeEnemy = new Dictionary<Eye, double>();
+        protected Dictionary<Eye, double> _eyeSeeTreasure = new Dictionary<Eye, double>();
+        protected Dictionary<Eye, double> _eyeSeeWalls = new Dictionary<Eye, double>();
 
 
         protected enum EvadeState
@@ -40,7 +42,9 @@ namespace DawnOnline.Simulation.Brains
             Debug.Assert(_initialized);
 
             // Fill eye buffer
-            See();
+            SeeEnemies();
+            SeeTreasures();
+            SeeWalls();
 
             // Emotional states
             // * neutral
@@ -83,7 +87,7 @@ namespace DawnOnline.Simulation.Brains
         {
             //var check = _eyeSee[_forwardEye] > 0 || _eyeSee[_leftEye] > 0 || _eyeSee[_rightEye] > 0;
             // get a good look!
-            var check = _eyeSee[_forwardEye] > 5 || _eyeSee[_leftEye] > 5 || _eyeSee[_rightEye] > 5;
+            var check = _eyeSeeEnemy[_forwardEye] > 5 || _eyeSeeEnemy[_leftEye] > 5 || _eyeSeeEnemy[_rightEye] > 5;
 
             if (check)
                 _lastTimeISawAnEnemy = DateTime.Now;
@@ -131,16 +135,16 @@ namespace DawnOnline.Simulation.Brains
             }
 
             // Move
-            if (_eyeSee[_forwardEye] > 0)
+            if (_eyeSeeEnemy[_forwardEye] > 0)
             {
                 MyCreature.RunForward();
             }
-            if (_eyeSee[_leftEye] > 0)
+            if (_eyeSeeEnemy[_leftEye] > 0)
             {
                 MyCreature.TurnLeft();
                 return;
             }
-            if (_eyeSee[_rightEye] > 0)
+            if (_eyeSeeEnemy[_rightEye] > 0)
             {
                 MyCreature.TurnRight();
                 return;
@@ -164,17 +168,17 @@ namespace DawnOnline.Simulation.Brains
                 _imPanickingSince = DateTime.Now;
 
             // Run away!!!
-            if (_eyeSee[_forwardEye] > 0)
+            if (_eyeSeeEnemy[_forwardEye] > 0)
             {
                 MyCreature.TurnLeft();
                 return;
             }
-            if (_eyeSee[_leftEye] > 0)
+            if (_eyeSeeEnemy[_leftEye] > 0)
             {
                 MyCreature.TurnRight();
                 return;
             }
-            if (_eyeSee[_rightEye] > 0)
+            if (_eyeSeeEnemy[_rightEye] > 0)
             {
                 MyCreature.TurnLeft();
                 return;
@@ -190,16 +194,14 @@ namespace DawnOnline.Simulation.Brains
             MyCreature.RegisterRest();
         }
 
-        protected void See()
+        private void SeeEnemies()
         {
-            var creatures = MyCreature.MyEnvironment.GetCreatures(MyCreature.FoodSpecies);
-
-            // sort on distance
-            var sortedOnDistance = creatures.OrderBy(c => MathTools.GetDistance2(c.Place.Position, MyCreature.Place.Position));
+            var entities = MyCreature.MyEnvironment.GetCreatures(MyCreature.FoodSpecies);
+            var sortedOnDistance = FilterAndSortOnDistance(entities);
 
             // Filter
             var filtered = new List<IEntity>();
-            foreach(var entity in sortedOnDistance)
+            foreach(ICreature entity in sortedOnDistance)
             {
                 // Not me
                 if (entity == MyCreature)
@@ -211,11 +213,48 @@ namespace DawnOnline.Simulation.Brains
                 filtered.Add(entity);
             }
 
-            _eyeSee.Clear();
+            _eyeSeeEnemy.Clear();
 
-            _eyeSee.Add(_forwardEye, _forwardEye.DistanceToFirstVisible(filtered));
-            _eyeSee.Add(_leftEye, _leftEye.DistanceToFirstVisible(filtered));
-            _eyeSee.Add(_rightEye, _rightEye.DistanceToFirstVisible(filtered));
+            _eyeSeeEnemy.Add(_forwardEye, _forwardEye.DistanceToFirstVisible(filtered));
+            _eyeSeeEnemy.Add(_leftEye, _leftEye.DistanceToFirstVisible(filtered));
+            _eyeSeeEnemy.Add(_rightEye, _rightEye.DistanceToFirstVisible(filtered));
+        }
+
+        private void SeeTreasures()
+        {
+            var entities = MyCreature.MyEnvironment.GetObstacles().Where(e => e.Specy == EntityType.Treasure);
+            var sortedOnDistance = FilterAndSortOnDistance(entities);
+
+            _eyeSeeTreasure.Clear();
+
+            _eyeSeeTreasure.Add(_forwardEye, _forwardEye.DistanceToFirstVisible(sortedOnDistance));
+            _eyeSeeTreasure.Add(_leftEye, _leftEye.DistanceToFirstVisible(sortedOnDistance));
+            _eyeSeeTreasure.Add(_rightEye, _rightEye.DistanceToFirstVisible(sortedOnDistance));
+        }
+
+        private List<IEntity> FilterAndSortOnDistance(IEnumerable<IEntity> entities)
+        {
+            var maxDistance2 = MyCreature.CharacterSheet.VisionDistance * MyCreature.CharacterSheet.VisionDistance;
+
+            var optimized = entities
+                .Select(e => new KeyValuePair<IEntity, double>(e, MathTools.GetDistance2(e.Place.Position, MyCreature.Place.Position)))
+                .Where(kvp => kvp.Value < maxDistance2)
+                .OrderBy(kvp => kvp.Value).Select(kvp => kvp.Key)
+                .ToList();
+
+            return optimized;
+        }
+
+        private void SeeWalls()
+        {
+            var entities = MyCreature.MyEnvironment.GetObstacles().Where(e => e.Specy == EntityType.Wall || e.Specy == EntityType.Box);
+            var sortedOnDistance = FilterAndSortOnDistance(entities);
+
+            _eyeSeeWalls.Clear();
+
+            _eyeSeeWalls.Add(_forwardEye, _forwardEye.DistanceToFirstVisible(sortedOnDistance, false));
+            _eyeSeeWalls.Add(_leftEye, _leftEye.DistanceToFirstVisible(sortedOnDistance, false));
+            _eyeSeeWalls.Add(_rightEye, _rightEye.DistanceToFirstVisible(sortedOnDistance, false));
         }
 
         internal override void InitializeSenses()

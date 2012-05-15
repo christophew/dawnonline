@@ -5,16 +5,17 @@ using System.Linq;
 using System.Text;
 using DawnOnline.Simulation.Brains;
 using DawnOnline.Simulation.Entities;
+using DawnOnline.Simulation.Senses;
 
 namespace DawnOnline.Simulation.Brains.Neural
 {
     internal class NeuralBrain : ForagerBrain
     {
         private NeuralNetwork _adrenalineModeNetwork;
-        private int _adrenalineInputNodes = 6; // 3x eye, bumper, 2x random
-        private int _adrenalineOutputNodes = 2; // 3x eye, bumper, 2x random
+        private int _adrenalineInputNodes = 14; // 3x eye x3, bumper, health, stamina, 2x random
+        private int _adrenalineOutputNodes = 2; 
         private NeuralNetwork _foragerModeNetwork;
-        private int _foragerInputNodes = 6;
+        private int _foragerInputNodes = 14; // 3x eye x3, bumper, health, stamina, 2x random
         private int _foragerOutputNodes = 2;
 
         internal NeuralBrain()
@@ -51,33 +52,34 @@ namespace DawnOnline.Simulation.Brains.Neural
                _foragerModeNetwork = new NeuralNetwork(_foragerInputNodes, _foragerInputNodes * 2, _foragerOutputNodes + _foragerInputNodes, _foragerInputNodes);
 
                 // eyes
-                _foragerModeNetwork.InputNodes[0].OutGoingEdges[0].Multiplier = 1;
-                _foragerModeNetwork.InputNodes[1].OutGoingEdges[1].Multiplier = 1;
-                _foragerModeNetwork.InputNodes[2].OutGoingEdges[2].Multiplier = 1;
+                _foragerModeNetwork.InputNodes[3].OutGoingEdges[0].Multiplier = 1;
+                _foragerModeNetwork.InputNodes[4].OutGoingEdges[1].Multiplier = 1;
+                _foragerModeNetwork.InputNodes[5].OutGoingEdges[2].Multiplier = 1;
 
                 _foragerModeNetwork.LayerNodes[0].OutGoingEdges[0].Multiplier = -1;
                 _foragerModeNetwork.LayerNodes[1].OutGoingEdges[1].Multiplier = 1;
                 _foragerModeNetwork.LayerNodes[2].OutGoingEdges[0].Multiplier = 1;
+
 
                 // Reinforcement
                 BuildStandardReinforcementSetup(_foragerModeNetwork);
 
 
                 // bumper
-                _foragerModeNetwork.ReinforcementInputNodes[3].OutGoingEdges[0].Multiplier = 0.5;
-                _foragerModeNetwork.ReinforcementInputNodes[3].OutGoingEdges[1].Multiplier = -2; 
-                _foragerModeNetwork.ReinforcementInputNodes[3].OutGoingEdges[2].Multiplier = -0.5; 
+                _foragerModeNetwork.ReinforcementInputNodes[9].OutGoingEdges[0].Multiplier = 0.5;
+                _foragerModeNetwork.ReinforcementInputNodes[9].OutGoingEdges[1].Multiplier = -2; 
+                _foragerModeNetwork.ReinforcementInputNodes[9].OutGoingEdges[2].Multiplier = -0.5; 
 
                 // random nodes
 
-                // reinforced random: input nodes [4, 5]
-                _foragerModeNetwork.ReinforcementInputNodes[4].OutGoingEdges[0].Multiplier = .1;
-                _foragerModeNetwork.ReinforcementInputNodes[4].OutGoingEdges[1].Multiplier = .3;
-                _foragerModeNetwork.ReinforcementInputNodes[4].OutGoingEdges[2].Multiplier = -.1;
+                // reinforced random: input nodes
+                _foragerModeNetwork.ReinforcementInputNodes[10].OutGoingEdges[0].Multiplier = .1;
+                _foragerModeNetwork.ReinforcementInputNodes[10].OutGoingEdges[1].Multiplier = .3;
+                _foragerModeNetwork.ReinforcementInputNodes[10].OutGoingEdges[2].Multiplier = -.1;
 
-                _foragerModeNetwork.ReinforcementInputNodes[5].OutGoingEdges[0].Multiplier = -.1;
-                _foragerModeNetwork.ReinforcementInputNodes[5].OutGoingEdges[1].Multiplier = .3;
-                _foragerModeNetwork.ReinforcementInputNodes[5].OutGoingEdges[2].Multiplier = .1;
+                _foragerModeNetwork.ReinforcementInputNodes[11].OutGoingEdges[0].Multiplier = -.1;
+                _foragerModeNetwork.ReinforcementInputNodes[11].OutGoingEdges[1].Multiplier = .3;
+                _foragerModeNetwork.ReinforcementInputNodes[11].OutGoingEdges[2].Multiplier = .1;
             }
 
             // Memory
@@ -124,41 +126,59 @@ namespace DawnOnline.Simulation.Brains.Neural
             _foragerModeNetwork.Reset();
         }
 
-        protected override void NeutralState(TimeSpan timeDelta)
+        private static double GetEyeCheck(Eye eye, double value)
         {
-            // Forage
-            var leftEyeCheck = _leftEye.SeesAnObstacle(EntityType.Treasure);
-            var forwardEyeCheck = _forwardEye.SeesAnObstacle(EntityType.Treasure);
-            var rightEyeCheck = _rightEye.SeesAnObstacle(EntityType.Treasure);
+            return value < 0 ? 0 : 100.0*(eye.VisionDistance - value)/eye.VisionDistance;
+        }
 
-            _foragerModeNetwork.InputNodes[0].CurrentValue = leftEyeCheck ? 50 : 0;
-            _foragerModeNetwork.InputNodes[1].CurrentValue = forwardEyeCheck ? 50 : 0;
-            _foragerModeNetwork.InputNodes[2].CurrentValue = rightEyeCheck ? 50 : 0;
-            _foragerModeNetwork.InputNodes[3].CurrentValue = _forwardBumper.Hit ? 100 : 0;
-            _foragerModeNetwork.InputNodes[4].CurrentValue = Globals.Radomizer.Next(50);
-            _foragerModeNetwork.InputNodes[5].CurrentValue = Globals.Radomizer.Next(50);
+        private void RunNetwork(NeuralNetwork network, TimeSpan timeDelta)
+        {
+            int i = 0;
+            if (_eyeSeeEnemy.Count > 0)
+            {
+                network.InputNodes[i++].CurrentValue = GetEyeCheck(_leftEye, _eyeSeeEnemy[_leftEye]);
+                network.InputNodes[i++].CurrentValue = GetEyeCheck(_forwardEye, _eyeSeeEnemy[_forwardEye]);
+                network.InputNodes[i++].CurrentValue = GetEyeCheck(_rightEye, _eyeSeeEnemy[_rightEye]);
+            }
+            else i += 3;
+            if (_eyeSeeTreasure.Count > 0)
+            {
+                network.InputNodes[i++].CurrentValue = GetEyeCheck(_leftEye, _eyeSeeTreasure[_leftEye]);
+                network.InputNodes[i++].CurrentValue = GetEyeCheck(_forwardEye, _eyeSeeTreasure[_forwardEye]);
+                network.InputNodes[i++].CurrentValue = GetEyeCheck(_rightEye, _eyeSeeTreasure[_rightEye]);
+            }
+            else i += 3;
+            if (_eyeSeeWalls.Count > 0)
+            {
+                network.InputNodes[i++].CurrentValue = GetEyeCheck(_leftEye, _eyeSeeWalls[_leftEye]);
+                network.InputNodes[i++].CurrentValue = GetEyeCheck(_forwardEye, _eyeSeeWalls[_forwardEye]);
+                network.InputNodes[i++].CurrentValue = GetEyeCheck(_rightEye, _eyeSeeWalls[_rightEye]);
+            }
+            else i += 3;
+            network.InputNodes[i++].CurrentValue = _forwardBumper.Hit ? 100 : 0;
+            network.InputNodes[i++].CurrentValue = Globals.Radomizer.Next(50);
+            network.InputNodes[i++].CurrentValue = Globals.Radomizer.Next(50);
+            network.InputNodes[i++].CurrentValue = this.MyCreature.CharacterSheet.Damage.PercentFilled;
+            network.InputNodes[i++].CurrentValue = this.MyCreature.CharacterSheet.Fatigue.PercentFilled;
+
+            Debug.Assert(i == 14);
 
             // Process
-            _foragerModeNetwork.Propagate(timeDelta);
+            network.Propagate(timeDelta);
 
             // Feed output to creature
-            MyCreature.Turn(_foragerModeNetwork.OutputNodes[0].CurrentValue / 100);
-            MyCreature.Thrust(_foragerModeNetwork.OutputNodes[1].CurrentValue / 100);
+            MyCreature.Turn(network.OutputNodes[0].CurrentValue / 100);
+            MyCreature.Thrust(network.OutputNodes[1].CurrentValue / 100);
+        }
 
-
-
-
-            //// TODO: neural equivalent
-            //if (Math.Abs(_foragerModeNetwork.OutputNodes[0].CurrentValue) < 5 &&
-            //    Math.Abs(_foragerModeNetwork.OutputNodes[1].CurrentValue) < 5)
-            //{
-            //    // TODO: use random input node
-            //    DoRandomAction(1000);
-            //}
+        protected override void NeutralState(TimeSpan timeDelta)
+        {
+            RunNetwork(_foragerModeNetwork, timeDelta);
         }
 
         protected override void AdrenalineState(TimeSpan timeDelta)
         {
+            // TODO: attack should also be an output state of the neuralnetwork
             // Find something to attack
             var creaturesToAttack = MyCreature.FindCreatureToAttack(MyCreature.FoodSpecies);
             if (creaturesToAttack != null)
@@ -166,24 +186,7 @@ namespace DawnOnline.Simulation.Brains.Neural
                 MyCreature.Attack(creaturesToAttack);
             }
 
-            // Init network with input values
-            var leftEyeCheck = _eyeSee[_leftEye] < 0 ? 0 : 100.0 * (_leftEye.VisionDistance - _eyeSee[_leftEye]) / _leftEye.VisionDistance;
-            var forwardEyeCheck = _eyeSee[_forwardEye] < 0 ? 0 : 100.0 * (_forwardEye.VisionDistance - _eyeSee[_forwardEye]) / _forwardEye.VisionDistance;
-            var rightEyeCheck = _eyeSee[_rightEye] < 0 ? 0 : 100.0 * (_rightEye.VisionDistance - _eyeSee[_rightEye]) / _rightEye.VisionDistance;
-
-            _adrenalineModeNetwork.InputNodes[0].CurrentValue = leftEyeCheck;
-            _adrenalineModeNetwork.InputNodes[1].CurrentValue = forwardEyeCheck;
-            _adrenalineModeNetwork.InputNodes[2].CurrentValue = rightEyeCheck;
-            _adrenalineModeNetwork.InputNodes[3].CurrentValue = _forwardBumper.Hit ? 100 : 0;
-            _adrenalineModeNetwork.InputNodes[4].CurrentValue = Globals.Radomizer.Next(50);
-            _adrenalineModeNetwork.InputNodes[5].CurrentValue = Globals.Radomizer.Next(50);
-
-            // Process
-            _adrenalineModeNetwork.Propagate(timeDelta);
-
-            // Feed output to creature
-            MyCreature.Turn(_adrenalineModeNetwork.OutputNodes[0].CurrentValue / 100);
-            MyCreature.Thrust(_adrenalineModeNetwork.OutputNodes[1].CurrentValue / 100);
+            RunNetwork(_adrenalineModeNetwork, timeDelta);
         }
 
         internal override AbstractBrain Replicate()

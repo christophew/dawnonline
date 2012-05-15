@@ -27,7 +27,7 @@ namespace DawnOnline.Simulation.Senses
         private Environment CreatureEnvironment { get { return _creature.MyEnvironment; } }
         private Placement CreaturePlace { get { return _creature.Place; } }
 
-        internal double DistanceToFirstVisible(List<IEntity> sortedEntities)
+        internal double DistanceToFirstVisible(List<IEntity> sortedEntities, bool useLineOfSight = true)
         {
             foreach (var entity in sortedEntities)
             {
@@ -35,7 +35,7 @@ namespace DawnOnline.Simulation.Senses
                 if (_OutOfRange(entity))
                     break;
 
-                if (_HasLineOfSight(entity))
+                if (_HasLineOfSight(entity, useLineOfSight))
                     return MathTools.GetDistance(CreaturePlace.Position, entity.Place.Position);
             }
             return -1;
@@ -72,7 +72,7 @@ namespace DawnOnline.Simulation.Senses
                 if (_OutOfRange(obstacle))
                     continue;
 
-                if (_HasLineOfSight(obstacle))
+                if (_HasLineOfSight(obstacle, true))
                     return true;
             }
 
@@ -109,7 +109,7 @@ namespace DawnOnline.Simulation.Senses
             if (_OutOfRange(current))
                 return false;
 
-            return _HasLineOfSight(current);
+            return _HasLineOfSight(current, true);
         }
 
         private  bool _OutOfRange(IEntity current)
@@ -119,7 +119,7 @@ namespace DawnOnline.Simulation.Senses
             return (distance2 > visionDistance2);
         }
 
-        private bool _HasLineOfSight(IEntity current)
+        private bool _HasLineOfSight(IEntity current, bool useLineOfSight)
         {
             // same position
             if (_creature.Place.Position == current.Place.Position)
@@ -135,6 +135,9 @@ namespace DawnOnline.Simulation.Senses
                 if (MathTools.NormalizeAngle(Math.Abs(angle - (_creature.Place.Angle + Angle))) > VisionAngle)
                     return false;
             }
+
+            if (!useLineOfSight)
+                return true;
 
             // Check obstacles
             {
