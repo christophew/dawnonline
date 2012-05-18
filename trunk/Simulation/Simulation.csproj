@@ -90,6 +90,7 @@
     <Compile Include="Builders\BulletBuilder.cs" />
     <Compile Include="Builders\CreatureBuilder.cs" />
     <Compile Include="Builders\ObstacleBuilder.cs" />
+    <Compile Include="Builders\SoundBuilder.cs" />
     <Compile Include="Entities\Bullet.cs" />
     <Compile Include="Collision\CollisionDetection.cs" />
     <Compile Include="Collision\IPolygon.cs" />
@@ -111,8 +112,10 @@
     <Compile Include="Placement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Senses\Bumper.cs" />
+    <Compile Include="Senses\Ear.cs" />
     <Compile Include="Senses\Eye.cs" />
     <Compile Include="SimulationFactory.cs" />
+    <Compile Include="Sound.cs" />
     <Compile Include="Statistics\CharacterSheet.cs" />
     <Compile Include="Statistics\Monitor.cs" />
     <Compile Include="Tools\MathTools.cs" />

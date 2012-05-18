@@ -19,6 +19,10 @@ namespace DawnOnline.Simulation
         internal EntityType BuildEntityOfType { get; set; }
         internal bool Rest { get; set; }
 
+        // Sounds
+        internal double SpeachVolumeA { get; set; }
+        internal double SpeachVolumeB { get; set; }
+
         // Timers: not cleared
         internal DateTime LastAttackTime { get; set; }
         internal DateTime LastBuildTime { get; set; }
@@ -34,6 +38,8 @@ namespace DawnOnline.Simulation
             HasFired = false;
             BuildEntityOfType = EntityType.Unknown;
             Rest = false;
+            SpeachVolumeA = 0;
+            SpeachVolumeB = 0;
         }
 
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using DawnOnline.Simulation.Brains.Neural;
@@ -22,9 +23,12 @@ namespace DawnOnline.Simulation.Brains
             _spawnType = spawnType;
             _maxInterval = interval;
 
-            var _prototype = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature) as Creature;
-            _prototype.Brain = new NeuralBrain();
-            PrototypeNeuralForager = _prototype;
+            var prototype = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature) as Creature;
+            var prototypeBrain = new NeuralBrain();
+            prototypeBrain.PredefineBehaviour();
+            //prototypeBrain.PredefineRandomBehaviour();
+            prototype.Brain = prototypeBrain;
+            PrototypeNeuralForager = prototype;
         }
 
         internal override void DoSomething(TimeSpan timeDelta)
@@ -68,7 +72,7 @@ namespace DawnOnline.Simulation.Brains
 
         private void SpawnNeuralForager()
         {
-            var replicatedCreature = PrototypeNeuralForager.Replicate() as Creature;
+            var replicatedCreature = PrototypeNeuralForager.Replicate(PrototypeNeuralForager) as Creature;
             replicatedCreature.SpawnPoint = MyCreature;
 
             AddToWorld(replicatedCreature);
@@ -89,12 +93,17 @@ namespace DawnOnline.Simulation.Brains
             Environment.GetWorld().AddCreature(creature, MyCreature.Place.Position, Globals.Radomizer.NextDouble() * Math.PI * 2.0, false);
         }
 
-        internal override AbstractBrain Replicate()
+        internal override AbstractBrain Replicate(AbstractBrain mate)
         {
             Console.WriteLine("Generation: " + MyCreature.CharacterSheet.Generation);
 
             var newBrain = new SpawnPointBrain(_spawnType, _maxInterval);
-            newBrain.PrototypeNeuralForager = PrototypeNeuralForager.Replicate();
+
+             // crossover
+            var spawnPointMate = mate as SpawnPointBrain;
+            Debug.Assert(spawnPointMate != null, "sodomy!");
+
+           newBrain.PrototypeNeuralForager = PrototypeNeuralForager.Replicate(spawnPointMate.PrototypeNeuralForager);
 
             // MUTATE 
             newBrain.PrototypeNeuralForager.Mutate();

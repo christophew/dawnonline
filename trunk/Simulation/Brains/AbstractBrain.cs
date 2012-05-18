@@ -81,7 +81,7 @@ namespace DawnOnline.Simulation.Brains
 
         #endregion
 
-        internal virtual AbstractBrain Replicate()
+        internal virtual AbstractBrain Replicate(AbstractBrain mate)
         {
             throw new NotImplementedException();
         }

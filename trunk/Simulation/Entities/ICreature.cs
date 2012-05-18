@@ -18,7 +18,7 @@ namespace DawnOnline.Simulation.Entities
 
         IEntity SpawnPoint { get; }
 
-        ICreature Replicate();
+        ICreature Replicate(ICreature mate);
         void Mutate();
     }
 }

@@ -28,6 +28,7 @@ namespace DawnOnline.Simulation
         List<IEntity> _obstacles = new List<IEntity>();
         List<IEntity> _bullets = new List<IEntity>();
         List<IExplosion> _explosions = new List<IExplosion>();
+        Dictionary<Sound.SoundTypeEnum, List<Sound>> _soundsPerType = new Dictionary<Sound.SoundTypeEnum, List<Sound>>();
 
 
         private Environment()
@@ -214,6 +215,20 @@ namespace DawnOnline.Simulation
             _explosions = remainingExplosions;
         }
 
+        public void UpdateSounds(double timeDelta)
+        {
+            var newSoundsPerType = new Dictionary<Sound.SoundTypeEnum, List<Sound>>();
+
+            foreach (var soundList in _soundsPerType)
+            {
+                var newList = soundList.Value.Where(sound => sound.Update((long) timeDelta)).ToList();
+
+                newSoundsPerType.Add(soundList.Key, newList);
+            }
+
+            _soundsPerType = newSoundsPerType;
+        }
+
         public void UpdatePhysics(double timeDelta)
         {
             // Update physics
@@ -274,6 +289,30 @@ namespace DawnOnline.Simulation
             }
 
             return list;
+        }
+
+        internal void AddSound(Sound sound)
+        {
+            List<Sound> categoryList;
+            if (!_soundsPerType.TryGetValue(sound.SoundType, out categoryList))
+            {
+                categoryList = new List<Sound>();
+                _soundsPerType.Add(sound.SoundType, categoryList);
+            }
+
+            categoryList.Add(sound);
+        }
+
+        internal List<Sound> GetSounds(Sound.SoundTypeEnum soundType)
+        {
+            List<Sound> categoryList;
+            if (!_soundsPerType.TryGetValue(soundType, out categoryList))
+            {
+                categoryList = new List<Sound>();
+                _soundsPerType.Add(soundType, categoryList);
+            }
+
+            return categoryList;
         }
 
         public void WrathOfGod(int nrKilled)
