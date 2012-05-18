@@ -427,7 +427,7 @@ namespace DawnOnline.Simulation.Entities
 
             _actionQueue.HasAttacked = true;
             _actionQueue.FatigueCost += CharacterSheet.FatigueCost;
-            target.MyActionQueue.Damage = _characterSheet.MeleeDamage;
+            target.MyActionQueue.Damage += _characterSheet.MeleeDamage;
 
             // Score
             //if (SpawnPoint != null)
