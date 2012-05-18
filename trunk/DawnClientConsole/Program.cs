@@ -34,7 +34,10 @@ namespace DawnClientConsole
 
                     Console.WriteLine(_dawnClient.DawnWorld.WorldInformation + " --> " + myInfo);
 
-                    _dawnClient.SendAvatorCommand(AvatarCommand.RunForward);
+                    if (_dawnClient.AvatarId != 0)
+                    {
+                        _dawnClient.SendAvatorCommand(AvatarCommand.RunForward);
+                    }
                 }
                 while (!Console.KeyAvailable);
             }

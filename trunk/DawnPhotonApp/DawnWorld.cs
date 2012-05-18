@@ -20,11 +20,11 @@ namespace DawnGame
 
         private int _grid = 5;
 
-        private int _nrOfSpawnPoints = 40;
+        private int _nrOfSpawnPoints = 25;
         private int _nrOfTreasures = 0;
-        private int _nrOfWalls = 700;
-        private int _nrOfBoxes = 200;
-        private int _stablePopulationSize = 200;
+        private int _nrOfWalls = 1500;
+        private int _nrOfBoxes = 0;
+        private int _stablePopulationSize = 150;
 
         private int _nrOfSpawnPointsReplicated = 0;
 
