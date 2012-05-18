@@ -46,8 +46,8 @@ namespace DawnOnline.Simulation.Builders
 
             critter.Specy = EntityType.Predator;
             //critter.FoodSpecies = new List<EntityType> { EntityType.Turret, EntityType.Avatar };
-            //critter.FoodSpecies = new List<EntityType> { EntityType.Avatar, EntityType.Predator, EntityType.SpawnPoint };
-            critter.FoodSpecies = new List<EntityType> { EntityType.Predator, EntityType.SpawnPoint };
+            critter.FoodSpecies = new List<EntityType> { EntityType.Avatar, EntityType.Predator, EntityType.SpawnPoint };
+            //critter.FoodSpecies = new List<EntityType> { EntityType.Predator, EntityType.SpawnPoint };
 
             //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(100, 150);
             critter.CharacterSheet.WalkingDistance = 30 * _velocityMultiplier;
@@ -99,6 +99,7 @@ namespace DawnOnline.Simulation.Builders
             avatar.CharacterSheet.TurningAngle = 1 * _turnMultiplier;
             avatar.CharacterSheet.RangeDamage = 50;
             avatar.CharacterSheet.MeleeDamage = 50;
+            avatar.CharacterSheet.Armour = 100; // I'm invincible!
 
             return avatar;
         }
@@ -145,6 +146,7 @@ namespace DawnOnline.Simulation.Builders
             spawnPoint.SpawnPoint = spawnPoint;
 
             spawnPoint.CharacterSheet.FatigueRecovery = 25;
+            spawnPoint.CharacterSheet.Armour = 5;
 
             return spawnPoint;
         }

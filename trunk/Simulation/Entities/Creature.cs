@@ -177,7 +177,8 @@ namespace DawnOnline.Simulation.Entities
             // toSeconds is NOT needed for farseer updates => uses timeDelta in own update
             double toSeconds = timeDelta / 1000.0;
 
-            _characterSheet.Damage.Increase((int)_actionQueue.Damage);
+            int resultingDamage = (int)Math.Max(_actionQueue.Damage - _characterSheet.Armour, 0);
+            _characterSheet.Damage.Increase(resultingDamage);
             _actionQueue.Damage = 0;
 
             if (_characterSheet.Damage.IsFilled)
