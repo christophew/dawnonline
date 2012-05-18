@@ -30,7 +30,8 @@ namespace MyApplication
         StrafeRight = 8,
         StrafeLeft = 9,
         Fire = 10,
-        FireRocket = 11
+        FireRocket = 11,
+        RunBackward = 12,
     }
 
 
@@ -305,6 +306,9 @@ namespace MyApplication
                 {
                     case AvatarCommand.RunForward:
                         avatar.RunForward();
+                        break;
+                    case AvatarCommand.RunBackward:
+                        avatar.RunBackward();
                         break;
                     case AvatarCommand.WalkForward:
                         avatar.WalkForward();

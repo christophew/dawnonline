@@ -256,7 +256,8 @@ namespace DawnGame
             if (moved < _environment.GetCreatures().Count / 2 && _environment.GetCreatures().Count > _stablePopulationSize)
             {
                 //_environment.Armageddon(_environment.GetCreatures().Count/2);
-                _environment.WrathOfGod(10);
+                //_environment.WrathOfGod(10);
+                _environment.Earthquake(20);
             }
         }
 

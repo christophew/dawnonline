@@ -305,6 +305,22 @@ namespace DawnOnline.Simulation.Entities
             //_actionQueue.FatigueCost += CharacterSheet.FatigueCost;
         }
 
+        public void RunBackward()
+        {
+            Debug.Assert(MyEnvironment != null);
+
+            if (IsTired)
+            {
+                WalkBackward();
+                return;
+            }
+
+            _actionQueue.ForwardMotion += new Vector2((float) (Math.Cos(_place.Angle)*CharacterSheet.RunningDistance),
+                                                      (float) (Math.Sin(_place.Angle)*CharacterSheet.RunningDistance))*-1f;
+
+            //_actionQueue.FatigueCost += CharacterSheet.FatigueCost;
+        }
+
         public void Fire()
         {
             if (!CanAttack())

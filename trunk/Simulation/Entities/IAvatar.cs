@@ -14,6 +14,7 @@ namespace DawnOnline.Simulation.Entities
         void StrafeLeft();
         void StrafeRight();
         void RunForward();
+        void RunBackward();
         void WalkForward();
         void WalkBackward();
 

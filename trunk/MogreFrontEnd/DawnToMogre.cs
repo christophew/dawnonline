@@ -84,7 +84,13 @@ namespace MogreFrontEnd
                                                   : AvatarCommand.RunForward);
             }
             if (keyboard.IsKeyDown(MOIS.KeyCode.KC_K))
-                _dawnClient.SendAvatorCommand(AvatarCommand.WalkBackward);
+            {
+                _dawnClient.SendAvatorCommand(keyboard.IsKeyDown(MOIS.KeyCode.KC_LSHIFT)
+                                  ? AvatarCommand.WalkBackward
+                                  : AvatarCommand.RunBackward);
+
+            }
+
             if (keyboard.IsKeyDown(MOIS.KeyCode.KC_J))
             {
                 _dawnClient.SendAvatorCommand(keyboard.IsKeyDown(MOIS.KeyCode.KC_LSHIFT)
