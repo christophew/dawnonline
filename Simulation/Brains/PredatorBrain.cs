@@ -21,6 +21,8 @@ namespace DawnOnline.Simulation.Brains
         protected Dictionary<Eye, double> _eyeSeeTreasure = new Dictionary<Eye, double>();
         protected Dictionary<Eye, double> _eyeSeeWalls = new Dictionary<Eye, double>();
 
+        protected Ear _leftEar;
+        protected Ear _rightEar;
 
         protected enum EvadeState
         {
@@ -281,6 +283,10 @@ namespace DawnOnline.Simulation.Brains
 
             // Bumpers
             _forwardBumper = new Bumper(MyCreature, new Vector2((float)MyCreature.Place.Form.BoundingCircleRadius, 0));
+
+            // Ears
+            _leftEar = new Ear(MyCreature, new Vector2(0, -2));
+            _rightEar = new Ear(MyCreature, new Vector2(0, -2));
 
 
             _initialized = true;

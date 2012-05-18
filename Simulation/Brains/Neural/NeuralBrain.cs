@@ -12,13 +12,55 @@ namespace DawnOnline.Simulation.Brains.Neural
     internal class NeuralBrain : ForagerBrain
     {
         private NeuralNetwork _adrenalineModeNetwork;
-        private int _adrenalineInputNodes = 14; // 3x eye x3, bumper, health, stamina, 2x random
-        private int _adrenalineOutputNodes = 2; 
+        private int _adrenalineInputNodes = 18; // 3x eye x3, bumper, health, stamina, 2x random, 2x ears x2
+        private int _adrenalineOutputNodes = 4; 
         private NeuralNetwork _foragerModeNetwork;
-        private int _foragerInputNodes = 14; // 3x eye x3, bumper, health, stamina, 2x random
-        private int _foragerOutputNodes = 2;
+        private int _foragerInputNodes = 18; // 3x eye x3, bumper, health, stamina, 2x random, 2x ears x2
+        private int _foragerOutputNodes = 4;
 
-        internal NeuralBrain()
+        internal void PredefineRandomBehaviour()
+        {
+            _adrenalineModeNetwork = new NeuralNetwork(_adrenalineInputNodes, _adrenalineInputNodes * 2, _adrenalineOutputNodes + _adrenalineInputNodes, _adrenalineInputNodes);
+            _foragerModeNetwork = new NeuralNetwork(_foragerInputNodes, _foragerInputNodes * 2, _foragerOutputNodes + _foragerInputNodes, _foragerInputNodes);
+
+            RandomizeNetwork(_adrenalineModeNetwork);
+            RandomizeNetwork(_foragerModeNetwork);
+        }
+
+        private static void RandomizeNetwork(NeuralNetwork network)
+        {
+            foreach (var node in network.InputNodes)
+            {
+                node.Threshold = Globals.Radomizer.Next(200) - 100;
+
+                foreach (var edge in node.OutGoingEdges)
+                {
+                    edge.Multiplier = Globals.Radomizer.Next(200) - 100;
+                }
+            }
+
+            foreach (var node in network.LayerNodes)
+            {
+                node.Threshold = Globals.Radomizer.Next(200) - 100;
+
+                foreach (var edge in node.OutGoingEdges)
+                {
+                    edge.Multiplier = Globals.Radomizer.Next(200) - 100;
+                }
+            }
+
+            foreach (var node in network.ReinforcementInputNodes)
+            {
+                node.Threshold = Globals.Radomizer.Next(200) - 100;
+
+                foreach (var edge in node.OutGoingEdges)
+                {
+                    edge.Multiplier = Globals.Radomizer.Next(200) - 100;
+                }
+            }
+        }
+
+        internal void PredefineBehaviour()
         {
             // AdrenalineMode
             {
@@ -160,8 +202,13 @@ namespace DawnOnline.Simulation.Brains.Neural
             network.InputNodes[i++].CurrentValue = Globals.Radomizer.Next(50);
             network.InputNodes[i++].CurrentValue = this.MyCreature.CharacterSheet.Damage.PercentFilled;
             network.InputNodes[i++].CurrentValue = this.MyCreature.CharacterSheet.Fatigue.PercentFilled;
+            network.InputNodes[i++].CurrentValue = _leftEar.HearFamily(Sound.SoundTypeEnum.A);
+            network.InputNodes[i++].CurrentValue = _leftEar.HearStrangers(Sound.SoundTypeEnum.A);
+            network.InputNodes[i++].CurrentValue = _leftEar.HearFamily(Sound.SoundTypeEnum.B);
+            network.InputNodes[i++].CurrentValue = _leftEar.HearStrangers(Sound.SoundTypeEnum.B);
 
-            Debug.Assert(i == 14);
+
+            Debug.Assert(i == 18);
 
             // Process
             network.Propagate(timeDelta);
@@ -169,6 +216,10 @@ namespace DawnOnline.Simulation.Brains.Neural
             // Feed output to creature
             MyCreature.Turn(network.OutputNodes[0].CurrentValue / 100);
             MyCreature.Thrust(network.OutputNodes[1].CurrentValue / 100);
+
+            // Speak
+            MyCreature.SayA(network.OutputNodes[2].CurrentValue);
+            MyCreature.SayB(network.OutputNodes[3].CurrentValue);
         }
 
         protected override void NeutralState(TimeSpan timeDelta)
@@ -189,11 +240,19 @@ namespace DawnOnline.Simulation.Brains.Neural
             RunNetwork(_adrenalineModeNetwork, timeDelta);
         }
 
-        internal override AbstractBrain Replicate()
+        internal override AbstractBrain Replicate(AbstractBrain mate)
         {
+            // TODO: optimize
+            // 'new' will also create a useless intial network
+
             var newBrain = new NeuralBrain();
             newBrain._adrenalineModeNetwork = _adrenalineModeNetwork.Replicate();
-            newBrain._foragerModeNetwork = _foragerModeNetwork.Replicate();
+            //newBrain._foragerModeNetwork = _foragerModeNetwork.Replicate();
+
+            // crossover
+            var neuralMate = mate as NeuralBrain;
+            Debug.Assert(neuralMate != null, "sodomy!");
+            newBrain._foragerModeNetwork = neuralMate._foragerModeNetwork.Replicate();
 
             newBrain.ConnectReinforcementNodes();
 

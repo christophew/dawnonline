@@ -31,7 +31,15 @@ namespace DawnOnline.Simulation.Entities
         public CharacterSheet CharacterSheet { get { return _characterSheet; } }
 
         public IEntity SpawnPoint { get; internal set; }
-
+        public int FamilyId
+        {
+            get
+            {
+                var family = SpawnPoint ?? this;
+                return family.Id;
+            }
+        }
+        
         internal Environment MyEnvironment { get; set; }
         internal ActionQueue MyActionQueue { get { return _actionQueue; } }
 
@@ -83,7 +91,7 @@ namespace DawnOnline.Simulation.Entities
             }
         }
 
-        public ICreature Replicate()
+        public ICreature Replicate(ICreature mate)
         {
             var newCreature = new Creature(_place.Form.BoundingCircleRadius);
             newCreature._characterSheet = CharacterSheet.Replicate();
@@ -96,7 +104,11 @@ namespace DawnOnline.Simulation.Entities
 
             newCreature.SpawnPoint = (this.Specy == EntityType.SpawnPoint) ? newCreature : SpawnPoint;
 
-            newCreature.Brain = _brain.Replicate();
+            // crossover
+            var creatureMate = mate as Creature;
+            Debug.Assert(creatureMate != null, "sodomy!");
+
+            newCreature.Brain = _brain.Replicate(creatureMate._brain);
 
             return newCreature;
         }
@@ -244,6 +256,18 @@ namespace DawnOnline.Simulation.Entities
             if (_actionQueue.Rest)
             {
                 DoRest();
+            }
+
+            // Speak
+            if (_actionQueue.SpeachVolumeA > 0)
+            {
+                var sound = SoundBuilder.CreateSoundForCreature(this, Sound.SoundTypeEnum.A, _actionQueue.SpeachVolumeA);
+                MyEnvironment.AddSound(sound);
+            }
+            if (_actionQueue.SpeachVolumeB > 0)
+            {
+                var sound = SoundBuilder.CreateSoundForCreature(this, Sound.SoundTypeEnum.B, _actionQueue.SpeachVolumeB);
+                MyEnvironment.AddSound(sound);
             }
         }
 
@@ -472,5 +496,14 @@ namespace DawnOnline.Simulation.Entities
             throw new NotSupportedException();
         }
 
+        public void SayA(double volume)
+        {
+            _actionQueue.SpeachVolumeA += volume;
+        }
+
+        public void SayB(double volume)
+        {
+            _actionQueue.SpeachVolumeB += volume;
+        }
     }
 }

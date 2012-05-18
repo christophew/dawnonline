@@ -212,21 +212,23 @@ namespace DawnGame
             {
                 var timer = new Stopwatch();
                 timer.Start();
-                ICreature bestspawnPoint;
+                ICreature bestspawnPoint, crossoverMate;
 
                 if (spawnPoints.Count == 0)
                 {
                     bestspawnPoint = CreatureBuilder.CreateSpawnPoint(EntityType.Predator);
+                    crossoverMate = bestspawnPoint;
                 }
                 else
                 {
                     // find best spawnpoint
                     bestspawnPoint = GetBestspawnPoint(spawnPoints);
+                    crossoverMate = GetBestspawnPoint(spawnPoints);
                 }
 
                 // Replicate
                 //AddSpawnPoints(EntityType.Predator, 1);
-                var newSpawnPoint = bestspawnPoint.Replicate();
+                var newSpawnPoint = bestspawnPoint.Replicate(crossoverMate);
                 var position = new Vector2 {X = _randomize.Next((int) MaxX), Y = _randomize.Next((int) MaxY)};
                 _environment.AddCreature(newSpawnPoint, position, 0);
                 _nrOfSpawnPointsReplicated++;
@@ -261,6 +263,7 @@ namespace DawnGame
         public void UpdatePhysics(double timeDelta)
         {
             _environment.UpdatePhysics(timeDelta);
+            _environment.UpdateSounds(timeDelta);
         }
 
         private static ICreature GetBestspawnPoint(IList<ICreature> spawnPoints)

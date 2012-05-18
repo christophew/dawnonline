@@ -4,10 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using DawnOnline.Simulation.Brains;
-using DawnOnline.Simulation.Collision;
 using DawnOnline.Simulation.Entities;
-using FarseerPhysics.Dynamics;
-using FarseerPhysics.Factories;
 
 namespace DawnOnline.Simulation.Builders
 {
