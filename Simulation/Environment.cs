@@ -333,6 +333,24 @@ namespace DawnOnline.Simulation
             }
         }
 
+        public void Earthquake(int nrDamaged)
+        {
+            Console.WriteLine("***********************************");
+            Console.WriteLine("Earthquake: " + nrDamaged);
+
+            for (int i = 0; i < nrDamaged; i++)
+            {
+                if (GetCreatures().Count == 0)
+                    break;
+
+                var creature = GetCreatures()[Globals.Radomizer.Next(GetCreatures().Count)] as Creature;
+                if (creature.Specy == EntityType.Avatar)
+                    continue;
+
+                creature.CharacterSheet.Damage.Increase(33);
+            }
+        }
+
         public void Armageddon(int survivors)
         {
             Console.WriteLine("***********************************");

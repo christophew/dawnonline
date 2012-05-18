@@ -18,6 +18,7 @@ namespace DawnClient
         StrafeRight = 8,
         StrafeLeft = 9,
         Fire = 10,
-        FireRocket = 11
+        FireRocket = 11,
+        RunBackward = 12,
     }
 }
