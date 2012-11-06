@@ -6,6 +6,7 @@ using System.Text;
 using DawnOnline.Simulation.Brains.Neural;
 using DawnOnline.Simulation.Builders;
 using DawnOnline.Simulation.Entities;
+using SharedConstants;
 
 namespace DawnOnline.Simulation.Brains
 {

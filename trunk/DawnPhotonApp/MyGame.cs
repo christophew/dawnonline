@@ -7,33 +7,13 @@ using DawnGame;
 using DawnOnline.Simulation.Entities;
 using Lite.Messages;
 using Microsoft.Xna.Framework;
+using SharedConstants;
 
 namespace MyApplication
 {
     using Lite;
-
     using Operations;
-
     using Photon.SocketServer;
-
-
-    public enum AvatarCommand
-    {
-        Unknown = 0,
-        TurnRight = 1,
-        TurnLeft = 2,
-        TurnRightSlow = 3,
-        TurnLeftSlow = 4,
-        RunForward = 5,
-        WalkForward = 6,
-        WalkBackward = 7,
-        StrafeRight = 8,
-        StrafeLeft = 9,
-        Fire = 10,
-        FireRocket = 11,
-        RunBackward = 12,
-    }
-
 
     public class MyGame : LiteGame
     {
@@ -51,7 +31,8 @@ namespace MyApplication
 
             //Debug.WriteLine("ms: " + millisecondsSinceLastFrame);
 
-            _dawnWorldInstance.ThinkAll(30, new TimeSpan(millisecondsSinceLastFrame));
+            // NEW DESIGN: _dawnWorld only handles the physics
+            //_dawnWorldInstance.ThinkAll(30, new TimeSpan(millisecondsSinceLastFrame));
             _dawnWorldInstance.ApplyMove(millisecondsSinceLastFrame);
             _dawnWorldInstance.UpdatePhysics(millisecondsSinceLastFrame);
 
@@ -91,7 +72,7 @@ namespace MyApplication
                 {
                     var data = new Dictionary<byte, object>();
                     data[0] = _dawnWorldInstance.GetWorldInformation();
-                    var eData = new EventData(101, data);
+                    var eData = new EventData((byte)EventCode.WorldInfo, data);
                     var sendParameters = new SendParameters { Unreliable = true };
                     this.PublishEvent(eData, this.Actors, sendParameters);
                 }
@@ -161,7 +142,7 @@ namespace MyApplication
                         // Send killed reliable
                         var data = new Dictionary<byte, object>();
                         data[0] = killedHash;
-                        var eData = new EventData(103, data);
+                        var eData = new EventData((byte)EventCode.Destroyed, data);
                         var sendParameters = new SendParameters { Unreliable = false };
                         this.PublishEvent(eData, this.Actors, sendParameters);
                     }
@@ -193,7 +174,7 @@ namespace MyApplication
 
                 if (index > fragmentSize)
                 {
-                    var eData = new EventData(104, currentDataList);
+                    var eData = new EventData((byte)EventCode.BulkPositionUpdate, currentDataList);
                     this.PublishEvent(eData, this.Actors, sendParameters);
 
                     index = 0;
@@ -204,7 +185,7 @@ namespace MyApplication
             // Send remainder
             if (currentDataList.Count > 0)
             {
-                var eData = new EventData(104, currentDataList);
+                var eData = new EventData((byte)EventCode.BulkPositionUpdate, currentDataList);
                 this.PublishEvent(eData, this.Actors, sendParameters);
             }
         }
@@ -260,6 +241,22 @@ namespace MyApplication
                 case MyOperationCodes.AvatarCommand:
                     {
                         HandleAvatorCommand(operationRequest);
+                        break;
+                    }
+
+                case MyOperationCodes.AddEntity:
+                    {
+                        // Add to world
+                        //var entityType = ((byte)operationRequest.Parameters[0]) as EntityType;
+                        var entityType = EntityType.Predator;
+                        var newCreatures = _dawnWorldInstance.AddCreatures(entityType, 1);
+
+                        // Send response
+                        var eData = new Dictionary<byte, object>();
+                        eData[0] = newCreatures[0].Id;
+                        var response = new OperationResponse((byte)MyOperationCodes.AddEntity, eData);
+                        peer.SendOperationResponse(response, new SendParameters { Unreliable = false });
+
                         break;
                     }
 

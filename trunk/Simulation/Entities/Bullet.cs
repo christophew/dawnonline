@@ -3,6 +3,7 @@ using DawnOnline.Simulation.Tools;
 using FarseerPhysics.Common.PhysicsLogic;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
+using SharedConstants;
 
 namespace DawnOnline.Simulation.Entities
 {

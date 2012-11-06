@@ -6,7 +6,7 @@ using System.Threading;
 using DawnClient;
 using SharedConstants;
 
-namespace DawnClientConsole
+namespace AgentMatrix
 {
     class Program
     {
@@ -14,13 +14,18 @@ namespace DawnClientConsole
 
         static void Main(string[] args)
         {
-            _dawnClient = new DawnClient.DawnClient();
+             _dawnClient = new DawnClient.DawnClient();
 
             if (_dawnClient.Connect())
             {
+                var agentWorld = new AgentWorld();
+
+
                 do
                 {
                     _dawnClient.Update();
+                    agentWorld.Update(_dawnClient.DawnWorld.GetEntities());
+
                     Thread.Sleep(1000);
 
                     // Test
@@ -30,14 +35,26 @@ namespace DawnClientConsole
                     var walls = allEntities.Count(e => e.Specy == EntityType.Wall);
                     var spawnpoints = allEntities.Count(e => e.Specy == EntityType.SpawnPoint);
 
-                    var myInfo = string.Format("Total: {0}, Walls: {1}, Boxes: {2}, Predators: {3}, SpawnPoints: {4}",
-                                               allEntities.Count, walls, boxes, predators, spawnpoints);
+                    
 
-                    Console.WriteLine(_dawnClient.DawnWorld.WorldInformation + " --> " + myInfo);
+                    Console.WriteLine(_dawnClient.DawnWorld.WorldInformation);
+                    Console.WriteLine("> boxes : " + boxes);
+                    Console.WriteLine("> boxes2: " + agentWorld.GetEntities().Count(e => e.Specy == EntityType.Box));
+                    Console.WriteLine("> walls : " + walls);
+                    Console.WriteLine("> walls2: " + agentWorld.GetEntities().Count(e => e.Specy == EntityType.Wall));
 
-                    if (_dawnClient.AvatarId != 0)
+                    Console.WriteLine("> Predators : " + predators);
+                    Console.WriteLine("> Predators created: " + _dawnClient.CreatureIds.Count);
+
+                    //if (_dawnClient.AvatarId != 0)
+                    //{
+                    //    _dawnClient.SendAvatorCommand(AvatarCommand.RunForward);
+                    //}
+
+                    // TEST
+                    if (_dawnClient.AvatarId != 0) // = we have connected to the server => find better check
                     {
-                        _dawnClient.SendAvatorCommand(AvatarCommand.RunForward);
+                        _dawnClient.RequestCreatureCreationOnServer();
                     }
                 }
                 while (!Console.KeyAvailable);
@@ -48,6 +65,6 @@ namespace DawnClientConsole
             }
 
             _dawnClient.Disconnect(); //<- uncomment this line to see a faster disconnect/leave on the other clients.
-        }
+        } 
     }
 }

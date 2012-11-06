@@ -6,6 +6,7 @@ using DawnOnline.Simulation.Collision;
 using DawnOnline.Simulation.Entities;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
+using SharedConstants;
 
 namespace DawnOnline.Simulation.Builders
 {

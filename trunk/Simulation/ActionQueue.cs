@@ -2,6 +2,7 @@
 using DawnOnline.Simulation.Collision;
 using DawnOnline.Simulation.Entities;
 using Microsoft.Xna.Framework;
+using SharedConstants;
 
 namespace DawnOnline.Simulation
 {

@@ -10,13 +10,18 @@ using DawnOnline.Simulation.Senses;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
 using Microsoft.Xna.Framework;
+using SharedConstants;
 
 namespace DawnOnline.Simulation.Entities
 {
     internal class Creature : IAvatar
     {
-        private readonly int _id = Globals.GenerateUniqueId();
-        public int Id { get { return _id; } }
+        private int _id = Globals.GenerateUniqueId();
+        public int Id
+        {
+            get { return _id; }
+            internal set { _id = value; }
+        }
 
         private Placement _place = new Placement();
         private ActionQueue _actionQueue = new ActionQueue();

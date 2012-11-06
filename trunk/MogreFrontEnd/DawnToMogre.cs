@@ -5,6 +5,7 @@ using System.Text;
 using DawnClient;
 using Mogre;
 using Mogre.TutorialFramework;
+using SharedConstants;
 using Math = Mogre.Math;
 
 namespace MogreFrontEnd
@@ -198,34 +199,34 @@ namespace MogreFrontEnd
 
                 switch (entity.Specy)
                 {
-                    case DawnClientEntity.EntityType.Avatar:
+                    case EntityType.Avatar:
                         node = CreateAvatorNode(entity);
                         break;
-                    case DawnClientEntity.EntityType.Predator:
+                    case EntityType.Predator:
                         node = CreatePredatorNode(entity);
                         break;
-                    case DawnClientEntity.EntityType.Turret:
+                    case EntityType.Turret:
                         node = CreateDummyNode(entity);
                         break;
-                    case DawnClientEntity.EntityType.Box:
+                    case EntityType.Box:
                         node = CreateBoxNode(entity);
                         break;
-                    case DawnClientEntity.EntityType.Wall:
+                    case EntityType.Wall:
                         node = CreateWallNode(entity);
                         break;
-                    case DawnClientEntity.EntityType.Treasure:
+                    case EntityType.Treasure:
                         node = CreateTreasureNode(entity);
                         break;
-                    case DawnClientEntity.EntityType.PredatorFactory:
+                    case EntityType.PredatorFactory:
                         node = CreateDummyNode(entity);
                         break;
-                    case DawnClientEntity.EntityType.Bullet:
+                    case EntityType.Bullet:
                         node = CreateBulletNode(entity);
                         break;
-                    case DawnClientEntity.EntityType.Rocket:
+                    case EntityType.Rocket:
                         node = CreateRocketNode(entity);
                         break;
-                    case DawnClientEntity.EntityType.SpawnPoint:
+                    case EntityType.SpawnPoint:
                         node = CreateSpawnPointNode(entity);
                         break;
                     default:
@@ -240,7 +241,7 @@ namespace MogreFrontEnd
 
             // Attach FP-camera when possible
             // Cannot be done on creation (we are not always sure about our avatarId)
-            if (entity.Specy == DawnClientEntity.EntityType.Avatar)
+            if (entity.Specy == EntityType.Avatar)
             {
                 // Check if camera is already attached
                 if (_fpCamera != null && !_fpCamera.IsAttached)
