@@ -6,6 +6,7 @@ using DawnOnline.Simulation.Senses;
 using DawnOnline.Simulation.Tools;
 using Microsoft.Xna.Framework;
 using System.Linq;
+using SharedConstants;
 
 namespace DawnOnline.Simulation.Brains
 {

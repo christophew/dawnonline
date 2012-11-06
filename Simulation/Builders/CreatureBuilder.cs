@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using DawnOnline.Simulation.Brains;
 using DawnOnline.Simulation.Entities;
+using SharedConstants;
 
 namespace DawnOnline.Simulation.Builders
 {
@@ -34,6 +35,8 @@ namespace DawnOnline.Simulation.Builders
                     return CreateRabbit();
                 case EntityType.Turret:
                     return CreateTurret();
+                case EntityType.SpawnPoint:
+                    return CreateSpawnPoint(EntityType.SpawnPoint);
             }
 
             throw new ArgumentOutOfRangeException();

@@ -3,29 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SharedConstants;
 
 namespace DawnClient
 {
     public class DawnClientEntity
     {
-        // TODO: share with Simulation
-        public enum EntityType
-        {
-            Unknown,
-            Avatar,
-            Predator,
-            Rabbit,
-            Plant,
-            Turret,
-            Wall,
-            Box,
-            Treasure,
-            PredatorFactory,
-            Bullet,
-            Rocket,
-            SpawnPoint
-        }
-
         public int Id { get; private set; }
         public EntityType Specy { get; private set; }
         public float PlaceX { get; private set; }

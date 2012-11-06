@@ -3,6 +3,7 @@ using System.Diagnostics;
 using DawnOnline.Simulation.Entities;
 using DawnOnline.Simulation.Senses;
 using DawnOnline.Simulation.Tools;
+using SharedConstants;
 
 namespace DawnOnline.Simulation.Brains
 {

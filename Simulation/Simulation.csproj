@@ -88,6 +88,7 @@
     <Compile Include="Brains\SpawnPointBrain.cs" />
     <Compile Include="Brains\TurretBrain.cs" />
     <Compile Include="Builders\BulletBuilder.cs" />
+    <Compile Include="Builders\CloneBuilder.cs" />
     <Compile Include="Builders\CreatureBuilder.cs" />
     <Compile Include="Builders\ObstacleBuilder.cs" />
     <Compile Include="Builders\SoundBuilder.cs" />
@@ -141,6 +142,10 @@
     <ProjectReference Include="..\Farseer Physics Engine 3.3.1 XNA\Farseer Physics XNA.csproj">
       <Project>{DA87EB61-D672-4A20-B0E7-D3E488C69D4C}</Project>
       <Name>Farseer Physics XNA</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SharedConstants\SharedConstants.csproj">
+      <Project>{EBD77164-CE60-4180-8613-974FA39850E8}</Project>
+      <Name>SharedConstants</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

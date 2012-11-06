@@ -74,6 +74,10 @@
       <Project>{E1F918F4-F581-4280-9D91-3CF77B24C290}</Project>
       <Name>Lite</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SharedConstants\SharedConstants.csproj">
+      <Project>{EBD77164-CE60-4180-8613-974FA39850E8}</Project>
+      <Name>SharedConstants</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Simulation\Simulation.csproj">
       <Project>{4F463D41-EA2D-4B41-A4C8-656DDD16F4C7}</Project>
       <Name>Simulation</Name>

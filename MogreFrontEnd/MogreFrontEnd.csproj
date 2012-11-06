@@ -94,6 +94,10 @@
       <Project>{4471FB48-DF80-44F5-B2A0-65BC98B2C2F3}</Project>
       <Name>DawnClient</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SharedConstants\SharedConstants.csproj">
+      <Project>{EBD77164-CE60-4180-8613-974FA39850E8}</Project>
+      <Name>SharedConstants</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

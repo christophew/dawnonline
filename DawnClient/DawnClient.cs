@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using ExitGames.Client.Photon;
 using ExitGames.Client.Photon.Lite;
+using SharedConstants;
 
 namespace DawnClient
 {
@@ -20,6 +22,9 @@ namespace DawnClient
 
         private int _avatarId;
         public int AvatarId { get { return _avatarId; } }
+
+        private List<int> _creatureIds = new List<int>();
+        public ReadOnlyCollection<int> CreatureIds { get { return _creatureIds.AsReadOnly(); } }
 
         private DawnClientEntity _avatarProxy = new DawnClientEntity();
         public DawnClientEntity Avatar { get { return _avatarProxy; } }
@@ -63,6 +68,17 @@ namespace DawnClient
             }
 
             _peer.Service();
+        }
+
+        public void RequestCreatureCreationOnServer()
+        {
+            var eData = new Dictionary<byte, object>();
+            eData[0] = (byte)EntityType.Predator;
+            //eData[1] = 100;
+            // 104 = OperationCode.AddPredator
+            var result = _peer.OpCustom((byte)104, eData, true);
+            _peer.Service();
+
         }
 
         public void Disconnect()
@@ -163,6 +179,12 @@ namespace DawnClient
                         Console.WriteLine(" ->Starting entities: " + staticEntities.Count);
                         DawnWorld.UpdateEntities(staticEntities);
 
+                        break;
+                    }
+                // Return from AddPredator
+                case (byte)104:
+                    {
+                        _creatureIds.Add((int)operationResponse.Parameters[0]);
                         break;
                     }
 

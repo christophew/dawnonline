@@ -3,26 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DawnOnline.Simulation.Statistics;
+using SharedConstants;
 
 namespace DawnOnline.Simulation.Entities
 {
-    public enum EntityType
-    {
-        Unknown,
-        Avatar,
-        Predator,
-        Rabbit,
-        Plant,
-        Turret,
-        Wall,
-        Box,
-        Treasure,
-        PredatorFactory,
-        Bullet,
-        Rocket,
-        SpawnPoint
-    }
-
     public interface IEntity
     {
         int Id { get; }
