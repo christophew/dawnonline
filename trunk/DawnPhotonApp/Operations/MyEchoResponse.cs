@@ -7,6 +7,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using SharedConstants;
+
 namespace MyApplication.Operations
 {
     #region

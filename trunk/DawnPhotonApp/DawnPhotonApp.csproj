@@ -59,7 +59,6 @@
     <Compile Include="MyGame.cs" />
     <Compile Include="MyGameCache.cs" />
     <Compile Include="MyPeer.cs" />
-    <Compile Include="Operations\Enums.cs" />
     <Compile Include="Operations\MyEchoRequest.cs" />
     <Compile Include="Operations\MyEchoResponse.cs" />
     <Compile Include="Operations\MyGameRequest.cs" />

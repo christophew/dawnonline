@@ -87,13 +87,14 @@ namespace MyApplication
                     {
                         currentEntities.Add(entity.Id, entity.Place.Position);
 
-                        // Do not send updates when the object hasn't moved
-                        Vector2 previousPosition;
-                        if (_previousEntities.TryGetValue(entity.Id, out previousPosition))
-                        {
-                            if (entity.Place.Position == previousPosition)
-                                continue;
-                        }
+                        // TEMP REMOVE OPTIMISATION: CREATURES CAN BE CREATED BY AGENT MATRIX
+                        //// Do not send updates when the object hasn't moved
+                        //Vector2 previousPosition;
+                        //if (_previousEntities.TryGetValue(entity.Id, out previousPosition))
+                        //{
+                        //    if (entity.Place.Position == previousPosition)
+                        //        continue;
+                        //}
 
                         positionData.Add(CreateEntityData(entity));
                     }
@@ -108,6 +109,7 @@ namespace MyApplication
                             if (entity.Place.Position == previousPosition)
                                 continue;
                         }
+
                         // Ignore walls,they are send on WorldLoad
                         //if (entity.Specy == EntityType.Wall)
                         //    continue;
@@ -247,13 +249,13 @@ namespace MyApplication
                 case MyOperationCodes.AddEntity:
                     {
                         // Add to world
-                        //var entityType = ((byte)operationRequest.Parameters[0]) as EntityType;
-                        var entityType = EntityType.Predator;
-                        var newCreatures = _dawnWorldInstance.AddCreatures(entityType, 1);
+                        var entityType = (EntityType)(byte)operationRequest.Parameters[0];
+                        var amount = (int)operationRequest.Parameters[1];
+                        var newCreatures = _dawnWorldInstance.AddCreatures(entityType, amount);
 
                         // Send response
                         var eData = new Dictionary<byte, object>();
-                        eData[0] = newCreatures[0].Id;
+                        eData[0] = newCreatures.Select(c => c.Id).ToArray();
                         var response = new OperationResponse((byte)MyOperationCodes.AddEntity, eData);
                         peer.SendOperationResponse(response, new SendParameters { Unreliable = false });
 
