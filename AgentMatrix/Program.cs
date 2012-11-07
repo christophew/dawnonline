@@ -16,6 +16,10 @@ namespace AgentMatrix
         {
              _dawnClient = new DawnClient.DawnClient();
 
+            // Add eventhandler
+            _dawnClient.WorldLoadedEvent += delegate { _dawnClient.RequestCreatureCreationOnServer(EntityType.Predator); };
+
+
             if (_dawnClient.Connect())
             {
                 var agentWorld = new AgentWorld();
@@ -44,18 +48,13 @@ namespace AgentMatrix
                     Console.WriteLine("> walls2: " + agentWorld.GetEntities().Count(e => e.Specy == EntityType.Wall));
 
                     Console.WriteLine("> Predators : " + predators);
-                    Console.WriteLine("> Predators created: " + _dawnClient.CreatureIds.Count);
+                    Console.WriteLine("> Predators created: " + _dawnClient.CreatureIds.Count + " - " + string.Join(", ", _dawnClient.CreatureIds));
 
+                    // Auto move forward
                     //if (_dawnClient.AvatarId != 0)
                     //{
                     //    _dawnClient.SendAvatorCommand(AvatarCommand.RunForward);
                     //}
-
-                    // TEST
-                    if (_dawnClient.AvatarId != 0) // = we have connected to the server => find better check
-                    {
-                        _dawnClient.RequestCreatureCreationOnServer();
-                    }
                 }
                 while (!Console.KeyAvailable);
             }

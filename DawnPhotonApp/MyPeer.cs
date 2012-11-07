@@ -7,6 +7,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using SharedConstants;
+
 namespace MyApplication
 {
     using ExitGames.Logging;

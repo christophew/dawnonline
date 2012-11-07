@@ -29,6 +29,12 @@ namespace DawnClient
         private DawnClientEntity _avatarProxy = new DawnClientEntity();
         public DawnClientEntity Avatar { get { return _avatarProxy; } }
 
+        public bool WorldLoaded { get; private set; }
+
+
+        // Events
+        public event EventHandler WorldLoadedEvent;
+
 
         public DawnClient()
         {
@@ -62,21 +68,21 @@ namespace DawnClient
                 var commands = _avatarCommands.Select(command => (byte)command).ToArray();
                 eData[0] = commands;
                 eData[1] = _avatarId;
-                // 102 = OperationCode.AvatarCommand
-                var result = _peer.OpCustom((byte) 102, eData, false);
+
+                var result = _peer.OpCustom((byte)MyOperationCodes.AvatarCommand, eData, false);
                 _avatarCommands.Clear();
             }
 
             _peer.Service();
         }
 
-        public void RequestCreatureCreationOnServer()
+        public void RequestCreatureCreationOnServer(EntityType entityType)
         {
             var eData = new Dictionary<byte, object>();
-            eData[0] = (byte)EntityType.Predator;
-            //eData[1] = 100;
-            // 104 = OperationCode.AddPredator
-            var result = _peer.OpCustom((byte)104, eData, true);
+            eData[0] = (byte)entityType;
+            eData[1] = 10;
+
+            var result = _peer.OpCustom((byte)MyOperationCodes.AddEntity, eData, true);
             _peer.Service();
 
         }
@@ -91,8 +97,6 @@ namespace DawnClient
             _avatarCommands.Add(command);
         }
 
-
-        #region IPhotonPeerListener Members
 
         public void DebugReturn(DebugLevel level, string message)
         {
@@ -111,14 +115,14 @@ namespace DawnClient
                     // TODO
                     break;
 
-                case 101:
+                case (byte)EventCode.WorldInfo:
                     {
                         // World information
                         DawnWorld.WorldInformation = (string) eventData.Parameters[0];
 
                         break;
                     }
-                case 104:
+                case (byte)EventCode.BulkPositionUpdate:
                     {
                         // Position update: compressed
                         var entities = eventData.Parameters.Select(kvp => new DawnClientEntity((Hashtable) kvp.Value)).ToList();
@@ -137,7 +141,7 @@ namespace DawnClient
                         break;
                     }
 
-                case 103:
+                case (byte)EventCode.Destroyed:
                     // Killed
                     DawnWorld.RemoveEntities((Hashtable)eventData.Parameters[0]);
 
@@ -163,11 +167,11 @@ namespace DawnClient
                         Console.WriteLine("Calling LoadWorld operation");
                         //var opParams = new Dictionary<byte, object>();
                         //opParams[LiteOpKey.Code] = (byte)103;
-                        _peer.OpCustom(103, null, true);
+                        _peer.OpCustom((byte)MyOperationCodes.LoadWorld, null, true);
                         break;
                     }
                 // Return from LoadWorld
-                case (byte)103:
+                case (byte)MyOperationCodes.LoadWorld:
                     {
                         // Get avatorId
                         _avatarId = (int)operationResponse.Parameters[0];
@@ -179,12 +183,18 @@ namespace DawnClient
                         Console.WriteLine(" ->Starting entities: " + staticEntities.Count);
                         DawnWorld.UpdateEntities(staticEntities);
 
+                        WorldLoaded = true;
+
+                        // Fire our event
+                        if (this.WorldLoadedEvent != null)
+                            this.WorldLoadedEvent(this, new EventArgs());
+
                         break;
                     }
                 // Return from AddPredator
-                case (byte)104:
+                case (byte)MyOperationCodes.AddEntity:
                     {
-                        _creatureIds.Add((int)operationResponse.Parameters[0]);
+                        _creatureIds.AddRange((int[])operationResponse.Parameters[0]);
                         break;
                     }
 
@@ -207,7 +217,5 @@ namespace DawnClient
                     break;
             }
         }
-
-        #endregion
     }
 }
