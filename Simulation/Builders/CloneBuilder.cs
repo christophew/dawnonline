@@ -20,6 +20,11 @@ namespace DawnOnline.Simulation.Builders
                    entityType == EntityType.Box;
         }
 
+        public static bool IsCreature(EntityType entityType)
+        {
+            return entityType == EntityType.Predator;
+        }
+
         public static IEntity CreateObstacle(int id, EntityType entityType, double height, double wide)
         {
             switch (entityType)
@@ -37,6 +42,22 @@ namespace DawnOnline.Simulation.Builders
                         Debug.Assert(obstacle != null);
                         obstacle.Id = id;
                         return obstacle;
+                    }
+
+                default: throw new NotImplementedException("TODO");
+            }
+        }
+
+        public static IEntity CreateCreature(int id, EntityType entityType)
+        {
+            switch (entityType)
+            {
+                case EntityType.Predator:
+                    {
+                        var creature = CreatureBuilder.CreatePredator() as Creature;
+                        Debug.Assert(creature != null);
+                        creature.Id = id;
+                        return creature;
                     }
 
                 default: throw new NotImplementedException("TODO");

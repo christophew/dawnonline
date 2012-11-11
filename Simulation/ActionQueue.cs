@@ -6,23 +6,28 @@ using SharedConstants;
 
 namespace DawnOnline.Simulation
 {
-    internal class ActionQueue
+    public class ActionQueue
     {
-        internal Vector2 ForwardMotion { get; set; }
-        internal double TurnMotion { get; set; }
-        internal Vector2 StrafeMotion { get; set; }
-        internal double FatigueCost { get; set; }
-        internal double Damage { get; set; }
-        internal bool Fire { get; set; }
-        internal bool FireRocket { get; set; }
-        internal bool HasAttacked { get; set; }
-        internal bool HasFired { get; set; }
-        internal EntityType BuildEntityOfType { get; set; }
-        internal bool Rest { get; set; }
+        public Vector2 ForwardMotion { get; internal set; }
+        public double TurnMotion { get; internal set; }
+        public Vector2 StrafeMotion { get; internal set; }
+        public double FatigueCost { get; internal set; }
+        public double Damage { get; internal set; }
+        public bool Fire { get; internal set; }
+        public bool FireRocket { get; internal set; }
+        public bool Attack { get; internal set; }
+        public bool HasAttacked { get; internal set; }
+        public bool HasFired { get; internal set; }
+        public EntityType BuildEntityOfType { get; internal set; }
+        public bool Rest { get; internal set; }
+
+        // TEMP for client/server sync
+        public double ForwardThrustPercent { get; internal set; }
+        public double TurnPercent { get; internal set; }
 
         // Sounds
-        internal double SpeachVolumeA { get; set; }
-        internal double SpeachVolumeB { get; set; }
+        public double SpeachVolumeA { get; internal set; }
+        public double SpeachVolumeB { get; internal set; }
 
         // Timers: not cleared
         internal DateTime LastAttackTime { get; set; }
@@ -41,7 +46,10 @@ namespace DawnOnline.Simulation
             Rest = false;
             SpeachVolumeA = 0;
             SpeachVolumeB = 0;
-        }
 
+            // TEMP for client/server sync
+            ForwardThrustPercent = 0;
+            TurnPercent = 0;
+        }
     }
 }

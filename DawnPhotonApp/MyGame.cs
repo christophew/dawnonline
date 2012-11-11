@@ -36,11 +36,11 @@ namespace MyApplication
             _dawnWorldInstance.ApplyMove(millisecondsSinceLastFrame);
             _dawnWorldInstance.UpdatePhysics(millisecondsSinceLastFrame);
 
-            var avatars = _dawnWorldInstance.Environment.GetCreatures(EntityType.Avatar);
-            foreach (var avatar in avatars)
-            {
-                avatar.ClearActionQueue();
-            }
+            //var avatars = _dawnWorldInstance.Environment.GetCreatures();
+            //foreach (var avatar in avatars)
+            //{
+            //    avatar.ClearActionQueue();
+            //}
         }
 
         private void SendAvatarUpdates()
@@ -294,8 +294,18 @@ namespace MyApplication
             var avatar = _dawnWorldInstance.GetAvatar(avatarId);
             if (avatar == null)
             {
+                // TODO: seperate CREATURE & AVATOR logic & commands?
+                avatar = _dawnWorldInstance.GetCreature(avatarId);
+            }
+            if (avatar == null)
+            {
                 throw new NotImplementedException("TODO: client notifications");
             }
+
+            // TEST: clear ActionQueue before update instead of on fixed intervals
+            // = + seems better
+            // = - if connection is lost => action queue is never cleared
+            avatar.ClearActionQueue();
 
             var commands = (byte[]) operationRequest.Parameters[0];
             foreach (var byteCommand in commands)

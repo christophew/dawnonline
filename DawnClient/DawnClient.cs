@@ -19,6 +19,7 @@ namespace DawnClient
 
         private DateTime _lastUpdateTime = DateTime.Now;
         private HashSet<AvatarCommand> _avatarCommands = new HashSet<AvatarCommand>();
+        private Dictionary<int, HashSet<AvatarCommand>> _entityCommands = new Dictionary<int, HashSet<AvatarCommand>>();
 
         private int _avatarId;
         public int AvatarId { get { return _avatarId; } }
@@ -56,31 +57,42 @@ namespace DawnClient
             var now = DateTime.Now;
             long millisecondsSinceLastFrame = (long)(now - _lastUpdateTime).TotalMilliseconds;
 
-            if (millisecondsSinceLastFrame < 50)
-                return;
+            //if (millisecondsSinceLastFrame < 50)
+            //    return;
 
             _lastUpdateTime = now;
 
             // Send avatar command
-            if (_avatarCommands.Count > 0)
-            {
-                var eData = new Dictionary<byte, object>();
-                var commands = _avatarCommands.Select(command => (byte)command).ToArray();
-                eData[0] = commands;
-                eData[1] = _avatarId;
+            SendCommands(_avatarId, _avatarCommands);
 
-                var result = _peer.OpCustom((byte)MyOperationCodes.AvatarCommand, eData, false);
-                _avatarCommands.Clear();
+            // Send creature command
+            foreach (var kvp in _entityCommands)
+            {
+                SendCommands(kvp.Key, kvp.Value);
             }
 
             _peer.Service();
         }
 
-        public void RequestCreatureCreationOnServer(EntityType entityType)
+        private void SendCommands(int id, HashSet<AvatarCommand> commands)
+        {
+            if (commands.Count == 0)
+                return;
+
+            var eData = new Dictionary<byte, object>();
+            var commandsArray = commands.Select(command => (byte)command).ToArray();
+            eData[0] = commandsArray;
+            eData[1] = id;
+
+            var result = _peer.OpCustom((byte)MyOperationCodes.AvatarCommand, eData, false);
+            commands.Clear();
+        }
+
+        public void RequestCreatureCreationOnServer(EntityType entityType, int amount)
         {
             var eData = new Dictionary<byte, object>();
             eData[0] = (byte)entityType;
-            eData[1] = 10;
+            eData[1] = amount;
 
             var result = _peer.OpCustom((byte)MyOperationCodes.AddEntity, eData, true);
             _peer.Service();
@@ -95,6 +107,14 @@ namespace DawnClient
         public void SendAvatorCommand(AvatarCommand command)
         {
             _avatarCommands.Add(command);
+        }
+
+        public void SendEntityCommand(int entityId, AvatarCommand command)
+        {
+            if (!_entityCommands.ContainsKey(entityId))
+                _entityCommands.Add(entityId, new HashSet<AvatarCommand>());
+
+            _entityCommands[entityId].Add(command);
         }
 
 

@@ -86,6 +86,7 @@
     <Compile Include="Brains\ProtectorBrain.cs" />
     <Compile Include="Brains\RabbitBrain.cs" />
     <Compile Include="Brains\SpawnPointBrain.cs" />
+    <Compile Include="Brains\TestBrain.cs" />
     <Compile Include="Brains\TurretBrain.cs" />
     <Compile Include="Builders\BulletBuilder.cs" />
     <Compile Include="Builders\CloneBuilder.cs" />

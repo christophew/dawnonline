@@ -15,5 +15,11 @@
         Fire = 10,
         FireRocket = 11,
         RunBackward = 12,
+
+        Attack = 13,
+
+        // Specific for creature matrix control
+        ForwardMotion = 14,
+        TurnMotion = 14,
     }
 }

@@ -17,7 +17,7 @@ namespace AgentMatrix
              _dawnClient = new DawnClient.DawnClient();
 
             // Add eventhandler
-            _dawnClient.WorldLoadedEvent += delegate { _dawnClient.RequestCreatureCreationOnServer(EntityType.Predator); };
+            _dawnClient.WorldLoadedEvent += delegate { _dawnClient.RequestCreatureCreationOnServer(EntityType.Predator, 100); };
 
 
             if (_dawnClient.Connect())
@@ -29,8 +29,11 @@ namespace AgentMatrix
                 {
                     _dawnClient.Update();
                     agentWorld.Update(_dawnClient.DawnWorld.GetEntities());
+                    agentWorld.Think(_dawnClient.CreatureIds);
+                    agentWorld.SendActionsToServer(_dawnClient);
+                    agentWorld.ClearActionQueues();
 
-                    Thread.Sleep(1000);
+                    Thread.Sleep(50);
 
                     // Test
                     var allEntities = _dawnClient.DawnWorld.GetEntities();
@@ -48,6 +51,7 @@ namespace AgentMatrix
                     Console.WriteLine("> walls2: " + agentWorld.GetEntities().Count(e => e.Specy == EntityType.Wall));
 
                     Console.WriteLine("> Predators : " + predators);
+                    Console.WriteLine("> Predators2: " + agentWorld.GetEntities().Count(e => e.Specy == EntityType.Predator));
                     Console.WriteLine("> Predators created: " + _dawnClient.CreatureIds.Count + " - " + string.Join(", ", _dawnClient.CreatureIds));
 
                     // Auto move forward
