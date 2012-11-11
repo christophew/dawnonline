@@ -18,10 +18,10 @@ namespace DawnOnline.Simulation.Brains
             Debug.Assert(_initialized);
 
             // Find something to attack
-            var creaturesToAttack = MyCreature.FindCreatureToAttack(MyCreature.FoodSpecies);
-            if (creaturesToAttack != null)
+            var creatureToAttack = MyCreature.FindCreatureToAttack(MyCreature.FoodSpecies);
+            if (creatureToAttack != null)
             {
-                MyCreature.Attack(creaturesToAttack);
+                MyCreature.Attack();
                 return;
             }
 

@@ -231,10 +231,10 @@ namespace DawnOnline.Simulation.Brains.Neural
         {
             // TODO: attack should also be an output state of the neuralnetwork
             // Find something to attack
-            var creaturesToAttack = MyCreature.FindCreatureToAttack(MyCreature.FoodSpecies);
-            if (creaturesToAttack != null)
+            var creatureToAttack = MyCreature.FindCreatureToAttack(MyCreature.FoodSpecies);
+            if (creatureToAttack != null)
             {
-                MyCreature.Attack(creaturesToAttack);
+                MyCreature.Attack();
             }
 
             RunNetwork(_adrenalineModeNetwork, timeDelta);

@@ -12,6 +12,8 @@ namespace DawnOnline.Simulation.Entities
         bool IsTired { get; }
         CharacterSheet CharacterSheet { get; }
 
+        ActionQueue MyActionQueue { get; }
+
         void ApplyActionQueue(double timeDelta);
         void ClearActionQueue();
         bool CanAttack();

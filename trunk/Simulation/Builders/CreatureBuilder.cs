@@ -36,7 +36,7 @@ namespace DawnOnline.Simulation.Builders
                 case EntityType.Turret:
                     return CreateTurret();
                 case EntityType.SpawnPoint:
-                    return CreateSpawnPoint(EntityType.SpawnPoint);
+                    return CreateSpawnPoint(EntityType.Predator);
             }
 
             throw new ArgumentOutOfRangeException();
@@ -46,6 +46,7 @@ namespace DawnOnline.Simulation.Builders
         {
             var critter = new Creature(1.5);
             critter.Brain = new PredatorBrain();
+            //critter.Brain = new TestBrain();
 
             critter.Specy = EntityType.Predator;
             //critter.FoodSpecies = new List<EntityType> { EntityType.Turret, EntityType.Avatar };

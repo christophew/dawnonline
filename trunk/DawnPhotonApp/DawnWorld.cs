@@ -61,6 +61,12 @@ namespace DawnGame
             return avatar as IAvatar;
         }
 
+        public IAvatar GetCreature(int id)
+        {
+            var avatar = _environment.GetCreatures(EntityType.Predator).FirstOrDefault(a => a.Id == id);
+            return avatar as IAvatar;
+        }
+
         public Vector2 Center
         {
             get

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
@@ -239,12 +240,24 @@ namespace DawnOnline.Simulation
             //FarSeerWorld.Step((float)timeDelta / 1000);
         }
 
-        public int Think(double maxThinkTime, TimeSpan timeDelta)
+        public int Think(double maxThinkTime, TimeSpan timeDelta, ReadOnlyCollection<int> creatureIds = null)
         {
             var startTime = DateTime.Now;
             var maxTime = startTime + new TimeSpan(0, 0, 0, 0, (int)maxThinkTime);
 
-            var creatures = GetCreatures().OrderBy(c => (c as Creature).LatestThinkTime);
+            IEnumerable<IEntity> creatures;
+
+            if (creatureIds == null)
+            {
+                creatures = GetCreatures()
+                                .OrderBy(c => (c as Creature).LatestThinkTime);
+            }
+            else
+            {
+                creatures = GetCreatures()
+                                .Where(c => creatureIds.Contains(c.Id))
+                                .OrderBy(c => (c as Creature).LatestThinkTime);
+            }
 
             int counter = 0;
             foreach (Creature current in creatures)

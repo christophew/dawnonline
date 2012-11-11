@@ -46,7 +46,7 @@ namespace DawnOnline.Simulation.Entities
         }
         
         internal Environment MyEnvironment { get; set; }
-        internal ActionQueue MyActionQueue { get { return _actionQueue; } }
+        public ActionQueue MyActionQueue { get { return _actionQueue; } }
 
         internal DateTime LatestThinkTime { get; set; }
 
@@ -208,6 +208,12 @@ namespace DawnOnline.Simulation.Entities
             // Fatigue
             CharacterSheet.Fatigue.Increase((int)(_actionQueue.FatigueCost * toSeconds));
 
+            // Attack
+            if (_actionQueue.Attack)
+            {
+                ApplyAttack();
+            }
+
             // Fire
             if (_actionQueue.Fire)
             {
@@ -281,7 +287,10 @@ namespace DawnOnline.Simulation.Entities
         {
             Debug.Assert(MyEnvironment != null);
 
-            _actionQueue.ForwardMotion += new Vector2((float) (Math.Cos(_place.Angle)*CharacterSheet.WalkingDistance),
+            // TEMP
+            _actionQueue.ForwardThrustPercent += 0.3;
+
+            _actionQueue.ForwardMotion += new Vector2((float)(Math.Cos(_place.Angle) * CharacterSheet.WalkingDistance),
                                                       (float) (Math.Sin(_place.Angle)*CharacterSheet.WalkingDistance));
             _actionQueue.FatigueCost = 0;
         }
@@ -290,7 +299,10 @@ namespace DawnOnline.Simulation.Entities
         {
             Debug.Assert(MyEnvironment != null);
 
-            _actionQueue.ForwardMotion += new Vector2((float) (Math.Cos(_place.Angle)*CharacterSheet.WalkingDistance),
+            // TEMP
+            _actionQueue.ForwardThrustPercent -= 0.3;
+
+            _actionQueue.ForwardMotion += new Vector2((float)(Math.Cos(_place.Angle) * CharacterSheet.WalkingDistance),
                                                       (float) (Math.Sin(_place.Angle)*CharacterSheet.WalkingDistance))*-0.5f;
             _actionQueue.FatigueCost = 0;
         }
@@ -305,7 +317,10 @@ namespace DawnOnline.Simulation.Entities
                 return;
             }
 
-            _actionQueue.ForwardMotion += new Vector2((float) (Math.Cos(_place.Angle)*CharacterSheet.RunningDistance),
+            // TEMP
+            _actionQueue.ForwardThrustPercent += 1.0;
+
+            _actionQueue.ForwardMotion += new Vector2((float)(Math.Cos(_place.Angle) * CharacterSheet.RunningDistance),
                                                       (float) (Math.Sin(_place.Angle)*CharacterSheet.RunningDistance));
 
             //_actionQueue.FatigueCost += CharacterSheet.FatigueCost;
@@ -321,7 +336,10 @@ namespace DawnOnline.Simulation.Entities
                 return;
             }
 
-            _actionQueue.ForwardMotion += new Vector2((float) (Math.Cos(_place.Angle)*CharacterSheet.RunningDistance),
+            // TEMP
+            _actionQueue.ForwardThrustPercent -= 1.0;
+
+            _actionQueue.ForwardMotion += new Vector2((float)(Math.Cos(_place.Angle) * CharacterSheet.RunningDistance),
                                                       (float) (Math.Sin(_place.Angle)*CharacterSheet.RunningDistance))*-1f;
 
             //_actionQueue.FatigueCost += CharacterSheet.FatigueCost;
@@ -365,11 +383,17 @@ namespace DawnOnline.Simulation.Entities
 
         internal void Turn(double percent)
         {
-            _actionQueue.TurnMotion += CharacterSheet.TurningAngle*percent;
+            // TEMP
+            _actionQueue.TurnPercent += percent;
+
+            _actionQueue.TurnMotion += CharacterSheet.TurningAngle * percent;
         }
 
         internal void Thrust(double percent)
         {
+            // TEMP
+            _actionQueue.ForwardThrustPercent += percent; 
+
             _actionQueue.ForwardMotion += new Vector2((float)(Math.Cos(_place.Angle) * CharacterSheet.RunningDistance),
                                                       (float)(Math.Sin(_place.Angle) * CharacterSheet.RunningDistance)) * (float)percent;
 
@@ -378,21 +402,33 @@ namespace DawnOnline.Simulation.Entities
 
         public void TurnLeft()
         {
+            // TEMP
+            _actionQueue.TurnPercent -= 1;
+
             _actionQueue.TurnMotion += -CharacterSheet.TurningAngle;
         }
 
         public void TurnRight()
         {
+            // TEMP
+            _actionQueue.TurnPercent += 1;
+
             _actionQueue.TurnMotion += CharacterSheet.TurningAngle;
         }
 
         public void TurnLeftSlow()
         {
+            // TEMP
+            _actionQueue.TurnPercent -= 0.3;
+
             _actionQueue.TurnMotion += -CharacterSheet.TurningAngle / 3.0;
         }
 
         public void TurnRightSlow()
         {
+            // TEMP
+            _actionQueue.TurnPercent += 0.3;
+
             _actionQueue.TurnMotion += CharacterSheet.TurningAngle / 3.0;
         }
 
@@ -454,17 +490,19 @@ namespace DawnOnline.Simulation.Entities
 
         public void Attack()
         {
-            if (!CanAttack())
-                return;
+            _actionQueue.Attack = true;
 
-            var creatureToAttack = FindCreatureToAttack(null);
-            if (creatureToAttack == null)
-                return;
+            //if (!CanAttack())
+            //    return;
 
-            Attack(creatureToAttack);
+            //var creatureToAttack = FindCreatureToAttack(null);
+            //if (creatureToAttack == null)
+            //    return;
+
+            //Attack(creatureToAttack);
         }
 
-        internal void Attack(Creature target)
+        private void ApplyAttack()
         {
             if (!CanAttack())
                 return;
@@ -473,6 +511,8 @@ namespace DawnOnline.Simulation.Entities
 
             _actionQueue.HasAttacked = true;
             _actionQueue.FatigueCost += CharacterSheet.FatigueCost;
+
+            var target = FindCreatureToAttack(null);
             target.MyActionQueue.Damage += _characterSheet.MeleeDamage;
 
             // Score
