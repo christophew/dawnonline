@@ -219,7 +219,7 @@ namespace MyApplication
 
             this.ExecutionFiber.Schedule(SendDawnWorld, 1500);
             this.ExecutionFiber.Schedule(SendAvatarUpdates, 1500);
-            this.ExecutionFiber.ScheduleOnInterval(UpdateDawnWorld, 1000, 50);
+            this.ExecutionFiber.ScheduleOnInterval(UpdateDawnWorld, 1000, SimulationConstants.UpdateIntervalOnServerInMs);
         }
 
 

@@ -90,13 +90,14 @@ namespace DawnClient
 
         public void RequestCreatureCreationOnServer(EntityType entityType, int amount)
         {
+            Console.WriteLine("RequestCreatureCreationOnServer: " + entityType);
+
             var eData = new Dictionary<byte, object>();
             eData[0] = (byte)entityType;
             eData[1] = amount;
 
             var result = _peer.OpCustom((byte)MyOperationCodes.AddEntity, eData, true);
             _peer.Service();
-
         }
 
         public void Disconnect()

@@ -33,14 +33,12 @@ namespace DawnOnline.Simulation.Builders
                     {
                         var obstacle = ObstacleBuilder.CreateObstacleBox(WorldConstants.WallHeight, WorldConstants.WallWide) as Obstacle;
                         Debug.Assert(obstacle != null);
-                        obstacle.Id = id;
                         return obstacle;
                     }
                 case EntityType.Wall:
                     {
                         var obstacle = ObstacleBuilder.CreateWall(WorldConstants.WallHeight, WorldConstants.WallWide) as Obstacle;
                         Debug.Assert(obstacle != null);
-                        obstacle.Id = id;
                         return obstacle;
                     }
 
@@ -56,7 +54,6 @@ namespace DawnOnline.Simulation.Builders
                     {
                         var creature = CreatureBuilder.CreatePredator() as Creature;
                         Debug.Assert(creature != null);
-                        creature.Id = id;
                         return creature;
                     }
 
