@@ -15,23 +15,26 @@ namespace AgentMatrix
         static void Main(string[] args)
         {
              _dawnClient = new DawnClient.DawnClient();
+            var agentWorld = new AgentWorld();
 
             // Add eventhandler
-            _dawnClient.WorldLoadedEvent += delegate { _dawnClient.RequestCreatureCreationOnServer(EntityType.Predator, 100); };
+            //_dawnClient.WorldLoadedEvent += delegate { _dawnClient.RequestCreatureCreationOnServer(EntityType.Predator, 100); };
+            _dawnClient.WorldLoadedEvent += delegate
+                                                {
+                                                    for (int i = 0; i < 200; i++ )
+                                                        agentWorld.CreateCreature(EntityType.Predator);
+                                                };
 
 
             if (_dawnClient.Connect())
             {
-                var agentWorld = new AgentWorld();
-
-
                 do
                 {
                     _dawnClient.Update();
-                    agentWorld.Update(_dawnClient.DawnWorld.GetEntities());
+                    agentWorld.ProcessMyCreateRequests(_dawnClient.CreatureIds);
+                    agentWorld.UpdateFromServer(_dawnClient.DawnWorld.GetEntities());
                     agentWorld.Think(_dawnClient.CreatureIds);
-                    agentWorld.SendActionsToServer(_dawnClient);
-                    agentWorld.ClearActionQueues();
+                    agentWorld.UpdateToServer(_dawnClient);
 
                     Thread.Sleep(50);
 

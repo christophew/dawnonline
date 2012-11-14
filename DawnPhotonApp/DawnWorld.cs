@@ -25,7 +25,7 @@ namespace DawnGame
         private int _nrOfTreasures = 0;
         private int _nrOfWalls = 1500;
         private int _nrOfBoxes = 0;
-        private int _stablePopulationSize = 150;
+        private int _stablePopulationSize = 500;
 
         private int _nrOfSpawnPointsReplicated = 0;
 
@@ -38,7 +38,7 @@ namespace DawnGame
 
             //AddCreatures(EntityType.Rabbit, 300);
             //AddCreatures(EntityType.Plant, 300);
-            //AddCreatures(EntityType.Predator, 1);
+            //AddCreatures(EntityType.Predator, 300);
             //AddCreatures(EntityType.Turret, 30);
             AddSpawnPoints(EntityType.Predator, _nrOfSpawnPoints);
         }

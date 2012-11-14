@@ -240,7 +240,7 @@ namespace DawnOnline.Simulation
             //FarSeerWorld.Step((float)timeDelta / 1000);
         }
 
-        public int Think(double maxThinkTime, TimeSpan timeDelta, ReadOnlyCollection<int> creatureIds = null)
+        public int Think(double maxThinkTime, TimeSpan timeDelta, IList<int> creatureIds = null)
         {
             var startTime = DateTime.Now;
             var maxTime = startTime + new TimeSpan(0, 0, 0, 0, (int)maxThinkTime);

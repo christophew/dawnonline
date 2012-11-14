@@ -17,11 +17,7 @@ namespace DawnOnline.Simulation.Entities
     internal class Creature : IAvatar
     {
         private int _id = Globals.GenerateUniqueId();
-        public int Id
-        {
-            get { return _id; }
-            internal set { _id = value; }
-        }
+        public int Id { get { return _id; } }
 
         private Placement _place = new Placement();
         private ActionQueue _actionQueue = new ActionQueue();
