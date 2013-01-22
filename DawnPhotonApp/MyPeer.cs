@@ -76,6 +76,7 @@ namespace MyApplication
                     }
 
                 // DawnCommands
+                case (byte)MyOperationCodes.BulkEntityCommand:
                 case (byte)MyOperationCodes.AvatarCommand:
                 case (byte)MyOperationCodes.LoadWorld:
                 case (byte)MyOperationCodes.AddEntity:

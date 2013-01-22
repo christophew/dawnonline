@@ -13,8 +13,8 @@ namespace DawnGame
 {
     class DawnWorld
     {
-        public const float MaxX = 500;
-        public const float MaxY = 400;
+        public const float MaxX = 300;
+        public const float MaxY = 300;
 
         private readonly DawnOnline.Simulation.Environment _environment = SimulationFactory.CreateEnvironment();
         Random _randomize = new Random();
@@ -23,7 +23,7 @@ namespace DawnGame
 
         private int _nrOfSpawnPoints = 0;
         private int _nrOfTreasures = 0;
-        private int _nrOfWalls = 1500;
+        private int _nrOfWalls = 0;
         private int _nrOfBoxes = 0;
         private int _stablePopulationSize = 500;
 
@@ -182,6 +182,27 @@ namespace DawnGame
             _environment.AddCreature(CreatureBuilder.CreateTurret(EntityType.Avatar), new Vector2(position.X + offset, position.Y - offset), 0, false);
 
             return true;
+        }
+
+        public IEntity AddCreature(EntityType specy, Vector2 position, float angle, int spawnPointId)
+        {
+            // Vector(0,0) = position undefined
+            if (position.X == 0 && position.Y == 0)
+                position = new Vector2 { X = _randomize.Next((int)MaxX), Y = _randomize.Next((int)MaxY) };
+
+            IEntity spawnPoint = null;
+            if (spawnPointId != 0)
+            {
+                spawnPoint = _environment.GetCreatures(EntityType.SpawnPoint).FirstOrDefault(c => c.Id == spawnPointId);
+            }
+
+            var newCreature = CloneBuilder.CreateCreature(specy, spawnPoint);
+            if (_environment.AddCreature(newCreature, position, angle, false))
+            {
+                return newCreature;
+            }
+
+            throw new NotSupportedException("TODO");
         }
 
         public IList<IEntity> AddCreatures(EntityType specy, int amount)

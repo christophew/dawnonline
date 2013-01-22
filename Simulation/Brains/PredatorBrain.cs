@@ -329,5 +329,11 @@ namespace DawnOnline.Simulation.Brains
         {
             _forwardBumper.Clear();
         }
+
+        internal override AbstractBrain Replicate(AbstractBrain mate)
+        {
+            return new PredatorBrain();
+        }
+
     }
 }

@@ -54,6 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApplyCreatureCommand.cs" />
     <Compile Include="DawnWorld.cs" />
     <Compile Include="MyApplication.cs" />
     <Compile Include="MyGame.cs" />

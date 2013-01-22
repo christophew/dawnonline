@@ -19,9 +19,14 @@ namespace DawnOnline.Simulation.Entities
         void WalkForward();
         void WalkBackward();
 
+        void Attack();
         void Fire();
         void FireRocket();
 
         void BuildEntity(EntityType entityType);
+
+        // For ICreature?
+        void Turn(double percent);
+        void Thrust(double percent);
     }
 }

@@ -377,7 +377,7 @@ namespace DawnOnline.Simulation.Entities
             }
         }
 
-        internal void Turn(double percent)
+        public void Turn(double percent)
         {
             // TEMP
             _actionQueue.TurnPercent += percent;
@@ -385,7 +385,7 @@ namespace DawnOnline.Simulation.Entities
             _actionQueue.TurnMotion += CharacterSheet.TurningAngle * percent;
         }
 
-        internal void Thrust(double percent)
+        public void Thrust(double percent)
         {
             // TEMP
             _actionQueue.ForwardThrustPercent += percent; 
@@ -509,7 +509,8 @@ namespace DawnOnline.Simulation.Entities
             _actionQueue.FatigueCost += CharacterSheet.FatigueCost;
 
             var target = FindCreatureToAttack(null);
-            target.MyActionQueue.Damage += _characterSheet.MeleeDamage;
+            if (target != null)
+                target.MyActionQueue.Damage += _characterSheet.MeleeDamage;
 
             // Score
             //if (SpawnPoint != null)

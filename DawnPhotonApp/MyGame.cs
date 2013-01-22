@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using DawnGame;
 using DawnOnline.Simulation.Entities;
+using DawnPhotonApp;
 using Lite.Messages;
 using Microsoft.Xna.Framework;
 using SharedConstants;
@@ -246,16 +247,29 @@ namespace MyApplication
                         break;
                     }
 
+                case MyOperationCodes.BulkEntityCommand:
+                    {
+                        HandleBulkEntityCommand(operationRequest);
+                        break;
+                    }
+
                 case MyOperationCodes.AddEntity:
                     {
+                        var parameters = (Hashtable)operationRequest.Parameters[0];
+
                         // Add to world
-                        var entityType = (EntityType)(byte)operationRequest.Parameters[0];
-                        var amount = (int)operationRequest.Parameters[1];
-                        var newCreatures = _dawnWorldInstance.AddCreatures(entityType, amount);
+                        var entityType = (EntityType)parameters[0];
+                        var position = new Vector2((float) parameters[1], (float) parameters[2]);
+                        var angle = (float) parameters[3];
+                        var spawnPoint = (int) parameters[4];
+                        var clientId = (int)parameters[5]; // client referenceId of created creature
+
+                        var newCreature = _dawnWorldInstance.AddCreature(entityType, position, angle, spawnPoint);
 
                         // Send response
                         var eData = new Dictionary<byte, object>();
-                        eData[0] = newCreatures.Select(c => c.Id).ToArray();
+                        eData[0] = (newCreature != null) ? newCreature.Id : 0;
+                        eData[1] = clientId; // client referenceId of created creature
                         var response = new OperationResponse((byte)MyOperationCodes.AddEntity, eData);
                         peer.SendOperationResponse(response, new SendParameters { Unreliable = false });
 
@@ -291,15 +305,53 @@ namespace MyApplication
         private static void HandleAvatorCommand(OperationRequest operationRequest)
         {
             var avatarId = (int) operationRequest.Parameters[1];
-            var avatar = _dawnWorldInstance.GetAvatar(avatarId);
+            var commandsParameter = (byte[]) operationRequest.Parameters[0];
+
+            var commands = new List<AvatarCommand>();
+            foreach (var byteCommand in commandsParameter)
+            {
+                commands.Add((AvatarCommand)byteCommand);
+            }
+
+            ApplyEntityCommands(avatarId, commands.Cast<AvatarCommand>().ToList());
+        }
+
+        private static void HandleBulkEntityCommand(OperationRequest operationRequest)
+        {
+            var entityCommands = operationRequest.Parameters.Values.Cast<Hashtable>();
+            foreach (var entityCommand in entityCommands)
+            {
+                HandleEntityCommand(entityCommand);
+            }
+        }
+
+        private static void HandleEntityCommand(Hashtable parameters)
+        {
+            var entityId = (int)parameters[0];
+            var nrOfCommands = (byte)parameters[1];
+
+            var commands = new List<AvatarCommand>();
+            for (int i=0; i < nrOfCommands; i++)
+            {
+                commands.Add((AvatarCommand)parameters[2+i]);
+            }
+
+            ApplyEntityCommands(entityId, commands);
+        }
+
+        private static void ApplyEntityCommands(int entityId, List<AvatarCommand> commands)
+        {
+            var avatar = _dawnWorldInstance.GetAvatar(entityId);
             if (avatar == null)
             {
                 // TODO: seperate CREATURE & AVATOR logic & commands?
-                avatar = _dawnWorldInstance.GetCreature(avatarId);
+                avatar = _dawnWorldInstance.GetCreature(entityId);
             }
             if (avatar == null)
             {
-                throw new NotImplementedException("TODO: client notifications");
+                //throw new NotImplementedException("TODO: client notifications");
+                // Client not yet in synch with kill operation
+                return;
             }
 
             // TEST: clear ActionQueue before update instead of on fixed intervals
@@ -307,49 +359,9 @@ namespace MyApplication
             // = - if connection is lost => action queue is never cleared
             avatar.ClearActionQueue();
 
-            var commands = (byte[]) operationRequest.Parameters[0];
-            foreach (var byteCommand in commands)
+            foreach (var command in commands)
             {
-                var command = (AvatarCommand) byteCommand;
-                switch (command)
-                {
-                    case AvatarCommand.RunForward:
-                        avatar.RunForward();
-                        break;
-                    case AvatarCommand.RunBackward:
-                        avatar.RunBackward();
-                        break;
-                    case AvatarCommand.WalkForward:
-                        avatar.WalkForward();
-                        break;
-                    case AvatarCommand.WalkBackward:
-                        avatar.WalkBackward();
-                        break;
-                    case AvatarCommand.TurnLeft:
-                        avatar.TurnLeft();
-                        break;
-                    case AvatarCommand.TurnRight:
-                        avatar.TurnRight();
-                        break;
-                    case AvatarCommand.StrafeLeft:
-                        avatar.StrafeLeft();
-                        break;
-                    case AvatarCommand.StrafeRight:
-                        avatar.StrafeRight();
-                        break;
-                    case AvatarCommand.TurnLeftSlow:
-                        avatar.TurnLeftSlow();
-                        break;
-                    case AvatarCommand.TurnRightSlow:
-                        avatar.TurnRightSlow();
-                        break;
-                    case AvatarCommand.Fire:
-                        avatar.Fire();
-                        break;
-                    case AvatarCommand.FireRocket:
-                        avatar.FireRocket();
-                        break;
-                }
+                ApplyCreatureCommand.ApplyCommand(avatar, command);
             }
         }
 

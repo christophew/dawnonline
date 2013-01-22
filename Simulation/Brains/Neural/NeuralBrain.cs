@@ -202,13 +202,13 @@ namespace DawnOnline.Simulation.Brains.Neural
             network.InputNodes[i++].CurrentValue = Globals.Radomizer.Next(50);
             network.InputNodes[i++].CurrentValue = this.MyCreature.CharacterSheet.Damage.PercentFilled;
             network.InputNodes[i++].CurrentValue = this.MyCreature.CharacterSheet.Fatigue.PercentFilled;
-            network.InputNodes[i++].CurrentValue = _leftEar.HearFamily(Sound.SoundTypeEnum.A);
-            network.InputNodes[i++].CurrentValue = _leftEar.HearStrangers(Sound.SoundTypeEnum.A);
-            network.InputNodes[i++].CurrentValue = _leftEar.HearFamily(Sound.SoundTypeEnum.B);
-            network.InputNodes[i++].CurrentValue = _leftEar.HearStrangers(Sound.SoundTypeEnum.B);
+            Debug.Assert(i == 14);
 
-
-            Debug.Assert(i == 18);
+            //network.InputNodes[i++].CurrentValue = _leftEar.HearFamily(Sound.SoundTypeEnum.A);
+            //network.InputNodes[i++].CurrentValue = _leftEar.HearStrangers(Sound.SoundTypeEnum.A);
+            //network.InputNodes[i++].CurrentValue = _leftEar.HearFamily(Sound.SoundTypeEnum.B);
+            //network.InputNodes[i++].CurrentValue = _leftEar.HearStrangers(Sound.SoundTypeEnum.B);
+            //Debug.Assert(i == 18);
 
             // Process
             network.Propagate(timeDelta);
@@ -218,8 +218,15 @@ namespace DawnOnline.Simulation.Brains.Neural
             MyCreature.Thrust(network.OutputNodes[1].CurrentValue / 100);
 
             // Speak
-            MyCreature.SayA(network.OutputNodes[2].CurrentValue);
-            MyCreature.SayB(network.OutputNodes[3].CurrentValue);
+            //MyCreature.SayA(network.OutputNodes[2].CurrentValue);
+            //MyCreature.SayB(network.OutputNodes[3].CurrentValue);
+
+            // Attack when possible
+            // TODO: SHOULD BE OUTPUT OF NETWORK?
+            if (MyCreature.FindCreatureToAttack(MyCreature.FoodSpecies) != null)
+            {
+                MyCreature.Attack();
+            }
         }
 
         protected override void NeutralState(TimeSpan timeDelta)

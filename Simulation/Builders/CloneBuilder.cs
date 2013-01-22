@@ -22,7 +22,11 @@ namespace DawnOnline.Simulation.Builders
 
         public static bool IsCreature(EntityType entityType)
         {
-            return entityType == EntityType.Predator;
+            return entityType == EntityType.Predator ||
+                   entityType == EntityType.SpawnPoint ||
+                   entityType == EntityType.Plant ||
+                   entityType == EntityType.Rabbit ||
+                   entityType == EntityType.Turret;
         }
 
         public static IEntity CreateObstacle(int id, EntityType entityType, double height, double wide)
@@ -46,19 +50,18 @@ namespace DawnOnline.Simulation.Builders
             }
         }
 
-        public static IEntity CreateCreature(int id, EntityType entityType)
+        public static ICreature CreateCreature(EntityType entityType, IEntity spawnPoint)
         {
-            switch (entityType)
-            {
-                case EntityType.Predator:
-                    {
-                        var creature = CreatureBuilder.CreatePredator() as Creature;
-                        Debug.Assert(creature != null);
-                        return creature;
-                    }
+            var creature = CreatureBuilder.CreateCreature(entityType) as Creature;
+            Debug.Assert(creature != null);
 
-                default: throw new NotImplementedException("TODO");
+            Debug.Assert(spawnPoint == null || spawnPoint.Specy == EntityType.SpawnPoint);
+            if (spawnPoint != null)
+            {
+                creature.SpawnPoint = spawnPoint;
             }
+
+            return creature;
         }
 
         public static void UpdatePosition(IEntity entity, Vector2 position, double angle)

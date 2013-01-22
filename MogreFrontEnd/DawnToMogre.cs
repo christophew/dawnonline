@@ -108,6 +108,9 @@ namespace MogreFrontEnd
                 _dawnClient.SendAvatorCommand(AvatarCommand.StrafeLeft);
             if (keyboard.IsKeyDown(MOIS.KeyCode.KC_O))
                 _dawnClient.SendAvatorCommand(AvatarCommand.StrafeRight);
+
+            if (keyboard.IsKeyDown(MOIS.KeyCode.KC_RETURN))
+                _dawnClient.SendAvatorCommand(AvatarCommand.Attack);
             if (keyboard.IsKeyDown(MOIS.KeyCode.KC_SPACE))
                 _dawnClient.SendAvatorCommand(AvatarCommand.Fire);
             if (keyboard.IsKeyDown(MOIS.KeyCode.KC_LCONTROL))
