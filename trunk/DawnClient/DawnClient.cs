@@ -24,8 +24,18 @@ namespace DawnClient
         private int _avatarId;
         public int AvatarId { get { return _avatarId; } }
 
-        private List<int> _creatureIds = new List<int>();
-        public ReadOnlyCollection<int> CreatureIds { get { return _creatureIds.AsReadOnly(); } }
+        public class ClientServerIdPair
+        {
+            public ClientServerIdPair(int serverId, int clientId)
+            {
+                ServerId = serverId;
+                ClientId = clientId;
+            }
+            public int ServerId;
+            public int ClientId;
+        }
+        private List<ClientServerIdPair> _creatureIds = new List<ClientServerIdPair>();
+        public ReadOnlyCollection<ClientServerIdPair> CreatureIds { get { return _creatureIds.AsReadOnly(); } }
 
         private DawnClientEntity _avatarProxy = new DawnClientEntity();
         public DawnClientEntity Avatar { get { return _avatarProxy; } }
@@ -33,9 +43,21 @@ namespace DawnClient
         public bool WorldLoaded { get; private set; }
 
 
-        // Events
+        #region Events
         public event EventHandler WorldLoadedEvent;
 
+        public class EntityDestroyedEventArgs : EventArgs
+        {
+            public Hashtable DestroyedIds { get; private set; }
+
+            public EntityDestroyedEventArgs(Hashtable killedIds)
+            {
+                DestroyedIds = killedIds;
+            }
+        }
+        public delegate void EntityDestroyedEventHandler(object sender, EntityDestroyedEventArgs e);
+        public event EntityDestroyedEventHandler EntityDestroyed;
+        #endregion
 
         public DawnClient()
         {
@@ -63,21 +85,34 @@ namespace DawnClient
             _lastUpdateTime = now;
 
             // Send avatar command
-            SendCommands(_avatarId, _avatarCommands);
+            if (_avatarId != 0)
+            {
+                SendCommands(_avatarId, _avatarCommands);
+            }
 
             // Send creature command
+            //foreach (var kvp in _entityCommands)
+            //{
+            //    SendCommands(kvp.Key, kvp.Value);
+            //}
+
+            var bulkCommands = new List<Hashtable>();
             foreach (var kvp in _entityCommands)
             {
-                SendCommands(kvp.Key, kvp.Value);
+                bulkCommands.Add(CreateCommandData(kvp.Key, kvp.Value));
             }
+            SendBulkCommands(bulkCommands);
+            _entityCommands.Clear();
 
             _peer.Service();
         }
 
         private void SendCommands(int id, HashSet<AvatarCommand> commands)
         {
-            if (commands.Count == 0)
-                return;
+            // Always send commands, even when none selected = used to clear the current action queue on the server
+            // => could be optimized: stop doing this when the commands haven't changed a number of times
+            //if (commands.Count == 0)
+            //    return;
 
             var eData = new Dictionary<byte, object>();
             var commandsArray = commands.Select(command => (byte)command).ToArray();
@@ -88,13 +123,64 @@ namespace DawnClient
             commands.Clear();
         }
 
-        public void RequestCreatureCreationOnServer(EntityType entityType, int amount)
+        private void SendBulkCommands(List<Hashtable> positions)
+        {
+            // TODO: warnings when we exceed the max packet-size!
+
+            // Split the list into fragments
+            const int fragmentSize = 50;
+
+            byte index = 0;
+            var currentDataList = new Dictionary<byte, object>();
+            foreach (var position in positions)
+            {
+                currentDataList.Add(index++, position);
+
+                if (index > fragmentSize)
+                {
+                    var result = _peer.OpCustom((byte)MyOperationCodes.BulkEntityCommand, currentDataList, false);
+
+                    index = 0;
+                    currentDataList = new Dictionary<byte, object>();
+                }
+            }
+
+            // Send remainder
+            if (currentDataList.Count > 0)
+            {
+                var result = _peer.OpCustom((byte)MyOperationCodes.BulkEntityCommand, currentDataList, false);
+            }
+        }
+
+        private Hashtable CreateCommandData(int entityId, HashSet<AvatarCommand> commands)
+        {
+            var commandData = new Hashtable();
+            commandData[0] = entityId;
+            commandData[1] = (byte)commands.Count;
+
+            var i = 2;
+            foreach (var command in commands)
+            {
+                commandData[i++] = command;
+            }
+
+            return commandData;
+        }
+
+        public void RequestCreatureCreationOnServer(EntityType entityType, float x, float y, float angle, int spawnPointId, int clientId)
         {
             Console.WriteLine("RequestCreatureCreationOnServer: " + entityType);
 
+            var creatureData = new Hashtable();
+            creatureData.Add(0, entityType);
+            creatureData.Add(1, x);
+            creatureData.Add(2, y);
+            creatureData.Add(3, angle);
+            creatureData.Add(4, spawnPointId);
+            creatureData.Add(5, clientId);
+
             var eData = new Dictionary<byte, object>();
-            eData[0] = (byte)entityType;
-            eData[1] = amount;
+            eData[0] = creatureData;
 
             var result = _peer.OpCustom((byte)MyOperationCodes.AddEntity, eData, true);
             _peer.Service();
@@ -164,7 +250,16 @@ namespace DawnClient
 
                 case (byte)EventCode.Destroyed:
                     // Killed
+                    var killedIds = (Hashtable) eventData.Parameters[0];
                     DawnWorld.RemoveEntities((Hashtable)eventData.Parameters[0]);
+
+                    // Fire our event
+                    if (this.EntityDestroyed != null)
+                    {
+                        var eventArgs = new EventArgs();
+
+                        this.EntityDestroyed(this, new EntityDestroyedEventArgs(killedIds));
+                    }
 
                     break;
             }
@@ -215,7 +310,10 @@ namespace DawnClient
                 // Return from AddPredator
                 case (byte)MyOperationCodes.AddEntity:
                     {
-                        _creatureIds.AddRange((int[])operationResponse.Parameters[0]);
+                        var creatureServerId = (int) operationResponse.Parameters[0];
+                        var creatureClientId = (int) operationResponse.Parameters[1];
+
+                        _creatureIds.Add(new ClientServerIdPair(creatureServerId, creatureClientId));
                         break;
                     }
 

@@ -39,7 +39,7 @@ namespace DawnOnline.Simulation.Builders
                     return CreateSpawnPoint(EntityType.Predator);
             }
 
-            throw new ArgumentOutOfRangeException();
+            throw new NotSupportedException();
         }
 
         public static ICreature CreatePredator()

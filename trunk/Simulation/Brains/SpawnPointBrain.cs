@@ -28,6 +28,7 @@ namespace DawnOnline.Simulation.Brains
             var prototypeBrain = new NeuralBrain();
             prototypeBrain.PredefineBehaviour();
             //prototypeBrain.PredefineRandomBehaviour();
+            //var prototypeBrain = new PredatorBrain();
             prototype.Brain = prototypeBrain;
             PrototypeNeuralForager = prototype;
         }

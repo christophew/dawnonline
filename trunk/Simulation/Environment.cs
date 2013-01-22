@@ -111,11 +111,26 @@ namespace DawnOnline.Simulation
                 AddExplosion(explosion);
             }
 
+            RemoveCreature(creature);
+        }
+
+        private void RemoveCreature(Creature creature)
+        {
             creature.Alive = false;
             _creatures.Remove(creature);
             _creaturesPerSpecy[creature.Specy].Remove(creature);
 
             FarSeerWorld.RemoveBody(creature.Place.Fixture.Body);
+        }
+
+        public bool RemoveCreature(int id)
+        {
+            var creature = _creatures.Find(c => c.Id == id) as Creature;
+            if (creature == null)
+                return false;
+
+            RemoveCreature(creature);
+            return true;
         }
 
         public IList<ICreature> GetCreatures()

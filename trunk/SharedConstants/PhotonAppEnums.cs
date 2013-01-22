@@ -14,6 +14,7 @@ namespace SharedConstants
         AvatarCommand = 102,
         LoadWorld = 103,
         AddEntity = 104,
+        BulkEntityCommand = 105,
     }
 
     public enum EventCode : byte
