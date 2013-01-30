@@ -89,6 +89,8 @@ namespace AgentMatrix
                     Console.WriteLine("> SpawnPoints : " + spawnpoints);
                     Console.WriteLine("> SpawnPoints2: " + agentWorld.GetEntities().Count(e => e.Specy == EntityType.SpawnPoint));
 
+                    Console.WriteLine("> SpawnPoints Replicated: " + agentWorld.NrOfSpawnPointsReplicated);
+
                     Console.WriteLine("> Creatures created: " + _dawnClient.CreatureIds.Count + " - " + string.Join(", ", _dawnClient.CreatureIds.Select(c => c.ServerId)));
 
                     // Auto move forward

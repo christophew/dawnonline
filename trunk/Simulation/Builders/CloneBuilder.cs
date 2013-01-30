@@ -17,7 +17,8 @@ namespace DawnOnline.Simulation.Builders
         public static bool IsObstacle(EntityType entityType)
         {
             return entityType == EntityType.Wall ||
-                   entityType == EntityType.Box;
+                   entityType == EntityType.Box ||
+                   entityType == EntityType.Treasure;
         }
 
         public static bool IsCreature(EntityType entityType)
@@ -42,6 +43,12 @@ namespace DawnOnline.Simulation.Builders
                 case EntityType.Wall:
                     {
                         var obstacle = ObstacleBuilder.CreateWall(WorldConstants.WallHeight, WorldConstants.WallWide) as Obstacle;
+                        Debug.Assert(obstacle != null);
+                        return obstacle;
+                    }
+                case EntityType.Treasure:
+                    {
+                        var obstacle = ObstacleBuilder.CreateTreasure() as Obstacle;
                         Debug.Assert(obstacle != null);
                         return obstacle;
                     }

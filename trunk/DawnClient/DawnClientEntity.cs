@@ -15,6 +15,7 @@ namespace DawnClient
         public float PlaceY { get; private set; }
         public float Angle { get; private set; }
         public int SpawnPointId { get; private set; }
+        public bool IsActive { get; private set; }
 
         internal DawnClientEntity()
         {}
@@ -26,10 +27,11 @@ namespace DawnClient
             this.PlaceX = (float)eventData[2];
             this.PlaceY = (float)eventData[3];
             this.Angle = (float)eventData[4];
+            this.IsActive = (bool)eventData[5];
 
-            if (eventData.ContainsKey(5))
+            if (eventData.ContainsKey(6))
             {
-                this.SpawnPointId = (int) eventData[5];
+                this.SpawnPointId = (int) eventData[6];
             }
         }
 

@@ -9,6 +9,7 @@ namespace MogreFrontEnd
     class SlerpNode
     {
         public SceneNode Node { get; private set; }
+        public SceneNode IndicatorNode { get; private set; }
 
         private Vector2 _destination;
         private float _destinationAngle;
@@ -25,18 +26,22 @@ namespace MogreFrontEnd
         //private const int SlerpCount = 1;
         //private const int AngleSlerpCount = 1;
 
-        internal SlerpNode(SceneNode node, Vector2 position, float angle)
+        internal SlerpNode(SceneNode node, Vector2 position, float angle, SceneNode indicatorNode)
         {
             Node = node;
+            IndicatorNode = indicatorNode;
 
             _currentPosition = position;
             _currentAngle = angle;
         }
 
-        public void Update(Vector2 newDestination, float newAngle)
+        public void Update(Vector2 newDestination, float newAngle, bool showIndicator)
         {
             UpdatePosition(newDestination);
             UpdateAngle(newAngle);
+
+            if (IndicatorNode != null)
+                IndicatorNode.SetVisible(showIndicator);
         }
 
         private void UpdatePosition(Vector2 newDestination)

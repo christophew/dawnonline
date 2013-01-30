@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using DawnClient;
 using Mogre;
@@ -194,23 +195,27 @@ namespace MogreFrontEnd
 
             if (_entities.TryGetValue(entity.Id, out slerpNode))
             {
-                slerpNode.Update(position, angle);
+                slerpNode.Update(position, angle, !entity.IsActive);
             }
             else
             {
                 SceneNode node = null;
+                SceneNode indicatorNode = null;
 
                 switch (entity.Specy)
                 {
                     case EntityType.Avatar:
                         node = CreateAvatorNode(entity);
+                        indicatorNode = AttachIndicator(node);
                         break;
                     case EntityType.Predator:
                         node = CreatePredatorNode(entity);
+                        indicatorNode = AttachIndicator(node);
                         break;
                     case EntityType.Turret:
                         node = CreateDummyNode(entity);
-                        break;
+                         indicatorNode = AttachIndicator(node);
+                       break;
                     case EntityType.Box:
                         node = CreateBoxNode(entity);
                         break;
@@ -236,7 +241,7 @@ namespace MogreFrontEnd
                         throw new NotSupportedException();
                 }
 
-                slerpNode = new SlerpNode(node, position, angle);
+                slerpNode = new SlerpNode(node, position, angle, indicatorNode);
 
                 _entities.Add(entity.Id, slerpNode);
             }
@@ -262,6 +267,19 @@ namespace MogreFrontEnd
             {
                 currentEntities.Add(entity.Id);
             }
+        }
+
+        private SceneNode AttachIndicator(SceneNode node)
+        {
+            var indicator = mSceneMgr.CreateEntity("cone.mesh");
+            var indicatorNode = node.CreateChildSceneNode(new Vector3(0, 1f, 0));
+            indicatorNode.AttachObject(indicator);
+            indicatorNode.Roll(Math.PI);
+            indicatorNode.SetVisible(false);
+
+            indicator.SetMaterial(GetLinkDeadMaterial());
+
+            return indicatorNode;
         }
 
         private SceneNode CreateDummyNode(DawnClientEntity entity)
@@ -479,6 +497,17 @@ namespace MogreFrontEnd
 
         private static readonly Random _randomize = new Random((int)DateTime.Now.Ticks);
         Dictionary<int, MaterialPtr> _familyColorMapper = new Dictionary<int, MaterialPtr>();
+        private MaterialPtr _linkDeadMaterial = null;
+
+        private MaterialPtr GetLinkDeadMaterial()
+        {
+            if (_linkDeadMaterial == null)
+            {
+                var color = ColourValue.Red;
+                _linkDeadMaterial = CreateMaterial(ColourValue.Red);
+            }
+            return _linkDeadMaterial;
+        }
 
         private MaterialPtr GetFamilyMaterial(DawnClientEntity entity)
         {

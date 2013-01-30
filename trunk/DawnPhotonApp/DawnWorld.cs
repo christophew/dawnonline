@@ -13,8 +13,8 @@ namespace DawnGame
 {
     class DawnWorld
     {
-        public const float MaxX = 300;
-        public const float MaxY = 300;
+        public const float MaxX = WorldConstants.MaxX;
+        public const float MaxY = WorldConstants.MaxY;
 
         private readonly DawnOnline.Simulation.Environment _environment = SimulationFactory.CreateEnvironment();
         Random _randomize = new Random();
@@ -22,7 +22,7 @@ namespace DawnGame
         private int _grid = 5;
 
         private int _nrOfSpawnPoints = 0;
-        private int _nrOfTreasures = 0;
+        private int _nrOfTreasures = 20;
         private int _nrOfWalls = 0;
         private int _nrOfBoxes = 0;
         private int _stablePopulationSize = 500;
@@ -188,7 +188,10 @@ namespace DawnGame
         {
             // Vector(0,0) = position undefined
             if (position.X == 0 && position.Y == 0)
+            {
                 position = new Vector2 { X = _randomize.Next((int)MaxX), Y = _randomize.Next((int)MaxY) };
+                
+            }
 
             IEntity spawnPoint = null;
             if (spawnPointId != 0)

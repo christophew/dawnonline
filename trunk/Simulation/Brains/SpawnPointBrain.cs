@@ -108,7 +108,7 @@ namespace DawnOnline.Simulation.Brains
            newBrain.PrototypeNeuralForager = PrototypeNeuralForager.Replicate(spawnPointMate.PrototypeNeuralForager);
 
             // MUTATE 
-            newBrain.PrototypeNeuralForager.Mutate();
+            //newBrain.PrototypeNeuralForager.Mutate();
 
             return newBrain;
         }

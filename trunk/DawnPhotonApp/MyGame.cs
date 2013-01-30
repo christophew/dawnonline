@@ -19,6 +19,7 @@ namespace MyApplication
     public class MyGame : LiteGame
     {
         private static DawnWorld _dawnWorldInstance = new DawnWorld();
+        private static WorldSyncState _worldSyncState = new WorldSyncState();
 
         private DateTime _lastUpdateTime = DateTime.Now;
         private Dictionary<int, Vector2> _previousEntities = new Dictionary<int, Vector2>();
@@ -37,11 +38,21 @@ namespace MyApplication
             _dawnWorldInstance.ApplyMove(millisecondsSinceLastFrame);
             _dawnWorldInstance.UpdatePhysics(millisecondsSinceLastFrame);
 
+            ClearQueueOfLinkDeads();
             //var avatars = _dawnWorldInstance.Environment.GetCreatures();
             //foreach (var avatar in avatars)
             //{
             //    avatar.ClearActionQueue();
             //}
+        }
+
+        private void ClearQueueOfLinkDeads()
+        {
+            foreach (var entity in _dawnWorldInstance.Environment.GetCreatures())
+            {
+                if (!_worldSyncState.IsActive(entity.Id))
+                    entity.ClearActionQueue();
+            }
         }
 
         private void SendAvatarUpdates()
@@ -201,11 +212,12 @@ namespace MyApplication
             dawnEntity[2] = entity.Place.Position.X;
             dawnEntity[3] = entity.Place.Position.Y;
             dawnEntity[4] = entity.Place.Angle;
+            dawnEntity[5] = _worldSyncState.IsActive(entity.Id);
 
             var creature = entity as ICreature;
             if (creature != null && creature.SpawnPoint != null)
             {
-                dawnEntity[5] = creature.SpawnPoint.Id;
+                dawnEntity[6] = creature.SpawnPoint.Id;
             }
             return dawnEntity;
         }
@@ -363,6 +375,8 @@ namespace MyApplication
             {
                 ApplyCreatureCommand.ApplyCommand(avatar, command);
             }
+
+            _worldSyncState.EntityCommandReceived(entityId);
         }
 
         private void HandleMyGameOperation(LitePeer peer, OperationRequest operationRequest, SendParameters sendParameters)
