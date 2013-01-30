@@ -21,9 +21,9 @@ namespace AgentMatrix
         private readonly Dictionary<int, int> _clientIdToServerIdMap = new Dictionary<int, int>();
         private readonly HashSet<int> _createQueueClientIds = new HashSet<int>();
 
-        //private Random _randomize = new Random();
+        private Random _randomize = new Random();
         private int _minNrOfSpawnPoints = 5;
-        private int _nrOfSpawnPointsReplicated = 0;
+        public int NrOfSpawnPointsReplicated { get; private set; }
 
 
 
@@ -68,7 +68,7 @@ namespace AgentMatrix
             foreach (var entity in entities)
             {
                 // Entities
-                if (entity.Specy == EntityType.Wall || entity.Specy == EntityType.Box ||
+                if (entity.Specy == EntityType.Wall || entity.Specy == EntityType.Box || entity.Specy == EntityType.Treasure ||
                     entity.Specy == EntityType.Predator || entity.Specy == EntityType.SpawnPoint)
                 {
                     var position = new Vector2(entity.PlaceX, entity.PlaceY);
@@ -397,12 +397,18 @@ namespace AgentMatrix
                 //AddSpawnPoints(EntityType.Predator, 1);
                 var newSpawnPoint = bestspawnPoint.Replicate(crossoverMate);
 
-                // TODO: send correct X, Y position at creation time
-                //var position = new Vector2 { X = _randomize.Next((int)MaxX), Y = _randomize.Next((int)MaxY) };
-                var position = new Vector2 { X = 0, Y = 0 };
+                // Send correct X, Y position at creation time
+                // Take a safety boundary!
+                const int boundary = 20;
+                var position = new Vector2
+                                   {
+                                       X = _randomize.Next((int)WorldConstants.MaxX - 2 * boundary) + boundary, 
+                                       Y = _randomize.Next((int)WorldConstants.MaxY - 2 * boundary) + boundary
+                                   };
+                //var position = new Vector2 { X = 0, Y = 0 };
 
                 _staticEnvironment.AddCreature(newSpawnPoint, position, 0, false);
-                _nrOfSpawnPointsReplicated++;
+                NrOfSpawnPointsReplicated++;
 
                 timer.Stop();
                 Console.WriteLine("Replicate.timer: " + timer.ElapsedMilliseconds);
