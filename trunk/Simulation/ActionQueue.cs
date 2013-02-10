@@ -44,6 +44,7 @@ namespace DawnOnline.Simulation
             HasFired = false;
             BuildEntityOfType = EntityType.Unknown;
             Rest = false;
+            Attack = false;
             SpeachVolumeA = 0;
             SpeachVolumeB = 0;
 

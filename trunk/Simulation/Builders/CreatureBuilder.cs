@@ -150,8 +150,8 @@ namespace DawnOnline.Simulation.Builders
             spawnPoint.SpawnPoint = spawnPoint;
 
             spawnPoint.CharacterSheet.FatigueRecovery = 25;
-            //spawnPoint.CharacterSheet.Armour = 5;
-            spawnPoint.CharacterSheet.Armour = 100;
+            spawnPoint.CharacterSheet.Armour = 5;
+            //spawnPoint.CharacterSheet.Armour = 100;
 
             return spawnPoint;
         }
