@@ -64,7 +64,7 @@ namespace DawnOnline.Simulation.Builders
             return obstacle;
         }
 
-        public static IEntity CreateTreasure()
+        public static IEntity CreateTreasure(bool bindCollision = true)
         {
             var treasure = new Collectable();
 
@@ -87,7 +87,9 @@ namespace DawnOnline.Simulation.Builders
             placement.Fixture.Body.LinearDamping = 0.5f;
             placement.Fixture.Body.AngularDamping = 0.5f;
             placement.Fixture.Body.Mass = 1f;
-            placement.Fixture.OnCollision += Collectable.OnCollision;
+
+            if (bindCollision)
+                placement.Fixture.OnCollision += Collectable.OnCollision;
 
             treasure.Place = placement;
             treasure.Specy = EntityType.Treasure;

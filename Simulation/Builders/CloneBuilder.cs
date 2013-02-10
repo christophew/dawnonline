@@ -48,7 +48,7 @@ namespace DawnOnline.Simulation.Builders
                     }
                 case EntityType.Treasure:
                     {
-                        var obstacle = ObstacleBuilder.CreateTreasure() as Obstacle;
+                        var obstacle = ObstacleBuilder.CreateTreasure(false) as Obstacle;
                         Debug.Assert(obstacle != null);
                         return obstacle;
                     }
