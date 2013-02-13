@@ -22,7 +22,7 @@ namespace MyApplication
         private static WorldSyncState _worldSyncState = new WorldSyncState();
 
         private DateTime _lastUpdateTime = DateTime.Now;
-        private Dictionary<int, Vector2> _previousEntities = new Dictionary<int, Vector2>();
+        private Dictionary<int, EntityStatus> _previousEntities = new Dictionary<int, EntityStatus>();
 
         private void UpdateDawnWorld()
         {
@@ -61,15 +61,15 @@ namespace MyApplication
             {
                 // 104 = compressed position update
                 {
-                    var positionData = new List<Hashtable>();
+                    var currentEntities = new Dictionary<int, EntityStatus>();
 
                     foreach (var entity in _dawnWorldInstance.Environment.GetCreatures())
                     {
                         if (entity.Specy == EntityType.Avatar)
-                            positionData.Add(CreateEntityData(entity));
+                            currentEntities.Add(entity.Id, CreateEntityStatus(entity));
                     }
 
-                    SendPositionsEvent(positionData);
+                    SendPositionsEvent(currentEntities);
                 }
             }
 
@@ -89,52 +89,24 @@ namespace MyApplication
                     this.PublishEvent(eData, this.Actors, sendParameters);
                 }
 
-                var currentEntities = new Dictionary<int, Vector2>();
+                var currentEntities = new Dictionary<int, EntityStatus>();
 
-                // 104 = compressed position update
+                // 104 = compressed status update
                 {
-                    var positionData = new List<Hashtable>();
-
                     foreach (var entity in _dawnWorldInstance.Environment.GetCreatures())
                     {
-                        currentEntities.Add(entity.Id, entity.Place.Position);
-
-                        // TEMP REMOVE OPTIMISATION: CREATURES CAN BE CREATED BY AGENT MATRIX
-                        //// Do not send updates when the object hasn't moved
-                        //Vector2 previousPosition;
-                        //if (_previousEntities.TryGetValue(entity.Id, out previousPosition))
-                        //{
-                        //    if (entity.Place.Position == previousPosition)
-                        //        continue;
-                        //}
-
-                        positionData.Add(CreateEntityData(entity));
+                        currentEntities.Add(entity.Id, CreateEntityStatus(entity));
                     }
                     foreach (var entity in _dawnWorldInstance.Environment.GetObstacles())
                     {
-                        currentEntities.Add(entity.Id, entity.Place.Position);
-
-                        // Do not send updates when the object hasn't moved
-                        Vector2 previousPosition;
-                        if (_previousEntities.TryGetValue(entity.Id, out previousPosition))
-                        {
-                            if (entity.Place.Position == previousPosition)
-                                continue;
-                        }
-
-                        // Ignore walls,they are send on WorldLoad
-                        //if (entity.Specy == EntityType.Wall)
-                        //    continue;
-
-                        positionData.Add(CreateEntityData(entity));
+                        currentEntities.Add(entity.Id, CreateEntityStatus(entity));
                     }
                     foreach (var entity in _dawnWorldInstance.Environment.GetBullets())
                     {
-                        currentEntities.Add(entity.Id, entity.Place.Position);
-                        positionData.Add(CreateEntityData(entity));
+                        currentEntities.Add(entity.Id, CreateEntityStatus(entity));
                     }
 
-                    SendPositionsEvent(positionData);
+                    SendPositionsEvent(currentEntities, _previousEntities);
                 }
 
                 // 103 = destroyed
@@ -149,17 +121,10 @@ namespace MyApplication
                             // TODO: optimize second parameter
                             killedHash.Add(index++, previousEntity);
                         }
+
+                        SendKilled(killedHash);
                     }
 
-                    if (killedHash.Count > 0)
-                    {
-                        // Send killed reliable
-                        var data = new Dictionary<byte, object>();
-                        data[0] = killedHash;
-                        var eData = new EventData((byte)EventCode.Destroyed, data);
-                        var sendParameters = new SendParameters { Unreliable = false };
-                        this.PublishEvent(eData, this.Actors, sendParameters);
-                    }
                 }
 
                 _previousEntities = currentEntities;
@@ -171,24 +136,50 @@ namespace MyApplication
             this.ExecutionFiber.Schedule(SendDawnWorld, 100);
         }
 
-        private void SendPositionsEvent(List<Hashtable> positions)
+        private void SendKilled(Hashtable killedIds)
+        {
+            if (killedIds.Count > 0)
+            {
+                // Send killed reliable
+                var data = new Dictionary<byte, object>();
+                data[0] = killedIds;
+                var eData = new EventData((byte)EventCode.Destroyed, data);
+                var sendParameters = new SendParameters { Unreliable = false };
+                this.PublishEvent(eData, this.Actors, sendParameters);
+            }
+            
+        }
+
+        private void SendPositionsEvent(Dictionary<int, EntityStatus> entityStatuses, Dictionary<int, EntityStatus> previousStatuses = null)
         {
             // TODO: warnings when we exceed the max packet-size!
 
             var sendParameters = new SendParameters { Unreliable = true };
 
             // Split the list into fragments
-            const int fragmentSize = 15;
+            const int fragmentSize = 10;
 
             byte index = 0;
             var currentDataList = new Dictionary<byte, object>();
-            foreach (var position in positions)
+            foreach (var entityStatusKvp in entityStatuses)
             {
-                currentDataList.Add(index++, position);
+                // Compare the delta for optimizations
+                if (previousStatuses != null)
+                {
+                    EntityStatus previousStatus;
+                    if (previousStatuses.TryGetValue(entityStatusKvp.Key, out previousStatus))
+                    {
+                        Debug.Assert(previousStatus != null);
+                        if (!entityStatusKvp.Value.HasDeltaChanges(previousStatus))
+                            continue;
+                    }
+                }
+
+                currentDataList.Add(index++, entityStatusKvp.Value.CreatePhotonPacket());
 
                 if (index > fragmentSize)
                 {
-                    var eData = new EventData((byte)EventCode.BulkPositionUpdate, currentDataList);
+                    var eData = new EventData((byte)EventCode.BulkStatusUpdate, currentDataList);
                     this.PublishEvent(eData, this.Actors, sendParameters);
 
                     index = 0;
@@ -199,27 +190,14 @@ namespace MyApplication
             // Send remainder
             if (currentDataList.Count > 0)
             {
-                var eData = new EventData((byte)EventCode.BulkPositionUpdate, currentDataList);
+                var eData = new EventData((byte)EventCode.BulkStatusUpdate, currentDataList);
                 this.PublishEvent(eData, this.Actors, sendParameters);
             }
         }
 
-        private Hashtable CreateEntityData(IEntity entity)
+        private static EntityStatus CreateEntityStatus(IEntity entity)
         {
-            var dawnEntity = new Hashtable();
-            dawnEntity[0] = entity.Id;
-            dawnEntity[1] = (byte)entity.Specy;
-            dawnEntity[2] = entity.Place.Position.X;
-            dawnEntity[3] = entity.Place.Position.Y;
-            dawnEntity[4] = entity.Place.Angle;
-            dawnEntity[5] = _worldSyncState.IsActive(entity.Id);
-
-            var creature = entity as ICreature;
-            if (creature != null && creature.SpawnPoint != null)
-            {
-                dawnEntity[6] = creature.SpawnPoint.Id;
-            }
-            return dawnEntity;
+            return new EntityStatus(entity, _worldSyncState.IsActive(entity.Id));
         }
 
         /// <summary>
@@ -295,7 +273,7 @@ namespace MyApplication
                         var slowObjects = _dawnWorldInstance.Environment.GetObstacles().ToList();
                         var slowCreatures = _dawnWorldInstance.Environment.GetCreatures(EntityType.SpawnPoint);
                         slowObjects.AddRange(slowCreatures);
-                        var slowObjectsParam = slowObjects.Select(CreateEntityData).ToArray();
+                        var slowObjectsParam = slowObjects.Select(e => CreateEntityStatus(e).CreatePhotonPacket()).ToArray();
 
                         // Send response
                         var eData = new Dictionary<byte, object>();

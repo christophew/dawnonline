@@ -194,7 +194,7 @@ namespace DawnOnline.Simulation.Brains
         protected virtual void TiredState(TimeSpan timeDelta)
         {
             // Rest
-            MyCreature.RegisterRest();
+            MyCreature.Rest();
         }
 
         private void SeeEnemies()

@@ -18,6 +18,9 @@
 
         Attack = 13,
 
+        Rest = 14,
+        RegisterSpawn = 15,
+
         // Testing
         Forward10 = 20,
         Forward20 = 21,
@@ -62,10 +65,5 @@
         Right80 = 57,
         Right90 = 58,
         Right100 = 59,
-
-
-        // Specific for creature matrix control
-        ForwardMotion = 14,
-        TurnMotion = 14,
     }
 }

@@ -21,6 +21,8 @@ namespace DawnOnline.Simulation
         public EntityType BuildEntityOfType { get; internal set; }
         public bool Rest { get; internal set; }
 
+        public bool RegisterSpawn { get; internal set; }
+
         // TEMP for client/server sync
         public double ForwardThrustPercent { get; internal set; }
         public double TurnPercent { get; internal set; }
@@ -44,6 +46,7 @@ namespace DawnOnline.Simulation
             HasFired = false;
             BuildEntityOfType = EntityType.Unknown;
             Rest = false;
+            RegisterSpawn = false; // Needs to be reset on the AgentMatrix, but should be reset on usage on the Server
             Attack = false;
             SpeachVolumeA = 0;
             SpeachVolumeB = 0;

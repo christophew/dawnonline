@@ -12,9 +12,10 @@ namespace DawnOnline.Simulation.Brains
 {
     class SpawnPointBrain : AbstractBrain
     {
-        private readonly double _maxInterval;
         private readonly EntityType _spawnType;
-        private double _interval;
+
+        private readonly double _maxSpawnCooldown;
+        private double _currentSpawnCooldown;
         private DateTime _lastSpawn;
 
         internal ICreature PrototypeNeuralForager { get; set; }
@@ -22,7 +23,7 @@ namespace DawnOnline.Simulation.Brains
         internal SpawnPointBrain(EntityType spawnType, double interval)
         {
             _spawnType = spawnType;
-            _maxInterval = interval;
+            _maxSpawnCooldown = interval;
 
             var prototype = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature) as Creature;
             var prototypeBrain = new NeuralBrain();
@@ -39,7 +40,7 @@ namespace DawnOnline.Simulation.Brains
             if (MyCreature.IsTired)
                 return;
 
-            if ((DateTime.Now - _lastSpawn).TotalSeconds < _interval)
+            if ((DateTime.Now - _lastSpawn).TotalSeconds < _currentSpawnCooldown)
                 return;
 
             // Score increase when we spawn
@@ -53,10 +54,14 @@ namespace DawnOnline.Simulation.Brains
             //if (choice == 2)
             //    SpawnProtector();
 
+            // TODO: Should not be necessary, but can be useful to have faster update of monitor (instead of waiting for server update)
             MyCreature.CharacterSheet.Fatigue.Increase(20);
 
             _lastSpawn = DateTime.Now;
-            _interval = Globals.Radomizer.NextDouble()*_maxInterval;
+            _currentSpawnCooldown = Globals.Radomizer.NextDouble()*_maxSpawnCooldown;
+
+            // RegisterSpawn, so Fatigue & Score can be updated on the server
+            MyCreature.RegisterSpawn();
         }
 
         private void SpawnHunter()
@@ -78,9 +83,6 @@ namespace DawnOnline.Simulation.Brains
             replicatedCreature.SpawnPoint = MyCreature;
 
             AddToWorld(replicatedCreature);
-
-            // Score
-            this.MyCreature.CharacterSheet.Score += 10;
         }
 
         private void SpawnProtector()
@@ -99,7 +101,7 @@ namespace DawnOnline.Simulation.Brains
         {
             Console.WriteLine("Generation: " + MyCreature.CharacterSheet.Generation);
 
-            var newBrain = new SpawnPointBrain(_spawnType, _maxInterval);
+            var newBrain = new SpawnPointBrain(_spawnType, _maxSpawnCooldown);
 
              // crossover
             var spawnPointMate = mate as SpawnPointBrain;

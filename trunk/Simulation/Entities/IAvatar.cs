@@ -25,6 +25,9 @@ namespace DawnOnline.Simulation.Entities
 
         void BuildEntity(EntityType entityType);
 
+        void Rest();
+        void RegisterSpawn();
+
         // For ICreature?
         void Turn(double percent);
         void Thrust(double percent);
