@@ -145,17 +145,40 @@ namespace DawnOnline.Simulation.Entities
             }
         }
 
-        internal void RegisterRest()
+        public void Rest()
         {
-            if ((DateTime.Now - _actionQueue.LastRestTime).TotalSeconds < CharacterSheet.RestCoolDown)
-                return;
             _actionQueue.Rest = true;
         }
 
-        internal void DoRest()
+        private void DoRest()
         {
+            if ((DateTime.Now - _actionQueue.LastRestTime).TotalSeconds < CharacterSheet.RestCoolDown)
+                return;
             CharacterSheet.Fatigue.Decrease((int)CharacterSheet.FatigueRecovery);
             _actionQueue.LastRestTime = DateTime.Now;
+        }
+
+        public void RegisterSpawn()
+        {
+            _actionQueue.RegisterSpawn = true;
+        }
+
+        private void DoSpawn()
+        {
+            // TODO: check against LastSpawnTime
+
+            // Security
+            if (!(this.Brain is SpawnPointBrain))
+                throw new InvalidOperationException();
+
+            // Fatigue
+            CharacterSheet.Fatigue.Increase(20);
+
+            // Score
+            CharacterSheet.Score += 10;
+
+            // Reset actionQueue => register should only happen once
+            _actionQueue.RegisterSpawn = false;
         }
 
         public void ClearActionQueue()
@@ -266,6 +289,12 @@ namespace DawnOnline.Simulation.Entities
                 DoRest();
             }
 
+            // Spawn
+            if (_actionQueue.RegisterSpawn)
+            {
+                DoSpawn();
+            }
+
             // Speak
             if (_actionQueue.SpeachVolumeA > 0)
             {
@@ -372,7 +401,8 @@ namespace DawnOnline.Simulation.Entities
             {
                 var spawnPointCreature = SpawnPoint as Creature;
                 Debug.Assert(spawnPointCreature != null);
-                spawnPointCreature.RegisterRest();
+
+                spawnPointCreature.Rest();
                 //spawnPointCreature.CharacterSheet.Score += 5;
             }
         }

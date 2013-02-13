@@ -39,26 +39,18 @@
 
         public bool IsCritical
         {
-            get
-            {
-                return _current > _criticalThreshold;
-            }
+            get { return _current > _criticalThreshold; }
         }
 
         public double PercentFilled
         {
-            get
-            {
-                return _current*100.0/_maxAmount;
-            }
+            get { return _current*100.0/_maxAmount; }
+            internal set { _current = (int)(value*_maxAmount/100.0); }
         }
 
         public bool IsFilled
         {
-            get
-            {
-                return _current == _maxAmount;   
-            }
+            get { return _current == _maxAmount; }
         }
 
         internal void Clear()

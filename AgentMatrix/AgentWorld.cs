@@ -76,7 +76,11 @@ namespace AgentMatrix
 
                     // Update
                     if (myEntity != null)
+                    {
                         CloneBuilder.UpdatePosition(myEntity, position, entity.Angle);
+                        CloneBuilder.UpdateStatus(myEntity, entity.DamagePercent, entity.FatiguePercent, entity.Score);
+                    }
+
                 }
 
                 // Avatars
@@ -306,6 +310,18 @@ namespace AgentMatrix
                 if (actionQueue.FireRocket)
                 {
                     dawnClient.SendEntityCommand(serverId, AvatarCommand.Fire);
+                }
+
+                // Spawn
+                if (actionQueue.RegisterSpawn)
+                {
+                    dawnClient.SendEntityCommand(serverId, AvatarCommand.RegisterSpawn);
+                }
+
+                // Rest
+                if (actionQueue.Rest)
+                {
+                    dawnClient.SendEntityCommand(serverId, AvatarCommand.Rest);
                 }
             }
         }

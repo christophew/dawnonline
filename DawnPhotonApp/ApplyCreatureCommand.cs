@@ -52,6 +52,12 @@ namespace DawnPhotonApp
                 case AvatarCommand.FireRocket:
                     creature.FireRocket();
                     break;
+                case AvatarCommand.Rest:
+                    creature.Rest();
+                    break;
+                case AvatarCommand.RegisterSpawn:
+                    creature.RegisterSpawn();
+                    break;
                 default:
                     ApplyPrecisionCommand(creature, command);
                     break;
@@ -105,6 +111,9 @@ namespace DawnPhotonApp
                 case AvatarCommand.Left80: creature.Turn(-0.8); break;
                 case AvatarCommand.Left90: creature.Turn(-0.9); break;
                 case AvatarCommand.Left100: creature.Turn(-1.0); break;
+
+                default:
+                    throw new NotSupportedException("TODO: implement apply for command: " + command);
             }
         }
 

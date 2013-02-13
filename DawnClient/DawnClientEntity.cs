@@ -16,6 +16,9 @@ namespace DawnClient
         public float Angle { get; private set; }
         public int SpawnPointId { get; private set; }
         public bool IsActive { get; private set; }
+        public int DamagePercent { get; private set; }
+        public int FatiguePercent { get; private set; }
+        public int Score { get; private set; }
 
         internal DawnClientEntity()
         {}
@@ -32,6 +35,9 @@ namespace DawnClient
             if (eventData.ContainsKey(6))
             {
                 this.SpawnPointId = (int) eventData[6];
+                this.DamagePercent = (byte)eventData[7];
+                this.FatiguePercent = (byte)eventData[8];
+                this.Score = (int)eventData[9];
             }
         }
 
@@ -42,7 +48,11 @@ namespace DawnClient
             this.PlaceX = original.PlaceX;
             this.PlaceY = original.PlaceY;
             this.Angle = original.Angle;
+            this.IsActive = original.IsActive;
             this.SpawnPointId = original.SpawnPointId;
+            this.DamagePercent = original.DamagePercent;
+            this.FatiguePercent = original.FatiguePercent;
+            this.Score = original.Score;
         }
     }
 }

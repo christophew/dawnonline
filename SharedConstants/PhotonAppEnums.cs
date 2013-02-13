@@ -21,7 +21,7 @@ namespace SharedConstants
     {
         WorldInfo = 101,
         Destroyed = 103,
-        BulkPositionUpdate = 104,
+        BulkStatusUpdate = 104,
     }
 
     /// <summary>

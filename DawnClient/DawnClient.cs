@@ -229,7 +229,7 @@ namespace DawnClient
 
                         break;
                     }
-                case (byte)EventCode.BulkPositionUpdate:
+                case (byte)EventCode.BulkStatusUpdate:
                     {
                         // Position update: compressed
                         var entities = eventData.Parameters.Select(kvp => new DawnClientEntity((Hashtable) kvp.Value)).ToList();
