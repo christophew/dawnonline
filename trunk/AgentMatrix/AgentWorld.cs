@@ -359,7 +359,10 @@ namespace AgentMatrix
             if (CloneBuilder.IsCreature(clientEntity.Specy))
             {
                 IEntity spawnPoint = null;
-                if (clientEntity.SpawnPointId != 0)
+
+                // When we create a Creature with a SpawnPoint, make sure we already have the SpawnPoint first (object ref is needed)
+                // => but, when the Creature is a SpawnPoint, the SpawnPoint ref will be set to the creature itself
+                if (clientEntity.Specy != EntityType.SpawnPoint && clientEntity.SpawnPointId != 0)
                 {
                     // The creature has a SpawnPoint, but the spawnPoint is not yet received from the server.
                     // = wait untill spawnPoint is synched

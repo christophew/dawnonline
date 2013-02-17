@@ -74,7 +74,7 @@ namespace DawnClient
             //return _peer.Connect("192.168.1.105:5055", "DawnServer");
         }
 
-        public void Update()
+        public void SendCommandsToServer()
         {
             var now = DateTime.Now;
             long millisecondsSinceLastFrame = (long)(now - _lastUpdateTime).TotalMilliseconds;
@@ -96,7 +96,7 @@ namespace DawnClient
             //    SendCommands(kvp.Key, kvp.Value);
             //}
 
-            var bulkCommands = new List<Hashtable>();
+            var bulkCommands = new List<int[]>();
             foreach (var kvp in _entityCommands)
             {
                 bulkCommands.Add(CreateCommandData(kvp.Key, kvp.Value));
@@ -123,7 +123,7 @@ namespace DawnClient
             commands.Clear();
         }
 
-        private void SendBulkCommands(List<Hashtable> positions)
+        private void SendBulkCommands(List<int[]> positions)
         {
             // TODO: warnings when we exceed the max packet-size!
 
@@ -152,16 +152,15 @@ namespace DawnClient
             }
         }
 
-        private Hashtable CreateCommandData(int entityId, HashSet<AvatarCommand> commands)
+        private static int[] CreateCommandData(int entityId, HashSet<AvatarCommand> commands)
         {
-            var commandData = new Hashtable();
+            var commandData = new int[1 + commands.Count];
             commandData[0] = entityId;
-            commandData[1] = (byte)commands.Count;
 
-            var i = 2;
+            var i = 1;
             foreach (var command in commands)
             {
-                commandData[i++] = command;
+                commandData[i++] = (int)command;
             }
 
             return commandData;
@@ -183,6 +182,15 @@ namespace DawnClient
             eData[0] = creatureData;
 
             var result = _peer.OpCustom((byte)MyOperationCodes.AddEntity, eData, true);
+            _peer.Service();
+        }
+
+        public void RequestAvatarCreationOnServer()
+        {
+            Console.WriteLine("RequestAvatarCreationOnServer");
+
+            var eData = new Dictionary<byte, object>();
+            var result = _peer.OpCustom((byte)MyOperationCodes.AddAvatar, null, true);
             _peer.Service();
         }
 
@@ -287,14 +295,19 @@ namespace DawnClient
                         break;
                     }
                 // Return from LoadWorld
-                case (byte)MyOperationCodes.LoadWorld:
+                case (byte)MyOperationCodes.AddAvatar:
                     {
                         // Get avatorId
-                        _avatarId = (int)operationResponse.Parameters[0];
+                        _avatarId = (int) operationResponse.Parameters[0];
                         Console.WriteLine(" ->My AvatarId is: " + _avatarId);
 
+                        break;
+                    }
+                    // Return from LoadWorld
+                case (byte)MyOperationCodes.LoadWorld:
+                    {
                         // Get static world objects
-                        var entityParam = (Hashtable[])operationResponse.Parameters[1];
+                        var entityParam = (Hashtable[])operationResponse.Parameters[0];
                         var staticEntities = entityParam.Select(param => new DawnClientEntity(param)).ToList();
                         Console.WriteLine(" ->Starting entities: " + staticEntities.Count);
                         DawnWorld.UpdateEntities(staticEntities);

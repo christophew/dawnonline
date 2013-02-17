@@ -40,9 +40,9 @@ namespace DawnMonitorClient
 
         private void Update()
         {
-            _dawnClient.Update();
+            _dawnClient.SendCommandsToServer();
 
-            EntityTable.ItemsSource = _dawnClient.DawnWorld.GetEntities();
+            EntityTable.ItemsSource = _dawnClient.DawnWorld.GetEntities().Where(e => e.Specy != EntityType.Wall && e.Specy != EntityType.Box && e.Specy != EntityType.Treasure).ToList();
         }
 
         public void DispatcherTimerSetup()

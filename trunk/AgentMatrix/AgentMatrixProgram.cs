@@ -45,7 +45,7 @@ namespace AgentMatrix
             {
                 do
                 {
-                    _dawnClient.Update();
+                    _dawnClient.SendCommandsToServer();
                     if (!_dawnClient.WorldLoaded)
                     {
                         Thread.Sleep(100);
