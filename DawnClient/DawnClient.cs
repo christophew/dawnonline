@@ -35,7 +35,12 @@ namespace DawnClient
             public int ClientId;
         }
         private List<ClientServerIdPair> _creatureIds = new List<ClientServerIdPair>();
-        public ReadOnlyCollection<ClientServerIdPair> CreatureIds { get { return _creatureIds.AsReadOnly(); } }
+        public ReadOnlyCollection<ClientServerIdPair> CreatedCreatureIds { get { return _creatureIds.AsReadOnly(); } }
+
+        public void CleanupCreatedCreatureIds(HashSet<int> destroyedServerIds)
+        {
+            _creatureIds.RemoveAll(pair => destroyedServerIds.Contains(pair.ServerId));
+        }
 
         private DawnClientEntity _avatarProxy = new DawnClientEntity();
         public DawnClientEntity Avatar { get { return _avatarProxy; } }
@@ -48,9 +53,9 @@ namespace DawnClient
 
         public class EntityDestroyedEventArgs : EventArgs
         {
-            public Hashtable DestroyedIds { get; private set; }
+            public int[] DestroyedIds { get; private set; }
 
-            public EntityDestroyedEventArgs(Hashtable killedIds)
+            public EntityDestroyedEventArgs(int[] killedIds)
             {
                 DestroyedIds = killedIds;
             }
@@ -104,6 +109,11 @@ namespace DawnClient
             SendBulkCommands(bulkCommands);
             _entityCommands.Clear();
 
+            _peer.Service();
+        }
+
+        public void Update()
+        {
             _peer.Service();
         }
 
@@ -237,11 +247,30 @@ namespace DawnClient
 
                         break;
                     }
+
+                case (byte)EventCode.BulkPositionUpdate:
+                    {
+                        // Position update: compressed
+                        var entities = eventData.Parameters.Select(kvp => DawnClientEntity.CreatePositionUpdate((Hashtable) kvp.Value)).ToList();
+                        DawnWorld.UpdateEntities(entities, false);
+
+                        // Update avatarProxy
+                        if (_avatarId != 0)
+                        {
+                            var avatar = entities.FirstOrDefault(e => e.Id == _avatarId);
+                            if (avatar != null)
+                            {
+                                _avatarProxy.UpdateFrom(avatar);
+                            }
+                        }
+
+                        break;
+                    }
                 case (byte)EventCode.BulkStatusUpdate:
                     {
                         // Position update: compressed
-                        var entities = eventData.Parameters.Select(kvp => new DawnClientEntity((Hashtable) kvp.Value)).ToList();
-                        DawnWorld.UpdateEntities(entities);
+                        var entities = eventData.Parameters.Select(kvp => DawnClientEntity.CreateStatusUpdate((Hashtable)kvp.Value)).ToList();
+                        DawnWorld.UpdateEntities(entities, true);
 
                         // Update avatarProxy
                         if (_avatarId != 0)
@@ -258,8 +287,8 @@ namespace DawnClient
 
                 case (byte)EventCode.Destroyed:
                     // Killed
-                    var killedIds = (Hashtable) eventData.Parameters[0];
-                    DawnWorld.RemoveEntities((Hashtable)eventData.Parameters[0]);
+                    var killedIds = (int[]) eventData.Parameters[0];
+                    DawnWorld.RemoveEntities(killedIds);
 
                     // Fire our event
                     if (this.EntityDestroyed != null)
@@ -308,9 +337,9 @@ namespace DawnClient
                     {
                         // Get static world objects
                         var entityParam = (Hashtable[])operationResponse.Parameters[0];
-                        var staticEntities = entityParam.Select(param => new DawnClientEntity(param)).ToList();
+                        var staticEntities = entityParam.Select(param => DawnClientEntity.CreateStaticUpdate(param)).ToList();
                         Console.WriteLine(" ->Starting entities: " + staticEntities.Count);
-                        DawnWorld.UpdateEntities(staticEntities);
+                        DawnWorld.UpdateEntities(staticEntities, true);
 
                         WorldLoaded = true;
 

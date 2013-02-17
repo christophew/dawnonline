@@ -18,7 +18,7 @@ namespace AgentMatrix
         {
             lock (_destroyQueue)
             {
-                foreach (int newId in args.DestroyedIds.Values)
+                foreach (int newId in args.DestroyedIds)
                 {
                     if (!_destroyQueue.Contains(newId))
                         _destroyQueue.Add(newId);
@@ -48,24 +48,30 @@ namespace AgentMatrix
                     _dawnClient.SendCommandsToServer();
                     if (!_dawnClient.WorldLoaded)
                     {
-                        Thread.Sleep(100);
+                        Thread.Sleep(1000);
                     }
                     else
                     {
-                        agentWorld.ProcessMyCreateRequests(_dawnClient.CreatureIds);
+                        agentWorld.ProcessMyCreateRequests(_dawnClient.CreatedCreatureIds);
                         agentWorld.UpdateFromServer(_dawnClient.DawnWorld.GetEntities());
                         lock (_destroyQueue)
                         {
                             agentWorld.ApplyDeleteFromServer(_destroyQueue);
+                            _dawnClient.CleanupCreatedCreatureIds(_destroyQueue);
                             _destroyQueue.Clear();
                         }
-                        agentWorld.Think(_dawnClient.CreatureIds);
+                        agentWorld.Think(50, _dawnClient.CreatedCreatureIds);
                         agentWorld.RepopulateWorld();
                         agentWorld.UpdateToServer(_dawnClient);
 
                         agentWorld.DoPhysics();
 
-                        Thread.Sleep(20);
+
+                        // Test => double the Peer.Service times => clear queue faster
+                        _dawnClient.Update();
+
+
+                        Thread.Sleep(25);
                     }
 
                     // Test
@@ -91,7 +97,7 @@ namespace AgentMatrix
 
                     Console.WriteLine("> SpawnPoints Replicated: " + agentWorld.NrOfSpawnPointsReplicated);
 
-                    Console.WriteLine("> Creatures created: " + _dawnClient.CreatureIds.Count + " - " + string.Join(", ", _dawnClient.CreatureIds.Select(c => c.ServerId)));
+                    Console.WriteLine("> Creatures created: " + _dawnClient.CreatedCreatureIds.Count + " - " + string.Join(", ", _dawnClient.CreatedCreatureIds.Select(c => c.ServerId)));
 
                     // Auto move forward
                     //if (_dawnClient.AvatarId != 0)

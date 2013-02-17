@@ -22,7 +22,7 @@ namespace AgentMatrix
         private readonly HashSet<int> _createQueueClientIds = new HashSet<int>();
 
         private Random _randomize = new Random();
-        private int _minNrOfSpawnPoints = 5;
+        private int _minNrOfSpawnPoints = 10;
         public int NrOfSpawnPointsReplicated { get; private set; }
 
 
@@ -135,11 +135,11 @@ namespace AgentMatrix
             return myEntity;
         }
 
-        public void Think(ReadOnlyCollection<DawnClient.DawnClient.ClientServerIdPair> creatureIds)
+        public void Think(double maxTime, ReadOnlyCollection<DawnClient.DawnClient.ClientServerIdPair> creatureIds)
         {
             // Map server to clientIds
             var clientIds = creatureIds.Select(c => c.ClientId).ToList();
-            _staticEnvironment.Think(100, new TimeSpan(SimulationConstants.UpdateIntervalOnServerInMs), clientIds);
+            _staticEnvironment.Think(maxTime, new TimeSpan(SimulationConstants.UpdateIntervalOnServerInMs), clientIds);
         }
 
         public void UpdateToServer(DawnClient.DawnClient dawnClient)
@@ -189,7 +189,6 @@ namespace AgentMatrix
 
         private void SendActionsToServer(DawnClient.DawnClient dawnClient)
         {
-            var creatureIds = dawnClient.CreatureIds;
             var creatures = _staticEnvironment.GetCreatures();
 
             foreach (var creature in creatures)
