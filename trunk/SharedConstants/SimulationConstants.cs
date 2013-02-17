@@ -7,6 +7,6 @@ namespace SharedConstants
 {
     public class SimulationConstants
     {
-        public const int UpdateIntervalOnServerInMs = 50;
+        public const int UpdateIntervalOnServerInMs = 75;
     }
 }

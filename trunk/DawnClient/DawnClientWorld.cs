@@ -20,22 +20,35 @@ namespace DawnClient
             }
         }    
     
-        internal void UpdateEntities(List<DawnClientEntity> entities)
+        internal void UpdateEntities(List<DawnClientEntity> entities, bool canCreateNew)
         {
             lock (this)
             {
                 foreach (var entity in entities)
                 {
-                    _entities[entity.Id] = entity;
+                    DawnClientEntity existingEntity;
+                    if (_entities.TryGetValue(entity.Id, out existingEntity))
+                    {
+                        // Update existing
+                        existingEntity.UpdateFrom(entity);
+                    }
+                    else
+                    {
+                        // Create new
+                        if (!canCreateNew)
+                            continue;
+
+                        _entities.Add(entity.Id, entity);
+                    }
                 }
             }
         }    
     
-        internal void RemoveEntities(Hashtable ids)
+        internal void RemoveEntities(int[] ids)
         {
             lock (this)
             {
-                foreach (int id in ids.Values)
+                foreach (int id in ids)
                 {
                     _entities.Remove(id);
                 }

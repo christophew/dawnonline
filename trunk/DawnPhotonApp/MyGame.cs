@@ -22,7 +22,22 @@ namespace MyApplication
         private static WorldSyncState _worldSyncState = new WorldSyncState();
 
         private DateTime _lastUpdateTime = DateTime.Now;
-        private Dictionary<int, EntityStatus> _previousEntities = new Dictionary<int, EntityStatus>();
+        private Dictionary<int, IEntityPhotonPacket> _previousPositions = new Dictionary<int, IEntityPhotonPacket>();
+        private Dictionary<int, IEntityPhotonPacket> _previousStatuses = new Dictionary<int, IEntityPhotonPacket>();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MyGame"/> class.
+        /// </summary>
+        /// <param name="gameName">The name of the game.</param>
+        public MyGame(string gameName)
+            : base(gameName)
+        {
+
+            this.ExecutionFiber.Schedule(SendDawnWorld, 1500);
+            this.ExecutionFiber.Schedule(SendAvatarUpdates, 1550);
+            this.ExecutionFiber.Schedule(SendPositions, 1600);
+            this.ExecutionFiber.ScheduleOnInterval(UpdateDawnWorld, 1000, SimulationConstants.UpdateIntervalOnServerInMs);
+        }
 
         private void UpdateDawnWorld()
         {
@@ -59,21 +74,47 @@ namespace MyApplication
         {
             // Broadcast changes
             {
-                // 104 = compressed position update
+                // 104 = BulkPositionUpdate
                 {
-                    var currentEntities = new Dictionary<int, EntityStatus>();
+                    var currentEntities = new Dictionary<int, IEntityPhotonPacket>();
 
                     foreach (var entity in _dawnWorldInstance.Environment.GetCreatures())
                     {
                         if (entity.Specy == EntityType.Avatar)
-                            currentEntities.Add(entity.Id, CreateEntityStatus(entity));
+                            currentEntities.Add(entity.Id, CreateEntityPosition(entity));
                     }
 
-                    SendPositionsEvent(currentEntities);
+                    SendEntityPhotonPackages(EventCode.BulkPositionUpdate, currentEntities);
                 }
             }
 
-            this.ExecutionFiber.Schedule(SendAvatarUpdates, 50);
+            this.ExecutionFiber.Schedule(SendAvatarUpdates, 75);
+        }
+
+        private void SendPositions()
+        {
+            var currentEntities = new Dictionary<int, IEntityPhotonPacket>();
+
+            // 104 = BulkPositionUpdate
+            foreach (var entity in _dawnWorldInstance.Environment.GetCreatures())
+            {
+                currentEntities.Add(entity.Id, CreateEntityPosition(entity));
+            }
+            foreach (var entity in _dawnWorldInstance.Environment.GetObstacles())
+            {
+                currentEntities.Add(entity.Id, CreateEntityPosition(entity));
+            }
+            foreach (var entity in _dawnWorldInstance.Environment.GetBullets())
+            {
+                currentEntities.Add(entity.Id, CreateEntityPosition(entity));
+            }
+
+            SendEntityPhotonPackages(EventCode.BulkPositionUpdate, currentEntities, _previousPositions);
+
+            _previousPositions = currentEntities;
+
+            // Schedule next update
+            this.ExecutionFiber.Schedule(SendPositions, 100);
         }
 
         private void SendDawnWorld()
@@ -81,17 +122,17 @@ namespace MyApplication
             // Broadcast changes
             {
                 // 101 = WorldInformation
-                {
-                    var data = new Dictionary<byte, object>();
-                    data[0] = _dawnWorldInstance.GetWorldInformation();
-                    var eData = new EventData((byte)EventCode.WorldInfo, data);
-                    var sendParameters = new SendParameters { Unreliable = true };
-                    this.PublishEvent(eData, this.Actors, sendParameters);
-                }
+                //{
+                //    var data = new Dictionary<byte, object>();
+                //    data[0] = _dawnWorldInstance.GetWorldInformation();
+                //    var eData = new EventData((byte)EventCode.WorldInfo, data);
+                //    var sendParameters = new SendParameters { Unreliable = true };
+                //    this.PublishEvent(eData, this.Actors, sendParameters);
+                //}
 
-                var currentEntities = new Dictionary<int, EntityStatus>();
+                var currentEntities = new Dictionary<int, IEntityPhotonPacket>();
 
-                // 104 = compressed status update
+                // 105 = BulkStatusUpdate
                 {
                     foreach (var entity in _dawnWorldInstance.Environment.GetCreatures())
                     {
@@ -106,39 +147,38 @@ namespace MyApplication
                         currentEntities.Add(entity.Id, CreateEntityStatus(entity));
                     }
 
-                    SendPositionsEvent(currentEntities, _previousEntities);
+                    SendEntityPhotonPackages(EventCode.BulkStatusUpdate, currentEntities, _previousStatuses);
                 }
 
                 // 103 = destroyed
                 {
-                    var killedHash = new Hashtable();
+                    var killedHash = new List<int>();
 
                     int index = 0;
-                    foreach (var previousEntity in _previousEntities.Keys)
+                    foreach (var previousEntity in _previousStatuses.Keys)
                     {
                         if (!currentEntities.ContainsKey(previousEntity))
                         {
                             // TODO: optimize second parameter
-                            killedHash.Add(index++, previousEntity);
+                            killedHash.Add(previousEntity);
                         }
 
-                        SendKilled(killedHash);
+                        SendKilled(killedHash.ToArray());
                     }
-
                 }
 
-                _previousEntities = currentEntities;
+                _previousStatuses = currentEntities;
 
                 // Walls
                 //SendWalls();
             }
 
-            this.ExecutionFiber.Schedule(SendDawnWorld, 100);
+            this.ExecutionFiber.Schedule(SendDawnWorld, 500);
         }
 
-        private void SendKilled(Hashtable killedIds)
+        private void SendKilled(int[] killedIds)
         {
-            if (killedIds.Count > 0)
+            if (killedIds.Length > 0)
             {
                 // Send killed reliable
                 var data = new Dictionary<byte, object>();
@@ -147,10 +187,9 @@ namespace MyApplication
                 var sendParameters = new SendParameters { Unreliable = false };
                 this.PublishEvent(eData, this.Actors, sendParameters);
             }
-            
         }
 
-        private void SendPositionsEvent(Dictionary<int, EntityStatus> entityStatuses, Dictionary<int, EntityStatus> previousStatuses = null)
+        private void SendEntityPhotonPackages(EventCode eventCode, Dictionary<int, IEntityPhotonPacket> entityPositions, Dictionary<int, IEntityPhotonPacket> previousPositions = null)
         {
             // TODO: warnings when we exceed the max packet-size!
 
@@ -161,13 +200,13 @@ namespace MyApplication
 
             byte index = 0;
             var currentDataList = new Dictionary<byte, object>();
-            foreach (var entityStatusKvp in entityStatuses)
+            foreach (var entityStatusKvp in entityPositions)
             {
                 // Compare the delta for optimizations
-                if (previousStatuses != null)
+                if (previousPositions != null)
                 {
-                    EntityStatus previousStatus;
-                    if (previousStatuses.TryGetValue(entityStatusKvp.Key, out previousStatus))
+                    IEntityPhotonPacket previousStatus;
+                    if (previousPositions.TryGetValue(entityStatusKvp.Key, out previousStatus))
                     {
                         Debug.Assert(previousStatus != null);
                         if (!entityStatusKvp.Value.HasDeltaChanges(previousStatus))
@@ -179,7 +218,7 @@ namespace MyApplication
 
                 if (index > fragmentSize)
                 {
-                    var eData = new EventData((byte)EventCode.BulkStatusUpdate, currentDataList);
+                    var eData = new EventData((byte)eventCode, currentDataList);
                     this.PublishEvent(eData, this.Actors, sendParameters);
 
                     index = 0;
@@ -190,29 +229,25 @@ namespace MyApplication
             // Send remainder
             if (currentDataList.Count > 0)
             {
-                var eData = new EventData((byte)EventCode.BulkStatusUpdate, currentDataList);
+                var eData = new EventData((byte)eventCode, currentDataList);
                 this.PublishEvent(eData, this.Actors, sendParameters);
             }
         }
 
-        private static EntityStatus CreateEntityStatus(IEntity entity)
+        private static IEntityPhotonPacket CreateEntityPosition(IEntity entity)
+        {
+            return new EntityPosition(entity);
+        }
+
+        private static IEntityPhotonPacket CreateStaticEntity(IEntity entity)
+        {
+            return new EntityLoad(entity);
+        }
+
+        private static IEntityPhotonPacket CreateEntityStatus(IEntity entity)
         {
             return new EntityStatus(entity, _worldSyncState.IsActive(entity.Id));
         }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MyGame"/> class.
-        /// </summary>
-        /// <param name="gameName">The name of the game.</param>
-        public MyGame(string gameName)
-            : base(gameName)
-        {
-
-            this.ExecutionFiber.Schedule(SendDawnWorld, 1500);
-            this.ExecutionFiber.Schedule(SendAvatarUpdates, 1500);
-            this.ExecutionFiber.ScheduleOnInterval(UpdateDawnWorld, 1000, SimulationConstants.UpdateIntervalOnServerInMs);
-        }
-
 
         /// <summary>
         /// Called for each operation in the execution queue.
@@ -285,7 +320,7 @@ namespace MyApplication
                         var slowObjects = _dawnWorldInstance.Environment.GetObstacles().ToList();
                         var slowCreatures = _dawnWorldInstance.Environment.GetCreatures(EntityType.SpawnPoint);
                         slowObjects.AddRange(slowCreatures);
-                        var slowObjectsParam = slowObjects.Select(e => CreateEntityStatus(e).CreatePhotonPacket()).ToArray();
+                        var slowObjectsParam = slowObjects.Select(e => CreateStaticEntity(e).CreatePhotonPacket()).ToArray();
 
                         // Send response
                         var eData = new Dictionary<byte, object>();

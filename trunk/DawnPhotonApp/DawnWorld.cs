@@ -23,7 +23,7 @@ namespace DawnGame
 
         private int _nrOfSpawnPoints = 0;
         private int _nrOfTreasures = 20;
-        private int _nrOfWalls = 0;
+        private int _nrOfWalls = 200;
         private int _nrOfBoxes = 0;
         private int _stablePopulationSize = 500;
 
