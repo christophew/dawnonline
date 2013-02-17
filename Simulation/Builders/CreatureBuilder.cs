@@ -58,6 +58,7 @@ namespace DawnOnline.Simulation.Builders
             critter.CharacterSheet.TurningAngle = 1.5 * _turnMultiplier;
             critter.CharacterSheet.MeleeDamage = 10;
             critter.CharacterSheet.RangeDamage = 0;
+            critter.CharacterSheet.UseAutoAttack = true;
 
             return critter;
         }

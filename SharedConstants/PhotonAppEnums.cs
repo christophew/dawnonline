@@ -14,6 +14,7 @@ namespace SharedConstants
         AvatarCommand = 102,
         LoadWorld = 103,
         AddEntity = 104,
+        AddAvatar = 106,
         BulkEntityCommand = 105,
     }
 

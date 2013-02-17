@@ -223,10 +223,11 @@ namespace DawnOnline.Simulation.Brains.Neural
 
             // Attack when possible
             // TODO: SHOULD BE OUTPUT OF NETWORK?
-            if (MyCreature.FindCreatureToAttack(MyCreature.FoodSpecies) != null)
-            {
-                MyCreature.Attack();
-            }
+            // TODO => currently replacd by AUTOATTACK PROPERTY
+            //if (MyCreature.FindCreatureToAttack(MyCreature.FoodSpecies) != null)
+            //{
+            //    MyCreature.Attack();
+            //}
         }
 
         protected override void NeutralState(TimeSpan timeDelta)

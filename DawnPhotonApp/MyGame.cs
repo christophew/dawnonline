@@ -266,9 +266,21 @@ namespace MyApplication
                         break;
                     }
 
-                case MyOperationCodes.LoadWorld:
+                case MyOperationCodes.AddAvatar:
                     {
                         var avatar = _dawnWorldInstance.AddAvatar();
+
+                        // Send response
+                        var eData = new Dictionary<byte, object>();
+                        eData[0] = avatar.Id;
+                        var response = new OperationResponse((byte)MyOperationCodes.AddAvatar, eData);
+                        peer.SendOperationResponse(response, new SendParameters { Unreliable = false });
+
+                        break;
+                    }
+
+                case MyOperationCodes.LoadWorld:
+                    {
                         //var slowObjects = _dawnWorldInstance.Environment.GetObstacles().Where(o => o.Specy == EntityType.Wall).ToList();
                         var slowObjects = _dawnWorldInstance.Environment.GetObstacles().ToList();
                         var slowCreatures = _dawnWorldInstance.Environment.GetCreatures(EntityType.SpawnPoint);
@@ -277,8 +289,7 @@ namespace MyApplication
 
                         // Send response
                         var eData = new Dictionary<byte, object>();
-                        eData[0] = avatar.Id;
-                        eData[1] = slowObjectsParam;
+                        eData[0] = slowObjectsParam;
                         var response = new OperationResponse((byte)MyOperationCodes.LoadWorld, eData);
                         peer.SendOperationResponse(response, new SendParameters{Unreliable = false});
 
@@ -308,22 +319,22 @@ namespace MyApplication
 
         private static void HandleBulkEntityCommand(OperationRequest operationRequest)
         {
-            var entityCommands = operationRequest.Parameters.Values.Cast<Hashtable>();
+            var entityCommands = operationRequest.Parameters.Values.Cast<int[]>();
             foreach (var entityCommand in entityCommands)
             {
                 HandleEntityCommand(entityCommand);
             }
         }
 
-        private static void HandleEntityCommand(Hashtable parameters)
+        private static void HandleEntityCommand(int[] parameters)
         {
             var entityId = (int)parameters[0];
-            var nrOfCommands = (byte)parameters[1];
+            var nrOfCommands = parameters.Length-1;
 
             var commands = new List<AvatarCommand>();
             for (int i=0; i < nrOfCommands; i++)
             {
-                commands.Add((AvatarCommand)parameters[2+i]);
+                commands.Add((AvatarCommand)parameters[1+i]);
             }
 
             ApplyEntityCommands(entityId, commands);

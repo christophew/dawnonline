@@ -20,7 +20,7 @@ namespace DawnClientConsole
             {
                 do
                 {
-                    _dawnClient.Update();
+                    _dawnClient.SendCommandsToServer();
                     Thread.Sleep(1000);
 
                     // Test

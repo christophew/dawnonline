@@ -80,6 +80,7 @@ namespace MyApplication
                 case (byte)MyOperationCodes.AvatarCommand:
                 case (byte)MyOperationCodes.LoadWorld:
                 case (byte)MyOperationCodes.AddEntity:
+                case (byte)MyOperationCodes.AddAvatar:
                     {
                         HandleGameOperation(operationRequest, sendParameters);
                         break;

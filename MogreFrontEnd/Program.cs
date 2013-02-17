@@ -12,7 +12,7 @@ namespace Mogre.Tutorials
 {
     class Tutorial : BaseApplication
     {
-        private DawnClient.DawnClient _dawnClient = new DawnClient.DawnClient();
+        private static DawnClient.DawnClient _dawnClient;
         private DawnToMogre _mogreModel;
 
         protected MOIS.InputManager mInputMgr;
@@ -21,6 +21,13 @@ namespace Mogre.Tutorials
 
         public static void Main()
         {
+            _dawnClient = new DawnClient.DawnClient();
+            _dawnClient.WorldLoadedEvent += delegate
+            {
+                _dawnClient.RequestAvatarCreationOnServer();
+            };
+
+
             new Tutorial().Go();
         }
 
@@ -110,7 +117,7 @@ namespace Mogre.Tutorials
 
             //_mogreModel.SimulationToOgre();
 
-            _dawnClient.Update();
+            _dawnClient.SendCommandsToServer();
             _mogreModel.SimulationToOgre();
 
             return true;

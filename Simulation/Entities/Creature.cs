@@ -228,7 +228,7 @@ namespace DawnOnline.Simulation.Entities
             CharacterSheet.Fatigue.Increase((int)(_actionQueue.FatigueCost * toSeconds));
 
             // Attack
-            if (_actionQueue.Attack)
+            if (_actionQueue.Attack || CharacterSheet.UseAutoAttack)
             {
                 ApplyAttack();
             }
@@ -403,7 +403,6 @@ namespace DawnOnline.Simulation.Entities
                 Debug.Assert(spawnPointCreature != null);
 
                 spawnPointCreature.Rest();
-                //spawnPointCreature.CharacterSheet.Score += 5;
             }
         }
 
