@@ -22,7 +22,7 @@ namespace AgentMatrix
         private readonly HashSet<int> _createQueueClientIds = new HashSet<int>();
 
         private Random _randomize = new Random();
-        private int _minNrOfSpawnPoints = 10;
+        private int _minNrOfSpawnPoints = 5;
         public int NrOfSpawnPointsReplicated { get; private set; }
 
 
@@ -389,11 +389,19 @@ namespace AgentMatrix
             _staticEnvironment.AddCreature(creature, new Vector2(0, 0), 0, false);
         }
 
-        internal void RepopulateWorld()
+        internal void RepopulateWorld(ReadOnlyCollection<DawnClient.DawnClient.ClientServerIdPair> myCreatureIds)
         {
             // Make sure we always have enough spawnpoints
             var spawnPoints = _staticEnvironment.GetCreatures(EntityType.SpawnPoint);
-            if (_staticEnvironment.GetCreatures(EntityType.SpawnPoint).Count < _minNrOfSpawnPoints)
+
+            var countMySpawnPoints = 0;
+            foreach (var spawnPoint in spawnPoints)
+            {
+                if (myCreatureIds.FirstOrDefault(pair => pair.ClientId == spawnPoint.Id) != null)
+                    countMySpawnPoints++;
+            }
+
+            if (countMySpawnPoints < _minNrOfSpawnPoints)
             {
                 var timer = new Stopwatch();
                 timer.Start();

@@ -173,7 +173,7 @@ namespace MyApplication
                 //SendWalls();
             }
 
-            this.ExecutionFiber.Schedule(SendDawnWorld, 500);
+            this.ExecutionFiber.Schedule(SendDawnWorld, 250);
         }
 
         private void SendKilled(int[] killedIds)

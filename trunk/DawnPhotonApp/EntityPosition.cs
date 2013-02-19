@@ -11,20 +11,25 @@ namespace DawnPhotonApp
 {
     class EntityPosition : IEntityPhotonPacket
     {
-        private IEntity _entity;
+        private int _id;
+        private float _x, _y, _angle;
 
         public EntityPosition(IEntity entity)
         {
-            _entity = entity;
+            _id = entity.Id;
+            _x = entity.Place.Position.X;
+            _y = entity.Place.Position.Y;
+            _angle = entity.Place.Angle;
         }
 
         public Hashtable CreatePhotonPacket()
         {
             var dawnEntity = new Hashtable();
-            dawnEntity[0] = _entity.Id;
-            dawnEntity[1] = _entity.Place.Position.X;
-            dawnEntity[2] = _entity.Place.Position.Y;
-            dawnEntity[3] = _entity.Place.Angle;
+
+            dawnEntity[0] = _id;
+            dawnEntity[1] = _x;
+            dawnEntity[2] = _y;
+            dawnEntity[3] = _angle;
 
             return dawnEntity;
         }
@@ -33,13 +38,14 @@ namespace DawnPhotonApp
         {
             var myPrevious = previousStatus as EntityPosition;
             Debug.Assert(myPrevious != null);
-            Debug.Assert(_entity.Id == myPrevious._entity.Id);
+            Debug.Assert(_id == myPrevious._id);
 
             // Backward compatible: only optimize for boxes && walls
-            if (_entity.Specy == EntityType.Box ||
-                _entity.Specy == EntityType.Wall)
+            //if (_entity.Specy == EntityType.Box ||
+            //    _entity.Specy == EntityType.Wall)
             {
-                if (_entity.Place.Position == myPrevious._entity.Place.Position)
+                if (_x == myPrevious._x && _y == myPrevious._y &&
+                    _angle == myPrevious._angle)
                     return false;
             }
 
