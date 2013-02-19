@@ -60,8 +60,12 @@ namespace AgentMatrix
                             _dawnClient.CleanupCreatedCreatureIds(_destroyQueue);
                             _destroyQueue.Clear();
                         }
-                        agentWorld.Think(50, _dawnClient.CreatedCreatureIds);
-                        agentWorld.RepopulateWorld();
+                        agentWorld.Think(25, _dawnClient.CreatedCreatureIds);
+
+                        // Test => double the Peer.Service times => clear queue faster
+                        _dawnClient.Update();
+
+                        agentWorld.RepopulateWorld(_dawnClient.CreatedCreatureIds);
                         agentWorld.UpdateToServer(_dawnClient);
 
                         agentWorld.DoPhysics();

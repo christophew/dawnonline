@@ -24,6 +24,8 @@ namespace DawnClient
         private int _avatarId;
         public int AvatarId { get { return _avatarId; } }
 
+        public int MinTimeBetweenSendCommands = 25;
+
         public class ClientServerIdPair
         {
             public ClientServerIdPair(int serverId, int clientId)
@@ -84,7 +86,7 @@ namespace DawnClient
             var now = DateTime.Now;
             long millisecondsSinceLastFrame = (long)(now - _lastUpdateTime).TotalMilliseconds;
 
-            //if (millisecondsSinceLastFrame < 50)
+            //if (millisecondsSinceLastFrame < MinTimeBetweenSendCommands)
             //    return;
 
             _lastUpdateTime = now;
@@ -151,7 +153,7 @@ namespace DawnClient
                     var result = _peer.OpCustom((byte)MyOperationCodes.BulkEntityCommand, currentDataList, false);
 
                     index = 0;
-                    currentDataList = new Dictionary<byte, object>();
+                    currentDataList.Clear();
                 }
             }
 

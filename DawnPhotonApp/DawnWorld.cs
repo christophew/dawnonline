@@ -23,9 +23,9 @@ namespace DawnGame
 
         private int _nrOfSpawnPoints = 0;
         private int _nrOfTreasures = 20;
-        private int _nrOfWalls = 200;
+        private int _nrOfWalls = 500;
         private int _nrOfBoxes = 0;
-        private int _stablePopulationSize = 500;
+        private int _stablePopulationSize = 100;
 
         private int _nrOfSpawnPointsReplicated = 0;
 
@@ -285,20 +285,22 @@ namespace DawnGame
         {
             Console.WriteLine(GetWorldInformation());
 
-            // Keep population at bay
             int moved = _environment.Think(maxThinkTime, timeDelta);
-            if (moved < _environment.GetCreatures().Count / 2 && _environment.GetCreatures().Count > _stablePopulationSize)
-            {
-                //_environment.Armageddon(_environment.GetCreatures().Count/2);
-                //_environment.WrathOfGod(10);
-                _environment.Earthquake(20);
-            }
         }
 
         public void UpdatePhysics(double timeDelta)
         {
             _environment.UpdatePhysics(timeDelta);
             _environment.UpdateSounds(timeDelta);
+
+
+            // Keep population at bay
+            if (_environment.GetCreatures().Count > _stablePopulationSize)
+            {
+                //_environment.Armageddon(_environment.GetCreatures().Count/2);
+                //_environment.WrathOfGod(10);
+                _environment.Earthquake(20);
+            }
         }
 
         private static ICreature GetBestspawnPoint(IList<ICreature> spawnPoints)
