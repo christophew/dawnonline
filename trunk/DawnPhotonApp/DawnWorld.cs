@@ -16,16 +16,16 @@ namespace DawnGame
         public const float MaxX = WorldConstants.MaxX;
         public const float MaxY = WorldConstants.MaxY;
 
-        private readonly DawnOnline.Simulation.Environment _environment = SimulationFactory.CreateEnvironment();
+        private readonly DawnOnline.Simulation.Environment _environment = SimulationFactory.CreateEnvironment(0); // 0 = server id
         Random _randomize = new Random();
 
         private int _grid = 5;
 
         private int _nrOfSpawnPoints = 0;
         private int _nrOfTreasures = 20;
-        private int _nrOfWalls = 500;
+        private int _nrOfWalls = 0;
         private int _nrOfBoxes = 0;
-        private int _stablePopulationSize = 100;
+        private int _stablePopulationSize = 500;
 
         private int _nrOfSpawnPointsReplicated = 0;
 

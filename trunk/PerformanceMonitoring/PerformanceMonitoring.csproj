@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{4471FB48-DF80-44F5-B2A0-65BC98B2C2F3}</ProjectGuid>
+    <ProjectGuid>{C529958B-927A-4DCB-834C-5765F831F04A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DawnClient</RootNamespace>
-    <AssemblyName>DawnClient</AssemblyName>
+    <RootNamespace>PerformanceMonitoring</RootNamespace>
+    <AssemblyName>PerformanceMonitoring</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,9 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Photon3DotNet">
-      <HintPath>..\Lib\PhotonLibs\Debug\Photon3DotNet.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,20 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DawnClient.cs" />
-    <Compile Include="DawnClientEntity.cs" />
-    <Compile Include="DawnClientWorld.cs" />
+    <Compile Include="Monitoring.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\PerformanceMonitoring\PerformanceMonitoring.csproj">
-      <Project>{C529958B-927A-4DCB-834C-5765F831F04A}</Project>
-      <Name>PerformanceMonitoring</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SharedConstants\SharedConstants.csproj">
-      <Project>{EBD77164-CE60-4180-8613-974FA39850E8}</Project>
-      <Name>SharedConstants</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

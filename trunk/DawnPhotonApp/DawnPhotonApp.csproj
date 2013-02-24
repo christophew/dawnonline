@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -44,7 +45,7 @@
     </Reference>
     <Reference Include="PhotonHostRuntimeInterfaces">
       <HintPath>..\PhotonServer\lib\PhotonHostRuntimeInterfaces.dll</HintPath>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -78,6 +79,10 @@
     <ProjectReference Include="..\Lite\Lite.csproj">
       <Project>{E1F918F4-F581-4280-9D91-3CF77B24C290}</Project>
       <Name>Lite</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PerformanceMonitoring\PerformanceMonitoring.csproj">
+      <Project>{C529958B-927A-4DCB-834C-5765F831F04A}</Project>
+      <Name>PerformanceMonitoring</Name>
     </ProjectReference>
     <ProjectReference Include="..\SharedConstants\SharedConstants.csproj">
       <Project>{EBD77164-CE60-4180-8613-974FA39850E8}</Project>

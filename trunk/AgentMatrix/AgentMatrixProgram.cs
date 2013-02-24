@@ -26,18 +26,27 @@ namespace AgentMatrix
             }
         }
 
-        static void Main(string[] args)
+        private static AgentWorld _agentWorld;
+        private static AgentWorld GetAgentWorld(int instanceId)
         {
-             _dawnClient = new DawnClient.DawnClient();
-            var agentWorld = new AgentWorld();
+            if (_agentWorld != null)
+                return _agentWorld;
 
-            // Add eventhandler
-            //_dawnClient.WorldLoadedEvent += delegate { _dawnClient.RequestCreatureCreationOnServer(EntityType.Predator, 100); };
+            _agentWorld = new AgentWorld(instanceId);
             _dawnClient.WorldLoadedEvent += delegate
                                                 {
                                                     for (int i = 0; i < 1; i++)
-                                                        agentWorld.CreateCreature(EntityType.SpawnPoint);
+                                                        _agentWorld.CreateCreature(EntityType.SpawnPoint);
                                                 };
+            return _agentWorld;
+        }
+
+        static void Main(string[] args)
+        {
+             _dawnClient = new DawnClient.DawnClient();
+
+            // Add eventhandler
+            //_dawnClient.WorldLoadedEvent += delegate { _dawnClient.RequestCreatureCreationOnServer(EntityType.Predator, 100); };
 
             _dawnClient.EntityDestroyed += OnEntityDestroyedOnServer;
 
@@ -45,13 +54,16 @@ namespace AgentMatrix
             {
                 do
                 {
-                    _dawnClient.SendCommandsToServer();
                     if (!_dawnClient.WorldLoaded)
                     {
-                        Thread.Sleep(1000);
+                        _dawnClient.Update();
+                        Thread.Sleep(100);
                     }
                     else
                     {
+                        _dawnClient.SendCommandsToServer();
+
+                        var agentWorld = GetAgentWorld(_dawnClient.InstanceId);
                         agentWorld.ProcessMyCreateRequests(_dawnClient.CreatedCreatureIds);
                         agentWorld.UpdateFromServer(_dawnClient.DawnWorld.GetEntities());
                         lock (_destroyQueue)
@@ -76,38 +88,10 @@ namespace AgentMatrix
 
 
                         Thread.Sleep(25);
+
+                        // Test
+                        WriteDebugInfo(agentWorld);
                     }
-
-                    // Test
-                    var allEntities = _dawnClient.DawnWorld.GetEntities();
-                    var predators = allEntities.Count(e => e.Specy == EntityType.Predator);
-                    var boxes = allEntities.Count(e => e.Specy == EntityType.Box);
-                    var walls = allEntities.Count(e => e.Specy == EntityType.Wall);
-                    var spawnpoints = allEntities.Count(e => e.Specy == EntityType.SpawnPoint);
-
-                    
-
-                    Console.WriteLine(_dawnClient.DawnWorld.WorldInformation);
-                    Console.WriteLine("> boxes : " + boxes);
-                    Console.WriteLine("> boxes2: " + agentWorld.GetEntities().Count(e => e.Specy == EntityType.Box));
-                    Console.WriteLine("> walls : " + walls);
-                    Console.WriteLine("> walls2: " + agentWorld.GetEntities().Count(e => e.Specy == EntityType.Wall));
-
-                    Console.WriteLine("> Predators : " + predators);
-                    Console.WriteLine("> Predators2: " + agentWorld.GetEntities().Count(e => e.Specy == EntityType.Predator));
-
-                    Console.WriteLine("> SpawnPoints : " + spawnpoints);
-                    Console.WriteLine("> SpawnPoints2: " + agentWorld.GetEntities().Count(e => e.Specy == EntityType.SpawnPoint));
-
-                    Console.WriteLine("> SpawnPoints Replicated: " + agentWorld.NrOfSpawnPointsReplicated);
-
-                    Console.WriteLine("> Creatures created: " + _dawnClient.CreatedCreatureIds.Count + " - " + string.Join(", ", _dawnClient.CreatedCreatureIds.Select(c => c.ServerId)));
-
-                    // Auto move forward
-                    //if (_dawnClient.AvatarId != 0)
-                    //{
-                    //    _dawnClient.SendAvatorCommand(AvatarCommand.RunForward);
-                    //}
                 }
                 while (!Console.KeyAvailable);
             }
@@ -117,6 +101,31 @@ namespace AgentMatrix
             }
 
             _dawnClient.Disconnect(); //<- uncomment this line to see a faster disconnect/leave on the other clients.
-        } 
+        }
+
+        private static void WriteDebugInfo(AgentWorld agentWorld)
+        {
+            var allEntities = _dawnClient.DawnWorld.GetEntities();
+            var predators = allEntities.Count(e => e.Specy == EntityType.Predator);
+            var boxes = allEntities.Count(e => e.Specy == EntityType.Box);
+            var walls = allEntities.Count(e => e.Specy == EntityType.Wall);
+            var spawnpoints = allEntities.Count(e => e.Specy == EntityType.SpawnPoint);
+
+                    
+            Console.WriteLine("> boxes : " + boxes);
+            Console.WriteLine("> boxes2: " + agentWorld.GetEntities().Count(e => e.Specy == EntityType.Box));
+            Console.WriteLine("> walls : " + walls);
+            Console.WriteLine("> walls2: " + agentWorld.GetEntities().Count(e => e.Specy == EntityType.Wall));
+
+            Console.WriteLine("> Predators : " + predators);
+            Console.WriteLine("> Predators2: " + agentWorld.GetEntities().Count(e => e.Specy == EntityType.Predator));
+
+            Console.WriteLine("> SpawnPoints : " + spawnpoints);
+            Console.WriteLine("> SpawnPoints2: " + agentWorld.GetEntities().Count(e => e.Specy == EntityType.SpawnPoint));
+
+            Console.WriteLine("> SpawnPoints Replicated: " + agentWorld.NrOfSpawnPointsReplicated);
+
+            Console.WriteLine("> Creatures created: " + _dawnClient.CreatedCreatureIds.Count + " - " + string.Join(", ", _dawnClient.CreatedCreatureIds.Select(c => c.ServerId)));
+        }
     }
 }
