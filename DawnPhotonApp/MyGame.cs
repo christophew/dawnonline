@@ -8,6 +8,7 @@ using DawnOnline.Simulation.Entities;
 using DawnPhotonApp;
 using Lite.Messages;
 using Microsoft.Xna.Framework;
+using PerformanceMonitoring;
 using SharedConstants;
 
 namespace MyApplication
@@ -25,6 +26,7 @@ namespace MyApplication
         private Dictionary<int, IEntityPhotonPacket> _previousPositions = new Dictionary<int, IEntityPhotonPacket>();
         private Dictionary<int, IEntityPhotonPacket> _previousStatuses = new Dictionary<int, IEntityPhotonPacket>();
 
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MyGame"/> class.
         /// </summary>
@@ -32,7 +34,6 @@ namespace MyApplication
         public MyGame(string gameName)
             : base(gameName)
         {
-
             this.ExecutionFiber.Schedule(SendDawnWorld, 1500);
             this.ExecutionFiber.Schedule(SendAvatarUpdates, 1550);
             this.ExecutionFiber.Schedule(SendPositions, 1600);
@@ -50,6 +51,8 @@ namespace MyApplication
 
             // NEW DESIGN: _dawnWorld only handles the physics
             //_dawnWorldInstance.ThinkAll(30, new TimeSpan(millisecondsSinceLastFrame));
+
+
             _dawnWorldInstance.ApplyMove(millisecondsSinceLastFrame);
             _dawnWorldInstance.UpdatePhysics(millisecondsSinceLastFrame);
 
@@ -154,7 +157,6 @@ namespace MyApplication
                 {
                     var killedHash = new List<int>();
 
-                    int index = 0;
                     foreach (var previousEntity in _previousStatuses.Keys)
                     {
                         if (!currentEntities.ContainsKey(previousEntity))
@@ -184,14 +186,18 @@ namespace MyApplication
                 var data = new Dictionary<byte, object>();
                 data[0] = killedIds;
                 var eData = new EventData((byte)EventCode.Destroyed, data);
-                var sendParameters = new SendParameters { Unreliable = false };
+                var sendParameters = new SendParameters { Unreliable = false, ChannelId = 1};
                 this.PublishEvent(eData, this.Actors, sendParameters);
             }
         }
 
         private void SendEntityPhotonPackages(EventCode eventCode, Dictionary<int, IEntityPhotonPacket> entityPositions, Dictionary<int, IEntityPhotonPacket> previousPositions = null)
         {
+            if (entityPositions.Count == 0)
+                return;
+
             // TODO: warnings when we exceed the max packet-size!
+            
 
             var sendParameters = new SendParameters { Unreliable = true };
 
@@ -220,6 +226,7 @@ namespace MyApplication
                 {
                     var eData = new EventData((byte)eventCode, currentDataList);
                     this.PublishEvent(eData, this.Actors, sendParameters);
+                    Monitoring.Register_SendEntityPhotonPackages(currentDataList.Count);
 
                     index = 0;
                     currentDataList = new Dictionary<byte, object>();
@@ -231,6 +238,7 @@ namespace MyApplication
             {
                 var eData = new EventData((byte)eventCode, currentDataList);
                 this.PublishEvent(eData, this.Actors, sendParameters);
+                Monitoring.Register_SendEntityPhotonPackages(currentDataList.Count);
             }
         }
 
@@ -268,36 +276,22 @@ namespace MyApplication
 
                 case MyOperationCodes.AvatarCommand:
                     {
+                        Monitoring.Register_ReceiveAvatarCommand();
                         HandleAvatorCommand(operationRequest);
                         break;
                     }
 
                 case MyOperationCodes.BulkEntityCommand:
                     {
+                        Monitoring.Register_ReceiveBulkEntityCommand();
                         HandleBulkEntityCommand(operationRequest);
                         break;
                     }
 
                 case MyOperationCodes.AddEntity:
                     {
-                        var parameters = (Hashtable)operationRequest.Parameters[0];
-
-                        // Add to world
-                        var entityType = (EntityType)parameters[0];
-                        var position = new Vector2((float) parameters[1], (float) parameters[2]);
-                        var angle = (float) parameters[3];
-                        var spawnPoint = (int) parameters[4];
-                        var clientId = (int)parameters[5]; // client referenceId of created creature
-
-                        var newCreature = _dawnWorldInstance.AddCreature(entityType, position, angle, spawnPoint);
-
-                        // Send response
-                        var eData = new Dictionary<byte, object>();
-                        eData[0] = (newCreature != null) ? newCreature.Id : 0;
-                        eData[1] = clientId; // client referenceId of created creature
-                        var response = new OperationResponse((byte)MyOperationCodes.AddEntity, eData);
-                        peer.SendOperationResponse(response, new SendParameters { Unreliable = false });
-
+                        Monitoring.Register_ReceiveAddEntity();
+                        HandleAddEntity(operationRequest, peer);
                         break;
                     }
 
@@ -309,7 +303,7 @@ namespace MyApplication
                         var eData = new Dictionary<byte, object>();
                         eData[0] = avatar.Id;
                         var response = new OperationResponse((byte)MyOperationCodes.AddAvatar, eData);
-                        peer.SendOperationResponse(response, new SendParameters { Unreliable = false });
+                        peer.SendOperationResponse(response, new SendParameters { Unreliable = false, ChannelId = 1});
 
                         break;
                     }
@@ -326,7 +320,7 @@ namespace MyApplication
                         var eData = new Dictionary<byte, object>();
                         eData[0] = slowObjectsParam;
                         var response = new OperationResponse((byte)MyOperationCodes.LoadWorld, eData);
-                        peer.SendOperationResponse(response, new SendParameters{Unreliable = false});
+                        peer.SendOperationResponse(response, new SendParameters { Unreliable = false, ChannelId = 1 });
 
                         break;
                     }
@@ -336,6 +330,27 @@ namespace MyApplication
                     base.ExecuteOperation(peer, operationRequest, sendParameters);
                     break;
             }
+        }
+
+        private void HandleAddEntity(OperationRequest operationRequest, LitePeer peer)
+        {
+            var parameters = (Hashtable)operationRequest.Parameters[0];
+
+            // Add to world
+            var entityType = (EntityType)parameters[0];
+            var position = new Vector2((float) parameters[1], (float) parameters[2]);
+            var angle = (float) parameters[3];
+            var spawnPoint = (int) parameters[4];
+            var clientId = (int)parameters[5]; // client referenceId of created creature
+
+            var newCreature = _dawnWorldInstance.AddCreature(entityType, position, angle, spawnPoint);
+
+            // Send response
+            var eData = new Dictionary<byte, object>();
+            eData[0] = (newCreature != null) ? newCreature.Id : 0;
+            eData[1] = clientId; // client referenceId of created creature
+            var response = new OperationResponse((byte)MyOperationCodes.AddEntity, eData);
+            peer.SendOperationResponse(response, new SendParameters { Unreliable = false, ChannelId = 1});
         }
 
         private static void HandleAvatorCommand(OperationRequest operationRequest)

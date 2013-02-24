@@ -15,17 +15,20 @@ namespace AgentMatrix
 {
     class AgentWorld
     {
-        private readonly DawnOnline.Simulation.Environment _staticEnvironment = SimulationFactory.CreateEnvironment();
+        private readonly DawnOnline.Simulation.Environment _staticEnvironment;
 
         private readonly Dictionary<int, int> _serverIdToClientIdMap = new Dictionary<int, int>();
         private readonly Dictionary<int, int> _clientIdToServerIdMap = new Dictionary<int, int>();
         private readonly HashSet<int> _createQueueClientIds = new HashSet<int>();
 
         private Random _randomize = new Random();
-        private int _minNrOfSpawnPoints = 5;
+        private int _minNrOfSpawnPoints = 10;
         public int NrOfSpawnPointsReplicated { get; private set; }
 
-
+        public AgentWorld(int instanceId)
+        {
+            _staticEnvironment = SimulationFactory.CreateEnvironment(instanceId);
+        }
 
         public ReadOnlyCollection<IEntity> GetEntities()
         {

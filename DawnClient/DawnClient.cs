@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using ExitGames.Client.Photon;
 using ExitGames.Client.Photon.Lite;
+using PerformanceMonitoring;
 using SharedConstants;
 
 namespace DawnClient
@@ -16,6 +17,7 @@ namespace DawnClient
 
         private LitePeer _peer;
         private int _actorId;
+        public int InstanceId { get { return _actorId; } }
 
         private DateTime _lastUpdateTime = DateTime.Now;
         private HashSet<AvatarCommand> _avatarCommands = new HashSet<AvatarCommand>();
@@ -86,8 +88,11 @@ namespace DawnClient
             var now = DateTime.Now;
             long millisecondsSinceLastFrame = (long)(now - _lastUpdateTime).TotalMilliseconds;
 
-            //if (millisecondsSinceLastFrame < MinTimeBetweenSendCommands)
-            //    return;
+            if (millisecondsSinceLastFrame < MinTimeBetweenSendCommands)
+            {
+                _peer.Service();
+                return;
+            }
 
             _lastUpdateTime = now;
 
@@ -140,7 +145,7 @@ namespace DawnClient
             // TODO: warnings when we exceed the max packet-size!
 
             // Split the list into fragments
-            const int fragmentSize = 50;
+            const int fragmentSize = 25;
 
             byte index = 0;
             var currentDataList = new Dictionary<byte, object>();
@@ -193,7 +198,7 @@ namespace DawnClient
             var eData = new Dictionary<byte, object>();
             eData[0] = creatureData;
 
-            var result = _peer.OpCustom((byte)MyOperationCodes.AddEntity, eData, true);
+            var result = _peer.OpCustom((byte)MyOperationCodes.AddEntity, eData, true, 1);
             _peer.Service();
         }
 
@@ -202,7 +207,7 @@ namespace DawnClient
             Console.WriteLine("RequestAvatarCreationOnServer");
 
             var eData = new Dictionary<byte, object>();
-            var result = _peer.OpCustom((byte)MyOperationCodes.AddAvatar, null, true);
+            var result = _peer.OpCustom((byte)MyOperationCodes.AddAvatar, null, true, 1);
             _peer.Service();
         }
 
@@ -252,6 +257,8 @@ namespace DawnClient
 
                 case (byte)EventCode.BulkPositionUpdate:
                     {
+                        Monitoring.Register_ReceiveBulkPositionUpdate(InstanceId);
+
                         // Position update: compressed
                         var entities = eventData.Parameters.Select(kvp => DawnClientEntity.CreatePositionUpdate((Hashtable) kvp.Value)).ToList();
                         DawnWorld.UpdateEntities(entities, false);
@@ -270,6 +277,8 @@ namespace DawnClient
                     }
                 case (byte)EventCode.BulkStatusUpdate:
                     {
+                        Monitoring.Register_ReceiveBulkStatusUpdate(InstanceId);
+
                         // Position update: compressed
                         var entities = eventData.Parameters.Select(kvp => DawnClientEntity.CreateStatusUpdate((Hashtable)kvp.Value)).ToList();
                         DawnWorld.UpdateEntities(entities, true);
@@ -288,19 +297,23 @@ namespace DawnClient
                     }
 
                 case (byte)EventCode.Destroyed:
-                    // Killed
-                    var killedIds = (int[]) eventData.Parameters[0];
-                    DawnWorld.RemoveEntities(killedIds);
-
-                    // Fire our event
-                    if (this.EntityDestroyed != null)
                     {
-                        var eventArgs = new EventArgs();
+                        Monitoring.Register_ReceiveDestroyedCounter(InstanceId);
 
-                        this.EntityDestroyed(this, new EntityDestroyedEventArgs(killedIds));
+                        // Killed
+                        var killedIds = (int[]) eventData.Parameters[0];
+                        DawnWorld.RemoveEntities(killedIds);
+
+                        // Fire our event
+                        if (this.EntityDestroyed != null)
+                        {
+                            var eventArgs = new EventArgs();
+
+                            this.EntityDestroyed(this, new EntityDestroyedEventArgs(killedIds));
+                        }
+
+                        break;
                     }
-
-                    break;
             }
         }
 
@@ -322,7 +335,7 @@ namespace DawnClient
                         Console.WriteLine("Calling LoadWorld operation");
                         //var opParams = new Dictionary<byte, object>();
                         //opParams[LiteOpKey.Code] = (byte)103;
-                        _peer.OpCustom((byte)MyOperationCodes.LoadWorld, null, true);
+                        _peer.OpCustom((byte)MyOperationCodes.LoadWorld, null, true, 1);
                         break;
                     }
                 // Return from LoadWorld
@@ -373,7 +386,7 @@ namespace DawnClient
                     Console.WriteLine("DawnClient Calling OpJoin ...");
                     var opParams = new Dictionary<byte, object>();
                     opParams[LiteOpKey.GameId] = "Dawn";
-                    _peer.OpCustom(LiteOpCode.Join, opParams, true);
+                    _peer.OpCustom(LiteOpCode.Join, opParams, true, 1);
 
                     break;
                 default:

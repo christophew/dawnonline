@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace DawnOnline.Simulation
 {
@@ -10,10 +11,19 @@ namespace DawnOnline.Simulation
             get { return _randomize; }
         }
 
+        private static int _instanceId = -1;
+        public static void SetInstanceId(int id)
+        {
+            Debug.Assert(_instanceId == -1, "Only set once");
+            Debug.Assert(_instanceId < 100, "Not supported: see GenerateUniqueId");
+            _instanceId = id;
+        }
+
         private static int _currentIdCounter = 1;
         public static int GenerateUniqueId()
         {
-            return _currentIdCounter++;
+            Debug.Assert(_instanceId != -1);
+            return _currentIdCounter++ * 100 + _instanceId;
         }
     }
 }

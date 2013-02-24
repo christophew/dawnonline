@@ -13,8 +13,9 @@ namespace DawnOnline.Simulation
 {
     public static class SimulationFactory
     {
-        public static Environment CreateEnvironment()
+        public static Environment CreateEnvironment(int instanceId)
         {
+            Globals.SetInstanceId(instanceId);
             return Environment.GetWorld();
         }
 
