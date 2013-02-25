@@ -57,10 +57,11 @@ namespace DawnOnline.Simulation.Builders
             }
         }
 
-        public static ICreature CreateCreature(EntityType entityType, IEntity spawnPoint)
+        public static ICreature CreateCreature(EntityType entityType, IEntity spawnPoint, int id)
         {
             var creature = CreatureBuilder.CreateCreature(entityType) as Creature;
             Debug.Assert(creature != null);
+            creature.Id = id;
 
             Debug.Assert(spawnPoint == null || spawnPoint.Specy == EntityType.SpawnPoint);
             if (spawnPoint != null)

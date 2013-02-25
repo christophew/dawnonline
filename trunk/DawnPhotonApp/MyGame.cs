@@ -202,7 +202,7 @@ namespace MyApplication
             var sendParameters = new SendParameters { Unreliable = true };
 
             // Split the list into fragments
-            const int fragmentSize = 10;
+            const int fragmentSize = 15;
 
             byte index = 0;
             var currentDataList = new Dictionary<byte, object>();
@@ -343,14 +343,14 @@ namespace MyApplication
             var spawnPoint = (int) parameters[4];
             var clientId = (int)parameters[5]; // client referenceId of created creature
 
-            var newCreature = _dawnWorldInstance.AddCreature(entityType, position, angle, spawnPoint);
+            var newCreature = _dawnWorldInstance.AddCreature(entityType, position, angle, spawnPoint, clientId);
 
             // Send response
-            var eData = new Dictionary<byte, object>();
-            eData[0] = (newCreature != null) ? newCreature.Id : 0;
-            eData[1] = clientId; // client referenceId of created creature
-            var response = new OperationResponse((byte)MyOperationCodes.AddEntity, eData);
-            peer.SendOperationResponse(response, new SendParameters { Unreliable = false, ChannelId = 1});
+            //var eData = new Dictionary<byte, object>();
+            //eData[0] = (newCreature != null) ? newCreature.Id : 0;
+            //eData[1] = clientId; // client referenceId of created creature
+            //var response = new OperationResponse((byte)MyOperationCodes.AddEntity, eData);
+            //peer.SendOperationResponse(response, new SendParameters { Unreliable = false, ChannelId = 1 });
         }
 
         private static void HandleAvatorCommand(OperationRequest operationRequest)

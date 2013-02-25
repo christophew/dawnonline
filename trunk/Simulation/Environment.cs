@@ -10,6 +10,7 @@ using DawnOnline.Simulation.Tools;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
 using SharedConstants;
+using PerformanceMonitoring;
 
 namespace DawnOnline.Simulation
 {
@@ -290,7 +291,9 @@ namespace DawnOnline.Simulation
                     break;
             }
 
-            Console.WriteLine(string.Format("#Think: {0} - Time: {1}", counter, (DateTime.Now - startTime).TotalMilliseconds));
+            var time = (DateTime.Now - startTime).TotalMilliseconds;
+            Monitoring.Register_Think(Globals.GetInstanceId(), (int)time, counter);
+            Console.WriteLine(string.Format("#Think: {0} - Time: {1}", counter, time));
 
             return counter;
         }

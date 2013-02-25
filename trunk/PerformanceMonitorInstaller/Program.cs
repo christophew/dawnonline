@@ -12,6 +12,7 @@ namespace PerformanceMonitorInstaller
         {
             Monitoring.InstallServerCounters();
             Monitoring.InstallClientCounters();
+            Monitoring.InstallSimulationCounters();
         }
     }
 }

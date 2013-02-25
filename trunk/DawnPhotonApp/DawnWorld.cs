@@ -184,7 +184,7 @@ namespace DawnGame
             return true;
         }
 
-        public IEntity AddCreature(EntityType specy, Vector2 position, float angle, int spawnPointId)
+        public IEntity AddCreature(EntityType specy, Vector2 position, float angle, int spawnPointId, int id)
         {
             // Vector(0,0) = position undefined
             if (position.X == 0 && position.Y == 0)
@@ -199,7 +199,7 @@ namespace DawnGame
                 spawnPoint = _environment.GetCreatures(EntityType.SpawnPoint).FirstOrDefault(c => c.Id == spawnPointId);
             }
 
-            var newCreature = CloneBuilder.CreateCreature(specy, spawnPoint);
+            var newCreature = CloneBuilder.CreateCreature(specy, spawnPoint, id);
             if (_environment.AddCreature(newCreature, position, angle, false))
             {
                 return newCreature;

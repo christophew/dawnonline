@@ -19,6 +19,11 @@ namespace DawnOnline.Simulation
             _instanceId = id;
         }
 
+        public static int GetInstanceId()
+        {
+            return _instanceId;
+        }
+
         private static int _currentIdCounter = 1;
         public static int GenerateUniqueId()
         {

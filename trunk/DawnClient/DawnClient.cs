@@ -28,23 +28,32 @@ namespace DawnClient
 
         public int MinTimeBetweenSendCommands = 25;
 
-        public class ClientServerIdPair
-        {
-            public ClientServerIdPair(int serverId, int clientId)
-            {
-                ServerId = serverId;
-                ClientId = clientId;
-            }
-            public int ServerId;
-            public int ClientId;
-        }
-        private List<ClientServerIdPair> _creatureIds = new List<ClientServerIdPair>();
-        public ReadOnlyCollection<ClientServerIdPair> CreatedCreatureIds { get { return _creatureIds.AsReadOnly(); } }
+        //public class ClientServerIdPair
+        //{
+        //    public ClientServerIdPair(int serverId, int clientId)
+        //    {
+        //        ServerId = serverId;
+        //        ClientId = clientId;
+        //    }
+        //    public int ServerId;
+        //    public int ClientId;
+        //}
+        //private List<ClientServerIdPair> _creatureIds = new List<ClientServerIdPair>();
+        //public ReadOnlyCollection<ClientServerIdPair> CreatedCreatureIds { get { return _creatureIds.AsReadOnly(); } }
+
+        //public void CleanupCreatedCreatureIds(HashSet<int> destroyedServerIds)
+        //{
+        //    _creatureIds.RemoveAll(pair => destroyedServerIds.Contains(pair.ServerId));
+        //}
+
+        private List<int> _creatureIds = new List<int>();
+        public List<int> CreatedCreatureIds { get { return _creatureIds; } }
 
         public void CleanupCreatedCreatureIds(HashSet<int> destroyedServerIds)
         {
-            _creatureIds.RemoveAll(pair => destroyedServerIds.Contains(pair.ServerId));
+            _creatureIds.RemoveAll(destroyedServerIds.Contains);
         }
+
 
         private DawnClientEntity _avatarProxy = new DawnClientEntity();
         public DawnClientEntity Avatar { get { return _avatarProxy; } }
@@ -145,7 +154,7 @@ namespace DawnClient
             // TODO: warnings when we exceed the max packet-size!
 
             // Split the list into fragments
-            const int fragmentSize = 25;
+            const int fragmentSize = 40;
 
             byte index = 0;
             var currentDataList = new Dictionary<byte, object>();
@@ -187,6 +196,9 @@ namespace DawnClient
         {
             Console.WriteLine("RequestCreatureCreationOnServer: " + entityType);
 
+            // Register in my created creatures
+            _creatureIds.Add(clientId);
+
             var creatureData = new Hashtable();
             creatureData.Add(0, entityType);
             creatureData.Add(1, x);
@@ -200,6 +212,7 @@ namespace DawnClient
 
             var result = _peer.OpCustom((byte)MyOperationCodes.AddEntity, eData, true, 1);
             _peer.Service();
+
         }
 
         public void RequestAvatarCreationOnServer()
@@ -367,11 +380,12 @@ namespace DawnClient
                 // Return from AddPredator
                 case (byte)MyOperationCodes.AddEntity:
                     {
-                        var creatureServerId = (int) operationResponse.Parameters[0];
-                        var creatureClientId = (int) operationResponse.Parameters[1];
+                        throw new NotSupportedException("obsolete");
+                        //var creatureServerId = (int) operationResponse.Parameters[0];
+                        //var creatureClientId = (int) operationResponse.Parameters[1];
 
-                        _creatureIds.Add(new ClientServerIdPair(creatureServerId, creatureClientId));
-                        break;
+                        //_creatureIds.Add(new ClientServerIdPair(creatureServerId, creatureClientId));
+                        //break;
                     }
 
             }

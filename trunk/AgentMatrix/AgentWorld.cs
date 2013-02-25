@@ -37,13 +37,13 @@ namespace AgentMatrix
             return result.AsReadOnly();
         }
 
-        internal void ProcessMyCreateRequests(ReadOnlyCollection<DawnClient.DawnClient.ClientServerIdPair> creatureIds)
+        internal void ProcessMyCreateRequests(List<int> creatureIds)
         {
             // creatureIds = id's of creatures that are created on request of this AgentWorld
             foreach (var id in creatureIds)
             {
                 // Check already created
-                if (_serverIdToClientIdMap.ContainsKey(id.ServerId))
+                if (_serverIdToClientIdMap.ContainsKey(id))
                 {
                     // Exists already
                     continue;
@@ -51,16 +51,16 @@ namespace AgentMatrix
 
                 // TODO: VERIFY, TEST, IMPROVE!!!! 
                 // Check created requested
-                if (_createQueueClientIds.Contains(id.ClientId))
+                if (_createQueueClientIds.Contains(id))
                 {
                     Console.WriteLine("ProcessMyCreateRequests: " + _createQueueClientIds.First());
 
                     // Create mapping
-                    _serverIdToClientIdMap.Add(id.ServerId, id.ClientId);
-                    _clientIdToServerIdMap.Add(id.ClientId, id.ServerId);
+                    _serverIdToClientIdMap.Add(id, id);
+                    _clientIdToServerIdMap.Add(id, id);
 
                     // Remove from queue
-                    _createQueueClientIds.Remove(id.ClientId);
+                    _createQueueClientIds.Remove(id);
                 }
             }
         }
@@ -138,11 +138,10 @@ namespace AgentMatrix
             return myEntity;
         }
 
-        public void Think(double maxTime, ReadOnlyCollection<DawnClient.DawnClient.ClientServerIdPair> creatureIds)
+        public int Think(double maxTime, List<int> creatureIds)
         {
             // Map server to clientIds
-            var clientIds = creatureIds.Select(c => c.ClientId).ToList();
-            _staticEnvironment.Think(maxTime, new TimeSpan(SimulationConstants.UpdateIntervalOnServerInMs), clientIds);
+            return _staticEnvironment.Think(maxTime, new TimeSpan(SimulationConstants.UpdateIntervalOnServerInMs), creatureIds);
         }
 
         public void UpdateToServer(DawnClient.DawnClient dawnClient)
@@ -375,7 +374,7 @@ namespace AgentMatrix
                     spawnPoint = _staticEnvironment.GetCreatures(EntityType.SpawnPoint).FirstOrDefault(c => c.Id == localFamilyId);
                 }
 
-                var entity = CloneBuilder.CreateCreature(clientEntity.Specy, spawnPoint);
+                var entity = CloneBuilder.CreateCreature(clientEntity.Specy, spawnPoint, clientEntity.Id);
                 if (_staticEnvironment.AddCreature(entity, position, clientEntity.Angle))
                     return entity;
                 // TODO: insert without collision check
@@ -392,7 +391,7 @@ namespace AgentMatrix
             _staticEnvironment.AddCreature(creature, new Vector2(0, 0), 0, false);
         }
 
-        internal void RepopulateWorld(ReadOnlyCollection<DawnClient.DawnClient.ClientServerIdPair> myCreatureIds)
+        internal void RepopulateWorld(List<int> myCreatureIds)
         {
             // Make sure we always have enough spawnpoints
             var spawnPoints = _staticEnvironment.GetCreatures(EntityType.SpawnPoint);
@@ -400,7 +399,7 @@ namespace AgentMatrix
             var countMySpawnPoints = 0;
             foreach (var spawnPoint in spawnPoints)
             {
-                if (myCreatureIds.FirstOrDefault(pair => pair.ClientId == spawnPoint.Id) != null)
+                if (myCreatureIds.FirstOrDefault(id => id == spawnPoint.Id) != null)
                     countMySpawnPoints++;
             }
 
