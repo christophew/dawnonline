@@ -144,10 +144,17 @@
       <Project>{DA87EB61-D672-4A20-B0E7-D3E488C69D4C}</Project>
       <Name>Farseer Physics XNA</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PerformanceMonitoring\PerformanceMonitoring.csproj">
+      <Project>{C529958B-927A-4DCB-834C-5765F831F04A}</Project>
+      <Name>PerformanceMonitoring</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SharedConstants\SharedConstants.csproj">
       <Project>{EBD77164-CE60-4180-8613-974FA39850E8}</Project>
       <Name>SharedConstants</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

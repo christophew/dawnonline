@@ -32,6 +32,14 @@ namespace PerformanceMonitoring
         private static PerformanceCounter _receiveBulkStatusUpdateCounter;
         private static PerformanceCounter _receiveDestroyedCounter;
 
+
+        private const string _simulationCategoryName = "DawnSimulation";
+        private const string _thinkCounterName = "ThinkCounter";
+        private const string _thinkTimeName = "ThinkTime";
+
+        private static PerformanceCounter _thinkCounter;
+        private static PerformanceCounter _thinkTime;
+
         public static void Register_SendEntityPhotonPackages(int amount)
         {
             PrepareCounter(ref _sendPositionsCounter, _serverCategoryName, _sendEntityPhotonPackagesName);
@@ -62,22 +70,27 @@ namespace PerformanceMonitoring
         public static void Register_ReceiveBulkPositionUpdate(int instanceId)
         {
             PrepareCounter(ref _receiveBulkPositionUpdateCounter, _clientCategoryName, _receiveBulkPositionUpdateName, instanceId);
-            //_receiveBulkPositionUpdateCounter.InstanceName = instanceId.ToString();
             _receiveBulkPositionUpdateCounter.Increment();
         }
 
         public static void Register_ReceiveBulkStatusUpdate(int instanceId)
         {
             PrepareCounter(ref _receiveBulkStatusUpdateCounter, _clientCategoryName, _receiveBulkStatusUpdateName, instanceId);
-            //_receiveBulkStatusUpdateCounter.InstanceName = instanceId.ToString();
             _receiveBulkStatusUpdateCounter.Increment();
         }
 
         public static void Register_ReceiveDestroyedCounter(int instanceId)
         {
             PrepareCounter(ref _receiveDestroyedCounter, _clientCategoryName, _receiveDestroyedName, instanceId);
-            //_receiveDestroyedCounter.InstanceName = instanceId.ToString();
             _receiveDestroyedCounter.Increment();
+        }
+
+        public static void Register_Think(int instanceId, int timeInMs, int nrProcesses)
+        {
+            PrepareCounter(ref _thinkCounter, _simulationCategoryName, _thinkCounterName, instanceId);
+            _thinkCounter.IncrementBy(nrProcesses);
+            PrepareCounter(ref _thinkTime, _simulationCategoryName, _thinkTimeName, instanceId);
+            _thinkTime.IncrementBy(timeInMs);
         }
 
         private static void PrepareCounter(ref PerformanceCounter counter, string category, string name)
@@ -162,6 +175,24 @@ namespace PerformanceMonitoring
 
                 // create new category with the counters above
                 PerformanceCounterCategory.Create(_clientCategoryName, "todo: help", PerformanceCounterCategoryType.MultiInstance , counters);
+            }
+        }
+
+        public static void InstallSimulationCounters()
+        {
+            // Temp: always delete
+            if (PerformanceCounterCategory.Exists(_simulationCategoryName))
+                PerformanceCounterCategory.Delete(_simulationCategoryName);
+
+            if (!PerformanceCounterCategory.Exists(_simulationCategoryName))
+            {
+                var counters = new CounterCreationDataCollection();
+
+                counters.Add(CreateCounter(_thinkCounterName));
+                counters.Add(CreateCounter(_thinkTimeName));
+
+                // create new category with the counters above
+                PerformanceCounterCategory.Create(_simulationCategoryName, "todo: help", PerformanceCounterCategoryType.MultiInstance, counters);
             }
         }
 

@@ -16,7 +16,7 @@ namespace AgentMatrix
         private static HashSet<int> _destroyQueue = new HashSet<int>();
         private static void OnEntityDestroyedOnServer(object sender, DawnClient.DawnClient.EntityDestroyedEventArgs args)
         {
-            lock (_destroyQueue)
+            //lock (_destroyQueue)
             {
                 foreach (int newId in args.DestroyedIds)
                 {
@@ -61,33 +61,43 @@ namespace AgentMatrix
                     }
                     else
                     {
-                        _dawnClient.SendCommandsToServer();
+                        _dawnClient.Update();
 
                         var agentWorld = GetAgentWorld(_dawnClient.InstanceId);
                         agentWorld.ProcessMyCreateRequests(_dawnClient.CreatedCreatureIds);
                         agentWorld.UpdateFromServer(_dawnClient.DawnWorld.GetEntities());
-                        lock (_destroyQueue)
+                        agentWorld.DoPhysics();
+
+                        //lock (_destroyQueue)
                         {
                             agentWorld.ApplyDeleteFromServer(_destroyQueue);
                             _dawnClient.CleanupCreatedCreatureIds(_destroyQueue);
                             _destroyQueue.Clear();
                         }
-                        agentWorld.Think(25, _dawnClient.CreatedCreatureIds);
 
-                        // Test => double the Peer.Service times => clear queue faster
                         _dawnClient.Update();
+                        agentWorld.Think(10, _dawnClient.CreatedCreatureIds);
+
+                        // max 3 loops, but stop after all are served
+                        //var counter = _dawnClient.CreatedCreatureIds.Count;
+                        //for (int i = 0; i < 3; i++ )
+                        //{
+                        //    counter -= agentWorld.Think(10, _dawnClient.CreatedCreatureIds);
+                        //    _dawnClient.Update();
+
+                        //    if (counter <= 0)
+                        //        break;
+                        //}
 
                         agentWorld.RepopulateWorld(_dawnClient.CreatedCreatureIds);
                         agentWorld.UpdateToServer(_dawnClient);
+                        _dawnClient.SendCommandsToServer();
 
-                        agentWorld.DoPhysics();
 
-
-                        // Test => double the Peer.Service times => clear queue faster
+                        //Thread.Sleep(25);
                         _dawnClient.Update();
+                        agentWorld.Think(10, _dawnClient.CreatedCreatureIds);
 
-
-                        Thread.Sleep(25);
 
                         // Test
                         WriteDebugInfo(agentWorld);
@@ -125,7 +135,7 @@ namespace AgentMatrix
 
             Console.WriteLine("> SpawnPoints Replicated: " + agentWorld.NrOfSpawnPointsReplicated);
 
-            Console.WriteLine("> Creatures created: " + _dawnClient.CreatedCreatureIds.Count + " - " + string.Join(", ", _dawnClient.CreatedCreatureIds.Select(c => c.ServerId)));
+            Console.WriteLine("> Creatures created: " + _dawnClient.CreatedCreatureIds.Count + " - " + string.Join(", ", _dawnClient.CreatedCreatureIds));
         }
     }
 }
