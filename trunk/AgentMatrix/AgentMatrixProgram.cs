@@ -75,7 +75,7 @@ namespace AgentMatrix
                             _destroyQueue.Clear();
                         }
 
-                        _dawnClient.Update();
+                        _dawnClient.Update(); // = update state of physical sensors (bumpers, ed)
                         agentWorld.Think(10, _dawnClient.CreatedCreatureIds);
 
                         // max 3 loops, but stop after all are served

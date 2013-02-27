@@ -38,18 +38,21 @@ namespace DawnOnline.Simulation.Builders
                     {
                         var obstacle = ObstacleBuilder.CreateObstacleBox(WorldConstants.WallHeight, WorldConstants.WallWide) as Obstacle;
                         Debug.Assert(obstacle != null);
+                        obstacle.Id = id;
                         return obstacle;
                     }
                 case EntityType.Wall:
                     {
                         var obstacle = ObstacleBuilder.CreateWall(WorldConstants.WallHeight, WorldConstants.WallWide) as Obstacle;
                         Debug.Assert(obstacle != null);
+                        obstacle.Id = id;
                         return obstacle;
                     }
                 case EntityType.Treasure:
                     {
                         var obstacle = ObstacleBuilder.CreateTreasure(false) as Obstacle;
                         Debug.Assert(obstacle != null);
+                        obstacle.Id = id;
                         return obstacle;
                     }
 
