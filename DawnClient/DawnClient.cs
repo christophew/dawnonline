@@ -95,6 +95,8 @@ namespace DawnClient
 
         public void SendCommandsToServer()
         {
+            Monitoring.Register_SendCommandsToServer(InstanceId);
+
             var now = DateTime.Now;
             long millisecondsSinceLastFrame = (long)(now - _lastUpdateTime).TotalMilliseconds;
 
@@ -131,6 +133,7 @@ namespace DawnClient
 
         public void Update()
         {
+            Monitoring.Register_Update(InstanceId);
             _peer.Service();
         }
 

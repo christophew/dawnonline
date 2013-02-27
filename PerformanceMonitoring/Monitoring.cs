@@ -31,11 +31,15 @@ namespace PerformanceMonitoring
         private static PerformanceCounter _receiveBulkPositionUpdateCounter;
         private static PerformanceCounter _receiveBulkStatusUpdateCounter;
         private static PerformanceCounter _receiveDestroyedCounter;
+        private static PerformanceCounter _sendCommandsToServerCounter;
+        private static PerformanceCounter _updateCounter;
 
 
         private const string _simulationCategoryName = "DawnSimulation";
         private const string _thinkCounterName = "ThinkCounter";
         private const string _thinkTimeName = "ThinkTime";
+        private const string _sendCommandsToServerName = "SendCommandsToServer";
+        private const string _updateName = "Update";
 
         private static PerformanceCounter _thinkCounter;
         private static PerformanceCounter _thinkTime;
@@ -91,6 +95,18 @@ namespace PerformanceMonitoring
             _thinkCounter.IncrementBy(nrProcesses);
             PrepareCounter(ref _thinkTime, _simulationCategoryName, _thinkTimeName, instanceId);
             _thinkTime.IncrementBy(timeInMs);
+        }
+
+        public static void Register_SendCommandsToServer(int instanceId)
+        {
+            PrepareCounter(ref _sendCommandsToServerCounter, _clientCategoryName, _sendCommandsToServerName, instanceId);
+            _sendCommandsToServerCounter.Increment();
+        }
+
+        public static void Register_Update(int instanceId)
+        {
+            PrepareCounter(ref _updateCounter, _clientCategoryName, _updateName, instanceId);
+            _updateCounter.Increment();
         }
 
         private static void PrepareCounter(ref PerformanceCounter counter, string category, string name)
@@ -172,6 +188,8 @@ namespace PerformanceMonitoring
                 counters.Add(CreateCounter(_receiveBulkPositionUpdateName));
                 counters.Add(CreateCounter(_receiveBulkStatusUpdateName));
                 counters.Add(CreateCounter(_receiveDestroyedName));
+                counters.Add(CreateCounter(_sendCommandsToServerName));
+                counters.Add(CreateCounter(_updateName));
 
                 // create new category with the counters above
                 PerformanceCounterCategory.Create(_clientCategoryName, "todo: help", PerformanceCounterCategoryType.MultiInstance , counters);
