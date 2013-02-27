@@ -95,8 +95,8 @@ namespace AgentMatrix
 
 
                         //Thread.Sleep(25);
-                        _dawnClient.Update();
-                        agentWorld.Think(10, _dawnClient.CreatedCreatureIds);
+                        //_dawnClient.Update();
+                        //agentWorld.Think(10, _dawnClient.CreatedCreatureIds);
 
 
                         // Test

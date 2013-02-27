@@ -76,6 +76,9 @@ namespace Mogre.Tutorials
                 pointLight.DiffuseColour = ColourValue.White;
                 pointLight.SpecularColour = ColourValue.White;
             }
+
+            // Camera anchors
+            CreateTopdownCameraAnchor();
         }
 
         protected override void InitializeInput()
@@ -88,6 +91,8 @@ namespace Mogre.Tutorials
 
             mKeyboard = (MOIS.Keyboard)mInputMgr.CreateInputObject(MOIS.Type.OISKeyboard, false);
             mMouse = (MOIS.Mouse)mInputMgr.CreateInputObject(MOIS.Type.OISMouse, false);
+
+            //mKeyboard.KeyPressed += new MOIS.KeyListener.KeyPressedHandler(OnPressCameraCommands);
         }
 
         protected override void CreateFrameListeners()
@@ -103,6 +108,21 @@ namespace Mogre.Tutorials
             mMouse.Capture();
 
             _mogreModel.UpdateAvatar(mKeyboard);
+
+            return true;
+        }
+
+        //protected bool OnPressCameraCommands(MOIS.KeyEvent arg)
+        protected override bool OnKeyPressed(MOIS.KeyEvent arg)
+        {
+            base.OnKeyPressed(arg);
+
+            switch (arg.key)
+            {
+                case MOIS.KeyCode.KC_F1:
+                    SwitchCamera();
+                    break;
+            }
 
             return true;
         }
@@ -123,12 +143,41 @@ namespace Mogre.Tutorials
             return true;
         }
 
+        private Camera _switchCamera;
+        private void SwitchCamera()
+        {
+            mCamera.DetachFromParent();
+            _topDownCameraAnchor.AttachObject(mCamera);
+        }
+
+        private SceneNode _topDownCameraAnchor;
+        private bool _topdownActive = false;
+        private void CreateTopdownCameraAnchor()
+        {
+            if (_topdownActive)
+            {
+                _topdownActive = false;
+                mCamera.DetachFromParent();
+                return;
+            }
+
+            _topdownActive = true;
+            _topDownCameraAnchor = mSceneMgr.RootSceneNode.CreateChildSceneNode();
+            _topDownCameraAnchor.Translate(200, 500, 200);
+            _topDownCameraAnchor.Pitch(Math.HALF_PI);
+
+            //mCamera.Roll(0);
+            //mCamera.Pitch(0);
+            //mCamera.(0);
+        }
+
         protected override void CreateCamera()
         {
-            //mCamera = mSceneMgr.CreateCamera("PlayerCam");
-            //mCamera.Position = new Vector3(200, 100, 300);
-            //mCamera.LookAt(new Vector3(200, 0, 100));
-            //mCamera.NearClipDistance = 5;
+            _switchCamera = mSceneMgr.CreateCamera("PlayerCam");
+            _switchCamera.Position = new Vector3(200, 100, 300);
+            _switchCamera.LookAt(new Vector3(200, 0, 100));
+            _switchCamera.NearClipDistance = 5;
+            
             //mCameraMan = new CameraMan(mCamera);
 
             mCamera = mSceneMgr.CreateCamera("FirstPersonCam");
