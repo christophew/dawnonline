@@ -254,7 +254,7 @@ namespace MogreFrontEnd
                 // Check if camera is already attached
                 if (_fpCamera != null && !_fpCamera.IsAttached)
                 {
-                    // Is this out avatar?
+                    // Is this our avatar?
                     if (entity.Id == _dawnClient.AvatarId)
                     {
                         slerpNode.Node.AttachObject(_fpCamera);

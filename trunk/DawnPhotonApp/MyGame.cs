@@ -401,7 +401,7 @@ namespace MyApplication
             if (avatar == null)
             {
                 //throw new NotImplementedException("TODO: client notifications");
-                // Client not yet in synch with kill operation
+                // Client not yet in synch with KILL or ADD operation
                 return;
             }
 
