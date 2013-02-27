@@ -17,9 +17,10 @@ namespace AgentMatrix
     {
         private readonly DawnOnline.Simulation.Environment _staticEnvironment;
 
-        private readonly Dictionary<int, int> _serverIdToClientIdMap = new Dictionary<int, int>();
-        private readonly Dictionary<int, int> _clientIdToServerIdMap = new Dictionary<int, int>();
+        //private readonly Dictionary<int, int> _serverIdToClientIdMap = new Dictionary<int, int>();
+        //private readonly Dictionary<int, int> _clientIdToServerIdMap = new Dictionary<int, int>();
         private readonly HashSet<int> _createQueueClientIds = new HashSet<int>();
+        private readonly HashSet<int> _serverIds = new HashSet<int>(); 
 
         private Random _randomize = new Random();
         private int _minNrOfSpawnPoints = 10;
@@ -43,7 +44,7 @@ namespace AgentMatrix
             foreach (var id in creatureIds)
             {
                 // Check already created
-                if (_serverIdToClientIdMap.ContainsKey(id))
+                if (_serverIds.Contains(id))
                 {
                     // Exists already
                     continue;
@@ -56,8 +57,7 @@ namespace AgentMatrix
                     Console.WriteLine("ProcessMyCreateRequests: " + _createQueueClientIds.First());
 
                     // Create mapping
-                    _serverIdToClientIdMap.Add(id, id);
-                    _clientIdToServerIdMap.Add(id, id);
+                    _serverIds.Add(id);
 
                     // Remove from queue
                     _createQueueClientIds.Remove(id);
@@ -106,10 +106,9 @@ namespace AgentMatrix
         {
             foreach (var serverId in destroyQueue)
             {
-                if (_serverIdToClientIdMap.ContainsKey(serverId))
+                if (_serverIds.Contains(serverId))
                 {
-                    var clientId = _serverIdToClientIdMap[serverId];
-                    _staticEnvironment.RemoveCreature(clientId);
+                    _staticEnvironment.RemoveCreature(serverId);
                 }
             }
         }
@@ -117,7 +116,7 @@ namespace AgentMatrix
         private IEntity GetOrCreateWorldEntity(DawnClientEntity entity, Vector2 position)
         {
             IEntity myEntity;
-            if (!_serverIdToClientIdMap.ContainsKey(entity.Id))
+            if (!_serverIds.Contains(entity.Id))
             {
                 // Add new with existing id!
                 myEntity = CreateWorldEntity(entity, position);
@@ -125,14 +124,13 @@ namespace AgentMatrix
                 // This entity exists on the server
                 if (myEntity != null)
                 {
-                    _serverIdToClientIdMap.Add(entity.Id, myEntity.Id);
-                    _clientIdToServerIdMap.Add(myEntity.Id, entity.Id);
+                    _serverIds.Add(entity.Id);
                 }
             }
             else
             {
                 // We already have this entity
-                myEntity = FindWorldEntity(entity.Specy, _serverIdToClientIdMap[entity.Id]);
+                myEntity = FindWorldEntity(entity.Specy, entity.Id);
                 Debug.Assert(myEntity != null);
             }
             return myEntity;
@@ -166,18 +164,20 @@ namespace AgentMatrix
                     continue;
 
                 // check if creature exists on server (and is returned to client)
-                if (_clientIdToServerIdMap.ContainsKey(creature.Id))
+                if (_serverIds.Contains(creature.Id))
                     continue;
 
                 // Send spawnPoint info
                 int spawnPointServerId = 0;
                 if (creature.SpawnPoint != null && creature.SpawnPoint != creature) // (spawnPoint is also regarded as it's own spawnPoint, for family sake)
                 {
-                    if (!_clientIdToServerIdMap.TryGetValue(creature.SpawnPoint.Id, out spawnPointServerId))
+                    if (!_serverIds.Contains(creature.SpawnPoint.Id))
                     {
                         // SpawnPoint is not known on server => wait untill it is.
                         continue;
                     }
+
+                    spawnPointServerId = creature.SpawnPoint.Id;
                 }
 
                 _createQueueClientIds.Add(creature.Id);
@@ -195,8 +195,7 @@ namespace AgentMatrix
 
             foreach (var creature in creatures)
             {
-                int serverId;
-                if (!_clientIdToServerIdMap.TryGetValue(creature.Id, out serverId))
+                if (!_serverIds.Contains(creature.Id))
                 {
                     // Creatures doesn't exist on server yet (or not returned by server)
                     // = wait a bit before sending commands
@@ -209,120 +208,120 @@ namespace AgentMatrix
                 if (actionQueue.ForwardThrustPercent > 0.0)
                 {
                     if (actionQueue.ForwardThrustPercent > 0.9)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Forward100);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Forward100);
                     else if (actionQueue.ForwardThrustPercent > 0.8)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Forward90);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Forward90);
                     else if (actionQueue.ForwardThrustPercent > 0.7)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Forward80);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Forward80);
                     else if (actionQueue.ForwardThrustPercent > 0.6)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Forward70);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Forward70);
                     else if (actionQueue.ForwardThrustPercent > 0.5)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Forward60);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Forward60);
                     else if (actionQueue.ForwardThrustPercent > 0.4)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Forward50);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Forward50);
                     else if (actionQueue.ForwardThrustPercent > 0.3)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Forward40);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Forward40);
                     else if (actionQueue.ForwardThrustPercent > 0.2)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Forward30);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Forward30);
                     else if (actionQueue.ForwardThrustPercent > 0.1)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Forward20);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Forward20);
                     else
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Forward10);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Forward10);
                 }
                 if (actionQueue.ForwardThrustPercent < 0.0)
                 {
                     if (actionQueue.ForwardThrustPercent < -0.9)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Backward100);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Backward100);
                     else if (actionQueue.ForwardThrustPercent < -0.8)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Backward90);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Backward90);
                     else if (actionQueue.ForwardThrustPercent < -0.7)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Backward80);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Backward80);
                     else if (actionQueue.ForwardThrustPercent < -0.6)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Backward70);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Backward70);
                     else if (actionQueue.ForwardThrustPercent < -0.5)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Backward60);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Backward60);
                     else if (actionQueue.ForwardThrustPercent < -0.4)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Backward50);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Backward50);
                     else if (actionQueue.ForwardThrustPercent < -0.3)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Backward40);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Backward40);
                     else if (actionQueue.ForwardThrustPercent < -0.2)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Backward30);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Backward30);
                     else if (actionQueue.ForwardThrustPercent < -0.1)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Backward20);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Backward20);
                     else
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Backward10);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Backward10);
                 }
                 if (actionQueue.TurnPercent > 0.0)
                 {
                     if (actionQueue.TurnPercent > 0.9)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Right100);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Right100);
                     else if (actionQueue.TurnPercent > 0.8)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Right90);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Right90);
                     else if (actionQueue.TurnPercent > 0.7)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Right80);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Right80);
                     else if (actionQueue.TurnPercent > 0.6)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Right70);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Right70);
                     else if (actionQueue.TurnPercent > 0.5)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Right60);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Right60);
                     else if (actionQueue.TurnPercent > 0.4)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Right50);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Right50);
                     else if (actionQueue.TurnPercent > 0.3)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Right40);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Right40);
                     else if (actionQueue.TurnPercent > 0.2)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Right30);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Right30);
                     else if (actionQueue.TurnPercent > 0.1)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Right20);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Right20);
                     else
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Right10);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Right10);
                 }
                 if (actionQueue.TurnPercent < 0.0)
                 {
                     if (actionQueue.TurnPercent < -0.9)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Left100);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Left100);
                     else if (actionQueue.TurnPercent < -0.8)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Left90);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Left90);
                     else if (actionQueue.TurnPercent < -0.7)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Left80);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Left80);
                     else if (actionQueue.TurnPercent < -0.6)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Left70);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Left70);
                     else if (actionQueue.TurnPercent < -0.5)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Left60);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Left60);
                     else if (actionQueue.TurnPercent < -0.4)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Left50);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Left50);
                     else if (actionQueue.TurnPercent < -0.3)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Left40);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Left40);
                     else if (actionQueue.TurnPercent < -0.2)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Left30);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Left30);
                     else if (actionQueue.TurnPercent < -0.1)
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Left20);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Left20);
                     else
-                        dawnClient.SendEntityCommand(serverId, AvatarCommand.Left10);
+                        dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Left10);
                 }
 
                 // Attack
                 if (actionQueue.Attack)
                 {
-                    dawnClient.SendEntityCommand(serverId, AvatarCommand.Attack);
+                    dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Attack);
                 }
                 if (actionQueue.Fire)
                 {
-                    dawnClient.SendEntityCommand(serverId, AvatarCommand.Fire);
+                    dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Fire);
                 }
                 if (actionQueue.FireRocket)
                 {
-                    dawnClient.SendEntityCommand(serverId, AvatarCommand.Fire);
+                    dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Fire);
                 }
 
                 // Spawn
                 if (actionQueue.RegisterSpawn)
                 {
-                    dawnClient.SendEntityCommand(serverId, AvatarCommand.RegisterSpawn);
+                    dawnClient.SendEntityCommand(creature.Id, AvatarCommand.RegisterSpawn);
                 }
 
                 // Rest
                 if (actionQueue.Rest)
                 {
-                    dawnClient.SendEntityCommand(serverId, AvatarCommand.Rest);
+                    dawnClient.SendEntityCommand(creature.Id, AvatarCommand.Rest);
                 }
             }
         }
@@ -367,11 +366,10 @@ namespace AgentMatrix
                 {
                     // The creature has a SpawnPoint, but the spawnPoint is not yet received from the server.
                     // = wait untill spawnPoint is synched
-                    int localFamilyId = 0;
-                    if (!_serverIdToClientIdMap.TryGetValue(clientEntity.SpawnPointId, out localFamilyId))
+                    if (!_serverIds.Contains(clientEntity.SpawnPointId))
                         return null;
 
-                    spawnPoint = _staticEnvironment.GetCreatures(EntityType.SpawnPoint).FirstOrDefault(c => c.Id == localFamilyId);
+                    spawnPoint = _staticEnvironment.GetCreatures(EntityType.SpawnPoint).FirstOrDefault(c => c.Id == clientEntity.SpawnPointId);
                 }
 
                 var entity = CloneBuilder.CreateCreature(clientEntity.Specy, spawnPoint, clientEntity.Id);
@@ -396,12 +394,8 @@ namespace AgentMatrix
             // Make sure we always have enough spawnpoints
             var spawnPoints = _staticEnvironment.GetCreatures(EntityType.SpawnPoint);
 
-            var countMySpawnPoints = 0;
-            foreach (var spawnPoint in spawnPoints)
-            {
-                if (myCreatureIds.FirstOrDefault(id => id == spawnPoint.Id) != null)
-                    countMySpawnPoints++;
-            }
+            // Count the amount of spawnpoints "at my command!"
+            var countMySpawnPoints = spawnPoints.Count(spawnPoint => myCreatureIds.Contains(spawnPoint.Id));
 
             if (countMySpawnPoints < _minNrOfSpawnPoints)
             {
