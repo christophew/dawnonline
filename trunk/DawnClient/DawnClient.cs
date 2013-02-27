@@ -88,7 +88,8 @@ namespace DawnClient
             //DebugLevel should usally be ERROR or Warning - ALL lets you "see" more details of what the sdk is doing.
             //Output is passed to you in the DebugReturn callback
             _peer.DebugOut = DebugLevel.ALL;
-            return _peer.Connect("127.0.0.1:5055", "DawnServer");
+            //return _peer.Connect("127.0.0.1:5055", "DawnServer");
+            return _peer.Connect("dawnserver:5055", "DawnServer");
             //return _peer.Connect("192.168.1.105:5055", "DawnServer");
         }
 
