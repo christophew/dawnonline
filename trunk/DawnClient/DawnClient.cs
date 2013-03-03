@@ -428,12 +428,17 @@ namespace DawnClient
         private void DebugUpdate()
         {
             _peer.TrafficStatsEnabled = true;
+            _peer.DebugOut = DebugLevel.ALL;
 
-            //Console.WriteLine("QueuedIncomingCommands: " + _peer.QueuedIncomingCommands);
-            //Console.WriteLine("QueuedOutgoingCommands: " + _peer.QueuedOutgoingCommands);
-            //Console.WriteLine("RoundTripTimeVariance: " + _peer.RoundTripTimeVariance);
-            //Console.WriteLine("RoundTripTime: " + _peer.RoundTripTime);
+            Console.WriteLine("QueuedIncomingCommands: " + _peer.QueuedIncomingCommands);
+            Console.WriteLine("QueuedOutgoingCommands: " + _peer.QueuedOutgoingCommands);
+            Console.WriteLine("RoundTripTimeVariance: " + _peer.RoundTripTimeVariance);
+            Console.WriteLine("RoundTripTime: " + _peer.RoundTripTime);
 
+            //Console.WriteLine("ByteCountLastOperation: " + _peer.ByteCountLastOperation);
+            //Console.WriteLine("ByteCountCurrentDispatch: " + _peer.ByteCountCurrentDispatch);
+
+            //Console.WriteLine("ByteCountCurrentDispatch: " + _peer.TrafficStatsIncoming.);
 
         }
     }
