@@ -73,24 +73,28 @@ namespace PerformanceMonitoring
 
         public static void Register_ReceiveBulkPositionUpdate(int instanceId)
         {
+            Debug.Assert(instanceId != 0);
             PrepareCounter(ref _receiveBulkPositionUpdateCounter, _clientCategoryName, _receiveBulkPositionUpdateName, instanceId);
             _receiveBulkPositionUpdateCounter.Increment();
         }
 
         public static void Register_ReceiveBulkStatusUpdate(int instanceId)
         {
+            Debug.Assert(instanceId != 0);
             PrepareCounter(ref _receiveBulkStatusUpdateCounter, _clientCategoryName, _receiveBulkStatusUpdateName, instanceId);
             _receiveBulkStatusUpdateCounter.Increment();
         }
 
         public static void Register_ReceiveDestroyedCounter(int instanceId)
         {
+            Debug.Assert(instanceId != 0);
             PrepareCounter(ref _receiveDestroyedCounter, _clientCategoryName, _receiveDestroyedName, instanceId);
             _receiveDestroyedCounter.Increment();
         }
 
         public static void Register_Think(int instanceId, int timeInMs, int nrProcesses)
         {
+            Debug.Assert(instanceId != 0);
             PrepareCounter(ref _thinkCounter, _simulationCategoryName, _thinkCounterName, instanceId);
             _thinkCounter.IncrementBy(nrProcesses);
             PrepareCounter(ref _thinkTime, _simulationCategoryName, _thinkTimeName, instanceId);
@@ -99,12 +103,14 @@ namespace PerformanceMonitoring
 
         public static void Register_SendCommandsToServer(int instanceId)
         {
+            Debug.Assert(instanceId != 0);
             PrepareCounter(ref _sendCommandsToServerCounter, _clientCategoryName, _sendCommandsToServerName, instanceId);
             _sendCommandsToServerCounter.Increment();
         }
 
         public static void Register_Update(int instanceId)
         {
+            Debug.Assert(instanceId != 0);
             PrepareCounter(ref _updateCounter, _clientCategoryName, _updateName, instanceId);
             _updateCounter.Increment();
         }

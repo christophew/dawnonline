@@ -20,24 +20,33 @@ namespace DawnClientConsole
             {
                 do
                 {
-                    _dawnClient.SendCommandsToServer();
-                    Thread.Sleep(1000);
-
-                    // Test
-                    var allEntities = _dawnClient.DawnWorld.GetEntities();
-                    var predators = allEntities.Count(e => e.Specy == EntityType.Predator);
-                    var boxes = allEntities.Count(e => e.Specy == EntityType.Box);
-                    var walls = allEntities.Count(e => e.Specy == EntityType.Wall);
-                    var spawnpoints = allEntities.Count(e => e.Specy == EntityType.SpawnPoint);
-
-                    var myInfo = string.Format("Total: {0}, Walls: {1}, Boxes: {2}, Predators: {3}, SpawnPoints: {4}",
-                                               allEntities.Count, walls, boxes, predators, spawnpoints);
-
-                    Console.WriteLine(_dawnClient.DawnWorld.WorldInformation + " --> " + myInfo);
-
-                    if (_dawnClient.AvatarId != 0)
+                    if (!_dawnClient.WorldLoaded)
                     {
-                        _dawnClient.SendAvatorCommand(AvatarCommand.RunForward);
+                        _dawnClient.Update();
+                        Thread.Sleep(100);
+                    }
+                    else
+                    {
+                        Thread.Sleep(25);
+                        _dawnClient.SendCommandsToServer();
+                        _dawnClient.Update();
+
+                        // Test
+                        var allEntities = _dawnClient.DawnWorld.GetEntities();
+                        var predators = allEntities.Count(e => e.Specy == EntityType.Predator);
+                        var boxes = allEntities.Count(e => e.Specy == EntityType.Box);
+                        var walls = allEntities.Count(e => e.Specy == EntityType.Wall);
+                        var spawnpoints = allEntities.Count(e => e.Specy == EntityType.SpawnPoint);
+
+                        var myInfo = string.Format("Total: {0}, Walls: {1}, Boxes: {2}, Predators: {3}, SpawnPoints: {4}",
+                                                   allEntities.Count, walls, boxes, predators, spawnpoints);
+
+                        Console.WriteLine(_dawnClient.DawnWorld.WorldInformation + " --> " + myInfo);
+
+                        if (_dawnClient.AvatarId != 0)
+                        {
+                            _dawnClient.SendAvatorCommand(AvatarCommand.RunForward);
+                        }
                     }
                 }
                 while (!Console.KeyAvailable);

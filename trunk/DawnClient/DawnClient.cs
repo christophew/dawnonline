@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using ExitGames.Client.Photon;
@@ -95,18 +96,24 @@ namespace DawnClient
 
         public void SendCommandsToServer()
         {
-            Monitoring.Register_SendCommandsToServer(InstanceId);
-
             var now = DateTime.Now;
             long millisecondsSinceLastFrame = (long)(now - _lastUpdateTime).TotalMilliseconds;
 
             if (millisecondsSinceLastFrame < MinTimeBetweenSendCommands)
             {
-                _peer.Service();
+                Update();
                 return;
             }
 
             _lastUpdateTime = now;
+
+
+            // Not yet initialized
+            if (InstanceId == 0)
+                return;
+
+            Monitoring.Register_SendCommandsToServer(InstanceId);
+
 
             // Send avatar command
             if (_avatarId != 0)
@@ -128,12 +135,17 @@ namespace DawnClient
             SendBulkCommands(bulkCommands);
             _entityCommands.Clear();
 
-            _peer.Service();
+            Update();
         }
 
         public void Update()
         {
-            Monitoring.Register_Update(InstanceId);
+            // I'm lazy... don't start monitoring before client connected (will give errors in instance counters
+            if (InstanceId != 0)
+                Monitoring.Register_Update(InstanceId);
+
+            //DebugUpdate();
+
             _peer.Service();
         }
 
@@ -277,6 +289,9 @@ namespace DawnClient
 
                 case (byte)EventCode.BulkPositionUpdate:
                     {
+                        if (!WorldLoaded)
+                            return;
+                        
                         Monitoring.Register_ReceiveBulkPositionUpdate(InstanceId);
 
                         // Position update: compressed
@@ -297,6 +312,9 @@ namespace DawnClient
                     }
                 case (byte)EventCode.BulkStatusUpdate:
                     {
+                        if (!WorldLoaded)
+                            return;
+
                         Monitoring.Register_ReceiveBulkStatusUpdate(InstanceId);
 
                         // Position update: compressed
@@ -410,9 +428,33 @@ namespace DawnClient
                     _peer.OpCustom(LiteOpCode.Join, opParams, true, 1);
 
                     break;
+                case StatusCode.Disconnect:
+                    Console.WriteLine("Disconnect");
+                    Debug.Assert(false, "Disconnect");
+                    break;
+                case StatusCode.DisconnectByServer:
+                    Console.WriteLine("DisconnectByServer");
+                    Debug.Assert(false, "DisconnectByServer");
+                   break;
+                case StatusCode.DisconnectByServerLogic:
+                   Console.WriteLine("DisconnectByServerLogic");
+                   Debug.Assert(false, "DisconnectByServerLogic");
+                   break;
                 default:
                     break;
             }
+        }
+
+        private void DebugUpdate()
+        {
+            _peer.TrafficStatsEnabled = true;
+
+            //Console.WriteLine("QueuedIncomingCommands: " + _peer.QueuedIncomingCommands);
+            //Console.WriteLine("QueuedOutgoingCommands: " + _peer.QueuedOutgoingCommands);
+            //Console.WriteLine("RoundTripTimeVariance: " + _peer.RoundTripTimeVariance);
+            //Console.WriteLine("RoundTripTime: " + _peer.RoundTripTime);
+
+
         }
     }
 }
