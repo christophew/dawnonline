@@ -29,24 +29,6 @@ namespace DawnClient
 
         public int MinTimeBetweenSendCommands = 25;
 
-        //public class ClientServerIdPair
-        //{
-        //    public ClientServerIdPair(int serverId, int clientId)
-        //    {
-        //        ServerId = serverId;
-        //        ClientId = clientId;
-        //    }
-        //    public int ServerId;
-        //    public int ClientId;
-        //}
-        //private List<ClientServerIdPair> _creatureIds = new List<ClientServerIdPair>();
-        //public ReadOnlyCollection<ClientServerIdPair> CreatedCreatureIds { get { return _creatureIds.AsReadOnly(); } }
-
-        //public void CleanupCreatedCreatureIds(HashSet<int> destroyedServerIds)
-        //{
-        //    _creatureIds.RemoveAll(pair => destroyedServerIds.Contains(pair.ServerId));
-        //}
-
         private List<int> _creatureIds = new List<int>();
         public List<int> CreatedCreatureIds { get { return _creatureIds; } }
 
@@ -286,7 +268,6 @@ namespace DawnClient
 
                         break;
                     }
-
                 case (byte)EventCode.BulkPositionUpdate:
                     {
                         if (!WorldLoaded)
@@ -333,7 +314,6 @@ namespace DawnClient
 
                         break;
                     }
-
                 case (byte)EventCode.Destroyed:
                     {
                         Monitoring.Register_ReceiveDestroyedCounter(InstanceId);

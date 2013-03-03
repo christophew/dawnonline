@@ -15,7 +15,10 @@ namespace DawnPhotonApp
         public EntityLoad(IEntity entity)
         {
             _entity = entity;
+            Id = entity.Id;
         }
+
+        public int Id { get; private set; }
 
         public Hashtable CreatePhotonPacket()
         {
@@ -32,6 +35,8 @@ namespace DawnPhotonApp
         public bool HasDeltaChanges(IEntityPhotonPacket previousStatus)
         {
             return true;
-        }    
+        }
+
+        public DateTime LastUpdateSend { get; set; }
     }
 }

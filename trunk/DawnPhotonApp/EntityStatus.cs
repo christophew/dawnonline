@@ -18,7 +18,10 @@ namespace DawnPhotonApp
         {
             _entity = entity;
             _isActive = isActive;
+            Id = entity.Id;
         }
+
+        public int Id { get; private set; }
 
         public Hashtable CreatePhotonPacket()
         {
@@ -51,6 +54,8 @@ namespace DawnPhotonApp
 
             // TODO: better checks
             return true;
-        }   
+        }
+
+        public DateTime LastUpdateSend { get; set; }
     }
 }

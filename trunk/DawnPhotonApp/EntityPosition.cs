@@ -22,6 +22,11 @@ namespace DawnPhotonApp
             _angle = entity.Place.Angle;
         }
 
+        public int Id
+        {
+            get { return _id; }
+        }
+
         public Hashtable CreatePhotonPacket()
         {
             var dawnEntity = new Hashtable();
@@ -52,5 +57,7 @@ namespace DawnPhotonApp
             // TODO: better checks
             return true;
         }
+
+        public DateTime LastUpdateSend { get; set; }
     }
 }

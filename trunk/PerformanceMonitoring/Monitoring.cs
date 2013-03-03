@@ -11,6 +11,7 @@ namespace PerformanceMonitoring
         private const string _serverCategoryName = "DawnServer";
         private const string _sendEntityPhotonPackagesName = "SendEntityPhotonPackages";
         private const string _sendEntityPhotonPackageFragmentsName = "SendEntityPhotonPackageFragments";
+        private const string _sendKilledName = "SendKilled";
 
         private const string _receiveAvatarCommandName = "ReceiveAvatarCommand";
         private const string _receiveBulkEntityCommandName = "ReceiveBulkEntityCommand";
@@ -18,6 +19,7 @@ namespace PerformanceMonitoring
 
         private static PerformanceCounter _sendPositionsCounter;
         private static PerformanceCounter _sendPositionsFragmentCounter;
+        private static PerformanceCounter _sendKilledCounter;
         private static PerformanceCounter _receiveAvatarCommandCounter;
         private static PerformanceCounter _receiveBulkEntityCommandCounter;
         private static PerformanceCounter _receiveAddEntityCounter;
@@ -51,6 +53,12 @@ namespace PerformanceMonitoring
 
             PrepareCounter(ref _sendPositionsFragmentCounter, _serverCategoryName, _sendEntityPhotonPackageFragmentsName);
             _sendPositionsFragmentCounter.Increment();
+        }
+
+        public static void Register_SendKilled()
+        {
+            PrepareCounter(ref _sendKilledCounter, _serverCategoryName, _sendKilledName);
+            _sendKilledCounter.Increment();
         }
 
         public static void Register_ReceiveAvatarCommand()
@@ -143,38 +151,14 @@ namespace PerformanceMonitoring
             {
                 var counters = new CounterCreationDataCollection();
 
-                //// 1. counter for counting totals: PerformanceCounterType.NumberOfItems32
-                //{
-                //    var totalOps = new CounterCreationData();
-                //    totalOps.CounterName = "NumberOfItems32";
-                //    totalOps.CounterHelp = "hello counters1";
-                //    totalOps.CounterType = PerformanceCounterType.NumberOfItems32;
-                //    counters.Add(totalOps);
-                //}
-
-
                 counters.Add(CreateCounter(_sendEntityPhotonPackagesName));
                 counters.Add(CreateCounter(_sendEntityPhotonPackageFragmentsName));
+                counters.Add(CreateCounter(_sendKilledName));
 
                 counters.Add(CreateCounter(_receiveAvatarCommandName));
                 counters.Add(CreateCounter(_receiveBulkEntityCommandName));
                 counters.Add(CreateCounter(_receiveAddEntityName));
 
-                //{
-                //    var totalOps = new CounterCreationData();
-                //    totalOps.CounterName = "AverageTimer32";
-                //    totalOps.CounterHelp = "hello counters3";
-                //    totalOps.CounterType = PerformanceCounterType.AverageTimer32;
-                //    counters.Add(totalOps);
-                //}
-
-                //{
-                //    var totalOps = new CounterCreationData();
-                //    totalOps.CounterName = "AverageBase";
-                //    totalOps.CounterHelp = "hello counters4";
-                //    totalOps.CounterType = PerformanceCounterType.AverageBase;
-                //    counters.Add(totalOps);
-                //}
 
                 // create new category with the counters above
                 PerformanceCounterCategory.Create(_serverCategoryName, "todo: help", PerformanceCounterCategoryType.SingleInstance , counters);

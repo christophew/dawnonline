@@ -35,7 +35,7 @@ namespace MyApplication
             : base(gameName)
         {
             this.ExecutionFiber.Schedule(SendDawnWorld, 1500);
-            this.ExecutionFiber.Schedule(SendAvatarUpdates, 1550);
+            //this.ExecutionFiber.Schedule(SendAvatarUpdates, 1550);
             this.ExecutionFiber.Schedule(SendPositions, 1600);
             this.ExecutionFiber.ScheduleOnInterval(UpdateDawnWorld, 1000, SimulationConstants.UpdateIntervalOnServerInMs);
         }
@@ -56,7 +56,7 @@ namespace MyApplication
             _dawnWorldInstance.ApplyMove(millisecondsSinceLastFrame);
             _dawnWorldInstance.UpdatePhysics(millisecondsSinceLastFrame);
 
-            ClearQueueOfLinkDeads();
+            ClearActionQueueOfLinkDeads();
             //var avatars = _dawnWorldInstance.Environment.GetCreatures();
             //foreach (var avatar in avatars)
             //{
@@ -64,7 +64,7 @@ namespace MyApplication
             //}
         }
 
-        private void ClearQueueOfLinkDeads()
+        private void ClearActionQueueOfLinkDeads()
         {
             foreach (var entity in _dawnWorldInstance.Environment.GetCreatures())
             {
@@ -118,6 +118,7 @@ namespace MyApplication
 
             // Schedule next update
             this.ExecutionFiber.Schedule(SendPositions, 100);
+            //this.ExecutionFiber.Schedule(SendPositions, 250);
         }
 
         private void SendDawnWorld()
@@ -175,13 +176,16 @@ namespace MyApplication
                 //SendWalls();
             }
 
-            this.ExecutionFiber.Schedule(SendDawnWorld, 250);
+            //this.ExecutionFiber.Schedule(SendDawnWorld, 250);
+            this.ExecutionFiber.Schedule(SendDawnWorld, 200);
         }
 
         private void SendKilled(int[] killedIds)
         {
             if (killedIds.Length > 0)
             {
+                Monitoring.Register_SendKilled();
+
                 // Send killed reliable
                 var data = new Dictionary<byte, object>();
                 data[0] = killedIds;
@@ -197,30 +201,25 @@ namespace MyApplication
                 return;
 
             // TODO: warnings when we exceed the max packet-size!
-            
+            // => HOW?
 
+
+            // send a limited amount of packages, starting with the last served
+            var sortedEntityPackages = PreprocessEntityPackages(entityPositions, previousPositions);
+
+            // SEND FRAGMENTED
             var sendParameters = new SendParameters { Unreliable = true };
 
             // Split the list into fragments
             const int fragmentSize = 15;
+            //const int maxFragments = 10;
 
             byte index = 0;
+            int fragmentIndex = 0;
             var currentDataList = new Dictionary<byte, object>();
-            foreach (var entityStatusKvp in entityPositions)
+            foreach (var package in sortedEntityPackages)
             {
-                // Compare the delta for optimizations
-                if (previousPositions != null)
-                {
-                    IEntityPhotonPacket previousStatus;
-                    if (previousPositions.TryGetValue(entityStatusKvp.Key, out previousStatus))
-                    {
-                        Debug.Assert(previousStatus != null);
-                        if (!entityStatusKvp.Value.HasDeltaChanges(previousStatus))
-                            continue;
-                    }
-                }
-
-                currentDataList.Add(index++, entityStatusKvp.Value.CreatePhotonPacket());
+                currentDataList.Add(index++, package.CreatePhotonPacket());
 
                 if (index > fragmentSize)
                 {
@@ -229,7 +228,12 @@ namespace MyApplication
                     Monitoring.Register_SendEntityPhotonPackages(currentDataList.Count);
 
                     index = 0;
-                    currentDataList = new Dictionary<byte, object>();
+                    currentDataList.Clear();
+
+                    // TEST, limit #fragment
+                    fragmentIndex++;
+                    //if (fragmentIndex >= maxFragments)
+                    //    break;
                 }
             }
 
@@ -240,6 +244,40 @@ namespace MyApplication
                 this.PublishEvent(eData, this.Actors, sendParameters);
                 Monitoring.Register_SendEntityPhotonPackages(currentDataList.Count);
             }
+
+
+            Debug.Assert(fragmentIndex < 50);
+        }
+
+        private static IEnumerable<IEntityPhotonPacket> PreprocessEntityPackages(Dictionary<int, IEntityPhotonPacket> entityPositions, Dictionary<int, IEntityPhotonPacket> previousPositions)
+        {
+            var entityPackages = new List<IEntityPhotonPacket>();
+            foreach (var entityStatusKvp in entityPositions)
+            {
+                // Temp: init to origin to be sure
+                entityStatusKvp.Value.LastUpdateSend = new DateTime();
+
+
+                // Compare the delta for optimizations
+                if (previousPositions != null)
+                {
+                    IEntityPhotonPacket previousStatus = null;
+                    if (previousPositions.TryGetValue(entityStatusKvp.Key, out previousStatus))
+                    {
+                        Debug.Assert(previousStatus != null);
+                        if (!entityStatusKvp.Value.HasDeltaChanges(previousStatus))
+                            continue;
+
+                        // Copy Timestamp to new Package
+                        entityStatusKvp.Value.LastUpdateSend = previousStatus.LastUpdateSend;
+                    }
+                }
+
+                entityPackages.Add(entityStatusKvp.Value);
+            }
+
+            var sortedEntityPackages = entityPackages.OrderBy(package => package.LastUpdateSend);
+            return sortedEntityPackages;
         }
 
         private static IEntityPhotonPacket CreateEntityPosition(IEntity entity)
@@ -344,6 +382,7 @@ namespace MyApplication
             var clientId = (int)parameters[5]; // client referenceId of created creature
 
             var newCreature = _dawnWorldInstance.AddCreature(entityType, position, angle, spawnPoint, clientId);
+            Debug.Assert(newCreature != null);
 
             // Send response
             //var eData = new Dictionary<byte, object>();
