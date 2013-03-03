@@ -150,6 +150,7 @@ namespace DawnClient
             eData[1] = id;
 
             var result = _peer.OpCustom((byte)MyOperationCodes.AvatarCommand, eData, false);
+            _peer.Service();
             commands.Clear();
         }
 
@@ -169,6 +170,7 @@ namespace DawnClient
                 if (index > fragmentSize)
                 {
                     var result = _peer.OpCustom((byte)MyOperationCodes.BulkEntityCommand, currentDataList, false);
+                    _peer.Service();
 
                     index = 0;
                     currentDataList.Clear();
@@ -179,6 +181,7 @@ namespace DawnClient
             if (currentDataList.Count > 0)
             {
                 var result = _peer.OpCustom((byte)MyOperationCodes.BulkEntityCommand, currentDataList, false);
+                _peer.Service();
             }
         }
 
