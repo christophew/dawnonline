@@ -8,7 +8,10 @@ namespace DawnPhotonApp
 {
     interface IEntityPhotonPacket
     {
+        int Id { get; }
         Hashtable CreatePhotonPacket();
         bool HasDeltaChanges(IEntityPhotonPacket previous);
+
+        DateTime LastUpdateSend { get; set; }
     }
 }
