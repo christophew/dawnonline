@@ -12,6 +12,9 @@ namespace DawnClient
         public string WorldInformation { get; internal set; }
 
         private Dictionary<int, DawnClientEntity> _entities = new Dictionary<int, DawnClientEntity>();
+        private HashSet<int> _removed = new HashSet<int>();
+
+
         internal void UpdateEntity(DawnClientEntity entity)
         {
             lock (this)
@@ -26,6 +29,10 @@ namespace DawnClient
             {
                 foreach (var entity in entities)
                 {
+                    // Check already removed (possibly caused by latency on different channels)
+                    if (_removed.Contains(entity.Id))
+                        continue;
+
                     DawnClientEntity existingEntity;
                     if (_entities.TryGetValue(entity.Id, out existingEntity))
                     {
@@ -51,6 +58,7 @@ namespace DawnClient
                 foreach (int id in ids)
                 {
                     _entities.Remove(id);
+                    _removed.Add(id);
                 }
             }
         }
