@@ -35,7 +35,7 @@ namespace MyApplication
             : base(gameName)
         {
             this.ExecutionFiber.Schedule(SendDawnWorld, 1500);
-            //this.ExecutionFiber.Schedule(SendAvatarUpdates, 1550);
+            this.ExecutionFiber.Schedule(SendAvatarUpdates, 1550);
             this.ExecutionFiber.Schedule(SendPositions, 1600);
             this.ExecutionFiber.ScheduleOnInterval(UpdateDawnWorld, 1000, SimulationConstants.UpdateIntervalOnServerInMs);
         }
@@ -162,13 +162,12 @@ namespace MyApplication
                     {
                         if (!currentEntities.ContainsKey(previousEntity))
                         {
-                            // TODO: optimize second parameter
                             killedHash.Add(previousEntity);
                         }
-
-                        SendKilled(killedHash.ToArray());
                     }
-                }
+
+                    SendKilled(killedHash.ToArray());
+               }
 
                 _previousStatuses = currentEntities;
 
