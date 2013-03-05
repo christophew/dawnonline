@@ -1,0 +1,17 @@
+2013-03-05 21:21:25,939 [1] INFO  Lite.LiteApplication [(null)] - Created application Instance: type=Lite.LiteApplication
+2013-03-05 21:21:25,990 [1] INFO  Photon.SocketServer.ApplicationBase [(null)] - Application start: AppId=Lite; AppPath=D:\Data\Projects\Testing\DawnOnline\PhotonServer32\deploy\Lite, Type=Lite.LiteApplication 
+2013-03-05 21:21:26,011 [1] INFO  Photon.SocketServer.Diagnostics.CounterPublisher [(null)] - CounterPublisher started on: 255.255.255.255:40001
+2013-03-05 21:28:12,125 [1] INFO  Lite.LiteApplication [(null)] - Created application Instance: type=Lite.LiteApplication
+2013-03-05 21:28:12,176 [1] INFO  Photon.SocketServer.ApplicationBase [(null)] - Application start: AppId=Lite; AppPath=D:\Data\Projects\Testing\DawnOnline\PhotonServer32\deploy\Lite, Type=Lite.LiteApplication 
+2013-03-05 21:28:12,194 [1] INFO  Photon.SocketServer.Diagnostics.CounterPublisher [(null)] - CounterPublisher started on: 255.255.255.255:40001
+2013-03-05 21:28:49,779 [1] INFO  Lite.LiteApplication [(null)] - Created application Instance: type=Lite.LiteApplication
+2013-03-05 21:28:49,830 [1] INFO  Photon.SocketServer.ApplicationBase [(null)] - Application start: AppId=Lite; AppPath=D:\Data\Projects\Testing\DawnOnline\PhotonServer32\deploy\Lite, Type=Lite.LiteApplication 
+2013-03-05 21:28:49,849 [1] INFO  Photon.SocketServer.Diagnostics.CounterPublisher [(null)] - CounterPublisher started on: 255.255.255.255:40001
+2013-03-05 21:37:05,210 [1] INFO  Lite.LiteApplication [(null)] - Created application Instance: type=Lite.LiteApplication
+2013-03-05 21:37:05,259 [1] INFO  Photon.SocketServer.ApplicationBase [(null)] - Application start: AppId=Lite; AppPath=D:\Data\Projects\Testing\DawnOnline\PhotonServer32\deploy\Lite, Type=Lite.LiteApplication 
+2013-03-05 21:37:05,278 [1] INFO  Photon.SocketServer.Diagnostics.CounterPublisher [(null)] - CounterPublisher started on: 255.255.255.255:40001
+2013-03-05 21:41:39,272 [1] INFO  Lite.LiteApplication [(null)] - Created application Instance: type=Lite.LiteApplication
+2013-03-05 21:41:39,322 [1] INFO  Photon.SocketServer.ApplicationBase [(null)] - Application start: AppId=Lite; AppPath=D:\Data\Projects\Testing\DawnOnline\PhotonServer32\deploy\Lite, Type=Lite.LiteApplication 
+2013-03-05 21:41:39,343 [1] INFO  Photon.SocketServer.Diagnostics.CounterPublisher [(null)] - CounterPublisher started on: 255.255.255.255:40001
+2013-03-05 21:50:42,726 [1] INFO  Lite.LiteApplication [(null)] - Created application Instance: type=MyApplication.MyApplication
+2013-03-05 21:50:42,773 [1] INFO  Photon.SocketServer.ApplicationBase [(null)] - Application start: AppId=DawnServer; AppPath=D:\Data\Projects\Testing\DawnOnline\PhotonServer32\deploy\DawnServer, Type=MyApplication.MyApplication 

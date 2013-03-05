@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DawnPhotonApp", "DawnPhotonApp.csproj", "{48A0E36A-C999-489E-990E-EB7899276E5B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lite", "..\Lite\Lite.csproj", "{E1F918F4-F581-4280-9D91-3CF77B24C290}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation", "..\Simulation\Simulation.csproj", "{4F463D41-EA2D-4B41-A4C8-656DDD16F4C7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulationTests", "..\SimulationTests\SimulationTests.csproj", "{C6E7017A-0267-4E1E-ACB1-178A1AE76F9C}"
@@ -18,6 +16,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerformanceMonitoring", "..\PerformanceMonitoring\PerformanceMonitoring.csproj", "{C529958B-927A-4DCB-834C-5765F831F04A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerformanceMonitorInstaller", "..\PerformanceMonitorInstaller\PerformanceMonitorInstaller.csproj", "{FC03351E-DC97-49BD-B286-DF3404625440}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lite", "..\PhotonServer32\src-server\Lite\Lite\Lite.csproj", "{E1F918F4-F581-4280-9D91-3CF77B24C290}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,16 +39,6 @@ Global
 		{48A0E36A-C999-489E-990E-EB7899276E5B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{48A0E36A-C999-489E-990E-EB7899276E5B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{48A0E36A-C999-489E-990E-EB7899276E5B}.Release|x86.ActiveCfg = Release|Any CPU
-		{E1F918F4-F581-4280-9D91-3CF77B24C290}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E1F918F4-F581-4280-9D91-3CF77B24C290}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E1F918F4-F581-4280-9D91-3CF77B24C290}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{E1F918F4-F581-4280-9D91-3CF77B24C290}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{E1F918F4-F581-4280-9D91-3CF77B24C290}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E1F918F4-F581-4280-9D91-3CF77B24C290}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E1F918F4-F581-4280-9D91-3CF77B24C290}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E1F918F4-F581-4280-9D91-3CF77B24C290}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{E1F918F4-F581-4280-9D91-3CF77B24C290}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{E1F918F4-F581-4280-9D91-3CF77B24C290}.Release|x86.ActiveCfg = Release|Any CPU
 		{4F463D41-EA2D-4B41-A4C8-656DDD16F4C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4F463D41-EA2D-4B41-A4C8-656DDD16F4C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F463D41-EA2D-4B41-A4C8-656DDD16F4C7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -109,6 +99,16 @@ Global
 		{FC03351E-DC97-49BD-B286-DF3404625440}.Release|Mixed Platforms.Build.0 = Release|x86
 		{FC03351E-DC97-49BD-B286-DF3404625440}.Release|x86.ActiveCfg = Release|x86
 		{FC03351E-DC97-49BD-B286-DF3404625440}.Release|x86.Build.0 = Release|x86
+		{E1F918F4-F581-4280-9D91-3CF77B24C290}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1F918F4-F581-4280-9D91-3CF77B24C290}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1F918F4-F581-4280-9D91-3CF77B24C290}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E1F918F4-F581-4280-9D91-3CF77B24C290}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E1F918F4-F581-4280-9D91-3CF77B24C290}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E1F918F4-F581-4280-9D91-3CF77B24C290}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1F918F4-F581-4280-9D91-3CF77B24C290}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1F918F4-F581-4280-9D91-3CF77B24C290}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E1F918F4-F581-4280-9D91-3CF77B24C290}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{E1F918F4-F581-4280-9D91-3CF77B24C290}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
