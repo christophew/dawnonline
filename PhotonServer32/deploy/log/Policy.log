@@ -1,0 +1,95 @@
+2013-03-05 21:21:27,358 [1] INFO  Exitgames.Realtime.Policy.Application.Policy [(null)] - Application start. AppId: Policy ApplicationPath: D:\Data\Projects\Testing\DawnOnline\PhotonServer32\deploy\Policy
+2013-03-05 21:21:27,373 [1] INFO  Exitgames.Realtime.Policy.Application.Policy [(null)] - Policy file: 
+<cross-domain-policy>
+	<allow-access-from domain="*" to-ports="5055,5056,5057,4530,4531,4532,9090,9091,9092" />
+</cross-domain-policy>
+2013-03-05 21:21:27,375 [1] INFO  Exitgames.Realtime.Policy.Application.Policy [(null)] - Policy file: 
+<?xml version="1.0" encoding="utf-8"?>
+<access-policy>
+  <cross-domain-access>
+    <policy>
+      <allow-from>
+        <domain uri="*" />
+      </allow-from>
+      <grant-to>
+        <socket-resource port="4530-4532" protocol="tcp" />
+      </grant-to>
+    </policy>
+  </cross-domain-access>
+</access-policy>
+2013-03-05 21:28:13,506 [1] INFO  Exitgames.Realtime.Policy.Application.Policy [(null)] - Application start. AppId: Policy ApplicationPath: D:\Data\Projects\Testing\DawnOnline\PhotonServer32\deploy\Policy
+2013-03-05 21:28:13,521 [1] INFO  Exitgames.Realtime.Policy.Application.Policy [(null)] - Policy file: 
+<cross-domain-policy>
+	<allow-access-from domain="*" to-ports="5055,5056,5057,4530,4531,4532,9090,9091,9092" />
+</cross-domain-policy>
+2013-03-05 21:28:13,523 [1] INFO  Exitgames.Realtime.Policy.Application.Policy [(null)] - Policy file: 
+<?xml version="1.0" encoding="utf-8"?>
+<access-policy>
+  <cross-domain-access>
+    <policy>
+      <allow-from>
+        <domain uri="*" />
+      </allow-from>
+      <grant-to>
+        <socket-resource port="4530-4532" protocol="tcp" />
+      </grant-to>
+    </policy>
+  </cross-domain-access>
+</access-policy>
+2013-03-05 21:37:07,051 [1] INFO  Exitgames.Realtime.Policy.Application.Policy [(null)] - Application start. AppId: Policy ApplicationPath: D:\Data\Projects\Testing\DawnOnline\PhotonServer32\deploy\Policy
+2013-03-05 21:37:07,072 [1] INFO  Exitgames.Realtime.Policy.Application.Policy [(null)] - Policy file: 
+<cross-domain-policy>
+	<allow-access-from domain="*" to-ports="5055,5056,5057,4530,4531,4532,9090,9091,9092" />
+</cross-domain-policy>
+2013-03-05 21:37:07,075 [1] INFO  Exitgames.Realtime.Policy.Application.Policy [(null)] - Policy file: 
+<?xml version="1.0" encoding="utf-8"?>
+<access-policy>
+  <cross-domain-access>
+    <policy>
+      <allow-from>
+        <domain uri="*" />
+      </allow-from>
+      <grant-to>
+        <socket-resource port="4530-4532" protocol="tcp" />
+      </grant-to>
+    </policy>
+  </cross-domain-access>
+</access-policy>
+2013-03-05 21:41:40,824 [1] INFO  Exitgames.Realtime.Policy.Application.Policy [(null)] - Application start. AppId: Policy ApplicationPath: D:\Data\Projects\Testing\DawnOnline\PhotonServer32\deploy\Policy
+2013-03-05 21:41:40,839 [1] INFO  Exitgames.Realtime.Policy.Application.Policy [(null)] - Policy file: 
+<cross-domain-policy>
+	<allow-access-from domain="*" to-ports="5055,5056,5057,4530,4531,4532,9090,9091,9092" />
+</cross-domain-policy>
+2013-03-05 21:41:40,841 [1] INFO  Exitgames.Realtime.Policy.Application.Policy [(null)] - Policy file: 
+<?xml version="1.0" encoding="utf-8"?>
+<access-policy>
+  <cross-domain-access>
+    <policy>
+      <allow-from>
+        <domain uri="*" />
+      </allow-from>
+      <grant-to>
+        <socket-resource port="4530-4532" protocol="tcp" />
+      </grant-to>
+    </policy>
+  </cross-domain-access>
+</access-policy>
+2013-03-05 21:50:42,852 [1] INFO  Exitgames.Realtime.Policy.Application.Policy [(null)] - Application start. AppId: Policy ApplicationPath: D:\Data\Projects\Testing\DawnOnline\PhotonServer32\deploy\Policy
+2013-03-05 21:50:42,864 [1] INFO  Exitgames.Realtime.Policy.Application.Policy [(null)] - Policy file: 
+<cross-domain-policy>
+	<allow-access-from domain="*" to-ports="5055,5056,5057,4530,4531,4532,9090,9091,9092" />
+</cross-domain-policy>
+2013-03-05 21:50:42,866 [1] INFO  Exitgames.Realtime.Policy.Application.Policy [(null)] - Policy file: 
+<?xml version="1.0" encoding="utf-8"?>
+<access-policy>
+  <cross-domain-access>
+    <policy>
+      <allow-from>
+        <domain uri="*" />
+      </allow-from>
+      <grant-to>
+        <socket-resource port="4530-4532" protocol="tcp" />
+      </grant-to>
+    </policy>
+  </cross-domain-access>
+</access-policy>

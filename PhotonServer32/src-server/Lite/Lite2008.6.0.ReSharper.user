@@ -1,0 +1,30 @@
+<Configuration>
+  <RecentFiles>
+    <RecentFiles>
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/d:Operations/f:MyEchoRequest.cs" caret="0" fromTop="0" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/d:Operations/f:MyEchoResponse.cs" caret="0" fromTop="0" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/d:Operations/f:MyGameRequest.cs" caret="0" fromTop="0" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/d:Operations/f:Enums.cs" caret="0" fromTop="0" />
+      <File id="4BC98113-D7EB-4861-A1FE-6864A114D317/d:Operations/f:MyGameResponse.cs" caret="0" fromTop="0" />
+    </RecentFiles>
+    <RecentEdits />
+  </RecentFiles>
+  <NAntValidationSettings>
+    <NAntPath value="" />
+  </NAntValidationSettings>
+  <UnitTestRunner>
+    <Providers />
+  </UnitTestRunner>
+  <UnitTestRunnerNUnit>
+    <NUnitInstallDir IsNull="False">
+    </NUnitInstallDir>
+    <UseAddins>Never</UseAddins>
+  </UnitTestRunnerNUnit>
+  <SettingsComponent>
+    <string />
+    <integer />
+    <boolean>
+      <setting name="SolutionAnalysisEnabled">False</setting>
+    </boolean>
+  </SettingsComponent>
+</Configuration>

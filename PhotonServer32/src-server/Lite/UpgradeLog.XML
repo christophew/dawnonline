@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="Lite2008">
+</Property><Property Name="Solution File" Value="D:\Data\Projects\Testing\DawnOnline\PhotonServer32\src-server\Lite\Lite2008.sln">
+</Property><Property Name="Date" Value="dinsdag 5 maart 2013">
+</Property><Property Name="Time" Value="21:23">
+</Property></Properties><Event ErrorLevel="0" Project="Lite" Source="Lite\Lite.csproj" Description="The project file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="Lite" Source="Lite\Lite.csproj" Description="No Conversion Required">
+</Event><Event ErrorLevel="0" Project="Lite.Tests" Source="Lite.NUnit\Lite.Tests.csproj" Description="The project file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="Lite.Tests" Source="Lite.NUnit\Lite.Tests.csproj" Description="No Conversion Required">
+</Event><Event ErrorLevel="0" Project="Lite.TestConsole" Source="Lite.TestConsole\Lite.TestConsole.csproj" Description="The project file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="Lite.TestConsole" Source="Lite.TestConsole\Lite.TestConsole.csproj" Description="No Conversion Required">
+</Event><Event ErrorLevel="0" Project="MyApplication" Source="MyApplication\MyApplication.csproj" Description="The project file does not require conversion.">
+</Event><Event ErrorLevel="3" Project="MyApplication" Source="MyApplication\MyApplication.csproj" Description="No Conversion Required">
+</Event><Event ErrorLevel="0" Project="" Source="Lite2008.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="Lite2008.sln" Description="Converted">
+</Event></UpgradeLog>
