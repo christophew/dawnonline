@@ -1,4 +1,0 @@
-2013-03-05 21:21:27,246 [1] INFO  Photon.SocketServer.ApplicationBase - Application start: AppId=MmoDemo; AppPath=D:\Data\Projects\Testing\DawnOnline\PhotonServer32\deploy\MmoDemo, Type=Photon.MmoDemo.Server.PhotonApplication 
-2013-03-05 21:28:13,396 [1] INFO  Photon.SocketServer.ApplicationBase - Application start: AppId=MmoDemo; AppPath=D:\Data\Projects\Testing\DawnOnline\PhotonServer32\deploy\MmoDemo, Type=Photon.MmoDemo.Server.PhotonApplication 
-2013-03-05 21:37:06,918 [1] INFO  Photon.SocketServer.ApplicationBase - Application start: AppId=MmoDemo; AppPath=D:\Data\Projects\Testing\DawnOnline\PhotonServer32\deploy\MmoDemo, Type=Photon.MmoDemo.Server.PhotonApplication 
-2013-03-05 21:41:40,700 [1] INFO  Photon.SocketServer.ApplicationBase - Application start: AppId=MmoDemo; AppPath=D:\Data\Projects\Testing\DawnOnline\PhotonServer32\deploy\MmoDemo, Type=Photon.MmoDemo.Server.PhotonApplication 
