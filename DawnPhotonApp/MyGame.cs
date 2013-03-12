@@ -27,6 +27,11 @@ namespace MyApplication
         private Dictionary<int, IEntityPhotonPacket> _previousStatuses = new Dictionary<int, IEntityPhotonPacket>();
 
 
+        private int _intervalSendAvatarUpdates = 75;
+        private int _intervalSendPositions = 100;
+        private int _intervalSendStatus = 200;
+
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MyGame"/> class.
         /// </summary>
@@ -35,7 +40,7 @@ namespace MyApplication
             : base(gameName)
         {
             this.ExecutionFiber.Schedule(SendDawnWorld, 1500);
-            this.ExecutionFiber.Schedule(SendAvatarUpdates, 1550);
+            //this.ExecutionFiber.Schedule(SendAvatarUpdates, 1550);
             this.ExecutionFiber.Schedule(SendPositions, 1600);
             this.ExecutionFiber.ScheduleOnInterval(UpdateDawnWorld, 1000, SimulationConstants.UpdateIntervalOnServerInMs);
         }
@@ -91,7 +96,7 @@ namespace MyApplication
                 }
             }
 
-            this.ExecutionFiber.Schedule(SendAvatarUpdates, 75);
+            this.ExecutionFiber.Schedule(SendAvatarUpdates, _intervalSendAvatarUpdates);
         }
 
         private void SendPositions()
@@ -117,8 +122,7 @@ namespace MyApplication
             _previousPositions = currentEntities;
 
             // Schedule next update
-            this.ExecutionFiber.Schedule(SendPositions, 100);
-            //this.ExecutionFiber.Schedule(SendPositions, 250);
+            this.ExecutionFiber.Schedule(SendPositions, _intervalSendPositions);
         }
 
         private void SendDawnWorld()
@@ -175,8 +179,7 @@ namespace MyApplication
                 //SendWalls();
             }
 
-            //this.ExecutionFiber.Schedule(SendDawnWorld, 250);
-            this.ExecutionFiber.Schedule(SendDawnWorld, 200);
+            this.ExecutionFiber.Schedule(SendDawnWorld, _intervalSendStatus);
         }
 
         private void SendKilled(int[] killedIds)

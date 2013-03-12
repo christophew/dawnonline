@@ -195,6 +195,8 @@ namespace DawnClient
 
         public void RequestCreatureCreationOnServer(EntityType entityType, float x, float y, float angle, int spawnPointId, int clientId)
         {
+            // OPTIMIZE TO BULK OPERATION
+
             Console.WriteLine("RequestCreatureCreationOnServer: " + entityType);
 
             // Register in my created creatures
@@ -213,7 +215,6 @@ namespace DawnClient
 
             var result = _peer.OpCustom((byte)MyOperationCodes.AddEntity, eData, true, 1);
             _peer.Service();
-
         }
 
         public void RequestAvatarCreationOnServer()
