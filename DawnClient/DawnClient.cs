@@ -83,7 +83,12 @@ namespace DawnClient
 
             if (millisecondsSinceLastFrame < MinTimeBetweenSendCommands)
             {
-                Update();
+                // Should this be necessary??
+
+                //Update();
+
+                //Console.WriteLine("ByteCountCurrentDispatch: " + _peer.ByteCountCurrentDispatch);
+                _peer.DispatchIncomingCommands();
                 return;
             }
 
@@ -127,6 +132,7 @@ namespace DawnClient
                 Monitoring.Register_Update(InstanceId);
 
             //DebugUpdate();
+            //Console.WriteLine("ByteCountCurrentDispatch: " + _peer.ByteCountCurrentDispatch);
 
             _peer.Service();
         }

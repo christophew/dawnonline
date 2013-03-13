@@ -30,6 +30,7 @@ namespace MyApplication
         private int _intervalSendAvatarUpdates = 75;
         private int _intervalSendPositions = 100;
         private int _intervalSendStatus = 200;
+        private const int _fragmentSize = 15;
 
 
         /// <summary>
@@ -213,8 +214,6 @@ namespace MyApplication
             var sendParameters = new SendParameters { Unreliable = true };
 
             // Split the list into fragments
-            const int fragmentSize = 15;
-            //const int maxFragments = 10;
 
             byte index = 0;
             int fragmentIndex = 0;
@@ -223,7 +222,7 @@ namespace MyApplication
             {
                 currentDataList.Add(index++, package.CreatePhotonPacket());
 
-                if (index > fragmentSize)
+                if (index > _fragmentSize)
                 {
                     var eData = new EventData((byte)eventCode, currentDataList);
                     this.PublishEvent(eData, this.Actors, sendParameters);
