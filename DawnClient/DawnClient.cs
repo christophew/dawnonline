@@ -63,6 +63,12 @@ namespace DawnClient
         public DawnClient()
         {
             _peer = new LitePeer(this, ConnectionProtocol.Udp);
+
+            // Testing
+            //_peer.TimePingInterval = 100;
+            //_peer.DisconnectTimeout
+            _peer.SentCountAllowance = 50;
+
             DawnWorld = new DawnClientWorld();
         }
 
@@ -405,7 +411,9 @@ namespace DawnClient
 
         public void OnStatusChanged(StatusCode statusCode)
         {
-            //Console.WriteLine("\n---OnStatusChanged:" + statusCode);
+            Console.WriteLine("\n---OnStatusChanged:" + statusCode);
+            Console.WriteLine(_peer.VitalStatsToString(true));
+
             switch (statusCode)
             {
                 case StatusCode.Connect:
@@ -441,6 +449,11 @@ namespace DawnClient
             Console.WriteLine("QueuedOutgoingCommands: " + _peer.QueuedOutgoingCommands);
             Console.WriteLine("RoundTripTimeVariance: " + _peer.RoundTripTimeVariance);
             Console.WriteLine("RoundTripTime: " + _peer.RoundTripTime);
+
+            //Console.WriteLine("LongestDeltaBetweenDispatching: " + _peer.TrafficStatsGameLevel.LongestDeltaBetweenDispatching);
+            //Console.WriteLine("LongestOpResponseCallback: " + _peer.TrafficStatsGameLevel.LongestOpResponseCallback);
+
+            Console.WriteLine("ToStringVitalStats: " + _peer.TrafficStatsGameLevel.ToStringVitalStats());
 
             //Console.WriteLine("ByteCountLastOperation: " + _peer.ByteCountLastOperation);
             //Console.WriteLine("ByteCountCurrentDispatch: " + _peer.ByteCountCurrentDispatch);
