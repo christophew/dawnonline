@@ -15,6 +15,11 @@ namespace DawnClientConsole
         static void Main(string[] args)
         {
             _dawnClient = new DawnClient.DawnClient();
+            _dawnClient.WorldLoadedEvent += delegate
+            {
+                _dawnClient.RequestAvatarCreationOnServer();
+            };
+
 
             if (_dawnClient.Connect())
             {
