@@ -129,6 +129,12 @@ namespace Mogre.Tutorials
 
         protected bool UpdateSimulation(FrameEvent evt)
         {
+            if (!_dawnClient.WorldLoaded)
+            {
+                _dawnClient.Update();
+                return true;
+            }
+
             //long millisecondsSinceLastFrame = (long)(evt.timeSinceLastFrame*1000.0);
 
             //_dawnWorld.ThinkAll(30, new TimeSpan(millisecondsSinceLastFrame));
