@@ -18,11 +18,12 @@ namespace TestClient
 
         public TestPeerListener()
         {
+            //_peer = new LitePeer(this, ConnectionProtocol.Udp);
             _peer = new LitePeer(this, ConnectionProtocol.Udp);
 
             // Testing
             //_peer.TimePingInterval = 100;
-            //_peer.DisconnectTimeout
+            //_peer.DisconnectTimeout = 10000;
             _peer.SentCountAllowance = 5;
         }
 
@@ -31,6 +32,7 @@ namespace TestClient
             //DebugLevel should usally be ERROR or Warning - ALL lets you "see" more details of what the sdk is doing.
             //Output is passed to you in the DebugReturn callback
             _peer.DebugOut = DebugLevel.ALL;
+
             //return _peer.Connect("127.0.0.1:5055", "DawnServer");
             return _peer.Connect("dawnserver:5055", "TestPhotonApp");
             //return _peer.Connect("192.168.1.105:5055", "DawnServer");
@@ -76,6 +78,8 @@ namespace TestClient
                 return;
             }
 
+            Console.WriteLine("\n---OnOperationResponse: OK - " + operationResponse.OperationCode);
+
             switch (operationResponse.OperationCode)
             {
                 case (byte)LiteOpCode.Join:
@@ -93,7 +97,8 @@ namespace TestClient
         public void SendTestEvent()
         {
             Console.WriteLine("SendTestEvent");
-            _peer.OpCustom((byte)200, null, true, 1);
+            //_peer.OpCustom((byte)200, null, false, 1);
+            _peer.OpRaiseEvent(200, null, false, 1);
             Monitoring.Register_SendTest(InstanceId);
         }
 
@@ -101,6 +106,9 @@ namespace TestClient
         {
             Console.WriteLine("\n---OnStatusChanged:" + statusCode);
             Console.WriteLine(_peer.VitalStatsToString(true));
+
+            Console.WriteLine("TrafficStatsGameLevel:");
+            Console.WriteLine(_peer.TrafficStatsGameLevel.ToString());
 
             switch (statusCode)
             {
@@ -128,20 +136,22 @@ namespace TestClient
             }
         }
 
-        private void DebugUpdate()
+        public void LogDebugInfo()
         {
             _peer.TrafficStatsEnabled = true;
             //_peer.DebugOut = DebugLevel.ALL; // set in .Connect
 
-            Console.WriteLine("QueuedIncomingCommands: " + _peer.QueuedIncomingCommands);
-            Console.WriteLine("QueuedOutgoingCommands: " + _peer.QueuedOutgoingCommands);
-            Console.WriteLine("RoundTripTimeVariance: " + _peer.RoundTripTimeVariance);
-            Console.WriteLine("RoundTripTime: " + _peer.RoundTripTime);
+            //Console.WriteLine("QueuedIncomingCommands: " + _peer.QueuedIncomingCommands);
+            //Console.WriteLine("QueuedOutgoingCommands: " + _peer.QueuedOutgoingCommands);
+            Console.WriteLine("- RoundTripTimeVariance: " + _peer.RoundTripTimeVariance);
+            Console.WriteLine("- RoundTripTime: " + _peer.RoundTripTime);
+
+            //Console.WriteLine("- RoundTripTime: " + _peer.);
 
             //Console.WriteLine("LongestDeltaBetweenDispatching: " + _peer.TrafficStatsGameLevel.LongestDeltaBetweenDispatching);
             //Console.WriteLine("LongestOpResponseCallback: " + _peer.TrafficStatsGameLevel.LongestOpResponseCallback);
 
-            Console.WriteLine("ToStringVitalStats: " + _peer.TrafficStatsGameLevel.ToStringVitalStats());
+            //Console.WriteLine("ToStringVitalStats: " + _peer.TrafficStatsGameLevel.ToStringVitalStats());
 
             //Console.WriteLine("ByteCountLastOperation: " + _peer.ByteCountLastOperation);
             //Console.WriteLine("ByteCountCurrentDispatch: " + _peer.ByteCountCurrentDispatch);
