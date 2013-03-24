@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using ExitGames.Client.Photon;
 using ExitGames.Client.Photon.Lite;
+using PerformanceMonitoring;
 
 namespace TestClient
 {
@@ -92,7 +93,8 @@ namespace TestClient
         public void SendTestEvent()
         {
             Console.WriteLine("SendTestEvent");
-            _peer.OpCustom((byte)200, null, false, 1);
+            _peer.OpCustom((byte)200, null, true, 1);
+            Monitoring.Register_SendTest(InstanceId);
         }
 
         public void OnStatusChanged(StatusCode statusCode)
