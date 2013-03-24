@@ -28,6 +28,7 @@ namespace TestClient
                     {
                         _peer.SendTestEvent();
                         _peer.Update();
+                        _peer.LogDebugInfo();
                         Thread.Sleep(50);
                     }
                 } 
