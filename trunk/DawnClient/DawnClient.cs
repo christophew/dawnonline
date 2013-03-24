@@ -67,7 +67,7 @@ namespace DawnClient
             // Testing
             //_peer.TimePingInterval = 100;
             //_peer.DisconnectTimeout
-            _peer.SentCountAllowance = 50;
+            _peer.SentCountAllowance = 5;
 
             DawnWorld = new DawnClientWorld();
         }
@@ -443,7 +443,7 @@ namespace DawnClient
         private void DebugUpdate()
         {
             _peer.TrafficStatsEnabled = true;
-            _peer.DebugOut = DebugLevel.ALL;
+            //_peer.DebugOut = DebugLevel.ALL; // set in .Connect
 
             Console.WriteLine("QueuedIncomingCommands: " + _peer.QueuedIncomingCommands);
             Console.WriteLine("QueuedOutgoingCommands: " + _peer.QueuedOutgoingCommands);
