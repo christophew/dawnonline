@@ -50,6 +50,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestPeerListener.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PerformanceMonitoring\PerformanceMonitoring.csproj">
+      <Project>{C529958B-927A-4DCB-834C-5765F831F04A}</Project>
+      <Name>PerformanceMonitoring</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

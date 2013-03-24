@@ -30,6 +30,10 @@ namespace PerformanceMonitoring
         private const string _receiveBulkStatusUpdateName = "ReceiveBulkStatusUpdate";
         private const string _receiveDestroyedName = "ReceiveDestroyed";
 
+        private const string _clientSendTestName = "SendTest";
+        private static PerformanceCounter _clientSendTestCounter;
+
+
         private static PerformanceCounter _receiveBulkPositionUpdateCounter;
         private static PerformanceCounter _receiveBulkStatusUpdateCounter;
         private static PerformanceCounter _receiveDestroyedCounter;
@@ -123,6 +127,13 @@ namespace PerformanceMonitoring
             _updateCounter.Increment();
         }
 
+        public static void Register_SendTest(int instanceId)
+        {
+            Debug.Assert(instanceId != 0);
+            PrepareCounter(ref _clientSendTestCounter, _clientCategoryName, _clientSendTestName, instanceId);
+            _clientSendTestCounter.Increment();
+        }
+
         private static void PrepareCounter(ref PerformanceCounter counter, string category, string name)
         {
             if (counter == null)
@@ -180,6 +191,7 @@ namespace PerformanceMonitoring
                 counters.Add(CreateCounter(_receiveDestroyedName));
                 counters.Add(CreateCounter(_sendCommandsToServerName));
                 counters.Add(CreateCounter(_updateName));
+                counters.Add(CreateCounter(_clientSendTestName));
 
                 // create new category with the counters above
                 PerformanceCounterCategory.Create(_clientCategoryName, "todo: help", PerformanceCounterCategoryType.MultiInstance , counters);
