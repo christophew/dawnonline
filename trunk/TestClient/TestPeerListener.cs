@@ -29,6 +29,12 @@ namespace TestClient
 
         public bool Connect()
         {
+            // Simulation lag
+            //_peer.IsSimulationEnabled = true;
+            //_peer.NetworkSimulationSettings.IncomingLag = 50;
+            //_peer.NetworkSimulationSettings.OutgoingLag = 0;
+
+
             //DebugLevel should usally be ERROR or Warning - ALL lets you "see" more details of what the sdk is doing.
             //Output is passed to you in the DebugReturn callback
             _peer.DebugOut = DebugLevel.ALL;
