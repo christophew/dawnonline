@@ -1,21 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using DawnOnline.Simulation.Entities;
 
 namespace DawnOnline.Simulation.Brains
 {
-    internal abstract class AbstractBrain : ICloneable
+    internal abstract class AbstractBrain : IBrain
     {
-        internal Creature MyCreature { get; set; }
+        public void SetCreature(ICreature creature)
+        {
+            MyCreature = creature as Creature;
+            Debug.Assert(MyCreature != null);
+        }
 
-        internal abstract void DoSomething(TimeSpan timeDelta);
+        internal Creature MyCreature { get; private set; }
 
-        internal virtual void InitializeSenses()
+        public abstract void DoSomething(TimeSpan timeDelta);
+
+        public virtual void InitializeSenses()
         {}
 
-        internal virtual void ClearState()
+        public virtual void ClearState()
         {}
 
         private bool _randomTurningLeft;
@@ -72,21 +79,12 @@ namespace DawnOnline.Simulation.Brains
             _randomMoveForward = true;
         }
 
-        #region ICloneable Members
-
-        public object Clone()
-        {
-            return this.MemberwiseClone();
-        }
-
-        #endregion
-
-        internal virtual AbstractBrain Replicate(AbstractBrain mate)
+        public virtual IBrain Replicate(IBrain mate)
         {
             throw new NotImplementedException();
         }
 
-        internal virtual void Mutate()
+        public virtual void Mutate()
         {
         }
     }

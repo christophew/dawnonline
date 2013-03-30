@@ -26,7 +26,7 @@ namespace DawnOnline.Simulation.Entities
         private Placement _place = new Placement();
         private ActionQueue _actionQueue = new ActionQueue();
         private CharacterSheet _characterSheet = new CharacterSheet();
-        private AbstractBrain _brain;
+        private IBrain _brain;
 
         public EntityType Specy { get; internal set; }
         public List<EntityType> FoodSpecies { get; internal set; }
@@ -59,13 +59,13 @@ namespace DawnOnline.Simulation.Entities
 
         public bool HasBrain { get { return Brain != null; } }
 
-        internal AbstractBrain Brain 
+        internal IBrain Brain 
         { 
             get { return _brain; }
             set
             {
                 _brain = value;
-                _brain.MyCreature = this;
+                _brain.SetCreature(this);
             }
         }
 

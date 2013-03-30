@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 
 namespace DawnOnline.Simulation.Senses
 {
-    internal class Ear
+    internal class Ear : IEar
     {
         private readonly Creature _creature;
         private readonly Vector2 _relativePosition;

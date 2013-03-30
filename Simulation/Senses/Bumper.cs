@@ -10,12 +10,12 @@ using Microsoft.Xna.Framework;
 
 namespace DawnOnline.Simulation.Senses
 {
-    internal class Bumper
+    internal class Bumper : IBumper
     {
         private Fixture _fixture = null;
         private float _radius = 0.1f;
 
-        internal bool Hit { get; private set; }
+        public bool Hit { get; private set; }
 
         internal Bumper(Creature creature, Vector2 offset)
         {
@@ -24,7 +24,7 @@ namespace DawnOnline.Simulation.Senses
             _fixture.OnCollision += OnCollision;
         }
 
-        internal void Clear()
+        public void Clear()
         {
             Hit = false;
         }

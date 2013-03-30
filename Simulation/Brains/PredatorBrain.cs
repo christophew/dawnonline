@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System;
+using DawnOnline.Simulation.Builders;
 using DawnOnline.Simulation.Entities;
 using DawnOnline.Simulation.Senses;
 using DawnOnline.Simulation.Tools;
@@ -12,18 +13,18 @@ namespace DawnOnline.Simulation.Brains
 {
     internal class PredatorBrain : AbstractBrain
     {
-        protected Eye _forwardEye;
-        protected Eye _leftEye;
-        protected Eye _rightEye;
-        protected Bumper _forwardBumper;
+        protected IEye _forwardEye;
+        protected IEye _leftEye;
+        protected IEye _rightEye;
+        protected IBumper _forwardBumper;
         protected bool _initialized;
 
-        protected Dictionary<Eye, double> _eyeSeeEnemy = new Dictionary<Eye, double>();
-        protected Dictionary<Eye, double> _eyeSeeTreasure = new Dictionary<Eye, double>();
-        protected Dictionary<Eye, double> _eyeSeeWalls = new Dictionary<Eye, double>();
+        protected Dictionary<IEye, double> _eyeSeeEnemy = new Dictionary<IEye, double>();
+        protected Dictionary<IEye, double> _eyeSeeTreasure = new Dictionary<IEye, double>();
+        protected Dictionary<IEye, double> _eyeSeeWalls = new Dictionary<IEye, double>();
 
-        protected Ear _leftEar;
-        protected Ear _rightEar;
+        protected IEar _leftEar;
+        protected IEar _rightEar;
 
         protected enum EvadeState
         {
@@ -39,7 +40,7 @@ namespace DawnOnline.Simulation.Brains
         protected DateTime? _imPanickingSince = null;
 
 
-        internal override void DoSomething(TimeSpan timeDelta)
+        public override void DoSomething(TimeSpan timeDelta)
         {
             Debug.Assert(MyCreature != null);
             Debug.Assert(_initialized);
@@ -292,45 +293,30 @@ namespace DawnOnline.Simulation.Brains
             _eyeSeeWalls.Add(_rightEye, _rightEye.DistanceToFirstVisible(sortedOnDistance, false));
         }
 
-        internal override void InitializeSenses()
+        public override void InitializeSenses()
         {
             // Eyes
-            _forwardEye = new Eye(MyCreature)
-                              {
-                                  Angle = 0.0,
-                                  VisionAngle = MathTools.ConvertToRadials(30),
-                                  VisionDistance = MyCreature.CharacterSheet.VisionDistance
-                              };
-            _leftEye = new Eye(MyCreature)
-                           {
-                               Angle = -MathTools.ConvertToRadials(60),
-                               VisionAngle = MathTools.ConvertToRadials(60),
-                               VisionDistance = MyCreature.CharacterSheet.VisionDistance
-                           };
-            _rightEye = new Eye(MyCreature)
-                            {
-                                Angle = MathTools.ConvertToRadials(60),
-                                VisionAngle = MathTools.ConvertToRadials(60),
-                                VisionDistance = MyCreature.CharacterSheet.VisionDistance
-                            };
+            _forwardEye = SensorBuilder.CreateEye(MyCreature, 0.0, MathTools.ConvertToRadials(30), MyCreature.CharacterSheet.VisionDistance);
+            _leftEye = SensorBuilder.CreateEye(MyCreature, -MathTools.ConvertToRadials(60), MathTools.ConvertToRadials(60), MyCreature.CharacterSheet.VisionDistance);
+            _rightEye = SensorBuilder.CreateEye(MyCreature, MathTools.ConvertToRadials(60), MathTools.ConvertToRadials(60), MyCreature.CharacterSheet.VisionDistance);
 
             // Bumpers
-            _forwardBumper = new Bumper(MyCreature, new Vector2((float)MyCreature.Place.Form.BoundingCircleRadius, 0));
+            _forwardBumper = SensorBuilder.CreateBumper(MyCreature, new Vector2((float)MyCreature.Place.Form.BoundingCircleRadius, 0));
 
             // Ears
-            _leftEar = new Ear(MyCreature, new Vector2(0, -2));
-            _rightEar = new Ear(MyCreature, new Vector2(0, -2));
+            _leftEar = SensorBuilder.CreateEar(MyCreature, new Vector2(0, -2));
+            _rightEar = SensorBuilder.CreateEar(MyCreature, new Vector2(0, -2));
 
 
             _initialized = true;
         }
 
-        internal override void ClearState()
+        public override void ClearState()
         {
             _forwardBumper.Clear();
         }
 
-        internal override AbstractBrain Replicate(AbstractBrain mate)
+        public override IBrain Replicate(IBrain mate)
         {
             return new PredatorBrain();
         }
