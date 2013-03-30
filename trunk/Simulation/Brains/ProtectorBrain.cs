@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System;
+using DawnOnline.Simulation.Builders;
 using DawnOnline.Simulation.Entities;
 using DawnOnline.Simulation.Senses;
 using DawnOnline.Simulation.Tools;
@@ -9,7 +10,7 @@ namespace DawnOnline.Simulation.Brains
 {
     internal class ProtectorBrain : PredatorBrain
     {
-        private Eye _backwardEye;
+        private IEye _backwardEye;
 
         protected override bool ISeeAnEnemy()
         {
@@ -63,42 +64,21 @@ namespace DawnOnline.Simulation.Brains
             DoRandomAction(500);
         }
 
-        internal override void InitializeSenses()
+        public override void InitializeSenses()
         {
             // Eyes
-            _forwardEye = new Eye(MyCreature)
-            {
-                Angle = 0.0,
-                VisionAngle = MathTools.ConvertToRadials(30),
-                VisionDistance = MyCreature.CharacterSheet.VisionDistance
-            };
-            _backwardEye = new Eye(MyCreature)
-            {
-                Angle = MathTools.ConvertToRadials(180),
-                VisionAngle = MathTools.ConvertToRadials(30),
-                VisionDistance = MyCreature.CharacterSheet.VisionDistance
-            };
-            _leftEye = new Eye(MyCreature)
-            {
-                Angle = -MathTools.ConvertToRadials(90),
-                VisionAngle = MathTools.ConvertToRadials(75),
-                VisionDistance = MyCreature.CharacterSheet.VisionDistance
-            };
-            _rightEye = new Eye(MyCreature)
-            {
-                Angle = MathTools.ConvertToRadials(90),
-                VisionAngle = MathTools.ConvertToRadials(75),
-                VisionDistance = MyCreature.CharacterSheet.VisionDistance
-            };
+            _forwardEye = SensorBuilder.CreateEye(MyCreature, 0.0, MathTools.ConvertToRadials(30), MyCreature.CharacterSheet.VisionDistance);
+            _backwardEye = SensorBuilder.CreateEye(MyCreature, MathTools.ConvertToRadials(180), MathTools.ConvertToRadials(30), MyCreature.CharacterSheet.VisionDistance);
+            _leftEye = SensorBuilder.CreateEye(MyCreature, -MathTools.ConvertToRadials(90), MathTools.ConvertToRadials(75), MyCreature.CharacterSheet.VisionDistance);
+            _rightEye = SensorBuilder.CreateEye(MyCreature, MathTools.ConvertToRadials(90), MathTools.ConvertToRadials(75), MyCreature.CharacterSheet.VisionDistance);
 
             // Bumpers
-            _forwardBumper = new Bumper(MyCreature, new Vector2(15, 0));
-
+            _forwardBumper = SensorBuilder.CreateBumper(MyCreature, new Vector2(15, 0));
 
             _initialized = true;
         }
 
-        internal override void ClearState()
+        public override void ClearState()
         {
             _forwardBumper.Clear();
         }

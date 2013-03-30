@@ -7,7 +7,7 @@ namespace DawnOnline.Simulation.Brains
 {
     internal class PlantBrain : AbstractBrain
     {
-        internal override void DoSomething(TimeSpan timeDelta)
+        public override void DoSomething(TimeSpan timeDelta)
         {
             //MyCreature.TryReproduce();
         }

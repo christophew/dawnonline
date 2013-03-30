@@ -160,7 +160,7 @@ namespace DawnOnline.Simulation.Brains.Neural
             }
         }
 
-        internal override void ClearState()
+        public override void ClearState()
         {
             base.ClearState();
 
@@ -168,7 +168,7 @@ namespace DawnOnline.Simulation.Brains.Neural
             _foragerModeNetwork.Reset();
         }
 
-        private static double GetEyeCheck(Eye eye, double value)
+        private static double GetEyeCheck(IEye eye, double value)
         {
             return value < 0 ? 0 : 100.0*(eye.VisionDistance - value)/eye.VisionDistance;
         }
@@ -248,7 +248,7 @@ namespace DawnOnline.Simulation.Brains.Neural
             RunNetwork(_adrenalineModeNetwork, timeDelta);
         }
 
-        internal override AbstractBrain Replicate(AbstractBrain mate)
+        public override IBrain Replicate(IBrain mate)
         {
             // TODO: optimize
             // 'new' will also create a useless intial network
@@ -267,7 +267,7 @@ namespace DawnOnline.Simulation.Brains.Neural
             return newBrain;
         }
 
-        internal override void Mutate()
+        public override void Mutate()
         {
             Console.WriteLine("AdrenalineMode: ");
             _adrenalineModeNetwork.Mutate();

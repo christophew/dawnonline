@@ -34,7 +34,7 @@ namespace DawnOnline.Simulation.Brains
             PrototypeNeuralForager = prototype;
         }
 
-        internal override void DoSomething(TimeSpan timeDelta)
+        public override void DoSomething(TimeSpan timeDelta)
         {
             // Need new energy
             if (MyCreature.IsTired)
@@ -97,7 +97,7 @@ namespace DawnOnline.Simulation.Brains
             Environment.GetWorld().AddCreature(creature, MyCreature.Place.Position, Globals.Radomizer.NextDouble() * Math.PI * 2.0, false);
         }
 
-        internal override AbstractBrain Replicate(AbstractBrain mate)
+        public override IBrain Replicate(IBrain mate)
         {
             Console.WriteLine("Generation: " + MyCreature.CharacterSheet.Generation);
 

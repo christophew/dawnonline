@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Brains\ForagerBrain.cs" />
+    <Compile Include="Brains\IBrain.cs" />
     <Compile Include="Brains\Neural\MemoryInputNode.cs" />
     <Compile Include="Brains\Neural\NeuralBrain.cs" />
     <Compile Include="Brains\Neural\Edge.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="Builders\CloneBuilder.cs" />
     <Compile Include="Builders\CreatureBuilder.cs" />
     <Compile Include="Builders\ObstacleBuilder.cs" />
+    <Compile Include="Builders\SensorBuilder.cs" />
     <Compile Include="Builders\SoundBuilder.cs" />
     <Compile Include="Entities\Bullet.cs" />
     <Compile Include="Collision\CollisionDetection.cs" />
@@ -116,6 +118,9 @@
     <Compile Include="Senses\Bumper.cs" />
     <Compile Include="Senses\Ear.cs" />
     <Compile Include="Senses\Eye.cs" />
+    <Compile Include="Senses\IBumper.cs" />
+    <Compile Include="Senses\IEar.cs" />
+    <Compile Include="Senses\IEye.cs" />
     <Compile Include="SimulationFactory.cs" />
     <Compile Include="Sound.cs" />
     <Compile Include="Statistics\CharacterSheet.cs" />

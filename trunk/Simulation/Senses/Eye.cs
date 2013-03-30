@@ -12,7 +12,7 @@ using SharedConstants;
 
 namespace DawnOnline.Simulation.Senses
 {
-    internal class Eye
+    internal class Eye : IEye
     {
         private readonly Creature _creature;
 
@@ -22,13 +22,14 @@ namespace DawnOnline.Simulation.Senses
         }
 
         internal double Angle { get; set; }
-        internal double VisionDistance { get; set; }
-        internal double VisionAngle { get; set; }
+
+        public double VisionDistance { get; internal set; }
+        public double VisionAngle { get; internal set; }
 
         private Environment CreatureEnvironment { get { return _creature.MyEnvironment; } }
         private Placement CreaturePlace { get { return _creature.Place; } }
 
-        internal double DistanceToFirstVisible(List<IEntity> sortedEntities, bool useLineOfSight = true)
+        public double DistanceToFirstVisible(List<IEntity> sortedEntities, bool useLineOfSight = true)
         {
             foreach (var entity in sortedEntities)
             {
@@ -42,27 +43,30 @@ namespace DawnOnline.Simulation.Senses
             return -1;
         }
 
-        internal bool SeesCreature(Creature creature)
+        public bool SeesCreature(ICreature creature)
         {
-            return HasLineOfSight(creature, null);
+            var myCreature = creature as Creature;
+            Debug.Assert(myCreature != null);
+
+            return HasLineOfSight(myCreature, null);
         }
 
-        internal bool SeesACreature(List<EntityType> species, IEntity spawnPointToExclude)
+        public bool SeesACreature(List<EntityType> species, IEntity spawnPointToExclude)
         {
             return species.Any(specy => HasLineOfSight(specy, spawnPointToExclude));
         }
 
-        internal bool SeesACreature(List<EntityType> species)
+        public  bool SeesACreature(List<EntityType> species)
         {
             return species.Any(specy => HasLineOfSight(specy, null));
         }
 
-        internal bool SeesACreature(EntityType specy)
+        public bool SeesACreature(EntityType specy)
         {
             return HasLineOfSight(specy, null);
         }
 
-        internal bool SeesAnObstacle(EntityType entityType)
+        public bool SeesAnObstacle(EntityType entityType)
         {
             var obstacles = CreatureEnvironment.GetObstacles().Where(o => o.Specy == entityType);
 

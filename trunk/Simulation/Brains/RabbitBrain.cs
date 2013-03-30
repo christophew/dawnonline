@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using DawnOnline.Simulation.Entities;
+using DawnOnline.Simulation.Builders;
 using DawnOnline.Simulation.Senses;
 using DawnOnline.Simulation.Tools;
 using SharedConstants;
@@ -9,12 +9,12 @@ namespace DawnOnline.Simulation.Brains
 {
     internal class RabbitBrain : AbstractBrain
     {
-        private Eye _forwardEye;
-        private Eye _leftEye;
-        private Eye _rightEye;
+        private IEye _forwardEye;
+        private IEye _leftEye;
+        private IEye _rightEye;
         private bool _initialized;
 
-        internal override void DoSomething(TimeSpan timeDelta)
+        public override void DoSomething(TimeSpan timeDelta)
         {
             Debug.Assert(MyCreature != null);
             Debug.Assert(_initialized);
@@ -57,26 +57,11 @@ namespace DawnOnline.Simulation.Brains
             DoRandomAction(100);
         }
 
-        internal override void InitializeSenses()
+        public override void InitializeSenses()
         {
-            _forwardEye = new Eye(MyCreature)
-            {
-                Angle = 0.0,
-                VisionAngle = MathTools.ConvertToRadials(30),
-                VisionDistance = MyCreature.CharacterSheet.VisionDistance
-            };
-            _leftEye = new Eye(MyCreature)
-            {
-                Angle = -MathTools.ConvertToRadials(60),
-                VisionAngle = MathTools.ConvertToRadials(30),
-                VisionDistance = MyCreature.CharacterSheet.VisionDistance
-            };
-            _rightEye = new Eye(MyCreature)
-            {
-                Angle = MathTools.ConvertToRadials(60),
-                VisionAngle = MathTools.ConvertToRadials(30),
-                VisionDistance = MyCreature.CharacterSheet.VisionDistance
-            };
+            _forwardEye = SensorBuilder.CreateEye(MyCreature, 0.0, MathTools.ConvertToRadials(30), MyCreature.CharacterSheet.VisionDistance);
+            _leftEye = SensorBuilder.CreateEye(MyCreature, -MathTools.ConvertToRadials(60), MathTools.ConvertToRadials(30), MyCreature.CharacterSheet.VisionDistance);
+            _rightEye = SensorBuilder.CreateEye(MyCreature, MathTools.ConvertToRadials(60), MathTools.ConvertToRadials(30), MyCreature.CharacterSheet.VisionDistance);
 
             _initialized = true;
         }
