@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using DawnOnline.Simulation.Entities;
 
 namespace DawnPhotonApp
 {
-    [Obsolete("Use EntityAdded")]
-    class EntityLoad : IEntityPhotonPacket
+    class EntityAdded : IEntityPhotonPacket
     {
         private IEntity _entity;
 
-        public EntityLoad(IEntity entity)
+        public EntityAdded(IEntity entity)
         {
             _entity = entity;
             Id = entity.Id;
@@ -25,10 +23,16 @@ namespace DawnPhotonApp
         {
             var dawnEntity = new Hashtable();
             dawnEntity[0] = _entity.Id;
-            dawnEntity[1] = _entity.Place.Position.X;
-            dawnEntity[2] = _entity.Place.Position.Y;
-            dawnEntity[3] = _entity.Place.Angle;
-            dawnEntity[4] = (byte)_entity.Specy;
+            dawnEntity[1] = (byte)_entity.Specy;
+            dawnEntity[2] = _entity.Place.Position.X;
+            dawnEntity[3] = _entity.Place.Position.Y;
+            dawnEntity[4] = _entity.Place.Angle;
+
+            var creature = _entity as ICreature;
+            if (creature != null && creature.SpawnPoint != null)
+            {
+                dawnEntity[5] = creature.SpawnPoint.Id;
+            }
 
             return dawnEntity;
         }

@@ -27,17 +27,16 @@ namespace DawnPhotonApp
         {
             var dawnEntity = new Hashtable();
             dawnEntity[0] = _entity.Id;
-            dawnEntity[1] = (byte)_entity.Specy;
-            dawnEntity[2] = _isActive;
+            dawnEntity[1] = _isActive;
 
             var creature = _entity as ICreature;
-            if (creature != null && creature.SpawnPoint != null)
+            if (creature != null)
             {
-                dawnEntity[3] = creature.SpawnPoint.Id;
-                dawnEntity[4] = (byte)creature.CharacterSheet.Damage.PercentFilled;
-                dawnEntity[5] = (byte)creature.CharacterSheet.Fatigue.PercentFilled;
-                dawnEntity[6] = (int)creature.CharacterSheet.Score;
+                dawnEntity[2] = (byte)creature.CharacterSheet.Damage.PercentFilled;
+                dawnEntity[3] = (byte)creature.CharacterSheet.Fatigue.PercentFilled;
+                dawnEntity[4] = (int)creature.CharacterSheet.Score;
             }
+
             return dawnEntity;
         }
 

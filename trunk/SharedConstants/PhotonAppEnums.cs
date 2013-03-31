@@ -24,6 +24,7 @@ namespace SharedConstants
         Destroyed = 103,
         BulkPositionUpdate = 104,
         BulkStatusUpdate = 105,
+        BulkAddEntity = 106,
     }
 
     /// <summary>

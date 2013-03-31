@@ -29,7 +29,7 @@ namespace MyApplication
 
         private int _intervalSendAvatarUpdates = 75;
         private int _intervalSendPositions = 100;
-        private int _intervalSendStatus = 200;
+        private int _intervalSendStatus = 500;
         private const int _fragmentSize = 15;
 
 
@@ -102,28 +102,41 @@ namespace MyApplication
 
         private void SendPositions()
         {
+            var allEntities = GetAllRelevantEntities();
+
             var currentEntities = new Dictionary<int, IEntityPhotonPacket>();
 
             // 104 = BulkPositionUpdate
-            foreach (var entity in _dawnWorldInstance.Environment.GetCreatures())
+            foreach (var entity in allEntities.Values)
             {
                 currentEntities.Add(entity.Id, CreateEntityPosition(entity));
             }
-            foreach (var entity in _dawnWorldInstance.Environment.GetObstacles())
-            {
-                currentEntities.Add(entity.Id, CreateEntityPosition(entity));
-            }
-            foreach (var entity in _dawnWorldInstance.Environment.GetBullets())
-            {
-                currentEntities.Add(entity.Id, CreateEntityPosition(entity));
-            }
-
             SendEntityPhotonPackages(EventCode.BulkPositionUpdate, currentEntities, _previousPositions);
 
             _previousPositions = currentEntities;
 
             // Schedule next update
             this.ExecutionFiber.Schedule(SendPositions, _intervalSendPositions);
+        }
+
+        private static Dictionary<int, IEntity> GetAllRelevantEntities()
+        {
+            var currentEntities = new Dictionary<int, IEntity>();
+
+            foreach (var entity in _dawnWorldInstance.Environment.GetCreatures())
+            {
+                currentEntities.Add(entity.Id, entity);
+            }
+            foreach (var entity in _dawnWorldInstance.Environment.GetObstacles())
+            {
+                currentEntities.Add(entity.Id, entity);
+            }
+            foreach (var entity in _dawnWorldInstance.Environment.GetBullets())
+            {
+                currentEntities.Add(entity.Id, entity);
+            }
+
+            return currentEntities;
         }
 
         private void SendDawnWorld()
@@ -139,24 +152,34 @@ namespace MyApplication
                 //    this.PublishEvent(eData, this.Actors, sendParameters);
                 //}
 
-                var currentEntities = new Dictionary<int, IEntityPhotonPacket>();
 
+                var currentEntities = GetAllRelevantEntities();
+
+
+                var currentStatuses = new Dictionary<int, IEntityPhotonPacket>();
                 // 105 = BulkStatusUpdate
                 {
-                    foreach (var entity in _dawnWorldInstance.Environment.GetCreatures())
+                    foreach (var entity in currentEntities.Values)
                     {
-                        currentEntities.Add(entity.Id, CreateEntityStatus(entity));
-                    }
-                    foreach (var entity in _dawnWorldInstance.Environment.GetObstacles())
-                    {
-                        currentEntities.Add(entity.Id, CreateEntityStatus(entity));
-                    }
-                    foreach (var entity in _dawnWorldInstance.Environment.GetBullets())
-                    {
-                        currentEntities.Add(entity.Id, CreateEntityStatus(entity));
+                        currentStatuses.Add(entity.Id, CreateEntityStatus(entity));
                     }
 
-                    SendEntityPhotonPackages(EventCode.BulkStatusUpdate, currentEntities, _previousStatuses);
+                    SendEntityPhotonPackages(EventCode.BulkStatusUpdate, currentStatuses, _previousStatuses);
+                }
+
+                // AddEntity
+                {
+                    var currentAdded = new Dictionary<int, IEntityPhotonPacket>();
+
+                    foreach (var currentEntityKvp in currentEntities)
+                    {
+                        if (!_previousStatuses.ContainsKey(currentEntityKvp.Key))
+                        {
+                            currentAdded.Add(currentEntityKvp.Key, CreateEntityAdded(currentEntityKvp.Value));
+                        }
+                    }
+
+                    SendEntityPhotonPackages(EventCode.BulkAddEntity, currentAdded, null, false);
                 }
 
                 // 103 = destroyed
@@ -174,7 +197,7 @@ namespace MyApplication
                     SendKilled(killedHash.ToArray());
                }
 
-                _previousStatuses = currentEntities;
+                _previousStatuses = currentStatuses;
 
                 // Walls
                 //SendWalls();
@@ -198,7 +221,7 @@ namespace MyApplication
             }
         }
 
-        private void SendEntityPhotonPackages(EventCode eventCode, Dictionary<int, IEntityPhotonPacket> entityPositions, Dictionary<int, IEntityPhotonPacket> previousPositions = null)
+        private void SendEntityPhotonPackages(EventCode eventCode, Dictionary<int, IEntityPhotonPacket> entityPositions, Dictionary<int, IEntityPhotonPacket> previousPositions = null, bool unreliable = true)
         {
             if (entityPositions.Count == 0)
                 return;
@@ -211,7 +234,9 @@ namespace MyApplication
             var sortedEntityPackages = PreprocessEntityPackages(entityPositions, previousPositions);
 
             // SEND FRAGMENTED
-            var sendParameters = new SendParameters { Unreliable = true };
+            var sendParameters = unreliable
+                                     ? new SendParameters {Unreliable = true}
+                                     : new SendParameters {Unreliable = false, ChannelId = 1};
 
             // Split the list into fragments
 
@@ -252,26 +277,31 @@ namespace MyApplication
 
         private static IEnumerable<IEntityPhotonPacket> PreprocessEntityPackages(Dictionary<int, IEntityPhotonPacket> entityPositions, Dictionary<int, IEntityPhotonPacket> previousPositions)
         {
+            if (previousPositions == null)
+            {
+                return entityPositions.Values;
+            }
+
+
             var entityPackages = new List<IEntityPhotonPacket>();
+
             foreach (var entityStatusKvp in entityPositions)
             {
                 // Temp: init to origin to be sure
                 entityStatusKvp.Value.LastUpdateSend = new DateTime();
 
-
                 // Compare the delta for optimizations
-                if (previousPositions != null)
-                {
-                    IEntityPhotonPacket previousStatus = null;
-                    if (previousPositions.TryGetValue(entityStatusKvp.Key, out previousStatus))
-                    {
-                        Debug.Assert(previousStatus != null);
-                        if (!entityStatusKvp.Value.HasDeltaChanges(previousStatus))
-                            continue;
+                Debug.Assert(previousPositions != null);
 
-                        // Copy Timestamp to new Package
-                        entityStatusKvp.Value.LastUpdateSend = previousStatus.LastUpdateSend;
-                    }
+                IEntityPhotonPacket previousStatus = null;
+                if (previousPositions.TryGetValue(entityStatusKvp.Key, out previousStatus))
+                {
+                    Debug.Assert(previousStatus != null);
+                    if (!entityStatusKvp.Value.HasDeltaChanges(previousStatus))
+                        continue;
+
+                    // Copy Timestamp to new Package
+                    entityStatusKvp.Value.LastUpdateSend = previousStatus.LastUpdateSend;
                 }
 
                 entityPackages.Add(entityStatusKvp.Value);
@@ -288,12 +318,17 @@ namespace MyApplication
 
         private static IEntityPhotonPacket CreateStaticEntity(IEntity entity)
         {
-            return new EntityLoad(entity);
+            return new EntityAdded(entity);
         }
 
         private static IEntityPhotonPacket CreateEntityStatus(IEntity entity)
         {
             return new EntityStatus(entity, _worldSyncState.IsActive(entity.Id));
+        }
+
+        private static IEntityPhotonPacket CreateEntityAdded(IEntity entity)
+        {
+            return new EntityAdded(entity);
         }
 
         /// <summary>
@@ -350,9 +385,12 @@ namespace MyApplication
                 case MyOperationCodes.LoadWorld:
                     {
                         //var slowObjects = _dawnWorldInstance.Environment.GetObstacles().Where(o => o.Specy == EntityType.Wall).ToList();
+
+                        // Load ALL objects & creatures on LoadWorld => this allows us to use BulkAddEntity
                         var slowObjects = _dawnWorldInstance.Environment.GetObstacles().ToList();
-                        var slowCreatures = _dawnWorldInstance.Environment.GetCreatures(EntityType.SpawnPoint);
+                        var slowCreatures = _dawnWorldInstance.Environment.GetCreatures();
                         slowObjects.AddRange(slowCreatures);
+
                         var slowObjectsParam = slowObjects.Select(e => CreateStaticEntity(e).CreatePhotonPacket()).ToArray();
 
                         // Send response

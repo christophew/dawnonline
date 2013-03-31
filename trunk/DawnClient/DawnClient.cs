@@ -291,16 +291,7 @@ namespace DawnClient
                         // Position update: compressed
                         var entities = eventData.Parameters.Select(kvp => DawnClientEntity.CreatePositionUpdate((Hashtable) kvp.Value)).ToList();
                         DawnWorld.UpdateEntities(entities, false);
-
-                        // Update avatarProxy
-                        if (_avatarId != 0)
-                        {
-                            var avatar = entities.FirstOrDefault(e => e.Id == _avatarId);
-                            if (avatar != null)
-                            {
-                                _avatarProxy.UpdateFrom(avatar);
-                            }
-                        }
+                        UpdateAvatarProxy(entities);
 
                         break;
                     }
@@ -313,17 +304,22 @@ namespace DawnClient
 
                         // Position update: compressed
                         var entities = eventData.Parameters.Select(kvp => DawnClientEntity.CreateStatusUpdate((Hashtable)kvp.Value)).ToList();
-                        DawnWorld.UpdateEntities(entities, true);
+                        DawnWorld.UpdateEntities(entities, false);
+                        UpdateAvatarProxy(entities);
 
-                        // Update avatarProxy
-                        if (_avatarId != 0)
-                        {
-                            var avatar = entities.FirstOrDefault(e => e.Id == _avatarId);
-                            if (avatar != null)
-                            {
-                                _avatarProxy.UpdateFrom(avatar);
-                            }
-                        }
+                        break;
+                    }
+                case (byte)EventCode.BulkAddEntity:
+                    {
+                        if (!WorldLoaded)
+                            return;
+
+                        Monitoring.Register_ReceiveBulkStatusUpdate(InstanceId);
+
+                        // Position update: compressed
+                        var entities = eventData.Parameters.Select(kvp => DawnClientEntity.CreateAddedEntity((Hashtable)kvp.Value)).ToList();
+                        DawnWorld.UpdateEntities(entities, true);
+                        UpdateAvatarProxy(entities);
 
                         break;
                     }
@@ -345,6 +341,18 @@ namespace DawnClient
 
                         break;
                     }
+            }
+        }
+
+        private void UpdateAvatarProxy(List<DawnClientEntity> entities)
+        {
+            if (_avatarId != 0)
+            {
+                var avatar = entities.FirstOrDefault(e => e.Id == _avatarId);
+                if (avatar != null)
+                {
+                    _avatarProxy.UpdateFrom(avatar);
+                }
             }
         }
 
@@ -383,7 +391,7 @@ namespace DawnClient
                     {
                         // Get static world objects
                         var entityParam = (Hashtable[])operationResponse.Parameters[0];
-                        var staticEntities = entityParam.Select(param => DawnClientEntity.CreateStaticUpdate(param)).ToList();
+                        var staticEntities = entityParam.Select(DawnClientEntity.CreateAddedEntity).ToList();
                         Console.WriteLine(" ->Starting entities: " + staticEntities.Count);
                         DawnWorld.UpdateEntities(staticEntities, true);
 
