@@ -52,31 +52,34 @@ namespace DawnClient
             newEntity.Mode = UpdateMode.StatusUpdate;
 
             newEntity.Id = (int)eventData[0];
-            newEntity.Specy = (EntityType)(byte)eventData[1];
-            newEntity.IsActive = (bool)eventData[2];
+            newEntity.IsActive = (bool)eventData[1];
 
-            if (eventData.ContainsKey(3))
+            if (eventData.ContainsKey(2))
             {
-                newEntity.SpawnPointId = (int)eventData[3];
-                newEntity.DamagePercent = (byte)eventData[4];
-                newEntity.FatiguePercent = (byte)eventData[5];
-                newEntity.Score = (int)eventData[6];
+                newEntity.DamagePercent = (byte)eventData[2];
+                newEntity.FatiguePercent = (byte)eventData[3];
+                newEntity.Score = (int)eventData[4];
             }
 
             return newEntity;
         }
 
-        public static DawnClientEntity CreateStaticUpdate(Hashtable eventData)
+        public static DawnClientEntity CreateAddedEntity(Hashtable eventData)
         {
             var newEntity = new DawnClientEntity();
 
             newEntity.Mode = UpdateMode.InitialLoad;
 
             newEntity.Id = (int)eventData[0];
-            newEntity.PlaceX = (float)eventData[1];
-            newEntity.PlaceY = (float)eventData[2];
-            newEntity.Angle = (float)eventData[3];
-            newEntity.Specy = (EntityType)(byte)eventData[4];
+            newEntity.Specy = (EntityType)(byte)eventData[1];
+            newEntity.PlaceX = (float)eventData[2];
+            newEntity.PlaceY = (float)eventData[3];
+            newEntity.Angle = (float)eventData[4];
+
+            if (eventData.ContainsKey(5))
+            {
+                newEntity.SpawnPointId = (int)eventData[5];
+            }
 
             return newEntity;
         }
@@ -95,12 +98,15 @@ namespace DawnClient
             }
             if (newData.Mode == UpdateMode.StatusUpdate || newData.Mode == UpdateMode.InitialLoad)
             {
-                this.Specy = newData.Specy;
                 this.IsActive = newData.IsActive;
-                this.SpawnPointId = newData.SpawnPointId;
                 this.DamagePercent = newData.DamagePercent;
                 this.FatiguePercent = newData.FatiguePercent;
                 this.Score = newData.Score;
+            }
+            if (newData.Mode == UpdateMode.InitialLoad)
+            {
+                this.Specy = newData.Specy;
+                this.SpawnPointId = newData.SpawnPointId;
             }
         }
     }

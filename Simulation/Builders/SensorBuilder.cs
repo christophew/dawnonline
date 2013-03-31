@@ -19,7 +19,7 @@ namespace DawnOnline.Simulation.Builders
             return new Bumper(myCreature, offset);
         }
 
-        public static IEye CreateEye(ICreature creature, double angle, double visionDistance, double visionAngle)
+        public static IEye CreateEye(ICreature creature, double angle, double visionAngle, double visionDistance)
         {
             var myCreature = creature as Creature;
             Debug.Assert(myCreature != null);
