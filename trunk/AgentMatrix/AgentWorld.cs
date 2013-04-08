@@ -5,13 +5,15 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using DawnClient;
+using DawnOnline.AgentMatrix;
+using DawnOnline.AgentMatrix.Brains;
 using DawnOnline.Simulation;
 using DawnOnline.Simulation.Builders;
 using DawnOnline.Simulation.Entities;
 using Microsoft.Xna.Framework;
 using SharedConstants;
 
-namespace AgentMatrix
+namespace DawnOnline.AgentMatrix
 {
     class AgentWorld
     {
@@ -383,9 +385,8 @@ namespace AgentMatrix
             throw new NotImplementedException();
         }
 
-        internal void CreateCreature(EntityType entityType)
+        internal void AddCreature(ICreature creature)
         {
-            var creature = CreatureBuilder.CreateCreature(entityType);
             _staticEnvironment.AddCreature(creature, new Vector2(0, 0), 0, false);
         }
 
@@ -405,7 +406,7 @@ namespace AgentMatrix
 
                 if (spawnPoints.Count == 0)
                 {
-                    bestspawnPoint = CreatureBuilder.CreateSpawnPoint(EntityType.Predator);
+                    bestspawnPoint = AgentCreatureBuilder.CreateSpawnPoint();
                     crossoverMate = bestspawnPoint;
                 }
                 else

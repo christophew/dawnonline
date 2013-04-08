@@ -7,7 +7,7 @@ using DawnOnline.Simulation.Brains;
 using DawnOnline.Simulation.Entities;
 using DawnOnline.Simulation.Senses;
 
-namespace DawnOnline.Simulation.Brains.Neural
+namespace DawnOnline.AgentMatrix.Brains.Neural
 {
     internal class NeuralBrain : ForagerBrain
     {

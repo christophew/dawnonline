@@ -1,4 +1,4 @@
-﻿namespace DawnOnline.Simulation.Brains.Neural
+﻿namespace DawnOnline.AgentMatrix.Brains.Neural
 {
     class Edge
     {

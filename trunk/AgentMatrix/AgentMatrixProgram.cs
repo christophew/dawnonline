@@ -7,7 +7,7 @@ using System.Threading;
 using DawnClient;
 using SharedConstants;
 
-namespace AgentMatrix
+namespace DawnOnline.AgentMatrix
 {
     class Program
     {
@@ -36,7 +36,9 @@ namespace AgentMatrix
             _dawnClient.WorldLoadedEvent += delegate
                                                 {
                                                     for (int i = 0; i < 1; i++)
-                                                        _agentWorld.CreateCreature(EntityType.SpawnPoint);
+                                                    {
+                                                        _agentWorld.AddCreature(AgentCreatureBuilder.CreateSpawnPoint());
+                                                    }
                                                 };
             return _agentWorld;
         }

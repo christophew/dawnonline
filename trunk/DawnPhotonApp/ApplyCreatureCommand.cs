@@ -9,7 +9,7 @@ namespace DawnPhotonApp
 {
     static class ApplyCreatureCommand
     {
-        internal static void ApplyCommand(IAvatar creature, AvatarCommand command)
+        internal static void ApplyCommand(ICreature creature, AvatarCommand command)
         {
             switch (command)
             {
@@ -64,7 +64,7 @@ namespace DawnPhotonApp
             }
         }
 
-        private static void ApplyPrecisionCommand(IAvatar creature, AvatarCommand command)
+        private static void ApplyPrecisionCommand(ICreature creature, AvatarCommand command)
         {
             switch (command)
             {

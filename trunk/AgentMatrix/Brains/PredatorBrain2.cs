@@ -4,7 +4,7 @@ using DawnOnline.Simulation.Builders;
 using DawnOnline.Simulation.Senses;
 using DawnOnline.Simulation.Tools;
 
-namespace DawnOnline.Simulation.Brains
+namespace DawnOnline.AgentMatrix.Brains
 {
     internal class PredatorBrain2 : AbstractBrain
     {

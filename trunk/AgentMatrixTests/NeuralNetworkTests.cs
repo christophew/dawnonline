@@ -2,7 +2,7 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using DawnOnline.Simulation.Brains.Neural;
+using DawnOnline.AgentMatrix.Brains.Neural;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace SimulationTests

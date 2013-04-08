@@ -139,7 +139,7 @@ namespace DawnOnline.Simulation
             return _creatures;
         }
 
-        internal IList<ICreature> GetCreatures(List<EntityType> species)
+        public IList<ICreature> GetCreatures(List<EntityType> species)
         {
             var result = new List<ICreature>();
             foreach (var specy in species)
