@@ -6,7 +6,7 @@ using DawnOnline.Simulation.Senses;
 using DawnOnline.Simulation.Tools;
 using Microsoft.Xna.Framework;
 
-namespace DawnOnline.Simulation.Brains
+namespace DawnOnline.AgentMatrix.Brains
 {
     internal class ProtectorBrain : PredatorBrain
     {
@@ -30,7 +30,7 @@ namespace DawnOnline.Simulation.Brains
             Debug.Assert(_initialized);
 
             // Return to base
-            var spawnPoint = MyCreature.SpawnPoint as Creature;
+            var spawnPoint = MyCreature.SpawnPoint as ICreature;
             if (_forwardEye.SeesCreature(spawnPoint))
             {
                 MyCreature.RunForward();

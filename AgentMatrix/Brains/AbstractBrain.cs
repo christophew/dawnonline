@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using DawnOnline.Simulation.Brains;
 using DawnOnline.Simulation.Entities;
 
-namespace DawnOnline.Simulation.Brains
+namespace DawnOnline.AgentMatrix.Brains
 {
     internal abstract class AbstractBrain : IBrain
     {
         public void SetCreature(ICreature creature)
         {
-            MyCreature = creature as Creature;
+            MyCreature = creature;
             Debug.Assert(MyCreature != null);
         }
 
-        internal Creature MyCreature { get; private set; }
+        internal ICreature MyCreature { get; private set; }
 
         public abstract void DoSomething(TimeSpan timeDelta);
 

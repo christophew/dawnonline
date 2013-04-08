@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DawnOnline.Simulation.Brains
+namespace DawnOnline.AgentMatrix.Brains
 {
-    internal class PlantBrain : AbstractBrain
+    internal class TestBrain : AbstractBrain
     {
         public override void DoSomething(TimeSpan timeDelta)
         {
-            //MyCreature.TryReproduce();
+            MyCreature.WalkForward();
+            MyCreature.TurnRightSlow();
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace DawnOnline.Simulation.Brains.Neural
+namespace DawnOnline.AgentMatrix.Brains.Neural
 {
     class NeuralNetwork
     {

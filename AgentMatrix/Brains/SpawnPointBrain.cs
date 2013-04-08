@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using DawnOnline.Simulation.Brains.Neural;
+using DawnOnline.AgentMatrix.Brains.Neural;
+using DawnOnline.Simulation.Brains;
 using DawnOnline.Simulation.Builders;
 using DawnOnline.Simulation.Entities;
 using SharedConstants;
 
-namespace DawnOnline.Simulation.Brains
+namespace DawnOnline.AgentMatrix.Brains
 {
     class SpawnPointBrain : AbstractBrain
     {
@@ -25,12 +26,12 @@ namespace DawnOnline.Simulation.Brains
             _spawnType = spawnType;
             _maxSpawnCooldown = interval;
 
-            var prototype = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature) as Creature;
             var prototypeBrain = new NeuralBrain();
             prototypeBrain.PredefineBehaviour();
+            var prototype = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature, prototypeBrain) as ICreature;
             //prototypeBrain.PredefineRandomBehaviour();
             //var prototypeBrain = new PredatorBrain();
-            prototype.Brain = prototypeBrain;
+
             PrototypeNeuralForager = prototype;
         }
 
@@ -55,7 +56,7 @@ namespace DawnOnline.Simulation.Brains
             //    SpawnProtector();
 
             // TODO: Should not be necessary, but can be useful to have faster update of monitor (instead of waiting for server update)
-            MyCreature.CharacterSheet.Fatigue.Increase(20);
+            //MyCreature.CharacterSheet.Fatigue.Increase(20);
 
             _lastSpawn = DateTime.Now;
             _currentSpawnCooldown = Globals.Radomizer.NextDouble()*_maxSpawnCooldown;
@@ -64,37 +65,37 @@ namespace DawnOnline.Simulation.Brains
             MyCreature.RegisterSpawn();
         }
 
-        private void SpawnHunter()
-        {
-            var creature = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature);
-            AddToWorld(creature);
-        }
+        //private void SpawnHunter()
+        //{
+        //    var creature = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature);
+        //    AddToWorld(creature);
+        //}
 
-        private void SpawnForager()
-        {
-            var creature = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature) as Creature;
-            creature.Brain = new ForagerBrain();
-            AddToWorld(creature);
-        }
+        //private void SpawnForager()
+        //{
+        //    var creature = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature) as Creature;
+        //    creature.Brain = new ForagerBrain();
+        //    AddToWorld(creature);
+        //}
 
         private void SpawnNeuralForager()
         {
-            var replicatedCreature = PrototypeNeuralForager.Replicate(PrototypeNeuralForager) as Creature;
-            replicatedCreature.SpawnPoint = MyCreature;
+            var replicatedCreature = PrototypeNeuralForager.Replicate(PrototypeNeuralForager);
+            Debug.Assert(replicatedCreature.SpawnPoint == MyCreature);
 
             AddToWorld(replicatedCreature);
         }
 
-        private void SpawnProtector()
-        {
-            var creature = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature) as Creature;
-            creature.Brain = new ProtectorBrain();
-            AddToWorld(creature);
-        }
+        //private void SpawnProtector()
+        //{
+        //    var creature = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature) as Creature;
+        //    creature.Brain = new ProtectorBrain();
+        //    AddToWorld(creature);
+        //}
 
         private void AddToWorld(ICreature creature)
         {
-            Environment.GetWorld().AddCreature(creature, MyCreature.Place.Position, Globals.Radomizer.NextDouble() * Math.PI * 2.0, false);
+            MyCreature.MyEnvironment.AddCreature(creature, MyCreature.Place.Position, Globals.Radomizer.NextDouble() * Math.PI * 2.0, false);
         }
 
         public override IBrain Replicate(IBrain mate)

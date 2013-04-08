@@ -14,7 +14,7 @@ using SharedConstants;
 
 namespace DawnOnline.Simulation.Entities
 {
-    internal class Creature : IAvatar
+    internal class Creature : ICreature
     {
         private int _id = Globals.GenerateUniqueId();
         public int Id
@@ -45,7 +45,7 @@ namespace DawnOnline.Simulation.Entities
             }
         }
         
-        internal Environment MyEnvironment { get; set; }
+        public Environment MyEnvironment { get; internal set; }
         public ActionQueue MyActionQueue { get { return _actionQueue; } }
 
         internal DateTime LatestThinkTime { get; set; }
@@ -172,7 +172,7 @@ namespace DawnOnline.Simulation.Entities
             // TODO: check against LastSpawnTime
 
             // Security
-            if (!(this.Brain is SpawnPointBrain))
+            if (this.Specy != EntityType.SpawnPoint)
                 throw new InvalidOperationException();
 
             // Fatigue
@@ -487,7 +487,7 @@ namespace DawnOnline.Simulation.Entities
             Brain.ClearState();
         }
 
-        internal Creature FindCreatureToAttack(List<EntityType> ofTypes)
+        public ICreature FindCreatureToAttack(List<EntityType> ofTypes)
         {
             var attackMiddle = new Vector2(
                 (float)(Place.Position.X + Math.Cos(Place.Angle) * CharacterSheet.MeleeRange),
@@ -573,17 +573,19 @@ namespace DawnOnline.Simulation.Entities
 
         public void DoBuildEntity(EntityType entityType)
         {
-            if (entityType == EntityType.Unknown)
-            {
-                return;
-            }
-            if (entityType == EntityType.Turret)
-            {
-                var turret = CreatureBuilder.CreateTurret(EntityType.Predator);
-                MyEnvironment.AddCreature(turret, Place.Position, Place.Angle);
-                _actionQueue.LastBuildTime = DateTime.Now;
-                return;
-            }
+            // TODO: inject the prototype into the Creature
+
+            //if (entityType == EntityType.Unknown)
+            //{
+            //    return;
+            //}
+            //if (entityType == EntityType.Turret)
+            //{
+            //    var turret = CreatureBuilder.CreateTurret(EntityType.Predator);
+            //    MyEnvironment.AddCreature(turret, Place.Position, Place.Angle);
+            //    _actionQueue.LastBuildTime = DateTime.Now;
+            //    return;
+            //}
 
             throw new NotSupportedException();
         }

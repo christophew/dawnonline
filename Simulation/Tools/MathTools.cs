@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace DawnOnline.Simulation.Tools
 {
-    static class MathTools
+    static public class MathTools
     {
         public static double GetDistance2(Vector2 position1, Vector2 position2)
         {

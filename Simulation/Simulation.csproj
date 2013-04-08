@@ -72,23 +72,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Brains\ForagerBrain.cs" />
+    <Compile Include="Brains\DummyBrain.cs" />
     <Compile Include="Brains\IBrain.cs" />
-    <Compile Include="Brains\Neural\MemoryInputNode.cs" />
-    <Compile Include="Brains\Neural\NeuralBrain.cs" />
-    <Compile Include="Brains\Neural\Edge.cs" />
-    <Compile Include="Brains\Neural\NeuralNetwork.cs" />
-    <Compile Include="Brains\Neural\Node.cs" />
-    <Compile Include="Brains\Neural\ReinforcementNode.cs" />
-    <Compile Include="Brains\PlantBrain.cs" />
-    <Compile Include="Brains\PredatorBrain.cs" />
-    <Compile Include="Brains\AbstractBrain.cs" />
-    <Compile Include="Brains\PredatorBrain2.cs" />
-    <Compile Include="Brains\ProtectorBrain.cs" />
-    <Compile Include="Brains\RabbitBrain.cs" />
-    <Compile Include="Brains\SpawnPointBrain.cs" />
-    <Compile Include="Brains\TestBrain.cs" />
-    <Compile Include="Brains\TurretBrain.cs" />
     <Compile Include="Builders\BulletBuilder.cs" />
     <Compile Include="Builders\CloneBuilder.cs" />
     <Compile Include="Builders\CreatureBuilder.cs" />
@@ -103,7 +88,6 @@
     <Compile Include="Entities\Collectable.cs" />
     <Compile Include="Entities\Creature.cs" />
     <Compile Include="Entities\ExplosionEffect.cs" />
-    <Compile Include="Entities\IAvatar.cs" />
     <Compile Include="Entities\ICreature.cs" />
     <Compile Include="Entities\IEntity.cs" />
     <Compile Include="Entities\IExplosion.cs" />

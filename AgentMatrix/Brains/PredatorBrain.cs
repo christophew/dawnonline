@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System;
+using DawnOnline.Simulation.Brains;
 using DawnOnline.Simulation.Builders;
 using DawnOnline.Simulation.Entities;
 using DawnOnline.Simulation.Senses;
@@ -9,7 +10,7 @@ using Microsoft.Xna.Framework;
 using System.Linq;
 using SharedConstants;
 
-namespace DawnOnline.Simulation.Brains
+namespace DawnOnline.AgentMatrix.Brains
 {
     internal class PredatorBrain : AbstractBrain
     {

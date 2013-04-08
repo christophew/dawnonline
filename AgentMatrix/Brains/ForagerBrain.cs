@@ -5,7 +5,7 @@ using DawnOnline.Simulation.Senses;
 using DawnOnline.Simulation.Tools;
 using SharedConstants;
 
-namespace DawnOnline.Simulation.Brains
+namespace DawnOnline.AgentMatrix.Brains
 {
     internal class ForagerBrain : PredatorBrain
     {

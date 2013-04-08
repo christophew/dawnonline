@@ -15,37 +15,37 @@ namespace DawnOnline.Simulation.Builders
         //private const double _turnMultiplier = 20000;
         private const double _turnMultiplier = 2;
 
-        public static ICreature CreateCreature(EntityType specy, IEntity spawnPoint)
+        public static ICreature CreateCreature(EntityType specy, IEntity spawnPoint, IBrain brain)
         {
-            var creature = CreateCreature(specy) as Creature;
+            var creature = CreateCreature(specy, brain) as Creature;
             Debug.Assert(creature != null);
             creature.SpawnPoint = spawnPoint;
             return creature;
         }
 
-        public static ICreature CreateCreature(EntityType specy)
+        public static ICreature CreateCreature(EntityType specy, IBrain brain)
         {
             switch (specy)
             {
                 case EntityType.Plant:
-                    return CreatePlant();
+                    return CreatePlant(brain);
                 case EntityType.Predator:
-                    return CreatePredator();
+                    return CreatePredator(brain);
                 case EntityType.Rabbit:
-                    return CreateRabbit();
+                    return CreateRabbit(brain);
                 case EntityType.Turret:
-                    return CreateTurret();
+                    return CreateTurret(brain);
                 case EntityType.SpawnPoint:
-                    return CreateSpawnPoint(EntityType.Predator);
+                    return CreateSpawnPoint(EntityType.Predator, brain);
             }
 
             throw new NotSupportedException();
         }
 
-        public static ICreature CreatePredator()
+        public static ICreature CreatePredator(IBrain brain)
         {
             var critter = new Creature(1.5);
-            critter.Brain = new PredatorBrain();
+            critter.Brain = brain;
             //critter.Brain = new TestBrain();
 
             critter.Specy = EntityType.Predator;
@@ -63,10 +63,10 @@ namespace DawnOnline.Simulation.Builders
             return critter;
         }
 
-        public static ICreature CreateRabbit()
+        public static ICreature CreateRabbit(IBrain brain)
         {
             var critter = new Creature(1);
-            critter.Brain = new RabbitBrain();
+            critter.Brain = brain;
 
             critter.Specy = EntityType.Rabbit;
             critter.FoodSpecies = new List<EntityType> { EntityType.Plant };
@@ -79,10 +79,10 @@ namespace DawnOnline.Simulation.Builders
             return critter;
         }
 
-        public static ICreature CreatePlant()
+        public static ICreature CreatePlant(IBrain brain)
         {
             var critter = new Creature(1.2);
-            critter.Brain = new PlantBrain();
+            critter.Brain = brain;
 
             critter.Specy = EntityType.Plant;
             //critter.FoodSpecy = CreatureType.Predator; // instead: killing creatures can produce plants
@@ -95,7 +95,7 @@ namespace DawnOnline.Simulation.Builders
             return critter;
         }
 
-        public static IAvatar CreateAvatar()
+        public static ICreature CreateAvatar()
         {
             var avatar = new Creature(1.5);
 
@@ -109,12 +109,12 @@ namespace DawnOnline.Simulation.Builders
             return avatar;
         }
 
-        public static ICreature CreateTurret()
+        public static ICreature CreateTurret(IBrain brain)
         {
-            return CreateTurret(EntityType.Avatar);
+            return CreateTurret(EntityType.Avatar, brain);
         }
 
-        public static ICreature CreateTurret(EntityType enemy)
+        public static ICreature CreateTurret(EntityType enemy, IBrain brain)
         {
             var critter = new Creature(1.5);
 
@@ -133,19 +133,20 @@ namespace DawnOnline.Simulation.Builders
             //critter.Place.Fixture.Body.BodyType = BodyType.Static;
             //critter.Place.Fixture.Body.LinearDamping = 100f;
 
-            critter.Brain = new TurretBrain();
+            critter.Brain = brain;
 
 
             return critter;
         }
 
-        public static ICreature CreateSpawnPoint(EntityType spawnType)
+        public static ICreature CreateSpawnPoint(EntityType spawnType, IBrain brain)
         {
             var spawnPoint = new Creature(1.0);
 
             spawnPoint.Specy = EntityType.SpawnPoint;
             //pawnPoint.Place.Fixture.Body.BodyType = BodyType.Static;
-            spawnPoint.Brain = new SpawnPointBrain(spawnType, 30);
+            //spawnPoint.Brain = new SpawnPointBrain(spawnType, 30);
+            spawnPoint.Brain = brain;
 
             // Make the spawnPoint part of the family
             spawnPoint.SpawnPoint = spawnPoint;

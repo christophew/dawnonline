@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace DawnOnline.Simulation.Brains.Neural
+namespace DawnOnline.AgentMatrix.Brains.Neural
 {
     class MemoryInputNode : Node
     {

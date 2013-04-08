@@ -21,7 +21,7 @@ namespace DawnGame
 
         private int _grid = 5;
 
-        private int _nrOfSpawnPoints = 0;
+        //private int _nrOfSpawnPoints = 0;
         private int _nrOfTreasures = 20;
         private int _nrOfWalls = 0;
         private int _nrOfBoxes = 0;
@@ -40,12 +40,12 @@ namespace DawnGame
             //AddCreatures(EntityType.Plant, 300);
             //AddCreatures(EntityType.Predator, 300);
             //AddCreatures(EntityType.Turret, 30);
-            AddSpawnPoints(EntityType.Predator, _nrOfSpawnPoints);
+            //AddSpawnPoints(EntityType.Predator, _nrOfSpawnPoints);
         }
 
-        public IAvatar AddAvatar()
+        public ICreature AddAvatar()
         {
-            IAvatar avatar = CreatureBuilder.CreateAvatar();
+            ICreature avatar = CreatureBuilder.CreateAvatar();
             while (!_environment.AddCreature(avatar,
                                      new Vector2 { X = _randomize.Next((int)MaxX), Y = _randomize.Next((int)MaxY) }, 0))
             {
@@ -55,16 +55,16 @@ namespace DawnGame
             return avatar;
         }
 
-        public IAvatar GetAvatar(int id)
+        public ICreature GetAvatar(int id)
         {
             var avatar = _environment.GetCreatures(EntityType.Avatar).FirstOrDefault(a => a.Id == id);
-            return avatar as IAvatar;
+            return avatar;
         }
 
-        public IAvatar GetCreature(int id)
+        public ICreature GetCreature(int id)
         {
             var avatar = _environment.GetCreatures().FirstOrDefault(a => a.Id == id);
-            return avatar as IAvatar;
+            return avatar;
         }
 
         public Vector2 Center
@@ -160,29 +160,29 @@ namespace DawnGame
             }
         }
 
-        private bool CreatePredatorFactory()
-        {
-            var position = new Vector2(_randomize.Next((int)MaxX / 10) * 10, _randomize.Next((int)MaxY / 10) * 10);
-            var box = ObstacleBuilder.CreatePredatorFactory();
+        //private bool CreatePredatorFactory()
+        //{
+        //    var position = new Vector2(_randomize.Next((int)MaxX / 10) * 10, _randomize.Next((int)MaxY / 10) * 10);
+        //    var box = ObstacleBuilder.CreatePredatorFactory();
 
-            if (!_environment.AddObstacle(box, position))
-                return false;
+        //    if (!_environment.AddObstacle(box, position))
+        //        return false;
 
-            // + SpawnPoints
-            var offset = 125;
-            _environment.AddCreature(CreatureBuilder.CreateSpawnPoint(EntityType.Predator), new Vector2(position.X + offset, position.Y), 0, false);
-            _environment.AddCreature(CreatureBuilder.CreateSpawnPoint(EntityType.Predator), new Vector2(position.X - offset, position.Y), 0, false);
-            _environment.AddCreature(CreatureBuilder.CreateSpawnPoint(EntityType.Predator), new Vector2(position.X, position.Y - offset), 0, false);
-            _environment.AddCreature(CreatureBuilder.CreateSpawnPoint(EntityType.Predator), new Vector2(position.X, position.Y - offset), 0, false);
+        //    // + SpawnPoints
+        //    var offset = 125;
+        //    _environment.AddCreature(CreatureBuilder.CreateSpawnPoint(EntityType.Predator), new Vector2(position.X + offset, position.Y), 0, false);
+        //    _environment.AddCreature(CreatureBuilder.CreateSpawnPoint(EntityType.Predator), new Vector2(position.X - offset, position.Y), 0, false);
+        //    _environment.AddCreature(CreatureBuilder.CreateSpawnPoint(EntityType.Predator), new Vector2(position.X, position.Y - offset), 0, false);
+        //    _environment.AddCreature(CreatureBuilder.CreateSpawnPoint(EntityType.Predator), new Vector2(position.X, position.Y - offset), 0, false);
 
-            // + turrets
-            _environment.AddCreature(CreatureBuilder.CreateTurret(EntityType.Avatar), new Vector2(position.X + offset, position.Y + offset), 0, false);
-            _environment.AddCreature(CreatureBuilder.CreateTurret(EntityType.Avatar), new Vector2(position.X - offset, position.Y + offset), 0, false);
-            _environment.AddCreature(CreatureBuilder.CreateTurret(EntityType.Avatar), new Vector2(position.X - offset, position.Y - offset), 0, false);
-            _environment.AddCreature(CreatureBuilder.CreateTurret(EntityType.Avatar), new Vector2(position.X + offset, position.Y - offset), 0, false);
+        //    // + turrets
+        //    _environment.AddCreature(CreatureBuilder.CreateTurret(EntityType.Avatar), new Vector2(position.X + offset, position.Y + offset), 0, false);
+        //    _environment.AddCreature(CreatureBuilder.CreateTurret(EntityType.Avatar), new Vector2(position.X - offset, position.Y + offset), 0, false);
+        //    _environment.AddCreature(CreatureBuilder.CreateTurret(EntityType.Avatar), new Vector2(position.X - offset, position.Y - offset), 0, false);
+        //    _environment.AddCreature(CreatureBuilder.CreateTurret(EntityType.Avatar), new Vector2(position.X + offset, position.Y - offset), 0, false);
 
-            return true;
-        }
+        //    return true;
+        //}
 
         public IEntity AddCreature(EntityType specy, Vector2 position, float angle, int spawnPointId, int id)
         {
@@ -208,68 +208,68 @@ namespace DawnGame
             throw new NotSupportedException("TODO");
         }
 
-        public IList<IEntity> AddCreatures(EntityType specy, int amount)
-        {
-            var result = new List<IEntity>();
-            for (int i = 0; i < amount;)
-            {
-                var newCreature = CreatureBuilder.CreateCreature(specy);
-                if (_environment.AddCreature(newCreature,
-                                 new Vector2 { X = _randomize.Next((int)MaxX), Y = _randomize.Next((int)MaxY) },
-                                 _randomize.Next(6)))
-                {
-                    i++;
-                    result.Add(newCreature);
-                }
-            }
-            return result;
-        }
+        //public IList<IEntity> AddCreatures(EntityType specy, int amount)
+        //{
+        //    var result = new List<IEntity>();
+        //    for (int i = 0; i < amount;)
+        //    {
+        //        var newCreature = CreatureBuilder.CreateCreature(specy);
+        //        if (_environment.AddCreature(newCreature,
+        //                         new Vector2 { X = _randomize.Next((int)MaxX), Y = _randomize.Next((int)MaxY) },
+        //                         _randomize.Next(6)))
+        //        {
+        //            i++;
+        //            result.Add(newCreature);
+        //        }
+        //    }
+        //    return result;
+        //}
 
-        public void AddSpawnPoints(EntityType spawnType, int amount)
-        {
-            for (int i = 0; i < amount;)
-            {
-                if (_environment.AddCreature(CreatureBuilder.CreateSpawnPoint(spawnType),
-                                 new Vector2(_randomize.Next((int)MaxX), _randomize.Next((int)MaxY)), 
-                                 0))
-                    i++;
-            }
-        }
+        //public void AddSpawnPoints(EntityType spawnType, int amount)
+        //{
+        //    for (int i = 0; i < amount;)
+        //    {
+        //        if (_environment.AddCreature(CreatureBuilder.CreateSpawnPoint(spawnType),
+        //                         new Vector2(_randomize.Next((int)MaxX), _randomize.Next((int)MaxY)), 
+        //                         0))
+        //            i++;
+        //    }
+        //}
 
         public void ApplyMove(double timeDelta)
         {
             _environment.ApplyActions(timeDelta);
 
             // Make sure we always have enough spawnpoints
-            var spawnPoints = _environment.GetCreatures(EntityType.SpawnPoint);
-            if (_environment.GetCreatures(EntityType.SpawnPoint).Count < _nrOfSpawnPoints)
-            {
-                var timer = new Stopwatch();
-                timer.Start();
-                ICreature bestspawnPoint, crossoverMate;
+            //var spawnPoints = _environment.GetCreatures(EntityType.SpawnPoint);
+            //if (_environment.GetCreatures(EntityType.SpawnPoint).Count < _nrOfSpawnPoints)
+            //{
+            //    var timer = new Stopwatch();
+            //    timer.Start();
+            //    ICreature bestspawnPoint, crossoverMate;
 
-                if (spawnPoints.Count == 0)
-                {
-                    bestspawnPoint = CreatureBuilder.CreateSpawnPoint(EntityType.Predator);
-                    crossoverMate = bestspawnPoint;
-                }
-                else
-                {
-                    // find best spawnpoint
-                    bestspawnPoint = GetBestspawnPoint(spawnPoints);
-                    crossoverMate = GetBestspawnPoint(spawnPoints);
-                }
+            //    if (spawnPoints.Count == 0)
+            //    {
+            //        bestspawnPoint = CreatureBuilder.CreateSpawnPoint(EntityType.Predator);
+            //        crossoverMate = bestspawnPoint;
+            //    }
+            //    else
+            //    {
+            //        // find best spawnpoint
+            //        bestspawnPoint = GetBestspawnPoint(spawnPoints);
+            //        crossoverMate = GetBestspawnPoint(spawnPoints);
+            //    }
 
-                // Replicate
-                //AddSpawnPoints(EntityType.Predator, 1);
-                var newSpawnPoint = bestspawnPoint.Replicate(crossoverMate);
-                var position = new Vector2 {X = _randomize.Next((int) MaxX), Y = _randomize.Next((int) MaxY)};
-                _environment.AddCreature(newSpawnPoint, position, 0);
-                _nrOfSpawnPointsReplicated++;
+            //    // Replicate
+            //    //AddSpawnPoints(EntityType.Predator, 1);
+            //    var newSpawnPoint = bestspawnPoint.Replicate(crossoverMate);
+            //    var position = new Vector2 {X = _randomize.Next((int) MaxX), Y = _randomize.Next((int) MaxY)};
+            //    _environment.AddCreature(newSpawnPoint, position, 0);
+            //    _nrOfSpawnPointsReplicated++;
 
-                timer.Stop();
-                Console.WriteLine("Replicate.timer: " + timer.ElapsedMilliseconds);
-            }
+            //    timer.Stop();
+            //    Console.WriteLine("Replicate.timer: " + timer.ElapsedMilliseconds);
+            //}
 
             // Make sure we always have enough Treasure
             var obstacles = _environment.GetObstacles();

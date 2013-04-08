@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using DawnOnline.Simulation.Brains;
 using DawnOnline.Simulation.Entities;
 using Microsoft.Xna.Framework;
 using SharedConstants;
@@ -62,7 +63,7 @@ namespace DawnOnline.Simulation.Builders
 
         public static ICreature CreateCreature(EntityType entityType, IEntity spawnPoint, int id)
         {
-            var creature = CreatureBuilder.CreateCreature(entityType) as Creature;
+            var creature = CreatureBuilder.CreateCreature(entityType, new DummyBrain()) as Creature;
             Debug.Assert(creature != null);
             creature.Id = id;
 
