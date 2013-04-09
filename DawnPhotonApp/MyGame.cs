@@ -396,6 +396,7 @@ namespace MyApplication
                         // Send response
                         var eData = new Dictionary<byte, object>();
                         eData[0] = slowObjectsParam;
+                        eData[1] = CreateNewClientInstanceId();
                         var response = new OperationResponse((byte)MyOperationCodes.LoadWorld, eData);
                         peer.SendOperationResponse(response, new SendParameters { Unreliable = false, ChannelId = 1 });
 
@@ -407,6 +408,14 @@ namespace MyApplication
                     base.ExecuteOperation(peer, operationRequest, sendParameters);
                     break;
             }
+        }
+
+
+        private static int _clientInstanceId = 1;
+        private static int CreateNewClientInstanceId()
+        {
+            Debug.Assert(_clientInstanceId < 1000, "Convention! => needed for Unique id generation");
+            return _clientInstanceId++;
         }
 
         private void HandleAddEntity(OperationRequest operationRequest, LitePeer peer)

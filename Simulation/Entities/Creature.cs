@@ -44,6 +44,12 @@ namespace DawnOnline.Simulation.Entities
                 return family.Id;
             }
         }
+
+        public void SetSpawnPoint(ICreature spawnPoint)
+        {
+            SpawnPoint = spawnPoint;
+        }
+
         
         public Environment MyEnvironment { get; internal set; }
         public ActionQueue MyActionQueue { get { return _actionQueue; } }

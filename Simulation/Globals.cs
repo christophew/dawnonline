@@ -15,7 +15,7 @@ namespace DawnOnline.Simulation
         public static void SetInstanceId(int id)
         {
             Debug.Assert(_instanceId == -1, "Only set once");
-            Debug.Assert(_instanceId < 100, "Not supported: see GenerateUniqueId");
+            Debug.Assert(_instanceId < 1000, "Not supported: see GenerateUniqueId");
             _instanceId = id;
         }
 
@@ -28,7 +28,8 @@ namespace DawnOnline.Simulation
         public static int GenerateUniqueId()
         {
             Debug.Assert(_instanceId != -1);
-            return _currentIdCounter++ * 100 + _instanceId;
+
+            return _currentIdCounter++ * 1000 + _instanceId;
         }
     }
 }

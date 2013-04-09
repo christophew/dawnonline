@@ -81,7 +81,11 @@ namespace DawnOnline.AgentMatrix.Brains
         private void SpawnNeuralForager()
         {
             var replicatedCreature = PrototypeNeuralForager.Replicate(PrototypeNeuralForager);
-            Debug.Assert(replicatedCreature.SpawnPoint == MyCreature);
+
+            // TODO: should work like this
+            //Debug.Assert(replicatedCreature.SpawnPoint == MyCreature);
+            // TODO => this is the shortcut
+            replicatedCreature.SetSpawnPoint(MyCreature);
 
             AddToWorld(replicatedCreature);
         }
