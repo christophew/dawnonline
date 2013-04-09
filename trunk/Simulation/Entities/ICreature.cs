@@ -19,6 +19,7 @@ namespace DawnOnline.Simulation.Entities
         // TEMP PUBLIC
         Environment MyEnvironment { get; }
         ICreature FindCreatureToAttack(List<EntityType> ofTypes);
+        void SetSpawnPoint(ICreature spawnPoint);
 
 
         ActionQueue MyActionQueue { get; }

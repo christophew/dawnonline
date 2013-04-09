@@ -18,7 +18,9 @@ namespace DawnClient
 
         private LitePeer _peer;
         private int _actorId;
-        public int InstanceId { get { return _actorId; } }
+        public int ActorId { get { return _actorId; } }
+        private int _instanceId;
+        public int InstanceId { get { return _instanceId; } }
 
         private DateTime _lastUpdateTime = DateTime.Now;
         private HashSet<AvatarCommand> _avatarCommands = new HashSet<AvatarCommand>();
@@ -394,6 +396,9 @@ namespace DawnClient
                         var staticEntities = entityParam.Select(DawnClientEntity.CreateAddedEntity).ToList();
                         Console.WriteLine(" ->Starting entities: " + staticEntities.Count);
                         DawnWorld.UpdateEntities(staticEntities, true);
+
+                        _instanceId = (int) operationResponse.Parameters[1];
+                        Debug.Assert(_instanceId < 1000, "Convention! => needed for Unique id generation");
 
                         WorldLoaded = true;
 
