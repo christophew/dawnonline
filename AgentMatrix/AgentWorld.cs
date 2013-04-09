@@ -393,7 +393,8 @@ namespace DawnOnline.AgentMatrix
         internal void RepopulateWorld(List<int> myCreatureIds)
         {
             // Make sure we always have enough spawnpoints
-            var spawnPoints = _staticEnvironment.GetCreatures(EntityType.SpawnPoint);
+            //var spawnPoints = _staticEnvironment.GetCreatures(EntityType.SpawnPoint);
+            var spawnPoints = CreatureRepository.GetRepository().GetLivingSpawnpoints();
 
             // Count the amount of spawnpoints "at my command!"
             var countMySpawnPoints = spawnPoints.Count(spawnPoint => myCreatureIds.Contains(spawnPoint.Id));
@@ -406,6 +407,7 @@ namespace DawnOnline.AgentMatrix
 
                 if (spawnPoints.Count == 0)
                 {
+                    // Everybody is dead... create a new eve
                     bestspawnPoint = AgentCreatureBuilder.CreateSpawnPoint();
                     crossoverMate = bestspawnPoint;
                 }
@@ -419,6 +421,8 @@ namespace DawnOnline.AgentMatrix
                 // Replicate
                 //AddSpawnPoints(EntityType.Predator, 1);
                 var newSpawnPoint = bestspawnPoint.Replicate(crossoverMate);
+                newSpawnPoint.Mutate();
+                CreatureRepository.GetRepository().Add(newSpawnPoint);
 
                 // Send correct X, Y position at creation time
                 // Take a safety boundary!

@@ -19,7 +19,7 @@ namespace DawnOnline.AgentMatrix.Brains
         private double _currentSpawnCooldown;
         private DateTime _lastSpawn;
 
-        internal ICreature PrototypeNeuralForager { get; set; }
+        internal ICreature PrototypeCreature { get; set; }
 
         internal SpawnPointBrain(EntityType spawnType, double interval)
         {
@@ -32,7 +32,7 @@ namespace DawnOnline.AgentMatrix.Brains
             //prototypeBrain.PredefineRandomBehaviour();
             //var prototypeBrain = new PredatorBrain();
 
-            PrototypeNeuralForager = prototype;
+            PrototypeCreature = prototype;
         }
 
         public override void DoSomething(TimeSpan timeDelta)
@@ -47,7 +47,7 @@ namespace DawnOnline.AgentMatrix.Brains
             // Score increase when we spawn
             //MyCreature.CharacterSheet.Score += 5;
 
-            SpawnNeuralForager();
+            SpawnNeuralCreature();
 
             //var choice = Globals.Radomizer.Next(3);
             //if (choice == 0 || choice == 1)
@@ -78,9 +78,9 @@ namespace DawnOnline.AgentMatrix.Brains
         //    AddToWorld(creature);
         //}
 
-        private void SpawnNeuralForager()
+        private void SpawnNeuralCreature()
         {
-            var replicatedCreature = PrototypeNeuralForager.Replicate(PrototypeNeuralForager);
+            var replicatedCreature = PrototypeCreature.Replicate(PrototypeCreature);
 
             // TODO: should work like this
             //Debug.Assert(replicatedCreature.SpawnPoint == MyCreature);
@@ -112,12 +112,17 @@ namespace DawnOnline.AgentMatrix.Brains
             var spawnPointMate = mate as SpawnPointBrain;
             Debug.Assert(spawnPointMate != null, "sodomy!");
 
-           newBrain.PrototypeNeuralForager = PrototypeNeuralForager.Replicate(spawnPointMate.PrototypeNeuralForager);
+           newBrain.PrototypeCreature = PrototypeCreature.Replicate(spawnPointMate.PrototypeCreature);
 
             // MUTATE 
             //newBrain.PrototypeNeuralForager.Mutate();
 
             return newBrain;
+        }
+
+        public override void Mutate()
+        {
+            PrototypeCreature.Mutate();
         }
     }
 }
