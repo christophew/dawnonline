@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 
 namespace DawnOnline.AgentMatrix.Brains.Neural
 {
@@ -48,5 +50,43 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
                 edge.ToNode.CurrentValue += CurrentValue * edge.Multiplier;
             }
         }
+
+        internal void Serialize(BinaryWriter writer)
+        {
+            writer.Write(_threshold);
+
+            if (OutGoingEdges != null)
+            {
+                writer.Write(OutGoingEdges.Length);
+                foreach (var edge in OutGoingEdges)
+                {
+                    edge.Serialize(writer);
+                }
+            }
+            else
+            {
+                writer.Write(0);
+            }
+        }
+
+        internal void Deserialize(BinaryReader reader)
+        {
+            _threshold = reader.ReadInt32();
+
+            var nrOfEdges = reader.ReadInt32();
+            if (OutGoingEdges != null)
+            {
+                Debug.Assert(nrOfEdges == OutGoingEdges.Length, "OutGoingEdges should have been initialized");
+                foreach (var edge in OutGoingEdges)
+                {
+                    edge.Deserialize(reader);
+                }
+            }
+            else
+            {
+                Debug.Assert(nrOfEdges == 0, "OutGoingEdges should have been initialized");
+            }
+        }
+
     }
 }

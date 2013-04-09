@@ -14,7 +14,10 @@ namespace DawnOnline.AgentMatrix
         public static ICreature CreateSpawnPoint()
         {
             var spawnPointBrain = new SpawnPointBrain(EntityType.Predator, 30);
-            return CreatureBuilder.CreateSpawnPoint(EntityType.Predator, spawnPointBrain);
+            var newSpawnPoint = CreatureBuilder.CreateSpawnPoint(EntityType.Predator, spawnPointBrain);
+            CreatureRepository.GetRepository().Add(newSpawnPoint);
+
+            return newSpawnPoint;
         }
     }
 }

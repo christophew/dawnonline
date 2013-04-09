@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 
 namespace DawnOnline.AgentMatrix.Brains.Neural
 {
@@ -244,5 +245,45 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             return info;
         }
 
+        public void Serialize(Stream stream)
+        {
+            using (var writer = new BinaryWriter(stream))
+            {
+                SerializeNodes(writer, _inputNodes);
+                SerializeNodes(writer, _reinforcementInputNodes);
+                SerializeNodes(writer, _layerNodes);
+                SerializeNodes(writer, _outputNodes);
+            }
+        }
+
+        private static void SerializeNodes(BinaryWriter writer, Node[] nodes)
+        {
+            writer.Write(nodes.Length);
+            foreach (var node in nodes)
+            {
+                node.Serialize(writer);
+            }
+        }
+
+        public void Deserialize(Stream stream)
+        {
+            using (var reader = new BinaryReader(stream))
+            {
+                DeserializeNodes(reader, _inputNodes);
+                DeserializeNodes(reader, _reinforcementInputNodes);
+                DeserializeNodes(reader, _layerNodes);
+                DeserializeNodes(reader, _outputNodes);
+            }
+        }
+
+        private static void DeserializeNodes(BinaryReader reader, Node[] nodes)
+        {
+            var nrOfNodes = reader.ReadInt32();
+            Debug.Assert(nrOfNodes == nodes.Length, "Nodes should have been initialized");
+            foreach (var node in nodes)
+            {
+                node.Deserialize(reader);
+            }
+        }
     }
 }

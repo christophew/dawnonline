@@ -1,4 +1,6 @@
-﻿namespace DawnOnline.AgentMatrix.Brains.Neural
+﻿using System.IO;
+
+namespace DawnOnline.AgentMatrix.Brains.Neural
 {
     class Edge
     {
@@ -25,5 +27,17 @@
 
 
         internal Node ToNode { get; set; }
+
+        internal void Serialize(BinaryWriter writer)
+        {
+            writer.Write(_multiplier);
+
+            // ToNode is static on create
+        }
+
+        internal void Deserialize(BinaryReader reader)
+        {
+            _multiplier = reader.ReadDouble();
+        }
     }
 }
