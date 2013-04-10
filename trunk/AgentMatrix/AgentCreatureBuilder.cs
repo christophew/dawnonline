@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DawnOnline.AgentMatrix.Brains;
+using DawnOnline.AgentMatrix.Repository;
 using DawnOnline.Simulation.Builders;
 using DawnOnline.Simulation.Entities;
 using SharedConstants;

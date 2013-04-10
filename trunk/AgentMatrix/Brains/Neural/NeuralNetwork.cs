@@ -245,15 +245,12 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             return info;
         }
 
-        public void Serialize(Stream stream)
+        public void Serialize(BinaryWriter writer)
         {
-            using (var writer = new BinaryWriter(stream))
-            {
-                SerializeNodes(writer, _inputNodes);
-                SerializeNodes(writer, _reinforcementInputNodes);
-                SerializeNodes(writer, _layerNodes);
-                SerializeNodes(writer, _outputNodes);
-            }
+            SerializeNodes(writer, _inputNodes);
+            SerializeNodes(writer, _reinforcementInputNodes);
+            SerializeNodes(writer, _layerNodes);
+            SerializeNodes(writer, _outputNodes);
         }
 
         private static void SerializeNodes(BinaryWriter writer, Node[] nodes)
@@ -265,15 +262,12 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             }
         }
 
-        public void Deserialize(Stream stream)
+        public void Deserialize(BinaryReader reader)
         {
-            using (var reader = new BinaryReader(stream))
-            {
-                DeserializeNodes(reader, _inputNodes);
-                DeserializeNodes(reader, _reinforcementInputNodes);
-                DeserializeNodes(reader, _layerNodes);
-                DeserializeNodes(reader, _outputNodes);
-            }
+            DeserializeNodes(reader, _inputNodes);
+            DeserializeNodes(reader, _reinforcementInputNodes);
+            DeserializeNodes(reader, _layerNodes);
+            DeserializeNodes(reader, _outputNodes);
         }
 
         private static void DeserializeNodes(BinaryReader reader, Node[] nodes)

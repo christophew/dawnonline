@@ -37,12 +37,18 @@ namespace AgentMatrixTests
             }
 
             var stream = new MemoryStream();
-            neuralNetwork.Serialize(stream);
+            using (var writer = new BinaryWriter(stream))
+            {
+                neuralNetwork.Serialize(writer);
+            }
             stream.Close();
 
             var restoredNetwork = new NeuralNetwork(4, 10, 4, 10);
             var restoredStream = new MemoryStream(stream.GetBuffer());
-            restoredNetwork.Deserialize(restoredStream);
+            using (var reader = new BinaryReader(restoredStream))
+            {
+                restoredNetwork.Deserialize(reader);
+            }
 
             // test correct values
             counter = startCounter;
@@ -99,12 +105,18 @@ namespace AgentMatrixTests
             }
 
             var stream = new MemoryStream();
-            neuralNetwork.Serialize(stream);
+            using (var writer = new BinaryWriter(stream))
+            {
+                neuralNetwork.Serialize(writer);
+            }
             stream.Close();
 
             var restoredNetwork = new NeuralNetwork(4, 10, 4, 10);
             var restoredStream = new MemoryStream(stream.GetBuffer());
-            restoredNetwork.Deserialize(restoredStream);
+            using (var reader = new BinaryReader(restoredStream))
+            {
+                restoredNetwork.Deserialize(reader);
+            }
 
             // test correct values
             counter = startCounter;

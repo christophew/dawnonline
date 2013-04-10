@@ -65,10 +65,10 @@ namespace DawnOnline.Simulation.Entities
 
         public bool HasBrain { get { return Brain != null; } }
 
-        internal IBrain Brain 
+        public IBrain Brain 
         { 
             get { return _brain; }
-            set
+            internal set
             {
                 _brain = value;
                 _brain.SetCreature(this);

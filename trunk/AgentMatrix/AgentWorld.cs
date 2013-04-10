@@ -7,6 +7,7 @@ using System.Text;
 using DawnClient;
 using DawnOnline.AgentMatrix;
 using DawnOnline.AgentMatrix.Brains;
+using DawnOnline.AgentMatrix.Repository;
 using DawnOnline.Simulation;
 using DawnOnline.Simulation.Builders;
 using DawnOnline.Simulation.Entities;
@@ -394,7 +395,7 @@ namespace DawnOnline.AgentMatrix
         {
             // Make sure we always have enough spawnpoints
             //var spawnPoints = _staticEnvironment.GetCreatures(EntityType.SpawnPoint);
-            var spawnPoints = CreatureRepository.GetRepository().GetLivingSpawnpoints();
+            var spawnPoints = CreatureRepository.GetRepository().GetSortedRelevantSpawnpoints();
 
             // Count the amount of spawnpoints "at my command!"
             var countMySpawnPoints = spawnPoints.Count(spawnPoint => myCreatureIds.Contains(spawnPoint.Id));
@@ -442,7 +443,7 @@ namespace DawnOnline.AgentMatrix
             }
         }
 
-        private static ICreature GetBestspawnPoint(IList<ICreature> spawnPoints)
+        private static ICreature GetBestspawnPoint(IList<ICreature> sortedSpawnPoints)
         {
             // Absolute
 
@@ -458,10 +459,9 @@ namespace DawnOnline.AgentMatrix
 
             // By better chance
             var randomizer = new Random((int)DateTime.Now.Ticks);
-            var tempSpawnPoints = spawnPoints.OrderByDescending(sp => sp.CharacterSheet.Score);
             for (; ; )
             {
-                foreach (var sp in tempSpawnPoints)
+                foreach (var sp in sortedSpawnPoints)
                 {
                     if (randomizer.Next(3) == 0)
                     {

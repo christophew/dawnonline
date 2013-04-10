@@ -35,6 +35,14 @@ namespace DawnOnline.Simulation.Statistics
         public Monitor Fatigue { get; internal set; }
         public Monitor Damage { get; internal set; }
 
+        // Prototype Persistency
+        public void Restore(double score, int generation)
+        {
+            Score = score;
+            Generation = generation;
+        }
+
+
         internal CharacterSheet()
         {
             Fatigue = new Monitor();

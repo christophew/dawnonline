@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using DawnClient;
+using DawnOnline.AgentMatrix.Repository;
 using SharedConstants;
 
 namespace DawnOnline.AgentMatrix
@@ -33,13 +34,14 @@ namespace DawnOnline.AgentMatrix
                 return _agentWorld;
 
             _agentWorld = new AgentWorld(instanceId);
-            _dawnClient.WorldLoadedEvent += delegate
-                                                {
-                                                    for (int i = 0; i < 1; i++)
-                                                    {
-                                                        _agentWorld.AddCreature(AgentCreatureBuilder.CreateSpawnPoint());
-                                                    }
-                                                };
+            // Handled by Repopulate
+            //_dawnClient.WorldLoadedEvent += delegate
+            //                                    {
+            //                                        for (int i = 0; i < 1; i++)
+            //                                        {
+            //                                            _agentWorld.AddCreature(AgentCreatureBuilder.CreateSpawnPoint());
+            //                                        }
+            //                                    };
             return _agentWorld;
         }
 
@@ -100,6 +102,8 @@ namespace DawnOnline.AgentMatrix
                         //_dawnClient.Update();
                         //agentWorld.Think(10, _dawnClient.CreatedCreatureIds);
 
+                        // Persist
+                        CreatureRepository.GetRepository().Save();
 
                         // Test
                         WriteDebugInfo(agentWorld);

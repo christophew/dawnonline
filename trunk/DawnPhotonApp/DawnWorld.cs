@@ -22,9 +22,10 @@ namespace DawnGame
         private int _grid = 5;
 
         //private int _nrOfSpawnPoints = 0;
-        private int _nrOfTreasures = 20;
-        private int _nrOfWalls = 200;
-        private int _nrOfBoxes = 100;
+        private int _nrOfTreasures = 50;
+        private int _nrOfWalls = 300;
+        private int _maxWallLength = 10;
+        private int _nrOfBoxes = 0;
         private int _stablePopulationSize = 500;
 
         private int _nrOfSpawnPointsReplicated = 0;
@@ -128,12 +129,10 @@ namespace DawnGame
             {
                 var position = new Vector2(_randomize.Next((int)MaxX / _grid) * _grid, _randomize.Next((int)MaxY / _grid) * _grid);
 
-                int maxLength = 5;
-
                 // Horizontal/Vertical switch
                 if (_randomize.Next(2) == 0)
                 {
-                    int maxHorizontal = _randomize.Next(maxLength);
+                    int maxHorizontal = _randomize.Next(_maxWallLength);
                     for (int j = 0; j < maxHorizontal; j++)
                     {
                         if (_environment.AddObstacle(ObstacleBuilder.CreateWall(WorldConstants.WallHeight, WorldConstants.WallWide), position + new Vector2(0, _grid * j))) i++;
@@ -141,7 +140,7 @@ namespace DawnGame
                 }
                 else
                 {
-                    int maxVertical = _randomize.Next(maxLength);
+                    int maxVertical = _randomize.Next(_maxWallLength);
                     for (int j = 0; j < maxVertical; j++)
                     {
                         if (_environment.AddObstacle(ObstacleBuilder.CreateWall(WorldConstants.WallHeight, WorldConstants.WallWide), position + new Vector2(_grid * j, 0))) i++;

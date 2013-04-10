@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using DawnOnline.AgentMatrix.Brains.Neural;
@@ -14,8 +15,8 @@ namespace DawnOnline.AgentMatrix.Brains
     class SpawnPointBrain : AbstractBrain
     {
         private readonly EntityType _spawnType;
-
         private readonly double _maxSpawnCooldown;
+
         private double _currentSpawnCooldown;
         private DateTime _lastSpawn;
 
@@ -123,6 +124,30 @@ namespace DawnOnline.AgentMatrix.Brains
         public override void Mutate()
         {
             PrototypeCreature.Mutate();
+        }
+
+        public void Serialize(BinaryWriter writer)
+        {
+            writer.Write((int)_spawnType);
+            writer.Write(_maxSpawnCooldown);
+
+            var neuralBrain = PrototypeCreature.Brain as NeuralBrain;
+            Debug.Assert(neuralBrain != null, "TODO");
+
+            neuralBrain.Serialize(writer);
+        }
+
+        public void Deserialize(BinaryReader reader)
+        {
+            var spawnType = (EntityType) reader.ReadInt32();
+            Debug.Assert(spawnType == _spawnType, "Validate");
+            var maxSpawnCooldown = reader.ReadDouble();
+            Debug.Assert(maxSpawnCooldown == _maxSpawnCooldown, "Validate");
+
+            var neuralBrain = PrototypeCreature.Brain as NeuralBrain;
+            Debug.Assert(neuralBrain != null, "TODO");
+
+            neuralBrain.Deserialize(reader);
         }
     }
 }
