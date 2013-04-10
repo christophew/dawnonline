@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DawnOnline.Simulation.Brains
 {
-    class DummyBrain : IBrain
+    public class DummyBrain : IBrain
     {
         #region IBrain Members
 

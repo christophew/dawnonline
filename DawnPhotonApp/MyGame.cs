@@ -270,9 +270,6 @@ namespace MyApplication
                 this.PublishEvent(eData, this.Actors, sendParameters);
                 Monitoring.Register_SendEntityPhotonPackages(currentDataList.Count);
             }
-
-
-            Debug.Assert(fragmentIndex < 50);
         }
 
         private static IEnumerable<IEntityPhotonPacket> PreprocessEntityPackages(Dictionary<int, IEntityPhotonPacket> entityPositions, Dictionary<int, IEntityPhotonPacket> previousPositions)

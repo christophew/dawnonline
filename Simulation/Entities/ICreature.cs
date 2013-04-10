@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DawnOnline.Simulation.Brains;
 using DawnOnline.Simulation.Statistics;
 using SharedConstants;
 
@@ -20,6 +21,7 @@ namespace DawnOnline.Simulation.Entities
         Environment MyEnvironment { get; }
         ICreature FindCreatureToAttack(List<EntityType> ofTypes);
         void SetSpawnPoint(ICreature spawnPoint);
+        IBrain Brain { get; }
 
 
         ActionQueue MyActionQueue { get; }

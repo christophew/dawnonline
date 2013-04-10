@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using DawnOnline.Simulation.Brains;
@@ -12,11 +13,12 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
     internal class NeuralBrain : ForagerBrain
     {
         private NeuralNetwork _adrenalineModeNetwork;
-        private int _adrenalineInputNodes = 18; // 3x eye x3, bumper, health, stamina, 2x random, 2x ears x2
-        private int _adrenalineOutputNodes = 4; 
+        private const int _adrenalineInputNodes = 18; // 3x eye x3, bumper, health, stamina, 2x random, 2x ears x2
+        private const int _adrenalineOutputNodes = 4; 
+
         private NeuralNetwork _foragerModeNetwork;
-        private int _foragerInputNodes = 18; // 3x eye x3, bumper, health, stamina, 2x random, 2x ears x2
-        private int _foragerOutputNodes = 4;
+        private const int _foragerInputNodes = 18; // 3x eye x3, bumper, health, stamina, 2x random, 2x ears x2
+        private const int _foragerOutputNodes = 4;
 
         internal void PredefineRandomBehaviour()
         {
@@ -273,6 +275,18 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             _adrenalineModeNetwork.Mutate();
             Console.WriteLine("NeutralMode: ");
             _foragerModeNetwork.Mutate();
+        }
+
+        public void Serialize(BinaryWriter writer)
+        {
+            _adrenalineModeNetwork.Serialize(writer);
+            _foragerModeNetwork.Serialize(writer);
+        }
+
+        public void Deserialize(BinaryReader reader)
+        {
+            _adrenalineModeNetwork.Deserialize(reader);
+            _foragerModeNetwork.Deserialize(reader);
         }
     }
 }
