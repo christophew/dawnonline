@@ -47,7 +47,10 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
 
             foreach (var edge in OutGoingEdges)
             {
-                edge.ToNode.CurrentValue += CurrentValue * edge.Multiplier;
+                if (edge.Enabled)
+                {
+                    edge.ToNode.CurrentValue += CurrentValue * edge.Multiplier;
+                }
             }
         }
 
