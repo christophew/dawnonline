@@ -153,10 +153,12 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             for (var j=0; j < oldNode.OutGoingEdges.Length; j++)
             {
                 newNode.OutGoingEdges[j].Multiplier = oldNode.OutGoingEdges[j].Multiplier;
+                newNode.OutGoingEdges[j].Enabled = oldNode.OutGoingEdges[j].Enabled;
             }
         }
 
         private static int _mutationRate = 150;
+        private static int _mutationRate2 = 5000;
         private static int _mutationImpact = 10;
 
         internal void Mutate()
@@ -200,16 +202,17 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
         {
             foreach (var edge in node.OutGoingEdges)
             {
+                // Mutate multiplier
                 if (Globals.Radomizer.Next(_mutationRate) == 0)
                 {
+                    // [-_mutationImpact, _mutationImpact]
                     var impact = Globals.Radomizer.Next(_mutationImpact + 1) - _mutationImpact / 2;
-                    if (impact == 0)
-                    {
-                        // Reset edge
-                        edge.Multiplier = 0;
-                        continue;
-                    }
                     edge.Multiplier += impact / 10.0;
+                }
+                // Enable/Disable edge
+                if (Globals.Radomizer.Next(_mutationRate2) == 0)
+                {
+                    edge.Enabled = !edge.Enabled;
                 }
             }
         }

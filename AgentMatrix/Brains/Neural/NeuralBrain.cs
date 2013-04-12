@@ -157,7 +157,7 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
 
                 foreach (var edge in node.OutGoingEdges)
                 {
-                    edge.Multiplier = Globals.Radomizer.Next(200) - 100;
+                    edge.Initialize(Globals.Radomizer.Next(200) - 100);
                 }
             }
 
@@ -167,7 +167,7 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
 
                 foreach (var edge in node.OutGoingEdges)
                 {
-                    edge.Multiplier = Globals.Radomizer.Next(200) - 100;
+                    edge.Initialize(Globals.Radomizer.Next(200) - 100);
                 }
             }
 
@@ -177,7 +177,7 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
 
                 foreach (var edge in node.OutGoingEdges)
                 {
-                    edge.Multiplier = Globals.Radomizer.Next(200) - 100;
+                    edge.Initialize(Globals.Radomizer.Next(200) - 100);
                 }
             }
         }
@@ -190,13 +190,13 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
                 _adrenalineModeNetwork = new NeuralNetwork(_adrenalineInputNodes, _adrenalineInputNodes * 2, _adrenalineOutputNodes + _adrenalineInputNodes, _adrenalineInputNodes);
 
                 // Eyes
-                _adrenalineModeNetwork.InputNodes[0].OutGoingEdges[0].Multiplier = 1.5;
-                _adrenalineModeNetwork.InputNodes[1].OutGoingEdges[1].Multiplier = 1.5;
-                _adrenalineModeNetwork.InputNodes[2].OutGoingEdges[2].Multiplier = 1.5;
+                _adrenalineModeNetwork.InputNodes[0].OutGoingEdges[0].Initialize(1.5);
+                _adrenalineModeNetwork.InputNodes[1].OutGoingEdges[1].Initialize(1.5);
+                _adrenalineModeNetwork.InputNodes[2].OutGoingEdges[2].Initialize(1.5);
 
-                _adrenalineModeNetwork.LayerNodes[0].OutGoingEdges[0].Multiplier = -1.5;
-                _adrenalineModeNetwork.LayerNodes[1].OutGoingEdges[1].Multiplier = 1.5;
-                _adrenalineModeNetwork.LayerNodes[2].OutGoingEdges[0].Multiplier = 1.5;
+                _adrenalineModeNetwork.LayerNodes[0].OutGoingEdges[0].Initialize(-1.5);
+                _adrenalineModeNetwork.LayerNodes[1].OutGoingEdges[1].Initialize(1.5);
+                _adrenalineModeNetwork.LayerNodes[2].OutGoingEdges[0].Initialize(1.5);
 
                 // bumper
 
@@ -204,9 +204,9 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
                 // Reinforcement
                 BuildStandardReinforcementSetup(_adrenalineModeNetwork);
 
-                _adrenalineModeNetwork.ReinforcementInputNodes[0].OutGoingEdges[0].Multiplier = 0.5;
-                _adrenalineModeNetwork.ReinforcementInputNodes[1].OutGoingEdges[1].Multiplier = 0.5;
-                _adrenalineModeNetwork.ReinforcementInputNodes[2].OutGoingEdges[2].Multiplier = 0.5;
+                _adrenalineModeNetwork.ReinforcementInputNodes[0].OutGoingEdges[0].Initialize(0.5);
+                _adrenalineModeNetwork.ReinforcementInputNodes[1].OutGoingEdges[1].Initialize(0.5);
+                _adrenalineModeNetwork.ReinforcementInputNodes[2].OutGoingEdges[2].Initialize(0.5);
 
             }
 
@@ -216,13 +216,13 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
                _foragerModeNetwork = new NeuralNetwork(_foragerInputNodes, _foragerInputNodes * 2, _foragerOutputNodes + _foragerInputNodes, _foragerInputNodes);
 
                 // eyes
-                _foragerModeNetwork.InputNodes[3].OutGoingEdges[0].Multiplier = 1;
-                _foragerModeNetwork.InputNodes[4].OutGoingEdges[1].Multiplier = 1;
-                _foragerModeNetwork.InputNodes[5].OutGoingEdges[2].Multiplier = 1;
+                _foragerModeNetwork.InputNodes[3].OutGoingEdges[0].Initialize(1);
+                _foragerModeNetwork.InputNodes[4].OutGoingEdges[1].Initialize(1);
+                _foragerModeNetwork.InputNodes[5].OutGoingEdges[2].Initialize(1);
 
-                _foragerModeNetwork.LayerNodes[0].OutGoingEdges[0].Multiplier = -1;
-                _foragerModeNetwork.LayerNodes[1].OutGoingEdges[1].Multiplier = 1;
-                _foragerModeNetwork.LayerNodes[2].OutGoingEdges[0].Multiplier = 1;
+                _foragerModeNetwork.LayerNodes[0].OutGoingEdges[0].Initialize(-1);
+                _foragerModeNetwork.LayerNodes[1].OutGoingEdges[1].Initialize(1);
+                _foragerModeNetwork.LayerNodes[2].OutGoingEdges[0].Initialize(1);
 
 
                 // Reinforcement
@@ -230,20 +230,20 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
 
 
                 // bumper
-                _foragerModeNetwork.ReinforcementInputNodes[9].OutGoingEdges[0].Multiplier = 0.5;
-                _foragerModeNetwork.ReinforcementInputNodes[9].OutGoingEdges[1].Multiplier = -2; 
-                _foragerModeNetwork.ReinforcementInputNodes[9].OutGoingEdges[2].Multiplier = -0.5; 
+                _foragerModeNetwork.ReinforcementInputNodes[9].OutGoingEdges[0].Initialize(0.5);
+                _foragerModeNetwork.ReinforcementInputNodes[9].OutGoingEdges[1].Initialize(-2); 
+                _foragerModeNetwork.ReinforcementInputNodes[9].OutGoingEdges[2].Initialize(-0.5); 
 
                 // random nodes
 
                 // reinforced random: input nodes
-                _foragerModeNetwork.ReinforcementInputNodes[10].OutGoingEdges[0].Multiplier = .1;
-                _foragerModeNetwork.ReinforcementInputNodes[10].OutGoingEdges[1].Multiplier = .3;
-                _foragerModeNetwork.ReinforcementInputNodes[10].OutGoingEdges[2].Multiplier = -.1;
+                _foragerModeNetwork.ReinforcementInputNodes[10].OutGoingEdges[0].Initialize(.1);
+                _foragerModeNetwork.ReinforcementInputNodes[10].OutGoingEdges[1].Initialize(.3);
+                _foragerModeNetwork.ReinforcementInputNodes[10].OutGoingEdges[2].Initialize(-.1);
 
-                _foragerModeNetwork.ReinforcementInputNodes[11].OutGoingEdges[0].Multiplier = -.1;
-                _foragerModeNetwork.ReinforcementInputNodes[11].OutGoingEdges[1].Multiplier = .3;
-                _foragerModeNetwork.ReinforcementInputNodes[11].OutGoingEdges[2].Multiplier = .1;
+                _foragerModeNetwork.ReinforcementInputNodes[11].OutGoingEdges[0].Initialize(-.1);
+                _foragerModeNetwork.ReinforcementInputNodes[11].OutGoingEdges[1].Initialize(.3);
+                _foragerModeNetwork.ReinforcementInputNodes[11].OutGoingEdges[2].Initialize(.1);
             }
 
             // Memory
@@ -258,15 +258,15 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             const double originalDecay = 1;
             for (int i = 0; i < network.InputNodes.Length; i++)
             {
-                network.InputNodes[i].OutGoingEdges[network.InputNodes.Length + i].Multiplier = originalDecay;
+                network.InputNodes[i].OutGoingEdges[network.InputNodes.Length + i].Initialize(originalDecay);
             }
             // standard reinforcement setup: small decay
             const double decay = 0.9;
             var nrOfOutputNodes = network.OutputNodes.Length - network.ReinforcementInputNodes.Length;
             for (int i = 0; i < network.ReinforcementInputNodes.Length; i++)
             {
-                network.ReinforcementInputNodes[i].OutGoingEdges[network.InputNodes.Length + i].Multiplier = decay;
-                network.LayerNodes[network.InputNodes.Length + i].OutGoingEdges[nrOfOutputNodes + i].Multiplier = decay;
+                network.ReinforcementInputNodes[i].OutGoingEdges[network.InputNodes.Length + i].Initialize(decay);
+                network.LayerNodes[network.InputNodes.Length + i].OutGoingEdges[nrOfOutputNodes + i].Initialize(decay);
             }
         }
 

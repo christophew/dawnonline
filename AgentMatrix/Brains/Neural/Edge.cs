@@ -25,12 +25,21 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             }
         }
 
+        internal bool Enabled { get; set; }
+
+        internal void Initialize(double multiplier)
+        {
+            Multiplier = multiplier;
+            Enabled = multiplier != 0;
+        }
+
 
         internal Node ToNode { get; set; }
 
         internal void Serialize(BinaryWriter writer)
         {
             writer.Write(_multiplier);
+            writer.Write(Enabled);
 
             // ToNode is static on create
         }
@@ -38,6 +47,7 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
         internal void Deserialize(BinaryReader reader)
         {
             _multiplier = reader.ReadDouble();
+            Enabled = reader.ReadBoolean();
         }
     }
 }
