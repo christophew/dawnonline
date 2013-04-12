@@ -35,6 +35,7 @@ namespace DawnOnline.Simulation
         internal DateTime LastAttackTime { get; set; }
         internal DateTime LastBuildTime { get; set; }
         internal DateTime LastRestTime { get; set; }
+        internal DateTime LastRegenTime { get; set; }
 
         internal void ClearForRound()
         {

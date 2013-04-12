@@ -73,7 +73,7 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             return edges;
         }
 
-        internal void Reset()
+        internal void ClearInput()
         {
             // Do not clear the reinforcement nodes
 
@@ -88,6 +88,16 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             foreach (var outputNode in _outputNodes)
             {
                 outputNode.CurrentValue = 0;
+            }
+        }
+
+        internal void ClearReinforcementInput()
+        {
+            // Do not clear the reinforcement nodes
+
+            foreach (var node in _reinforcementInputNodes)
+            {
+                node.CurrentValue = 0;
             }
         }
 

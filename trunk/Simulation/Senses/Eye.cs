@@ -33,7 +33,7 @@ namespace DawnOnline.Simulation.Senses
         {
             foreach (var entity in sortedEntities)
             {
-                // sortedEntitities should be descended sorted on distance
+                // sortedEntitities should be ascended sorted on distance
                 if (_OutOfRange(entity))
                     break;
 

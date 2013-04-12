@@ -24,6 +24,7 @@ namespace DawnOnline.Simulation.Statistics
         public double AttackCoolDown { get; internal set; }
         public double BuildCoolDown { get; internal set; }
         public double RestCoolDown { get; internal set; }
+        public double RegenCoolDown { get; internal set; }
 
         internal double FoodValue { get; set; }
 
@@ -35,7 +36,11 @@ namespace DawnOnline.Simulation.Statistics
         public Monitor Fatigue { get; internal set; }
         public Monitor Damage { get; internal set; }
 
-        // Prototype Persistency
+        // Regen
+        public double FatigueRegen { get; internal set; }
+        public double HealthRegen { get; internal set; }
+
+        // Prototype Persistency layer
         public void Restore(double score, int generation)
         {
             Score = score;
@@ -58,9 +63,14 @@ namespace DawnOnline.Simulation.Statistics
             MeleeDamage = 25;
 
             FoodValue = 10;
+
             AttackCoolDown = 0.2; // Seconds
             BuildCoolDown = 5; // Seconds
             RestCoolDown = 1; // Seconds
+            RegenCoolDown = 2; // Seconds
+
+            FatigueRegen = 1;
+            HealthRegen = 0;
         }
 
         internal CharacterSheet Replicate()
@@ -79,8 +89,12 @@ namespace DawnOnline.Simulation.Statistics
             newCharacterSheet.AttackCoolDown = AttackCoolDown;
             newCharacterSheet.BuildCoolDown = BuildCoolDown;
             newCharacterSheet.RestCoolDown = RestCoolDown;
+            newCharacterSheet.RegenCoolDown = RegenCoolDown;
 
             newCharacterSheet.FoodValue = FoodValue;
+
+            newCharacterSheet.FatigueRegen = FatigueRegen;
+            newCharacterSheet.HealthRegen = HealthRegen;
 
             // Increase generation
             newCharacterSheet.Generation = Generation + 1;
