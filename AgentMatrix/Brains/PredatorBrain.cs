@@ -24,8 +24,8 @@ namespace DawnOnline.AgentMatrix.Brains
         protected Dictionary<IEye, double> _eyeSeeTreasure = new Dictionary<IEye, double>();
         protected Dictionary<IEye, double> _eyeSeeWalls = new Dictionary<IEye, double>();
 
-        protected IEar _leftEar;
-        protected IEar _rightEar;
+        //protected IEar _leftEar;
+        //protected IEar _rightEar;
 
         protected enum EvadeState
         {
@@ -208,9 +208,6 @@ namespace DawnOnline.AgentMatrix.Brains
             var filtered = new List<IEntity>();
             foreach(ICreature entity in sortedOnDistance)
             {
-                // Not me
-                if (entity == MyCreature)
-                    continue;
                 // Not my family
                 if (entity.SpawnPoint == MyCreature.SpawnPoint)
                     continue;
@@ -237,51 +234,6 @@ namespace DawnOnline.AgentMatrix.Brains
             _eyeSeeTreasure.Add(_rightEye, _rightEye.DistanceToFirstVisible(sortedOnDistance));
         }
 
-        private List<IEntity> FilterAndSortOnDistance(IEnumerable<IEntity> entities)
-        {
-            var creaturePosition = MyCreature.Place.Position;
-
-            // exclude all entities outside the bounding box of the vision range
-            var minX = creaturePosition.X - MyCreature.CharacterSheet.VisionDistance;
-            var maxX = creaturePosition.X + MyCreature.CharacterSheet.VisionDistance;
-            var minY = creaturePosition.Y - MyCreature.CharacterSheet.VisionDistance;
-            var maxY = creaturePosition.Y + MyCreature.CharacterSheet.VisionDistance;
-            var boxOptimizedList = new List<IEntity>();
-            foreach (var entity in entities)
-            {
-                var entityPosition = entity.Place.Position;
-                if (entityPosition.X < minX)
-                    continue;
-                if (entityPosition.X > maxX)
-                    continue;
-                if (entityPosition.Y < minY)
-                    continue;
-                if (entityPosition.Y > maxY)
-                    continue;
-
-                boxOptimizedList.Add(entity);
-            }
-
-            // Filter on exact distance
-            var maxDistance2 = MyCreature.CharacterSheet.VisionDistance * MyCreature.CharacterSheet.VisionDistance;
-            var filteredWithDistance = new List<KeyValuePair<IEntity, double>>();
-            foreach (var entity in boxOptimizedList)
-            {
-                var distance2 = MathTools.GetDistance2(entity.Place.Position, creaturePosition);
-                if (distance2 > maxDistance2)
-                    continue;
-                filteredWithDistance.Add(new KeyValuePair<IEntity, double>(entity, distance2));
-            }
-
-            // Sort on exact distance
-            var optimized = filteredWithDistance
-                .OrderBy(kvp => kvp.Value)
-                .Select(kvp => kvp.Key)
-                .ToList();
-
-            return optimized;
-        }
-
         private void SeeWalls()
         {
             var entities = MyCreature.MyEnvironment.GetObstacles().Where(e => e.Specy == EntityType.Wall || e.Specy == EntityType.Box);
@@ -305,8 +257,8 @@ namespace DawnOnline.AgentMatrix.Brains
             _forwardBumper = SensorBuilder.CreateBumper(MyCreature, new Vector2((float)MyCreature.Place.Form.BoundingCircleRadius, 0));
 
             // Ears
-            _leftEar = SensorBuilder.CreateEar(MyCreature, new Vector2(0, -2));
-            _rightEar = SensorBuilder.CreateEar(MyCreature, new Vector2(0, -2));
+            //_leftEar = SensorBuilder.CreateEar(MyCreature, new Vector2(0, -2));
+            //_rightEar = SensorBuilder.CreateEar(MyCreature, new Vector2(0, -2));
 
 
             _initialized = true;

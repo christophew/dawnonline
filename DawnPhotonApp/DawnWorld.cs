@@ -239,37 +239,6 @@ namespace DawnGame
         {
             _environment.ApplyActions(timeDelta);
 
-            // Make sure we always have enough spawnpoints
-            //var spawnPoints = _environment.GetCreatures(EntityType.SpawnPoint);
-            //if (_environment.GetCreatures(EntityType.SpawnPoint).Count < _nrOfSpawnPoints)
-            //{
-            //    var timer = new Stopwatch();
-            //    timer.Start();
-            //    ICreature bestspawnPoint, crossoverMate;
-
-            //    if (spawnPoints.Count == 0)
-            //    {
-            //        bestspawnPoint = CreatureBuilder.CreateSpawnPoint(EntityType.Predator);
-            //        crossoverMate = bestspawnPoint;
-            //    }
-            //    else
-            //    {
-            //        // find best spawnpoint
-            //        bestspawnPoint = GetBestspawnPoint(spawnPoints);
-            //        crossoverMate = GetBestspawnPoint(spawnPoints);
-            //    }
-
-            //    // Replicate
-            //    //AddSpawnPoints(EntityType.Predator, 1);
-            //    var newSpawnPoint = bestspawnPoint.Replicate(crossoverMate);
-            //    var position = new Vector2 {X = _randomize.Next((int) MaxX), Y = _randomize.Next((int) MaxY)};
-            //    _environment.AddCreature(newSpawnPoint, position, 0);
-            //    _nrOfSpawnPointsReplicated++;
-
-            //    timer.Stop();
-            //    Console.WriteLine("Replicate.timer: " + timer.ElapsedMilliseconds);
-            //}
-
             // Make sure we always have enough Treasure
             var obstacles = _environment.GetObstacles();
             if (obstacles.Where(o => o.Specy == EntityType.Treasure).Count() < _nrOfTreasures)
@@ -278,13 +247,6 @@ namespace DawnGame
                 var box = ObstacleBuilder.CreateTreasure();
                 _environment.AddObstacle(box, position);
             }
-        }
-
-        public void ThinkAll(double maxThinkTime, TimeSpan timeDelta)
-        {
-            Console.WriteLine(GetWorldInformation());
-
-            int moved = _environment.Think(maxThinkTime, timeDelta);
         }
 
         public void UpdatePhysics(double timeDelta)
@@ -299,36 +261,6 @@ namespace DawnGame
                 //_environment.Armageddon(_environment.GetCreatures().Count/2);
                 //_environment.WrathOfGod(10);
                 _environment.Earthquake(20);
-            }
-        }
-
-        private static ICreature GetBestspawnPoint(IList<ICreature> spawnPoints)
-        {
-            // Absolute
-
-            //ICreature bestspawnPoint = spawnPoints[0];
-            //foreach (var spawnPoint in spawnPoints)
-            //{
-            //    if (spawnPoint.CharacterSheet.Score > bestspawnPoint.CharacterSheet.Score)
-            //    {
-            //        bestspawnPoint = spawnPoint;
-            //    }
-            //}
-            //return bestspawnPoint;
-
-            // By better chance
-            var randomizer = new Random((int)DateTime.Now.Ticks);
-            var tempSpawnPoints = spawnPoints.OrderByDescending(sp => sp.CharacterSheet.Score);
-            for (; ; )
-            {
-                foreach (var sp in tempSpawnPoints)
-                {
-                    if (randomizer.Next(3) == 0)
-                    {
-                        Console.WriteLine("Score to replicate: " + sp.CharacterSheet.Score);
-                        return sp;
-                    }
-                }
             }
         }
 

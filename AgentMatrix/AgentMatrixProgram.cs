@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -54,6 +55,8 @@ namespace DawnOnline.AgentMatrix
 
             _dawnClient.EntityDestroyed += OnEntityDestroyedOnServer;
 
+            var stopWatch = new Stopwatch();
+
             if (_dawnClient.Connect())
             {
                 do
@@ -65,6 +68,9 @@ namespace DawnOnline.AgentMatrix
                     }
                     else
                     {
+                        stopWatch.Reset();
+                        stopWatch.Start();
+
                         _dawnClient.Update();
 
                         var agentWorld = GetAgentWorld(_dawnClient.InstanceId);
@@ -80,33 +86,25 @@ namespace DawnOnline.AgentMatrix
                         }
 
                         _dawnClient.Update(); // = update state of physical sensors (bumpers, ed)
-                        agentWorld.Think(10, _dawnClient.CreatedCreatureIds);
-
-                        // max 3 loops, but stop after all are served
-                        //var counter = _dawnClient.CreatedCreatureIds.Count;
-                        //for (int i = 0; i < 3; i++ )
-                        //{
-                        //    counter -= agentWorld.Think(10, _dawnClient.CreatedCreatureIds);
-                        //    _dawnClient.Update();
-
-                        //    if (counter <= 0)
-                        //        break;
-                        //}
+                        agentWorld.Think(50, _dawnClient.CreatedCreatureIds);
 
                         agentWorld.RepopulateWorld(_dawnClient.CreatedCreatureIds);
                         agentWorld.UpdateToServer(_dawnClient);
                         _dawnClient.SendCommandsToServer();
-
-
-                        //Thread.Sleep(25);
-                        //_dawnClient.Update();
-                        //agentWorld.Think(10, _dawnClient.CreatedCreatureIds);
 
                         // Persist
                         CreatureRepository.GetRepository().Save();
 
                         // Test
                         WriteDebugInfo(agentWorld);
+
+
+                        // Create stable cycles
+                        stopWatch.Stop();
+                        if (stopWatch.ElapsedMilliseconds < 100)
+                        {
+                            Thread.Sleep((int)(100 - stopWatch.ElapsedMilliseconds));
+                        }
                     }
                 }
                 while (!Console.KeyAvailable);

@@ -5,13 +5,30 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using DawnOnline.Simulation.Brains;
+using DawnOnline.Simulation.Builders;
 using DawnOnline.Simulation.Entities;
 using DawnOnline.Simulation.Senses;
+using DawnOnline.Simulation.Tools;
+using Microsoft.Xna.Framework;
+using SharedConstants;
 
 namespace DawnOnline.AgentMatrix.Brains.Neural
 {
-    internal class NeuralBrain : ForagerBrain
+    internal class NeuralBrain : AbstractBrain
     {
+        protected IEye _forwardEye;
+        protected IEye _leftEye;
+        protected IEye _rightEye;
+
+        protected Dictionary<IEye, double> _eyeSeeEnemy = new Dictionary<IEye, double>();
+        protected Dictionary<IEye, double> _eyeSeeTreasure = new Dictionary<IEye, double>();
+        protected Dictionary<IEye, double> _eyeSeeWalls = new Dictionary<IEye, double>();
+
+        protected IBumper _forwardBumper;
+        protected bool _initialized;
+
+
+
         private NeuralNetwork _adrenalineModeNetwork;
         private const int _adrenalineInputNodes = 18; // 3x eye x3, bumper, health, stamina, 2x random, 2x ears x2
         private const int _adrenalineOutputNodes = 4; 
@@ -19,6 +36,109 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
         private NeuralNetwork _foragerModeNetwork;
         private const int _foragerInputNodes = 18; // 3x eye x3, bumper, health, stamina, 2x random, 2x ears x2
         private const int _foragerOutputNodes = 4;
+
+
+
+        public override void DoSomething(TimeSpan timeDelta)
+        {
+            Debug.Assert(MyCreature != null);
+            Debug.Assert(_initialized);
+
+            // Fill eye buffer
+            SeeEnemies();
+            SeeTreasures();
+            SeeWalls();
+
+            // Emotional states
+            // * neutral
+            // * adrenaline
+            // * fear
+            // * tired
+
+
+            if (ISeeAnEnemy())
+            {
+                // CHAAAAARGE!
+                AdrenalineState(timeDelta);
+                return;
+            }
+
+            NeutralState(timeDelta);
+        }
+
+        private bool ISeeAnEnemy()
+        {
+            //var check = _eyeSee[_forwardEye] > 0 || _eyeSee[_leftEye] > 0 || _eyeSee[_rightEye] > 0;
+            // get a good look!
+            var check = _eyeSeeEnemy[_forwardEye] > 5 || _eyeSeeEnemy[_leftEye] > 5 || _eyeSeeEnemy[_rightEye] > 5;
+
+            return check;
+        }
+
+        private void SeeEnemies()
+        {
+            var entities = MyCreature.MyEnvironment.GetCreatures(MyCreature.FoodSpecies);
+            var sortedOnDistance = FilterAndSortOnDistance(entities);
+
+            // Filter
+            var filtered = new List<IEntity>();
+            foreach (ICreature entity in sortedOnDistance)
+            {
+                // Not my family
+                if (entity.SpawnPoint == MyCreature.SpawnPoint)
+                    continue;
+
+                filtered.Add(entity);
+            }
+
+            _eyeSeeEnemy.Clear();
+
+            _eyeSeeEnemy.Add(_forwardEye, _forwardEye.DistanceToFirstVisible(filtered));
+            _eyeSeeEnemy.Add(_leftEye, _leftEye.DistanceToFirstVisible(filtered));
+            _eyeSeeEnemy.Add(_rightEye, _rightEye.DistanceToFirstVisible(filtered));
+        }
+
+        private void SeeTreasures()
+        {
+            var entities = MyCreature.MyEnvironment.GetObstacles().Where(e => e.Specy == EntityType.Treasure);
+            var sortedOnDistance = FilterAndSortOnDistance(entities);
+
+            _eyeSeeTreasure.Clear();
+
+            _eyeSeeTreasure.Add(_forwardEye, _forwardEye.DistanceToFirstVisible(sortedOnDistance));
+            _eyeSeeTreasure.Add(_leftEye, _leftEye.DistanceToFirstVisible(sortedOnDistance));
+            _eyeSeeTreasure.Add(_rightEye, _rightEye.DistanceToFirstVisible(sortedOnDistance));
+        }
+
+        private void SeeWalls()
+        {
+            var entities = MyCreature.MyEnvironment.GetObstacles().Where(e => e.Specy == EntityType.Wall || e.Specy == EntityType.Box);
+            var sortedOnDistance = FilterAndSortOnDistance(entities);
+
+            _eyeSeeWalls.Clear();
+
+            _eyeSeeWalls.Add(_forwardEye, _forwardEye.DistanceToFirstVisible(sortedOnDistance, false));
+            _eyeSeeWalls.Add(_leftEye, _leftEye.DistanceToFirstVisible(sortedOnDistance, false));
+            _eyeSeeWalls.Add(_rightEye, _rightEye.DistanceToFirstVisible(sortedOnDistance, false));
+        }
+
+        public override void InitializeSenses()
+        {
+            // Eyes
+            _forwardEye = SensorBuilder.CreateEye(MyCreature, 0.0, MathTools.ConvertToRadials(30), MyCreature.CharacterSheet.VisionDistance);
+            _leftEye = SensorBuilder.CreateEye(MyCreature, -MathTools.ConvertToRadials(60), MathTools.ConvertToRadials(60), MyCreature.CharacterSheet.VisionDistance);
+            _rightEye = SensorBuilder.CreateEye(MyCreature, MathTools.ConvertToRadials(60), MathTools.ConvertToRadials(60), MyCreature.CharacterSheet.VisionDistance);
+
+            // Bumpers
+            _forwardBumper = SensorBuilder.CreateBumper(MyCreature, new Vector2((float)MyCreature.Place.Form.BoundingCircleRadius, 0));
+
+            // Ears
+            //_leftEar = SensorBuilder.CreateEar(MyCreature, new Vector2(0, -2));
+            //_rightEar = SensorBuilder.CreateEar(MyCreature, new Vector2(0, -2));
+
+
+            _initialized = true;
+        }
 
         internal void PredefineRandomBehaviour()
         {
@@ -164,10 +284,10 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
 
         public override void ClearState()
         {
-            base.ClearState();
+            _forwardBumper.Clear();
 
-            _adrenalineModeNetwork.Reset();
-            _foragerModeNetwork.Reset();
+            _adrenalineModeNetwork.ClearInput();
+            _foragerModeNetwork.ClearInput();
         }
 
         private static double GetEyeCheck(IEye eye, double value)
@@ -232,21 +352,30 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             //}
         }
 
-        protected override void NeutralState(TimeSpan timeDelta)
+        private void NeutralState(TimeSpan timeDelta)
         {
+            // Clear memory of _adrenalineModeNetwork
+            _adrenalineModeNetwork.ClearReinforcementInput();
+
+            // Act on _foragerModeNetwork
             RunNetwork(_foragerModeNetwork, timeDelta);
         }
 
-        protected override void AdrenalineState(TimeSpan timeDelta)
+        private void AdrenalineState(TimeSpan timeDelta)
         {
-            // TODO: attack should also be an output state of the neuralnetwork
-            // Find something to attack
-            var creatureToAttack = MyCreature.FindCreatureToAttack(MyCreature.FoodSpecies);
-            if (creatureToAttack != null)
-            {
-                MyCreature.Attack();
-            }
+            // TODO: WE HAVE AUTO ATTACK FOR THE MOMENT
+            //// TODO: attack should also be an output state of the neuralnetwork
+            //// Find something to attack
+            //var creatureToAttack = MyCreature.FindCreatureToAttack(MyCreature.FoodSpecies);
+            //if (creatureToAttack != null)
+            //{
+            //    MyCreature.Attack();
+            //}
 
+            // Clear memory of _foragerModeNetwork
+            _foragerModeNetwork.ClearReinforcementInput();
+
+            // Act on _adrenalineModeNetwork
             RunNetwork(_adrenalineModeNetwork, timeDelta);
         }
 

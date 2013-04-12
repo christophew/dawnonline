@@ -76,7 +76,7 @@ namespace SimulationTests
             Assert.AreEqual(0, neuralNetwork.OutputNodes[0].CurrentValue);
             Assert.AreEqual(0, neuralNetwork.OutputNodes[1].CurrentValue);
 
-            neuralNetwork.Reset();
+            neuralNetwork.ClearInput();
             neuralNetwork.InputNodes[0].CurrentValue = 10;
             neuralNetwork.InputNodes[0].Threshold = 10;
             neuralNetwork.Propagate(new TimeSpan());
@@ -131,7 +131,7 @@ namespace SimulationTests
 
             neuralNetwork.InputNodes[0].CurrentValue = 10;
             neuralNetwork.Propagate(new TimeSpan());
-            neuralNetwork.Reset();
+            neuralNetwork.ClearInput();
 
             foreach (var inputNode in neuralNetwork.InputNodes)
             {

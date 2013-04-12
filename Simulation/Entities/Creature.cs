@@ -168,6 +168,15 @@ namespace DawnOnline.Simulation.Entities
             _actionQueue.LastRestTime = DateTime.Now;
         }
 
+        private void DoRegen()
+        {
+            if ((DateTime.Now - _actionQueue.LastRegenTime).TotalSeconds < CharacterSheet.RegenCoolDown)
+                return;
+            CharacterSheet.Fatigue.Decrease((int)CharacterSheet.FatigueRegen);
+            CharacterSheet.Damage.Decrease((int)CharacterSheet.HealthRegen);
+            _actionQueue.LastRegenTime = DateTime.Now;
+        }
+
         public void RegisterSpawn()
         {
             _actionQueue.RegisterSpawn = true;
@@ -182,7 +191,7 @@ namespace DawnOnline.Simulation.Entities
                 throw new InvalidOperationException();
 
             // Fatigue
-            CharacterSheet.Fatigue.Increase(20);
+            CharacterSheet.Fatigue.Increase(50);
 
             // Score
             CharacterSheet.Score += 10;
@@ -316,6 +325,9 @@ namespace DawnOnline.Simulation.Entities
                 var sound = SoundBuilder.CreateSoundForCreature(this, Sound.SoundTypeEnum.B, _actionQueue.SpeachVolumeB);
                 MyEnvironment.AddSound(sound);
             }
+
+            // AutoRegen
+            DoRegen();
         }
 
         public void WalkForward()

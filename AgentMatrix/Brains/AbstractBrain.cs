@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using DawnOnline.Simulation.Brains;
 using DawnOnline.Simulation.Entities;
+using DawnOnline.Simulation.Tools;
 
 namespace DawnOnline.AgentMatrix.Brains
 {
@@ -87,6 +88,51 @@ namespace DawnOnline.AgentMatrix.Brains
 
         public virtual void Mutate()
         {
+        }
+
+        protected List<IEntity> FilterAndSortOnDistance(IEnumerable<IEntity> entities)
+        {
+            var creaturePosition = MyCreature.Place.Position;
+
+            // exclude all entities outside the bounding box of the vision range
+            var minX = creaturePosition.X - MyCreature.CharacterSheet.VisionDistance;
+            var maxX = creaturePosition.X + MyCreature.CharacterSheet.VisionDistance;
+            var minY = creaturePosition.Y - MyCreature.CharacterSheet.VisionDistance;
+            var maxY = creaturePosition.Y + MyCreature.CharacterSheet.VisionDistance;
+            var boxOptimizedList = new List<IEntity>();
+            foreach (var entity in entities)
+            {
+                var entityPosition = entity.Place.Position;
+                if (entityPosition.X < minX)
+                    continue;
+                if (entityPosition.X > maxX)
+                    continue;
+                if (entityPosition.Y < minY)
+                    continue;
+                if (entityPosition.Y > maxY)
+                    continue;
+
+                boxOptimizedList.Add(entity);
+            }
+
+            // Filter on exact distance
+            var maxDistance2 = MyCreature.CharacterSheet.VisionDistance * MyCreature.CharacterSheet.VisionDistance;
+            var filteredWithDistance = new List<KeyValuePair<IEntity, double>>();
+            foreach (var entity in boxOptimizedList)
+            {
+                var distance2 = MathTools.GetDistance2(entity.Place.Position, creaturePosition);
+                if (distance2 > maxDistance2)
+                    continue;
+                filteredWithDistance.Add(new KeyValuePair<IEntity, double>(entity, distance2));
+            }
+
+            // Sort on exact distance
+            var optimized = filteredWithDistance
+                .OrderBy(kvp => kvp.Value)
+                .Select(kvp => kvp.Key)
+                .ToList();
+
+            return optimized;
         }
     }
 }
