@@ -35,6 +35,7 @@ namespace DawnOnline.Simulation.Statistics
         // Monitors
         public Monitor Fatigue { get; internal set; }
         public Monitor Damage { get; internal set; }
+        public Monitor Resource { get; internal set; }
 
         // Regen
         public double FatigueRegen { get; internal set; }
@@ -52,6 +53,7 @@ namespace DawnOnline.Simulation.Statistics
         {
             Fatigue = new Monitor();
             Damage = new Monitor();
+            Resource = new Monitor();
 
             // Defaults
             WalkingDistance = 10;

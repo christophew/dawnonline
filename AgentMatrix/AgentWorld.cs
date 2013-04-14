@@ -84,7 +84,7 @@ namespace DawnOnline.AgentMatrix
                     if (myEntity != null)
                     {
                         CloneBuilder.UpdatePosition(myEntity, position, entity.Angle);
-                        CloneBuilder.UpdateStatus(myEntity, entity.DamagePercent, entity.FatiguePercent, entity.Score);
+                        CloneBuilder.UpdateStatus(myEntity, entity.DamagePercent, entity.FatiguePercent, entity.ResourcePercent, entity.Score);
                     }
 
                 }

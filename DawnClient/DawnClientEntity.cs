@@ -19,6 +19,7 @@ namespace DawnClient
         public bool IsActive { get; private set; }
         public int DamagePercent { get; private set; }
         public int FatiguePercent { get; private set; }
+        public int ResourcePercent { get; private set; }
         public int Score { get; private set; }
 
         enum UpdateMode
@@ -58,7 +59,8 @@ namespace DawnClient
             {
                 newEntity.DamagePercent = (byte)eventData[2];
                 newEntity.FatiguePercent = (byte)eventData[3];
-                newEntity.Score = (int)eventData[4];
+                newEntity.ResourcePercent = (byte)eventData[4];
+                newEntity.Score = (int)eventData[5];
             }
 
             return newEntity;
@@ -101,6 +103,7 @@ namespace DawnClient
                 this.IsActive = newData.IsActive;
                 this.DamagePercent = newData.DamagePercent;
                 this.FatiguePercent = newData.FatiguePercent;
+                this.ResourcePercent = newData.ResourcePercent;
                 this.Score = newData.Score;
             }
             if (newData.Mode == UpdateMode.InitialLoad)

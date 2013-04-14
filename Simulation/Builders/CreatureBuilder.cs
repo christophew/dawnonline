@@ -41,7 +41,7 @@ namespace DawnOnline.Simulation.Builders
 
             throw new NotSupportedException();
         }
-
+        
         public static ICreature CreatePredator(IBrain brain)
         {
             var critter = new Creature(1.5);
@@ -154,6 +154,7 @@ namespace DawnOnline.Simulation.Builders
             spawnPoint.CharacterSheet.FatigueRecovery = 25;
             spawnPoint.CharacterSheet.Armour = 5;
             //spawnPoint.CharacterSheet.Armour = 100;
+
 
             return spawnPoint;
         }

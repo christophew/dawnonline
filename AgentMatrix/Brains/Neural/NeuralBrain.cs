@@ -23,6 +23,7 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
         protected Dictionary<IEye, double> _eyeSeeEnemy = new Dictionary<IEye, double>();
         protected Dictionary<IEye, double> _eyeSeeTreasure = new Dictionary<IEye, double>();
         protected Dictionary<IEye, double> _eyeSeeWalls = new Dictionary<IEye, double>();
+        protected Dictionary<IEye, double> _eyeSeeMySpawnPoint = new Dictionary<IEye, double>();
 
         protected IBumper _forwardBumper;
         protected bool _initialized;
@@ -30,12 +31,16 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
 
 
         private NeuralNetwork _adrenalineModeNetwork;
-        private const int _adrenalineInputNodes = 18; // 3x eye x3, bumper, health, stamina, 2x random, 2x ears x2
+        private const int _adrenalineInputNodes = 17; // 3x eye x4, bumper, health, stamina, 2x random
         private const int _adrenalineOutputNodes = 4; 
 
         private NeuralNetwork _foragerModeNetwork;
-        private const int _foragerInputNodes = 18; // 3x eye x3, bumper, health, stamina, 2x random, 2x ears x2
+        private const int _foragerInputNodes = 17; // 3x eye x4, bumper, health, stamina, 2x random
         private const int _foragerOutputNodes = 4;
+
+        private NeuralNetwork _deliverModeNetwork;
+        private const int _deliverInputNodes = 17; // 3x eye x4, bumper, health, stamina, 2x random
+        private const int _deliverOutputNodes = 4;
 
 
 
@@ -48,6 +53,7 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             SeeEnemies();
             SeeTreasures();
             SeeWalls();
+            SeeSpawnPoint();
 
             // Emotional states
             // * neutral
@@ -56,14 +62,21 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             // * tired
 
 
-            if (ISeeAnEnemy())
+            // I have resources => deliver
+            if (MyCreature.CharacterSheet.Resource.PercentFilled > 5)
             {
-                // CHAAAAARGE!
-                AdrenalineState(timeDelta);
+                DeliverState(timeDelta);
                 return;
             }
 
-            NeutralState(timeDelta);
+            //if (ISeeAnEnemy())
+            //{
+            //    // CHAAAAARGE!
+            //    AdrenalineState(timeDelta);
+            //    return;
+            //}
+
+            ForageState(timeDelta);
         }
 
         private bool ISeeAnEnemy()
@@ -122,6 +135,29 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             _eyeSeeWalls.Add(_rightEye, _rightEye.DistanceToFirstVisible(sortedOnDistance, false));
         }
 
+        private void SeeSpawnPoint()
+        {
+            var entities = MyCreature.MyEnvironment.GetCreatures().Where(e => e.Specy == EntityType.SpawnPoint);
+            var sortedOnDistance = FilterAndSortOnDistance(entities);
+
+            // Filter
+            var filtered = new List<IEntity>();
+            foreach (ICreature entity in sortedOnDistance)
+            {
+                // Not my enemy
+                if (entity.SpawnPoint != MyCreature.SpawnPoint)
+                    continue;
+
+                filtered.Add(entity);
+            }
+
+            _eyeSeeMySpawnPoint.Clear();
+
+            _eyeSeeMySpawnPoint.Add(_forwardEye, _forwardEye.DistanceToFirstVisible(filtered, false));
+            _eyeSeeMySpawnPoint.Add(_leftEye, _leftEye.DistanceToFirstVisible(filtered, false));
+            _eyeSeeMySpawnPoint.Add(_rightEye, _rightEye.DistanceToFirstVisible(filtered, false));
+        }
+
         public override void InitializeSenses()
         {
             // Eyes
@@ -140,48 +176,6 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             _initialized = true;
         }
 
-        internal void PredefineRandomBehaviour()
-        {
-            _adrenalineModeNetwork = new NeuralNetwork(_adrenalineInputNodes, _adrenalineInputNodes * 2, _adrenalineOutputNodes + _adrenalineInputNodes, _adrenalineInputNodes);
-            _foragerModeNetwork = new NeuralNetwork(_foragerInputNodes, _foragerInputNodes * 2, _foragerOutputNodes + _foragerInputNodes, _foragerInputNodes);
-
-            RandomizeNetwork(_adrenalineModeNetwork);
-            RandomizeNetwork(_foragerModeNetwork);
-        }
-
-        private static void RandomizeNetwork(NeuralNetwork network)
-        {
-            foreach (var node in network.InputNodes)
-            {
-                node.Threshold = Globals.Radomizer.Next(200) - 100;
-
-                foreach (var edge in node.OutGoingEdges)
-                {
-                    edge.Initialize(Globals.Radomizer.Next(200) - 100);
-                }
-            }
-
-            foreach (var node in network.LayerNodes)
-            {
-                node.Threshold = Globals.Radomizer.Next(200) - 100;
-
-                foreach (var edge in node.OutGoingEdges)
-                {
-                    edge.Initialize(Globals.Radomizer.Next(200) - 100);
-                }
-            }
-
-            foreach (var node in network.ReinforcementInputNodes)
-            {
-                node.Threshold = Globals.Radomizer.Next(200) - 100;
-
-                foreach (var edge in node.OutGoingEdges)
-                {
-                    edge.Initialize(Globals.Radomizer.Next(200) - 100);
-                }
-            }
-        }
-
         internal void PredefineBehaviour()
         {
             // AdrenalineMode
@@ -190,6 +184,7 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
                 _adrenalineModeNetwork = new NeuralNetwork(_adrenalineInputNodes, _adrenalineInputNodes * 2, _adrenalineOutputNodes + _adrenalineInputNodes, _adrenalineInputNodes);
 
                 // Eyes
+                // > ISeeEnemy
                 _adrenalineModeNetwork.InputNodes[0].OutGoingEdges[0].Initialize(1.5);
                 _adrenalineModeNetwork.InputNodes[1].OutGoingEdges[1].Initialize(1.5);
                 _adrenalineModeNetwork.InputNodes[2].OutGoingEdges[2].Initialize(1.5);
@@ -210,13 +205,14 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
 
             }
 
-            // NeutralMode
+            // ForagerMode
             {
                  // 1 reinforcement node foreach regular input node
                _foragerModeNetwork = new NeuralNetwork(_foragerInputNodes, _foragerInputNodes * 2, _foragerOutputNodes + _foragerInputNodes, _foragerInputNodes);
 
                 // eyes
-                _foragerModeNetwork.InputNodes[3].OutGoingEdges[0].Initialize(1);
+               // > ISeeTreasure
+               _foragerModeNetwork.InputNodes[3].OutGoingEdges[0].Initialize(1);
                 _foragerModeNetwork.InputNodes[4].OutGoingEdges[1].Initialize(1);
                 _foragerModeNetwork.InputNodes[5].OutGoingEdges[2].Initialize(1);
 
@@ -230,20 +226,57 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
 
 
                 // bumper
-                _foragerModeNetwork.ReinforcementInputNodes[9].OutGoingEdges[0].Initialize(0.5);
-                _foragerModeNetwork.ReinforcementInputNodes[9].OutGoingEdges[1].Initialize(-2); 
-                _foragerModeNetwork.ReinforcementInputNodes[9].OutGoingEdges[2].Initialize(-0.5); 
+                _foragerModeNetwork.ReinforcementInputNodes[12].OutGoingEdges[0].Initialize(0.5);
+                _foragerModeNetwork.ReinforcementInputNodes[12].OutGoingEdges[1].Initialize(-2); 
+                _foragerModeNetwork.ReinforcementInputNodes[12].OutGoingEdges[2].Initialize(-0.5); 
 
                 // random nodes
 
                 // reinforced random: input nodes
-                _foragerModeNetwork.ReinforcementInputNodes[10].OutGoingEdges[0].Initialize(.1);
-                _foragerModeNetwork.ReinforcementInputNodes[10].OutGoingEdges[1].Initialize(.3);
-                _foragerModeNetwork.ReinforcementInputNodes[10].OutGoingEdges[2].Initialize(-.1);
+                _foragerModeNetwork.ReinforcementInputNodes[13].OutGoingEdges[0].Initialize(.1);
+                _foragerModeNetwork.ReinforcementInputNodes[13].OutGoingEdges[1].Initialize(.3);
+                _foragerModeNetwork.ReinforcementInputNodes[13].OutGoingEdges[2].Initialize(-.1);
 
-                _foragerModeNetwork.ReinforcementInputNodes[11].OutGoingEdges[0].Initialize(-.1);
-                _foragerModeNetwork.ReinforcementInputNodes[11].OutGoingEdges[1].Initialize(.3);
-                _foragerModeNetwork.ReinforcementInputNodes[11].OutGoingEdges[2].Initialize(.1);
+                _foragerModeNetwork.ReinforcementInputNodes[14].OutGoingEdges[0].Initialize(-.1);
+                _foragerModeNetwork.ReinforcementInputNodes[14].OutGoingEdges[1].Initialize(.3);
+                _foragerModeNetwork.ReinforcementInputNodes[14].OutGoingEdges[2].Initialize(.1);
+            }
+
+            // DeliverMode
+            {
+                 // 1 reinforcement node foreach regular input node
+                _deliverModeNetwork = new NeuralNetwork(_deliverInputNodes, _deliverInputNodes * 2, _deliverOutputNodes + _deliverInputNodes, _deliverInputNodes);
+
+                // eyes
+                // > ISeeMySpawnPoint
+                _deliverModeNetwork.InputNodes[9].OutGoingEdges[0].Initialize(1);
+                _deliverModeNetwork.InputNodes[10].OutGoingEdges[1].Initialize(1);
+                _deliverModeNetwork.InputNodes[11].OutGoingEdges[2].Initialize(1);
+
+                _deliverModeNetwork.LayerNodes[0].OutGoingEdges[0].Initialize(-2);
+                _deliverModeNetwork.LayerNodes[1].OutGoingEdges[1].Initialize(2);
+                _deliverModeNetwork.LayerNodes[2].OutGoingEdges[0].Initialize(2);
+
+
+                // Reinforcement
+                BuildStandardReinforcementSetup(_deliverModeNetwork);
+
+
+                // bumper
+                _deliverModeNetwork.ReinforcementInputNodes[12].OutGoingEdges[0].Initialize(0.5);
+                _deliverModeNetwork.ReinforcementInputNodes[12].OutGoingEdges[1].Initialize(-2);
+                _deliverModeNetwork.ReinforcementInputNodes[12].OutGoingEdges[2].Initialize(-0.5); 
+
+                // random nodes
+
+                // reinforced random: input nodes
+                _deliverModeNetwork.ReinforcementInputNodes[13].OutGoingEdges[0].Initialize(.1);
+                _deliverModeNetwork.ReinforcementInputNodes[13].OutGoingEdges[1].Initialize(.2);
+                //_deliverModeNetwork.ReinforcementInputNodes[13].OutGoingEdges[2].Initialize(-.1);
+
+                //_deliverModeNetwork.ReinforcementInputNodes[14].OutGoingEdges[0].Initialize(-.1);
+                //_deliverModeNetwork.ReinforcementInputNodes[14].OutGoingEdges[1].Initialize(.3);
+                //_deliverModeNetwork.ReinforcementInputNodes[14].OutGoingEdges[2].Initialize(.1);
             }
 
             // Memory
@@ -280,6 +313,10 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             {
                 _foragerModeNetwork.ReinforcementInputNodes[i].NodeToReinforce = (_foragerModeNetwork.OutputNodes[_foragerOutputNodes+i]);
             }
+            for (int i = 0; i < _deliverInputNodes; i++)
+            {
+                _deliverModeNetwork.ReinforcementInputNodes[i].NodeToReinforce = (_deliverModeNetwork.OutputNodes[_deliverOutputNodes + i]);
+            }
         }
 
         public override void ClearState()
@@ -288,6 +325,7 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
 
             _adrenalineModeNetwork.ClearInput();
             _foragerModeNetwork.ClearInput();
+            _deliverModeNetwork.ClearInput();
         }
 
         private static double GetEyeCheck(IEye eye, double value)
@@ -319,12 +357,20 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
                 network.InputNodes[i++].CurrentValue = GetEyeCheck(_rightEye, _eyeSeeWalls[_rightEye]);
             }
             else i += 3;
+            if (_eyeSeeMySpawnPoint.Count > 0)
+            {
+                network.InputNodes[i++].CurrentValue = GetEyeCheck(_leftEye, _eyeSeeMySpawnPoint[_leftEye]);
+                network.InputNodes[i++].CurrentValue = GetEyeCheck(_forwardEye, _eyeSeeMySpawnPoint[_forwardEye]);
+                network.InputNodes[i++].CurrentValue = GetEyeCheck(_rightEye, _eyeSeeMySpawnPoint[_rightEye]);
+            }
+            else i += 3;
+            Debug.Assert(i == 12);
             network.InputNodes[i++].CurrentValue = _forwardBumper.Hit ? 100 : 0;
             network.InputNodes[i++].CurrentValue = Globals.Radomizer.Next(50);
             network.InputNodes[i++].CurrentValue = Globals.Radomizer.Next(50);
             network.InputNodes[i++].CurrentValue = this.MyCreature.CharacterSheet.Damage.PercentFilled;
             network.InputNodes[i++].CurrentValue = this.MyCreature.CharacterSheet.Fatigue.PercentFilled;
-            Debug.Assert(i == 14);
+            Debug.Assert(i == 17);
 
             //network.InputNodes[i++].CurrentValue = _leftEar.HearFamily(Sound.SoundTypeEnum.A);
             //network.InputNodes[i++].CurrentValue = _leftEar.HearStrangers(Sound.SoundTypeEnum.A);
@@ -352,13 +398,24 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             //}
         }
 
-        private void NeutralState(TimeSpan timeDelta)
+        private void ForageState(TimeSpan timeDelta)
         {
-            // Clear memory of _adrenalineModeNetwork
+            // Clear memory of other networks
             _adrenalineModeNetwork.ClearReinforcementInput();
+            _deliverModeNetwork.ClearReinforcementInput();
 
             // Act on _foragerModeNetwork
             RunNetwork(_foragerModeNetwork, timeDelta);
+        }
+
+        private void DeliverState(TimeSpan timeDelta)
+        {
+            // Clear memory of other networks
+            _foragerModeNetwork.ClearReinforcementInput();
+            _adrenalineModeNetwork.ClearReinforcementInput();
+
+            // Act on _foragerModeNetwork
+            RunNetwork(_deliverModeNetwork, timeDelta);
         }
 
         private void AdrenalineState(TimeSpan timeDelta)
@@ -372,8 +429,9 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             //    MyCreature.Attack();
             //}
 
-            // Clear memory of _foragerModeNetwork
+            // Clear memory of other networks
             _foragerModeNetwork.ClearReinforcementInput();
+            _deliverModeNetwork.ClearReinforcementInput();
 
             // Act on _adrenalineModeNetwork
             RunNetwork(_adrenalineModeNetwork, timeDelta);
@@ -384,14 +442,14 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             // TODO: optimize
             // 'new' will also create a useless intial network
 
-            var newBrain = new NeuralBrain();
-            newBrain._adrenalineModeNetwork = _adrenalineModeNetwork.Replicate();
-            //newBrain._foragerModeNetwork = _foragerModeNetwork.Replicate();
-
             // crossover
             var neuralMate = mate as NeuralBrain;
             Debug.Assert(neuralMate != null, "sodomy!");
-            newBrain._foragerModeNetwork = neuralMate._foragerModeNetwork.Replicate();
+
+            var newBrain = new NeuralBrain();
+            newBrain._adrenalineModeNetwork = Globals.Radomizer.Next(1) == 0 ? _adrenalineModeNetwork.Replicate() : neuralMate._adrenalineModeNetwork.Replicate();
+            newBrain._foragerModeNetwork = Globals.Radomizer.Next(1) == 0 ? _foragerModeNetwork.Replicate() : neuralMate._foragerModeNetwork.Replicate();
+            newBrain._deliverModeNetwork = Globals.Radomizer.Next(1) == 0 ? _deliverModeNetwork.Replicate() : neuralMate._deliverModeNetwork.Replicate();
 
             newBrain.ConnectReinforcementNodes();
 
@@ -402,20 +460,24 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
         {
             Console.WriteLine("AdrenalineMode: ");
             _adrenalineModeNetwork.Mutate();
-            Console.WriteLine("NeutralMode: ");
+            Console.WriteLine("ForageMode: ");
             _foragerModeNetwork.Mutate();
+            Console.WriteLine("DeliverMode: ");
+            _deliverModeNetwork.Mutate();
         }
 
         public void Serialize(BinaryWriter writer)
         {
             _adrenalineModeNetwork.Serialize(writer);
             _foragerModeNetwork.Serialize(writer);
+            _deliverModeNetwork.Serialize(writer);
         }
 
         public void Deserialize(BinaryReader reader)
         {
             _adrenalineModeNetwork.Deserialize(reader);
             _foragerModeNetwork.Deserialize(reader);
+            _deliverModeNetwork.Deserialize(reader);
         }
     }
 }
