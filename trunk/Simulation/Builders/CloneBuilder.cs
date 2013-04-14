@@ -81,7 +81,7 @@ namespace DawnOnline.Simulation.Builders
             entity.Place.OffsetPosition(position, angle);
         }
 
-        public static void UpdateStatus(IEntity entity, int damagePercent, int fatiguePercent, int score)
+        public static void UpdateStatus(IEntity entity, int damagePercent, int fatiguePercent, int resourcePercent, int score)
         {
             var creature = entity as Creature;
             if (creature == null)
@@ -89,6 +89,7 @@ namespace DawnOnline.Simulation.Builders
 
             creature.CharacterSheet.Damage.PercentFilled = damagePercent;
             creature.CharacterSheet.Fatigue.PercentFilled = fatiguePercent;
+            creature.CharacterSheet.Resource.PercentFilled = resourcePercent;
             creature.CharacterSheet.Score = score;
         }
     }

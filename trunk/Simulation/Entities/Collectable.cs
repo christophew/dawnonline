@@ -13,6 +13,9 @@ namespace DawnOnline.Simulation.Entities
 
         public static bool OnCollision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
         {
+            // Should only be triggered on the server
+            Debug.Assert(Globals.GetInstanceId() == 0, "Should only be triggered on the server");
+
             var collectable = fixtureA.UserData as Collectable;
             Debug.Assert(collectable != null);
 

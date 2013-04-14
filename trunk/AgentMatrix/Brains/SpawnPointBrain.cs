@@ -20,6 +20,10 @@ namespace DawnOnline.AgentMatrix.Brains
         private double _currentSpawnCooldown;
         private DateTime _lastSpawn;
 
+        // Some spawns to get the family going, before we have any resources gathered
+        private int _freeSpawns = 2;
+
+
         internal ICreature PrototypeCreature { get; set; }
 
         internal SpawnPointBrain(EntityType spawnType, double interval)
@@ -29,7 +33,7 @@ namespace DawnOnline.AgentMatrix.Brains
 
             var prototypeBrain = new NeuralBrain();
             prototypeBrain.PredefineBehaviour();
-            var prototype = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature, prototypeBrain) as ICreature;
+            var prototype = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature, prototypeBrain);
             //prototypeBrain.PredefineRandomBehaviour();
             //var prototypeBrain = new PredatorBrain();
 
@@ -38,15 +42,16 @@ namespace DawnOnline.AgentMatrix.Brains
 
         public override void DoSomething(TimeSpan timeDelta)
         {
+            if ((DateTime.Now - _lastSpawn).TotalSeconds < _currentSpawnCooldown)
+                return;
+
             // Need new energy
             if (MyCreature.IsTired)
                 return;
 
-            if ((DateTime.Now - _lastSpawn).TotalSeconds < _currentSpawnCooldown)
+            // Enough resources?
+            if ((_freeSpawns-- <= 0) && (MyCreature.CharacterSheet.Resource.PercentFilled < 10))
                 return;
-
-            // Score increase when we spawn
-            //MyCreature.CharacterSheet.Score += 5;
 
             SpawnNeuralCreature();
 
@@ -62,7 +67,7 @@ namespace DawnOnline.AgentMatrix.Brains
             _lastSpawn = DateTime.Now;
             _currentSpawnCooldown = Globals.Radomizer.NextDouble()*_maxSpawnCooldown;
 
-            // RegisterSpawn, so Fatigue & Score can be updated on the server
+            // RegisterSpawn, so Status can be updated on the server
             MyCreature.RegisterSpawn();
         }
 

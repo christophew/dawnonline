@@ -34,7 +34,8 @@ namespace DawnPhotonApp
             {
                 dawnEntity[2] = (byte)creature.CharacterSheet.Damage.PercentFilled;
                 dawnEntity[3] = (byte)creature.CharacterSheet.Fatigue.PercentFilled;
-                dawnEntity[4] = (int)creature.CharacterSheet.Score;
+                dawnEntity[4] = (byte)creature.CharacterSheet.Resource.PercentFilled;
+                dawnEntity[5] = (int)creature.CharacterSheet.Score;
             }
 
             return dawnEntity;

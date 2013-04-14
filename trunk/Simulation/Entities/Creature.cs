@@ -78,6 +78,33 @@ namespace DawnOnline.Simulation.Entities
 
         private bool _alive = true;
 
+        public static bool DeliverOnCollision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
+        {
+            // Should only be triggered on the server
+            Debug.Assert(Globals.GetInstanceId() == 0, "Should only be triggered on the server");
+
+
+            var spawnPoint = fixtureA.UserData as Creature;
+            Debug.Assert(spawnPoint != null);
+            Debug.Assert(spawnPoint.Specy == EntityType.SpawnPoint, "Should be bound to a SpawnPoint");
+
+            var deliveryCreature = fixtureB.UserData as Creature;
+            if (deliveryCreature == null)
+                return true;
+
+            // Only deliver to my own spawnPoint
+            if (deliveryCreature.SpawnPoint != spawnPoint)
+                return true;
+
+            // Exchange resource
+            spawnPoint.CharacterSheet.Resource.Increase((int)deliveryCreature.CharacterSheet.Resource.PercentFilled);
+            deliveryCreature.CharacterSheet.Resource.Clear();
+
+
+
+            return true;
+        }
+
 
         internal Creature(double bodyRadius)
         {
@@ -99,6 +126,13 @@ namespace DawnOnline.Simulation.Entities
             if (_brain != null)
             {
                 _brain.InitializeSenses();
+            }
+
+            // TODO: some better checks
+            // TODO: a better place todo this => should be in the CreatureBuilder, but we only have a Fixture after we add it to the Engine
+            if ((Globals.GetInstanceId() == 0) && (Specy == EntityType.SpawnPoint))
+            {
+                _place.Fixture.OnCollision += Creature.DeliverOnCollision;
             }
         }
 
@@ -191,7 +225,10 @@ namespace DawnOnline.Simulation.Entities
                 throw new InvalidOperationException();
 
             // Fatigue
-            CharacterSheet.Fatigue.Increase(50);
+            CharacterSheet.Fatigue.Increase(30);
+
+            // Resource
+            CharacterSheet.Resource.Decrease(10);
 
             // Score
             CharacterSheet.Score += 10;
@@ -418,14 +455,17 @@ namespace DawnOnline.Simulation.Entities
             // + health
             _characterSheet.Damage.Decrease(10);
 
-            // + spawnPoint energy
-            if (SpawnPoint != null)
-            {
-                var spawnPointCreature = SpawnPoint as Creature;
-                Debug.Assert(spawnPointCreature != null);
+            // + resource
+            _characterSheet.Resource.Increase(10);
 
-                spawnPointCreature.Rest();
-            }
+            // + spawnPoint energy
+            //if (SpawnPoint != null)
+            //{
+            //    var spawnPointCreature = SpawnPoint as Creature;
+            //    Debug.Assert(spawnPointCreature != null);
+
+            //    spawnPointCreature.Rest();
+            //}
         }
 
         public void Turn(double percent)
