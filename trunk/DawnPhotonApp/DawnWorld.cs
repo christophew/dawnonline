@@ -22,13 +22,18 @@ namespace DawnGame
         private int _grid = 5;
 
         //private int _nrOfSpawnPoints = 0;
-        private int _nrOfTreasures = 100;
-        private int _nrOfWalls = 0;
+        private int _nrOfTreasures = 0;
+        private int _nrOfWalls = 300;
         private int _maxWallLength = 10;
         private int _nrOfBoxes = 0;
         private int _stablePopulationSize = 500;
 
         private int _nrOfSpawnPointsReplicated = 0;
+
+        private static int _agingDeltaInSeconds = 5;
+        private static int _agingImpact = 1;
+
+
 
         public DawnOnline.Simulation.Environment Environment { get { return _environment; } }
 
@@ -207,34 +212,6 @@ namespace DawnGame
             throw new NotSupportedException("TODO");
         }
 
-        //public IList<IEntity> AddCreatures(EntityType specy, int amount)
-        //{
-        //    var result = new List<IEntity>();
-        //    for (int i = 0; i < amount;)
-        //    {
-        //        var newCreature = CreatureBuilder.CreateCreature(specy);
-        //        if (_environment.AddCreature(newCreature,
-        //                         new Vector2 { X = _randomize.Next((int)MaxX), Y = _randomize.Next((int)MaxY) },
-        //                         _randomize.Next(6)))
-        //        {
-        //            i++;
-        //            result.Add(newCreature);
-        //        }
-        //    }
-        //    return result;
-        //}
-
-        //public void AddSpawnPoints(EntityType spawnType, int amount)
-        //{
-        //    for (int i = 0; i < amount;)
-        //    {
-        //        if (_environment.AddCreature(CreatureBuilder.CreateSpawnPoint(spawnType),
-        //                         new Vector2(_randomize.Next((int)MaxX), _randomize.Next((int)MaxY)), 
-        //                         0))
-        //            i++;
-        //    }
-        //}
-
         public void ApplyMove(double timeDelta)
         {
             _environment.ApplyActions(timeDelta);
@@ -249,6 +226,9 @@ namespace DawnGame
             }
         }
 
+
+        private static DateTime _lastAgingApplied;
+
         public void UpdatePhysics(double timeDelta)
         {
             _environment.UpdatePhysics(timeDelta);
@@ -261,6 +241,13 @@ namespace DawnGame
                 //_environment.Armageddon(_environment.GetCreatures().Count/2);
                 //_environment.WrathOfGod(10);
                 _environment.Earthquake(20);
+            }
+
+            // Age
+            if ((DateTime.Now - _lastAgingApplied).TotalSeconds > _agingDeltaInSeconds)
+            {
+                _environment.ApplyAging(_agingImpact);
+                _lastAgingApplied = DateTime.Now;
             }
         }
 

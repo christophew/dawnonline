@@ -347,6 +347,14 @@ namespace DawnOnline.Simulation
             return categoryList;
         }
 
+        public void ApplyAging(int ageImpact)
+        {
+            foreach (var creature in GetCreatures())
+            {
+                creature.CharacterSheet.Damage.Increase(ageImpact);
+            }
+        }
+
         public void WrathOfGod(int nrKilled)
         {
             Console.WriteLine("***********************************");

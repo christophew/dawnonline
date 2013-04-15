@@ -28,9 +28,14 @@ namespace DawnOnline.Simulation.Builders
 
             eye.Angle = angle;
             eye.VisionDistance = visionDistance;
-            eye.VisionAngle = visionAngle;
+            eye.VisionAngleDelta = visionAngle;
 
             return eye;
+        }
+
+        public static IEye CreateNose(ICreature creature, double angle, double sniffAngle, double sniffDistance)
+        {
+            return CreateEye(creature, angle, sniffAngle, sniffDistance);
         }
 
         public static IEar CreateEar(ICreature creature, Vector2 offset)

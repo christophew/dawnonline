@@ -96,10 +96,8 @@ namespace DawnOnline.Simulation.Entities
             if (deliveryCreature.SpawnPoint != spawnPoint)
                 return true;
 
-            // Exchange resource
-            spawnPoint.CharacterSheet.Resource.Increase((int)deliveryCreature.CharacterSheet.Resource.PercentFilled);
-            deliveryCreature.CharacterSheet.Resource.Clear();
 
+            deliveryCreature.DoDeliverResources(spawnPoint);
 
 
             return true;
@@ -231,10 +229,23 @@ namespace DawnOnline.Simulation.Entities
             CharacterSheet.Resource.Decrease(10);
 
             // Score
-            CharacterSheet.Score += 10;
+            //CharacterSheet.Score += 15;
 
             // Reset actionQueue => register should only happen once
             _actionQueue.RegisterSpawn = false;
+        }
+
+        private void DoDeliverResources(Creature spawnPoint)
+        {
+            // Only deliver to my own spawnPoint
+            Debug.Assert(this.SpawnPoint == spawnPoint);
+
+            // Score
+            spawnPoint.CharacterSheet.Score += CharacterSheet.Resource.PercentFilled;
+
+            // Exchange resource
+            spawnPoint.CharacterSheet.Resource.Increase((int)CharacterSheet.Resource.PercentFilled);
+            CharacterSheet.Resource.Clear();
         }
 
         public void ClearActionQueue()
@@ -267,9 +278,12 @@ namespace DawnOnline.Simulation.Entities
 
                 MyEnvironment.KillCreature(this);
 
-                // Add treasure where creature is killed
-                var treasure = ObstacleBuilder.CreateTreasure();
-                MyEnvironment.AddObstacle(treasure, position);
+                // Add treasure where creature is killed: 1 treasure + 1 treasure foreach 10 resource points
+                for (var i = -1; i < CharacterSheet.Resource.PercentFilled; i += 10)
+                {
+                    var treasure = ObstacleBuilder.CreateTreasure();
+                    MyEnvironment.AddObstacle(treasure, position);
+                }
 
                 return;
             }
@@ -604,9 +618,10 @@ namespace DawnOnline.Simulation.Entities
                 target.MyActionQueue.Damage += _characterSheet.MeleeDamage;
 
             // Score
-            //if (SpawnPoint != null)
+            //var spawnPoint = SpawnPoint as Creature;
+            //if (spawnPoint != null)
             //{
-            //    (SpawnPoint as Creature).CharacterSheet.Score += 1;
+            //    spawnPoint.CharacterSheet.Score += 0.1;
             //}
         }
 

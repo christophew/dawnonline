@@ -23,8 +23,8 @@ namespace DawnOnline.Simulation.Senses
 
         internal double Angle { get; set; }
 
-        public double VisionDistance { get; internal set; }
-        public double VisionAngle { get; internal set; }
+        internal double VisionDistance { get; set; }
+        internal double VisionAngleDelta { get; set; }
 
         private Environment CreatureEnvironment { get { return _creature.MyEnvironment; } }
         private Placement CreaturePlace { get { return _creature.Place; } }
@@ -41,6 +41,12 @@ namespace DawnOnline.Simulation.Senses
                     return MathTools.GetDistance(CreaturePlace.Position, entity.Place.Position);
             }
             return -1;
+        }
+
+        public double WeightedDistanceToFirstVisible(List<IEntity> sortedEntities, bool useLineOfSight = true)
+        {
+            var value = DistanceToFirstVisible(sortedEntities, useLineOfSight);
+            return value < 0 ? 0 : 100.0 * (VisionDistance - value) / VisionDistance;
         }
 
         public bool SeesCreature(ICreature creature)
@@ -134,10 +140,13 @@ namespace DawnOnline.Simulation.Senses
 
             // Check angle
             {
+
                 double angle = MathTools.GetAngle(CreaturePlace.Position.X, CreaturePlace.Position.Y,
                                                   current.Place.Position.X, current.Place.Position.Y);
 
-                if (MathTools.NormalizeAngle(Math.Abs(angle - (_creature.Place.Angle + Angle))) > VisionAngle)
+                float deltaAngle = MathHelper.WrapAngle((float) (angle - (_creature.Place.Angle + Angle)));
+
+                if (Math.Abs(deltaAngle) > VisionAngleDelta)
                     return false;
             }
 

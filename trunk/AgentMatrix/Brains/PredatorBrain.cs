@@ -202,7 +202,7 @@ namespace DawnOnline.AgentMatrix.Brains
         private void SeeEnemies()
         {
             var entities = MyCreature.MyEnvironment.GetCreatures(MyCreature.FoodSpecies);
-            var sortedOnDistance = FilterAndSortOnDistance(entities);
+            var sortedOnDistance = FilterAndSortOnDistance(entities, MyCreature.CharacterSheet.VisionDistance);
 
             // Filter
             var filtered = new List<IEntity>();
@@ -225,7 +225,7 @@ namespace DawnOnline.AgentMatrix.Brains
         private void SeeTreasures()
         {
             var entities = MyCreature.MyEnvironment.GetObstacles().Where(e => e.Specy == EntityType.Treasure);
-            var sortedOnDistance = FilterAndSortOnDistance(entities);
+            var sortedOnDistance = FilterAndSortOnDistance(entities, MyCreature.CharacterSheet.VisionDistance);
 
             _eyeSeeTreasure.Clear();
 
@@ -237,7 +237,7 @@ namespace DawnOnline.AgentMatrix.Brains
         private void SeeWalls()
         {
             var entities = MyCreature.MyEnvironment.GetObstacles().Where(e => e.Specy == EntityType.Wall || e.Specy == EntityType.Box);
-            var sortedOnDistance = FilterAndSortOnDistance(entities);
+            var sortedOnDistance = FilterAndSortOnDistance(entities, MyCreature.CharacterSheet.VisionDistance);
 
             _eyeSeeWalls.Clear();
 

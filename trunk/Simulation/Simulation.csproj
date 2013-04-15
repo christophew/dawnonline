@@ -105,6 +105,7 @@
     <Compile Include="Senses\IBumper.cs" />
     <Compile Include="Senses\IEar.cs" />
     <Compile Include="Senses\IEye.cs" />
+    <Compile Include="Senses\INose.cs" />
     <Compile Include="SimulationFactory.cs" />
     <Compile Include="Sound.cs" />
     <Compile Include="Statistics\CharacterSheet.cs" />

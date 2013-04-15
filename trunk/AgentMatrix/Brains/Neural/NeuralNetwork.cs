@@ -101,7 +101,7 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             }
         }
 
-        internal void Propagate(TimeSpan timeDelta)
+        internal void Propagate()
         {
             foreach (var inputNode in _inputNodes)
             {

@@ -54,7 +54,7 @@ namespace DawnOnline.AgentMatrix.Repository
                 return;
 
 
-            var fileName = Creature.CharacterSheet.Generation + "-" + Creature.CharacterSheet.Score + "-" + DateTime.Now.Ticks + ".dwn";
+            var fileName = Creature.CharacterSheet.Generation + "-" + Creature.CharacterSheet.Score + "-" + Guid.NewGuid() + ".dwn";
 
             using (var stream = new FileStream(path + fileName, FileMode.CreateNew))
             {
