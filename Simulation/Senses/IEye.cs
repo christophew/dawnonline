@@ -9,10 +9,8 @@ namespace DawnOnline.Simulation.Senses
 {
     public interface IEye
     {
-        double VisionDistance { get; }
-        double VisionAngle { get; }
-
         double DistanceToFirstVisible(List<IEntity> sortedEntities, bool useLineOfSight = true);
+        double WeightedDistanceToFirstVisible(List<IEntity> sortedEntities, bool useLineOfSight = true);
 
         bool SeesCreature(ICreature creature);
         bool SeesACreature(List<EntityType> species, IEntity spawnPointToExclude);

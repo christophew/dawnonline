@@ -90,15 +90,15 @@ namespace DawnOnline.AgentMatrix.Brains
         {
         }
 
-        protected List<IEntity> FilterAndSortOnDistance(IEnumerable<IEntity> entities)
+        protected List<IEntity> FilterAndSortOnDistance(IEnumerable<IEntity> entities, double maxDistance)
         {
             var creaturePosition = MyCreature.Place.Position;
 
             // exclude all entities outside the bounding box of the vision range
-            var minX = creaturePosition.X - MyCreature.CharacterSheet.VisionDistance;
-            var maxX = creaturePosition.X + MyCreature.CharacterSheet.VisionDistance;
-            var minY = creaturePosition.Y - MyCreature.CharacterSheet.VisionDistance;
-            var maxY = creaturePosition.Y + MyCreature.CharacterSheet.VisionDistance;
+            var minX = creaturePosition.X - maxDistance;
+            var maxX = creaturePosition.X + maxDistance;
+            var minY = creaturePosition.Y - maxDistance;
+            var maxY = creaturePosition.Y + maxDistance;
             var boxOptimizedList = new List<IEntity>();
             foreach (var entity in entities)
             {
@@ -116,7 +116,7 @@ namespace DawnOnline.AgentMatrix.Brains
             }
 
             // Filter on exact distance
-            var maxDistance2 = MyCreature.CharacterSheet.VisionDistance * MyCreature.CharacterSheet.VisionDistance;
+            var maxDistance2 = maxDistance * maxDistance;
             var filteredWithDistance = new List<KeyValuePair<IEntity, double>>();
             foreach (var entity in boxOptimizedList)
             {

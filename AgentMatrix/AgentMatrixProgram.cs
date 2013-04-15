@@ -35,14 +35,15 @@ namespace DawnOnline.AgentMatrix
                 return _agentWorld;
 
             _agentWorld = new AgentWorld(instanceId);
-            // Handled by Repopulate
-            //_dawnClient.WorldLoadedEvent += delegate
-            //                                    {
-            //                                        for (int i = 0; i < 1; i++)
-            //                                        {
-            //                                            _agentWorld.AddCreature(AgentCreatureBuilder.CreateSpawnPoint());
-            //                                        }
-            //                                    };
+
+            // Initial population
+            _dawnClient.WorldLoadedEvent += delegate
+                                                {
+                                                    for (int i = 0; i < 10; i++)
+                                                    {
+                                                        _agentWorld.AddCreature(AgentCreatureBuilder.CreateSpawnPoint());
+                                                    }
+                                                };
             return _agentWorld;
         }
 
