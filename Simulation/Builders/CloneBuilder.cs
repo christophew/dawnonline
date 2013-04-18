@@ -25,6 +25,7 @@ namespace DawnOnline.Simulation.Builders
         public static bool IsCreature(EntityType entityType)
         {
             return entityType == EntityType.Predator ||
+                   entityType == EntityType.Predator2 ||
                    entityType == EntityType.SpawnPoint ||
                    entityType == EntityType.Plant ||
                    entityType == EntityType.Rabbit ||

@@ -14,8 +14,7 @@ namespace DawnOnline.AgentMatrix.Brains
 {
     class SpawnPointBrain : AbstractBrain
     {
-        private readonly EntityType _spawnType;
-        private readonly double _maxSpawnCooldown;
+        private readonly double _maxSpawnCooldown = 30; // TODO: move to CharacterSheet?
 
         private double _currentSpawnCooldown;
         private DateTime _lastSpawn;
@@ -26,17 +25,8 @@ namespace DawnOnline.AgentMatrix.Brains
 
         internal ICreature PrototypeCreature { get; set; }
 
-        internal SpawnPointBrain(EntityType spawnType, double interval)
+        internal SpawnPointBrain(ICreature prototype)
         {
-            _spawnType = spawnType;
-            _maxSpawnCooldown = interval;
-
-            var prototypeBrain = new NeuralBrain();
-            prototypeBrain.PredefineBehaviour();
-            var prototype = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature, prototypeBrain);
-            //prototypeBrain.PredefineRandomBehaviour();
-            //var prototypeBrain = new PredatorBrain();
-
             PrototypeCreature = prototype;
         }
 
@@ -71,19 +61,6 @@ namespace DawnOnline.AgentMatrix.Brains
             MyCreature.RegisterSpawn();
         }
 
-        //private void SpawnHunter()
-        //{
-        //    var creature = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature);
-        //    AddToWorld(creature);
-        //}
-
-        //private void SpawnForager()
-        //{
-        //    var creature = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature) as Creature;
-        //    creature.Brain = new ForagerBrain();
-        //    AddToWorld(creature);
-        //}
-
         private void SpawnNeuralCreature()
         {
             var replicatedCreature = PrototypeCreature.Replicate(PrototypeCreature);
@@ -96,13 +73,6 @@ namespace DawnOnline.AgentMatrix.Brains
             AddToWorld(replicatedCreature);
         }
 
-        //private void SpawnProtector()
-        //{
-        //    var creature = CreatureBuilder.CreateCreature(_spawnType, this.MyCreature) as Creature;
-        //    creature.Brain = new ProtectorBrain();
-        //    AddToWorld(creature);
-        //}
-
         private void AddToWorld(ICreature creature)
         {
             MyCreature.MyEnvironment.AddCreature(creature, MyCreature.Place.Position, Globals.Radomizer.NextDouble() * Math.PI * 2.0, false);
@@ -112,16 +82,15 @@ namespace DawnOnline.AgentMatrix.Brains
         {
             Console.WriteLine("Generation: " + MyCreature.CharacterSheet.Generation);
 
-            var newBrain = new SpawnPointBrain(_spawnType, _maxSpawnCooldown);
-
              // crossover
             var spawnPointMate = mate as SpawnPointBrain;
             Debug.Assert(spawnPointMate != null, "sodomy!");
 
-           newBrain.PrototypeCreature = PrototypeCreature.Replicate(spawnPointMate.PrototypeCreature);
+            var newPrototype = PrototypeCreature.Replicate(spawnPointMate.PrototypeCreature);
+            var newBrain = new SpawnPointBrain(newPrototype);
 
-            // MUTATE 
-            //newBrain.PrototypeNeuralForager.Mutate();
+
+            // TODO: Mutate!
 
             return newBrain;
         }
@@ -133,7 +102,7 @@ namespace DawnOnline.AgentMatrix.Brains
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.Write((int)_spawnType);
+            writer.Write((int)PrototypeCreature.Specy);
             writer.Write(_maxSpawnCooldown);
 
             var neuralBrain = PrototypeCreature.Brain as NeuralBrain;
@@ -145,7 +114,7 @@ namespace DawnOnline.AgentMatrix.Brains
         public void Deserialize(BinaryReader reader)
         {
             var spawnType = (EntityType) reader.ReadInt32();
-            Debug.Assert(spawnType == _spawnType, "Validate");
+            Debug.Assert(spawnType == PrototypeCreature.Specy, "Validate");
             var maxSpawnCooldown = reader.ReadDouble();
             Debug.Assert(maxSpawnCooldown == _maxSpawnCooldown, "Validate");
 

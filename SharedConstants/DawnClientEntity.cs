@@ -2,18 +2,19 @@
 {
     public enum EntityType
     {
-        Unknown,
-        Avatar,
-        Predator,
-        Rabbit,
-        Plant,
-        Turret,
-        Wall,
-        Box,
-        Treasure,
-        PredatorFactory,
-        Bullet,
-        Rocket,
-        SpawnPoint
+        Unknown = 0,
+        Avatar = 1,
+        Predator = 2,
+        Predator2 = 3,
+        Rabbit = 4,
+        Plant = 5,
+        Turret = 6,
+        Wall = 7,
+        Box = 8,
+        Treasure = 9,
+        PredatorFactory = 10,
+        Bullet = 11,
+        SpawnPoint = 12,
+        Rocket = 13,
     }
 }

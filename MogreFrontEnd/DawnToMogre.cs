@@ -212,6 +212,10 @@ namespace MogreFrontEnd
                         node = CreatePredatorNode(entity);
                         indicatorNode = AttachIndicator(node);
                         break;
+                    case EntityType.Predator2:
+                        node = CreatePredator2Node(entity);
+                        indicatorNode = AttachIndicator(node);
+                        break;
                     case EntityType.Turret:
                         node = CreateDummyNode(entity);
                          indicatorNode = AttachIndicator(node);
@@ -455,6 +459,53 @@ namespace MogreFrontEnd
             //light.SpecularColour = ColourValue.Blue;
             //light.Direction = new Vector3(0, 0, 10);
             //rootNode.AttachObject(light);
+
+            return rootNode;
+        }
+
+        private SceneNode CreatePredator2Node(DawnClientEntity entity)
+        {
+            var rootNode = mSceneMgr.RootSceneNode.CreateChildSceneNode();
+            rootNode.Scale(1.5f, 1.5f, 1.5f);
+
+            var material = GetFamilyMaterial(entity);
+
+
+            {
+                var box = mSceneMgr.CreateEntity("Cube.mesh");
+                var node = rootNode.CreateChildSceneNode();
+                node.AttachObject(box);
+                node.Scale(1.5f, 0.5f, 1.5f);
+
+                box.SetMaterial(material);
+            }
+
+            {
+                var wheel = mSceneMgr.CreateEntity("Cylinder.mesh");
+                var wheelNode = rootNode.CreateChildSceneNode(new Vector3(-1.5f, 0, 0));
+                wheelNode.AttachObject(wheel);
+                wheelNode.Pitch(Math.HALF_PI);
+                wheelNode.Roll(Math.HALF_PI);
+                wheelNode.Scale(0.75f, 0.5f, 0.5f);
+            }
+            {
+                var wheel = mSceneMgr.CreateEntity("Cylinder.mesh");
+                var wheelNode = rootNode.CreateChildSceneNode(new Vector3(1.5f, 0, 0));
+                wheelNode.AttachObject(wheel);
+                wheelNode.Pitch(Math.HALF_PI);
+                wheelNode.Roll(Math.HALF_PI);
+                wheelNode.Scale(0.75f, 0.5f, 0.5f);
+            }
+
+            // Nose
+            {
+                var nose = mSceneMgr.CreateEntity("cone.mesh");
+                var noseNode = rootNode.CreateChildSceneNode(new Vector3(0, 0, 1.6f));
+                noseNode.AttachObject(nose);
+                noseNode.Pitch(Math.HALF_PI);
+                //noseNode.Roll(Math.HALF_PI);
+                noseNode.Scale(0.5f, 0.4f, 0.2f);
+            }
 
             return rootNode;
         }

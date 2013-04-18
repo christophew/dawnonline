@@ -41,7 +41,8 @@ namespace DawnOnline.AgentMatrix
                                                 {
                                                     for (int i = 0; i < 10; i++)
                                                     {
-                                                        _agentWorld.AddCreature(AgentCreatureBuilder.CreateSpawnPoint());
+                                                        //_agentWorld.AddCreature(AgentCreatureBuilder.CreateSpawnPoint());
+                                                        _agentWorld.AddCreature(AgentCreatureBuilder.CreateSpawnPoint2());
                                                     }
                                                 };
             return _agentWorld;
