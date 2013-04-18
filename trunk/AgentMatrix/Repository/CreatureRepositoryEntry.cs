@@ -81,8 +81,11 @@ namespace DawnOnline.AgentMatrix.Repository
             using (var reader = new BinaryReader(stream))
             {
                 // Initialize SpawnPoint
-                var spawnPointBrain = new SpawnPointBrain(EntityType.Predator, 30);
-                var newSpawnPoint = CreatureBuilder.CreateSpawnPoint(EntityType.Predator, spawnPointBrain);
+                var prototypeBrain = new NeuralBrain();
+                prototypeBrain.PredefineBehaviour();
+                var prototype = CreatureBuilder.CreatePredator(prototypeBrain);
+                var spawnPointBrain = new SpawnPointBrain(prototype);
+                var newSpawnPoint = CreatureBuilder.CreateSpawnPoint(spawnPointBrain);
 
                 // Restore SpawnPoint
                 var specy = (EntityType)reader.ReadInt32();

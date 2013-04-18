@@ -75,7 +75,7 @@ namespace DawnOnline.AgentMatrix
             {
                 // Entities
                 if (entity.Specy == EntityType.Wall || entity.Specy == EntityType.Box || entity.Specy == EntityType.Treasure ||
-                    entity.Specy == EntityType.Predator || entity.Specy == EntityType.SpawnPoint)
+                    entity.Specy == EntityType.Predator || entity.Specy == EntityType.Predator2 || entity.Specy == EntityType.SpawnPoint)
                 {
                     var position = new Vector2(entity.PlaceX, entity.PlaceY);
                     IEntity myEntity = GetOrCreateWorldEntity(entity, position);
@@ -86,7 +86,10 @@ namespace DawnOnline.AgentMatrix
                         CloneBuilder.UpdatePosition(myEntity, position, entity.Angle);
                         CloneBuilder.UpdateStatus(myEntity, entity.DamagePercent, entity.FatiguePercent, entity.ResourcePercent, entity.Score);
                     }
-
+                }
+                else
+                {
+                    Debug.Assert(entity.Specy == EntityType.Avatar, "TODO");
                 }
 
                 // Avatars
@@ -409,7 +412,8 @@ namespace DawnOnline.AgentMatrix
                 if (spawnPoints.Count == 0)
                 {
                     // Everybody is dead... create a new eve
-                    bestspawnPoint = AgentCreatureBuilder.CreateSpawnPoint();
+                    //bestspawnPoint = AgentCreatureBuilder.CreateSpawnPoint();
+                    bestspawnPoint = AgentCreatureBuilder.CreateSpawnPoint2();
                     crossoverMate = bestspawnPoint;
                 }
                 else

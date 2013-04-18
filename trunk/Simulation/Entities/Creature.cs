@@ -278,12 +278,9 @@ namespace DawnOnline.Simulation.Entities
 
                 MyEnvironment.KillCreature(this);
 
-                // Add treasure where creature is killed: 1 treasure + 1 treasure foreach 10 resource points
-                for (var i = -1; i < CharacterSheet.Resource.PercentFilled; i += 10)
-                {
-                    var treasure = ObstacleBuilder.CreateTreasure();
-                    MyEnvironment.AddObstacle(treasure, position);
-                }
+                // Add treasure where creature is killed
+                var treasure = ObstacleBuilder.CreateTreasure();
+                MyEnvironment.AddObstacle(treasure, position);
 
                 return;
             }
