@@ -14,6 +14,8 @@ namespace DawnOnline.Simulation.Entities
         bool IsTired { get; }
         CharacterSheet CharacterSheet { get; }
 
+        bool IsSpawnPoint { get; }
+
         // TODO: add to CharacterSheet? 
         List<EntityType> FoodSpecies { get; }
 

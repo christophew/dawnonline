@@ -140,7 +140,7 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
 
         private void SeeAndSmellSpawnPoint()
         {
-            var entities = MyCreature.MyEnvironment.GetCreatures().Where(e => e.Specy == EntityType.SpawnPoint);
+            var entities = MyCreature.MyEnvironment.GetCreatures().Where(e => e.IsSpawnPoint);
             var sortedOnDistance = FilterAndSortOnDistance(entities, 1000);
 
             // Filter

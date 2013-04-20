@@ -37,8 +37,10 @@ namespace DawnOnline.Simulation.Builders
                     return CreateRabbit(brain);
                 case EntityType.Turret:
                     return CreateTurret(brain);
-                case EntityType.SpawnPoint:
+                case EntityType.SpawnPoint1:
                     return CreateSpawnPoint(brain);
+                case EntityType.SpawnPoint2:
+                    return CreateSpawnPoint2(brain);
             }
 
             throw new NotSupportedException();
@@ -50,7 +52,7 @@ namespace DawnOnline.Simulation.Builders
             critter.Brain = brain;
 
             critter.Specy = EntityType.Predator;
-            critter.FoodSpecies = new List<EntityType> { EntityType.Avatar, EntityType.Predator, EntityType.Predator2, EntityType.SpawnPoint };
+            critter.FoodSpecies = new List<EntityType> { EntityType.Avatar, EntityType.Predator2, EntityType.SpawnPoint2 };
 
             critter.CharacterSheet.WalkingDistance = 30 * _velocityMultiplier;
             critter.CharacterSheet.TurningAngle = 1.5 * _turnMultiplier;
@@ -67,7 +69,7 @@ namespace DawnOnline.Simulation.Builders
             critter.Brain = brain;
 
             critter.Specy = EntityType.Predator2;
-            critter.FoodSpecies = new List<EntityType> { EntityType.Avatar, EntityType.Predator, EntityType.Predator2, EntityType.SpawnPoint };
+            critter.FoodSpecies = new List<EntityType> { EntityType.Avatar, EntityType.Predator, EntityType.SpawnPoint1 };
 
             critter.CharacterSheet.WalkingDistance = 20 * _velocityMultiplier;
             critter.CharacterSheet.TurningAngle = 1.0 * _turnMultiplier;
@@ -161,8 +163,27 @@ namespace DawnOnline.Simulation.Builders
         {
             var spawnPoint = new Creature(1.0);
 
-            spawnPoint.Specy = EntityType.SpawnPoint;
+            spawnPoint.Specy = EntityType.SpawnPoint1;
             spawnPoint.Brain = brain;
+            spawnPoint.IsSpawnPoint = true;
+
+            // Make the spawnPoint part of the family
+            spawnPoint.SpawnPoint = spawnPoint;
+
+            spawnPoint.CharacterSheet.FatigueRecovery = 25;
+            spawnPoint.CharacterSheet.Armour = 5;
+            //spawnPoint.CharacterSheet.Armour = 100;
+
+            return spawnPoint;
+        }
+
+        public static ICreature CreateSpawnPoint2(IBrain brain)
+        {
+            var spawnPoint = new Creature(2.0);
+
+            spawnPoint.Specy = EntityType.SpawnPoint2;
+            spawnPoint.Brain = brain;
+            spawnPoint.IsSpawnPoint = true;
 
             // Make the spawnPoint part of the family
             spawnPoint.SpawnPoint = spawnPoint;

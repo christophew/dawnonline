@@ -26,7 +26,8 @@ namespace DawnOnline.Simulation.Builders
         {
             return entityType == EntityType.Predator ||
                    entityType == EntityType.Predator2 ||
-                   entityType == EntityType.SpawnPoint ||
+                   entityType == EntityType.SpawnPoint1 ||
+                   entityType == EntityType.SpawnPoint2 ||
                    entityType == EntityType.Plant ||
                    entityType == EntityType.Rabbit ||
                    entityType == EntityType.Turret;
@@ -62,13 +63,13 @@ namespace DawnOnline.Simulation.Builders
             }
         }
 
-        public static ICreature CreateCreature(EntityType entityType, IEntity spawnPoint, int id)
+        public static ICreature CreateCreature(EntityType entityType, ICreature spawnPoint, int id)
         {
             var creature = CreatureBuilder.CreateCreature(entityType, new DummyBrain()) as Creature;
             Debug.Assert(creature != null);
             creature.Id = id;
 
-            Debug.Assert(spawnPoint == null || spawnPoint.Specy == EntityType.SpawnPoint);
+            Debug.Assert(spawnPoint == null || spawnPoint.IsSpawnPoint);
             if (spawnPoint != null)
             {
                 creature.SpawnPoint = spawnPoint;

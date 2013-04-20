@@ -14,7 +14,8 @@
         Treasure = 9,
         PredatorFactory = 10,
         Bullet = 11,
-        SpawnPoint = 12,
+        SpawnPoint1 = 12,
+        SpawnPoint2 = 14,
         Rocket = 13,
     }
 }

@@ -39,9 +39,9 @@ namespace DawnOnline.AgentMatrix
             // Initial population
             _dawnClient.WorldLoadedEvent += delegate
                                                 {
-                                                    for (int i = 0; i < 10; i++)
+                                                    for (int i = 0; i < 5; i++)
                                                     {
-                                                        //_agentWorld.AddCreature(AgentCreatureBuilder.CreateSpawnPoint());
+                                                        _agentWorld.AddCreature(AgentCreatureBuilder.CreateSpawnPoint());
                                                         _agentWorld.AddCreature(AgentCreatureBuilder.CreateSpawnPoint2());
                                                     }
                                                 };
@@ -125,7 +125,7 @@ namespace DawnOnline.AgentMatrix
             var predators = allEntities.Count(e => e.Specy == EntityType.Predator);
             var boxes = allEntities.Count(e => e.Specy == EntityType.Box);
             var walls = allEntities.Count(e => e.Specy == EntityType.Wall);
-            var spawnpoints = allEntities.Count(e => e.Specy == EntityType.SpawnPoint);
+            var spawnpoints = allEntities.Count(e => e.IsSpawnPoint);
 
                     
             Console.WriteLine("> boxes : " + boxes);
@@ -134,10 +134,10 @@ namespace DawnOnline.AgentMatrix
             Console.WriteLine("> walls2: " + agentWorld.GetEntities().Count(e => e.Specy == EntityType.Wall));
 
             Console.WriteLine("> Predators : " + predators);
-            Console.WriteLine("> Predators2: " + agentWorld.GetEntities().Count(e => e.Specy == EntityType.Predator));
+            Console.WriteLine("> Predators2: " + agentWorld.GetCreatures().Count(e => e.Specy == EntityType.Predator));
 
             Console.WriteLine("> SpawnPoints : " + spawnpoints);
-            Console.WriteLine("> SpawnPoints2: " + agentWorld.GetEntities().Count(e => e.Specy == EntityType.SpawnPoint));
+            Console.WriteLine("> SpawnPoints2: " + agentWorld.GetCreatures().Count(e => e.IsSpawnPoint));
 
             Console.WriteLine("> SpawnPoints Replicated: " + agentWorld.NrOfSpawnPointsReplicated);
 
