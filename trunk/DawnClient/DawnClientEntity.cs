@@ -22,6 +22,9 @@ namespace DawnClient
         public int ResourcePercent { get; private set; }
         public int Score { get; private set; }
 
+        // Maybe we should return this property from the server as well?
+        public bool IsSpawnPoint { get { return Specy == EntityType.SpawnPoint1 || Specy == EntityType.SpawnPoint2; } }
+
         enum UpdateMode
         {
             PositionUpdate, StatusUpdate, InitialLoad

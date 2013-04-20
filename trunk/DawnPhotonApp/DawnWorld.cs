@@ -197,10 +197,10 @@ namespace DawnGame
                 
             }
 
-            IEntity spawnPoint = null;
+            ICreature spawnPoint = null;
             if (spawnPointId != 0)
             {
-                spawnPoint = _environment.GetCreatures(EntityType.SpawnPoint).FirstOrDefault(c => c.Id == spawnPointId);
+                spawnPoint = _environment.GetCreatures().FirstOrDefault(c => c.Id == spawnPointId);
             }
 
             var newCreature = CloneBuilder.CreateCreature(specy, spawnPoint, id);

@@ -50,6 +50,9 @@ namespace DawnOnline.Simulation.Entities
             SpawnPoint = spawnPoint;
         }
 
+        // Is this the correct place?
+        public bool IsSpawnPoint { get; internal set; }
+
         
         public Environment MyEnvironment { get; internal set; }
         public ActionQueue MyActionQueue { get { return _actionQueue; } }
@@ -86,7 +89,7 @@ namespace DawnOnline.Simulation.Entities
 
             var spawnPoint = fixtureA.UserData as Creature;
             Debug.Assert(spawnPoint != null);
-            Debug.Assert(spawnPoint.Specy == EntityType.SpawnPoint, "Should be bound to a SpawnPoint");
+            Debug.Assert((spawnPoint.IsSpawnPoint), "Should be bound to a SpawnPoint");
 
             var deliveryCreature = fixtureB.UserData as Creature;
             if (deliveryCreature == null)
@@ -128,7 +131,7 @@ namespace DawnOnline.Simulation.Entities
 
             // TODO: some better checks
             // TODO: a better place todo this => should be in the CreatureBuilder, but we only have a Fixture after we add it to the Engine
-            if ((Globals.GetInstanceId() == 0) && (Specy == EntityType.SpawnPoint))
+            if ((Globals.GetInstanceId() == 0) && IsSpawnPoint)
             {
                 _place.Fixture.OnCollision += Creature.DeliverOnCollision;
             }
@@ -138,6 +141,7 @@ namespace DawnOnline.Simulation.Entities
         {
             var newCreature = new Creature(_place.Form.BoundingCircleRadius);
             newCreature._characterSheet = CharacterSheet.Replicate();
+            newCreature.IsSpawnPoint = IsSpawnPoint;
 
             //newCreature.Place.Fixture.Body.BodyType = _place.Fixture.Body.BodyType;
 
@@ -145,7 +149,7 @@ namespace DawnOnline.Simulation.Entities
             if (FoodSpecies != null)
                 newCreature.FoodSpecies = new List<EntityType>(FoodSpecies);
 
-            newCreature.SpawnPoint = (this.Specy == EntityType.SpawnPoint) ? newCreature : SpawnPoint;
+            newCreature.SpawnPoint = IsSpawnPoint ? newCreature : SpawnPoint;
 
             // crossover
             var creatureMate = mate as Creature;
@@ -219,7 +223,7 @@ namespace DawnOnline.Simulation.Entities
             // TODO: check against LastSpawnTime
 
             // Security
-            if (this.Specy != EntityType.SpawnPoint)
+            if (!IsSpawnPoint)
                 throw new InvalidOperationException();
 
             // Fatigue

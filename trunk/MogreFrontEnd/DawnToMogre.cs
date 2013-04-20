@@ -238,8 +238,11 @@ namespace MogreFrontEnd
                     case EntityType.Rocket:
                         node = CreateRocketNode(entity);
                         break;
-                    case EntityType.SpawnPoint:
+                    case EntityType.SpawnPoint1:
                         node = CreateSpawnPointNode(entity);
+                        break;
+                    case EntityType.SpawnPoint2:
+                        node = CreateSpawnPoint2Node(entity);
                         break;
                     default:
                         throw new NotSupportedException();
@@ -302,6 +305,19 @@ namespace MogreFrontEnd
             SceneNode node = mSceneMgr.RootSceneNode.CreateChildSceneNode();
             node.AttachObject(box);
             node.Scale(2.5f, 2.5f, 2.5f);
+
+            var material = GetFamilyMaterial(entity);
+            box.SetMaterial(material);
+
+            return node;
+        }
+
+        private SceneNode CreateSpawnPoint2Node(DawnClientEntity entity)
+        {
+            var box = mSceneMgr.CreateEntity("cone.mesh");
+            SceneNode node = mSceneMgr.RootSceneNode.CreateChildSceneNode();
+            node.AttachObject(box);
+            node.Scale(3.5f, 3.5f, 3.5f);
 
             var material = GetFamilyMaterial(entity);
             box.SetMaterial(material);

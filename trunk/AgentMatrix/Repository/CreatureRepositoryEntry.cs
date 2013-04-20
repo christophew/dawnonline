@@ -33,15 +33,19 @@ namespace DawnOnline.AgentMatrix.Repository
             Creature = creature;
         }
 
-        public CreatureRepositoryEntry(string fileName)
+        public CreatureRepositoryEntry(EntityType entityType, string fileName)
         {
-            Load(fileName);
+            Load(entityType, fileName);
         }
 
         public void Save(string path)
         {
-            if (Creature.Specy == EntityType.SpawnPoint)
+            if (Creature.IsSpawnPoint)
                 SaveSpawnPoint(path);
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
 
         private void SaveSpawnPoint(string path)
@@ -74,22 +78,18 @@ namespace DawnOnline.AgentMatrix.Repository
             IsSaved = true;
         }
 
-        private void Load(string fileName)
+        private void Load(EntityType entityType, string fileName)
         {
             var stream = new FileStream(fileName, FileMode.Open);
 
             using (var reader = new BinaryReader(stream))
             {
                 // Initialize SpawnPoint
-                var prototypeBrain = new NeuralBrain();
-                prototypeBrain.PredefineBehaviour();
-                var prototype = CreatureBuilder.CreatePredator(prototypeBrain);
-                var spawnPointBrain = new SpawnPointBrain(prototype);
-                var newSpawnPoint = CreatureBuilder.CreateSpawnPoint(spawnPointBrain);
+                var newSpawnPoint = AgentCreatureBuilder.CreateCreature(entityType);
 
                 // Restore SpawnPoint
                 var specy = (EntityType)reader.ReadInt32();
-                Debug.Assert(specy == EntityType.SpawnPoint, "Validation");
+                Debug.Assert(specy == entityType, "Validation");
                 var savedScore = reader.ReadDouble();
                 var savedGeneration = reader.ReadInt32();
                 newSpawnPoint.CharacterSheet.Restore(savedScore, savedGeneration);

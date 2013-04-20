@@ -26,7 +26,7 @@ namespace DawnOnline.AgentMatrix
         private readonly HashSet<int> _serverIds = new HashSet<int>(); 
 
         private Random _randomize = new Random();
-        private int _minNrOfSpawnPoints = 10;
+        private int _minNrOfSpawnPoints = 5;
         public int NrOfSpawnPointsReplicated { get; private set; }
 
         public AgentWorld(int instanceId)
@@ -38,6 +38,12 @@ namespace DawnOnline.AgentMatrix
         {
             var result = new List<IEntity>(_staticEnvironment.GetCreatures());
             result.AddRange(_staticEnvironment.GetObstacles());
+            return result.AsReadOnly();
+        }
+
+        public ReadOnlyCollection<ICreature> GetCreatures()
+        {
+            var result = new List<ICreature>(_staticEnvironment.GetCreatures());
             return result.AsReadOnly();
         }
 
@@ -73,39 +79,21 @@ namespace DawnOnline.AgentMatrix
             // Add + update
             foreach (var entity in entities)
             {
+                // TODO
+                if (entity.Specy == EntityType.Avatar)
+                    continue;
+
                 // Entities
-                if (entity.Specy == EntityType.Wall || entity.Specy == EntityType.Box || entity.Specy == EntityType.Treasure ||
-                    entity.Specy == EntityType.Predator || entity.Specy == EntityType.Predator2 || entity.Specy == EntityType.SpawnPoint)
-                {
-                    var position = new Vector2(entity.PlaceX, entity.PlaceY);
-                    IEntity myEntity = GetOrCreateWorldEntity(entity, position);
+                var position = new Vector2(entity.PlaceX, entity.PlaceY);
+                IEntity myEntity = GetOrCreateWorldEntity(entity, position);
 
-                    // Update
-                    if (myEntity != null)
-                    {
-                        CloneBuilder.UpdatePosition(myEntity, position, entity.Angle);
-                        CloneBuilder.UpdateStatus(myEntity, entity.DamagePercent, entity.FatiguePercent, entity.ResourcePercent, entity.Score);
-                    }
-                }
-                else
+                // Update
+                if (myEntity != null)
                 {
-                    Debug.Assert(entity.Specy == EntityType.Avatar, "TODO");
+                    CloneBuilder.UpdatePosition(myEntity, position, entity.Angle);
+                    CloneBuilder.UpdateStatus(myEntity, entity.DamagePercent, entity.FatiguePercent, entity.ResourcePercent, entity.Score);
                 }
-
-                // Avatars
             }
-
-            // Deletes are handled by events!
-
-            //var allEntities = _staticEnvironment.GetCreatures();
-            //foreach (var entity in allEntities)
-            //{
-            //    // Check if entity still exists on 
-            //    if (entities.FirstOrDefault(e => e.Id == entity.Id) == null)
-            //    {
-                    
-            //    }
-            //}
         }
 
         internal void ApplyDeleteFromServer(HashSet<int> destroyQueue)
@@ -358,30 +346,29 @@ namespace DawnOnline.AgentMatrix
                 var entity = CloneBuilder.CreateObstacle(clientEntity.Id, clientEntity.Specy, WorldConstants.WallHeight, WorldConstants.WallWide);
                 if (_staticEnvironment.AddObstacle(entity, position))
                     return entity;
-                // TODO: insert without collision check
                 //throw new NotSupportedException("Should not happen!"); 
                 return null;
             }
             if (CloneBuilder.IsCreature(clientEntity.Specy))
             {
-                IEntity spawnPoint = null;
+                ICreature spawnPoint = null;
 
+                // TODO: refactor
                 // When we create a Creature with a SpawnPoint, make sure we already have the SpawnPoint first (object ref is needed)
                 // => but, when the Creature is a SpawnPoint, the SpawnPoint ref will be set to the creature itself
-                if (clientEntity.Specy != EntityType.SpawnPoint && clientEntity.SpawnPointId != 0)
+                if (!clientEntity.IsSpawnPoint && clientEntity.SpawnPointId != 0)
                 {
                     // The creature has a SpawnPoint, but the spawnPoint is not yet received from the server.
                     // = wait untill spawnPoint is synched
                     if (!_serverIds.Contains(clientEntity.SpawnPointId))
                         return null;
 
-                    spawnPoint = _staticEnvironment.GetCreatures(EntityType.SpawnPoint).FirstOrDefault(c => c.Id == clientEntity.SpawnPointId);
+                    spawnPoint = _staticEnvironment.GetCreatures().FirstOrDefault(c => c.Id == clientEntity.SpawnPointId);
                 }
 
                 var entity = CloneBuilder.CreateCreature(clientEntity.Specy, spawnPoint, clientEntity.Id);
                 if (_staticEnvironment.AddCreature(entity, position, clientEntity.Angle))
                     return entity;
-                // TODO: insert without collision check
                 //throw new NotSupportedException("Should not happen!"); 
                 return null;
             }
@@ -396,9 +383,15 @@ namespace DawnOnline.AgentMatrix
 
         internal void RepopulateWorld(List<int> myCreatureIds)
         {
+            RepopulateWorld(myCreatureIds, EntityType.SpawnPoint1);
+            RepopulateWorld(myCreatureIds, EntityType.SpawnPoint2);
+        }
+
+        private void RepopulateWorld(List<int> myCreatureIds, EntityType spawnpointType)
+        {
             // Make sure we always have enough spawnpoints
             //var spawnPoints = _staticEnvironment.GetCreatures(EntityType.SpawnPoint);
-            var spawnPoints = CreatureRepository.GetRepository().GetSortedRelevantSpawnpoints();
+            var spawnPoints = CreatureRepository.GetRepository().GetSortedRelevantSpawnpoints(spawnpointType);
 
             // Count the amount of spawnpoints "at my command!"
             var countMySpawnPoints = spawnPoints.Count(spawnPoint => myCreatureIds.Contains(spawnPoint.Id));
@@ -412,8 +405,7 @@ namespace DawnOnline.AgentMatrix
                 if (spawnPoints.Count == 0)
                 {
                     // Everybody is dead... create a new eve
-                    //bestspawnPoint = AgentCreatureBuilder.CreateSpawnPoint();
-                    bestspawnPoint = AgentCreatureBuilder.CreateSpawnPoint2();
+                    bestspawnPoint = AgentCreatureBuilder.CreateCreature(spawnpointType);
                     crossoverMate = bestspawnPoint;
                 }
                 else
