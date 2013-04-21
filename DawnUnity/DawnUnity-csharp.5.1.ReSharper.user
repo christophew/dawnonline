@@ -1,0 +1,108 @@
+<Configuration>
+  <SettingsComponent>
+    <string />
+    <integer />
+    <boolean>
+      <setting name="SolutionAnalysisEnabled">False</setting>
+    </boolean>
+  </SettingsComponent>
+  <RecentFiles>
+    <RecentFiles>
+      <File id="DBF800C6-3A08-49EF-8F97-EFD7F61B82FD/d:Assets/d:Scripts/f:DawnEntityManager.cs" caret="366" fromTop="0" />
+    </RecentFiles>
+    <RecentEdits>
+      <File id="DBF800C6-3A08-49EF-8F97-EFD7F61B82FD/d:Assets/d:Scripts/f:DawnEntityManager.cs" caret="4624" fromTop="28" />
+      <File id="DBF800C6-3A08-49EF-8F97-EFD7F61B82FD/d:Assets/d:Scripts/f:DawnEntityManager.cs" caret="4687" fromTop="22" />
+      <File id="DBF800C6-3A08-49EF-8F97-EFD7F61B82FD/d:Assets/d:Scripts/f:DawnEntityManager.cs" caret="4394" fromTop="17" />
+      <File id="DBF800C6-3A08-49EF-8F97-EFD7F61B82FD/d:Assets/d:Scripts/f:DawnEntityManager.cs" caret="4075" fromTop="7" />
+      <File id="DBF800C6-3A08-49EF-8F97-EFD7F61B82FD/d:Assets/d:Scripts/f:DawnEntityManager.cs" caret="4177" fromTop="11" />
+    </RecentEdits>
+  </RecentFiles>
+  <NAntValidationSettings>
+    <NAntPath value="" />
+  </NAntValidationSettings>
+  <UnitTestRunner>
+    <Providers />
+  </UnitTestRunner>
+  <UnitTestRunnerNUnit>
+    <NUnitInstallDir>C:\Program Files (x86)\NUnit 2.4.8\bin\net-2.0\</NUnitInstallDir>
+    <UseAddins>Never</UseAddins>
+  </UnitTestRunnerNUnit>
+  <CompletionStatisticsManager>
+    <ItemStatistics item="Default">
+      <Item value="using" priority="1" />
+      <Item value="DawnClient" priority="1" />
+      <Item value="private" priority="4" />
+      <Item value="DawnClient`0" priority="0" />
+      <Item value="_dawnClient" priority="5" />
+      <Item value="new" priority="4" />
+      <Item value="if" priority="1" />
+      <Item value="return" priority="0" />
+      <Item value="bool" priority="1" />
+      <Item value="true" priority="1" />
+      <Item value="_update1" priority="0" />
+      <Item value="_update2" priority="0" />
+      <Item value="_connectOk" priority="0" />
+      <Item value="string" priority="0" />
+      <Item value="e" priority="1" />
+      <Item value="Wall" priority="1" />
+      <Item value="TestTemplate" priority="0" />
+      <Item value="Transform`0" priority="2" />
+      <Item value="transform" priority="1" />
+      <Item value="entity" priority="5" />
+      <Item value="Quaternion`0" priority="0" />
+      <Item value="Quaternion" priority="0" />
+      <Item value="foreach" priority="0" />
+      <Item value="var" priority="0" />
+      <Item value="in" priority="0" />
+      <Item value="EntityToNode`0" priority="0" />
+      <Item value="_entities" priority="0" />
+      <Item value="entityTransform" priority="1" />
+      <Item value="WallTemplate" priority="2" />
+      <Item value="null" priority="0" />
+      <Item value="else" priority="0" />
+      <Item value="throw" priority="0" />
+      <Item value="NotSupportedException" priority="0" />
+      <Item value="Vector3" priority="1" />
+      <Item value="ADPosition`0" priority="0" />
+      <Item value="PredatorTemplate" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:DawnClient.DawnClient">
+      <Item value="Connect`0" priority="0" />
+      <Item value="WorldLoaded" priority="0" />
+      <Item value="DawnWorld" priority="1" />
+      <Item value="SendCommandsToServer`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:DawnClient.DawnClientWorld">
+      <Item value="WorldInformation" priority="0" />
+      <Item value="GetEntities`0" priority="1" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Collections.ObjectModel.ReadOnlyCollection`1">
+      <Item value="Count" priority="0" />
+      <Item value="Where`1" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:DawnClient.DawnClientEntity">
+      <Item value="Specy" priority="1" />
+      <Item value="PlaceX" priority="1" />
+      <Item value="PlaceY" priority="1" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Collections.Generic.IEnumerable`1">
+      <Item value="Count`1" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Int32">
+      <Item value="ToString`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:@SharedConstants.EntityType">
+      <Item value="Predator" priority="1" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:UnityEngine.Transform">
+      <Item value="Translate`0" priority="1" />
+      <Item value="position" priority="1" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:UnityEngine.Vector3">
+      <Item value="Set`0" priority="0" />
+      <Item value="x" priority="0" />
+      <Item value="y" priority="0" />
+    </ItemStatistics>
+  </CompletionStatisticsManager>
+</Configuration>

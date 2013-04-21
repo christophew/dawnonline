@@ -46,9 +46,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Lib\MOIS.dll</HintPath>
     </Reference>
-    <Reference Include="Photon3DotNet, Version=3.0.1.2, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Photon3Unity3D, Version=3.2.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\PhotonLibs\Debug\Photon3DotNet.dll</HintPath>
+      <HintPath>..\Lib\PhotonLibs\Release\Photon3Unity3D.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
