@@ -12,16 +12,21 @@ using Random = UnityEngine.Random;
 public class DawnEntityManager : MonoBehaviour
 {
     public Transform WallTemplate;
+    public Transform BoxTemplate;
     public Transform PredatorTemplate;
+    public Transform Predator2Template;
+    public Transform SpawnPoint1Template;
+    public Transform SpawnPoint2Template;
+    public Transform TreasureTemplate;
+    public Transform BulletTemplate;
+    public Transform RocketTemplate;
+    public Transform DefaultTemplate;
 
 
     private DawnClient.DawnClient _dawnClient;
 
-    private int _update1;
-    private int _update2;
-    private int _update3;
-
     private string _debugInfoNrOfWalls;
+    private string _debugInfoNrOfBoxes;
     private string _debugInfoNrOfPredators;
     private string _debugInfoNrOfPredators2;
 
@@ -39,19 +44,16 @@ public class DawnEntityManager : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-	    _update1++;
         if (!_dawnClient.WorldLoaded)
         {
-            _update2++;
             _dawnClient.Update();
             return;
         }
 
-
-        _update3++;
         _dawnClient.SendCommandsToServer();
 
 	    _debugInfoNrOfWalls = _dawnClient.DawnWorld.GetEntities().Where(e => e.Specy == EntityType.Wall).Count().ToString();
+        _debugInfoNrOfBoxes = _dawnClient.DawnWorld.GetEntities().Where(e => e.Specy == EntityType.Box).Count().ToString();
         _debugInfoNrOfPredators = _dawnClient.DawnWorld.GetEntities().Where(e => e.Specy == EntityType.Predator).Count().ToString();
         _debugInfoNrOfPredators2 = _dawnClient.DawnWorld.GetEntities().Where(e => e.Specy == EntityType.Predator2).Count().ToString();
 
@@ -72,8 +74,8 @@ public class DawnEntityManager : MonoBehaviour
             if (!currentEntities.Contains(entity.Key))
             {
                 _entities.Remove(entity.Key);
-                // TODO: delete node
-                //mSceneMgr.RootSceneNode.RemoveAndDestroyChild(entity.Value.Node.Name);
+
+                Destroy(entity.Value.gameObject);
             }
         }
 	}
@@ -83,18 +85,57 @@ public class DawnEntityManager : MonoBehaviour
         if (Application.isEditor)  // or check the app debug flag
         {
             GUI.Label(new Rect(0, 0, Screen.width, Screen.height), "WorldLoaded: " + _dawnClient.WorldLoaded);
-            GUI.Label(new Rect(0, 20, Screen.width, Screen.height), "Update1: " + _update1);
-            GUI.Label(new Rect(100, 20, Screen.width, Screen.height), "Update2: " + _update2);
-            GUI.Label(new Rect(200, 20, Screen.width, Screen.height), "Update3: " + _update3);
-            GUI.Label(new Rect(0, 80, Screen.width, Screen.height), "#walls: " + _debugInfoNrOfWalls);
-            GUI.Label(new Rect(0, 100, Screen.width, Screen.height), "#predators: " + _debugInfoNrOfPredators);
-            GUI.Label(new Rect(100, 100, Screen.width, Screen.height), "#predators2: " + _debugInfoNrOfPredators2);
+            GUI.Label(new Rect(0, 20, Screen.width, Screen.height), "#walls: " + _debugInfoNrOfWalls);
+            GUI.Label(new Rect(100, 20, Screen.width, Screen.height), "#boxes: " + _debugInfoNrOfBoxes);
+            GUI.Label(new Rect(0, 40, Screen.width, Screen.height), "#predators: " + _debugInfoNrOfPredators);
+            GUI.Label(new Rect(100, 40, Screen.width, Screen.height), "#predators2: " + _debugInfoNrOfPredators2);
         }
     }
 
 
     private Dictionary<int, Transform> _entities = new Dictionary<int, Transform>();
 
+    private Transform GetTemplate(EntityType entityType)
+    {
+        Transform template = null;
+        switch (entityType)
+        {
+            case EntityType.Wall:
+                template = WallTemplate;
+                break;
+            case EntityType.Box:
+                template = BoxTemplate;
+                break;
+            case EntityType.Predator:
+                template = PredatorTemplate;
+                break;
+            case EntityType.Predator2:
+                template = Predator2Template;
+                break;
+            case EntityType.SpawnPoint1:
+                template = SpawnPoint1Template;
+                break;
+            case EntityType.SpawnPoint2:
+                template = SpawnPoint2Template;
+                break;
+            case EntityType.Treasure:
+                template = TreasureTemplate;
+                break;
+            case EntityType.Bullet:
+                template = BulletTemplate;
+                break;
+            case EntityType.Rocket:
+                template = RocketTemplate;
+                break;
+        }
+
+        return template ?? DefaultTemplate;
+    }
+
+    private static double RadianToDegree(double angle)
+    {
+        return angle * (180.0 / Math.PI);
+    }
 
     private void EntityToNode(DawnClientEntity entity, HashSet<int> currentEntities)
     {
@@ -106,28 +147,17 @@ public class DawnEntityManager : MonoBehaviour
 
         if (_entities.TryGetValue(entity.Id, out entityTransform))
         {
-            // TODO: update x, y, angle
-            //entityTransform.position.Set(entity.PlaceX, 0, entity.PlaceY);
             entityTransform.position = new Vector3(entity.PlaceX, 0, entity.PlaceY);
+
+            // Why do we need a negative angle?
+            entityTransform.eulerAngles = new Vector3(0, (float)RadianToDegree(-entity.Angle), 0);
         }
         else
         {
-            Transform node = null;
-
-            if (entity.Specy == EntityType.Wall)
-                node = SpawnObject(entity, WallTemplate);
-            else if (entity.Specy == EntityType.Predator || entity.Specy == EntityType.Predator2)
-                node = SpawnObject(entity, PredatorTemplate);
-            else
-            {
-				// TODO
-                node = SpawnObject(entity, WallTemplate);
-            }
-
+            var template = GetTemplate(entity.Specy);
+            var node = SpawnObject(entity, template);
             _entities.Add(entity.Id, node);
         }
-
-
 
         if (currentEntities != null)
         {
@@ -141,7 +171,42 @@ public class DawnEntityManager : MonoBehaviour
         Vector3 position = new Vector3(entity.PlaceX, 0, entity.PlaceY);
         //Quaternion rotation = Quaternion.A;
         Transform newObj = (Transform)Instantiate(template, position, transform.rotation);
+        newObj.eulerAngles = new Vector3(0, (float)RadianToDegree(entity.Angle), 0);
+
+        // Set color
+        if (entity.SpawnPointId != 0)
+        {
+            var body = newObj.FindChild("Body");
+            if (body != null && body.renderer != null)
+            {
+                body.renderer.material.color = GetFamilyMaterial(entity);
+            }
+        }
 
         return newObj;
     }
+
+    private static Dictionary<int, Color> _familyColorMapper = new Dictionary<int, Color>();
+
+    private static Color GetFamilyMaterial(DawnClientEntity entity)
+    {
+        if (entity.SpawnPointId == 0)
+            return Color.white;
+
+        Color color;
+        if (!_familyColorMapper.TryGetValue(entity.SpawnPointId, out color))
+        {
+            //var skipColor = _randomize.Next(3);
+            var skipColor = -1;
+            color = new Color(
+                skipColor == 0 ? 0 : Random.Range(0f, 255f) / 255f,
+                skipColor == 1 ? 0 : Random.Range(0f, 255f) / 255f,
+                skipColor == 2 ? 0 : Random.Range(0f, 255f) / 255f);
+
+            _familyColorMapper.Add(entity.SpawnPointId, color);
+        }
+
+        return color;
+    }
+
 }
