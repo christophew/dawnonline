@@ -44,7 +44,9 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\CreatureScript.cs" />
      <Compile Include="Assets\Scripts\DawnEntityManager.cs" />
+     <Compile Include="Assets\Scripts\MoveCamera.cs" />
  <Reference Include="DawnClient">
  <HintPath>Assets\Libs\DawnClient.dll</HintPath>
  </Reference>
