@@ -82,17 +82,17 @@ public class DawnEntityManager : MonoBehaviour
 
     void OnGUI()
     {
-        if (Application.isEditor)  // or check the app debug flag
-        {
-            GUI.Label(new Rect(0, 0, Screen.width, Screen.height), "WorldLoaded: " + _dawnClient.WorldLoaded);
-            GUI.Label(new Rect(0, 20, Screen.width, Screen.height), "#walls: " + _debugInfoNrOfWalls);
-            GUI.Label(new Rect(100, 20, Screen.width, Screen.height), "#boxes: " + _debugInfoNrOfBoxes);
-            GUI.Label(new Rect(0, 40, Screen.width, Screen.height), "#predators: " + _debugInfoNrOfPredators);
-            GUI.Label(new Rect(100, 40, Screen.width, Screen.height), "#predators2: " + _debugInfoNrOfPredators2);
-        }
+        if (!Application.isEditor)  // or check the app debug flag
+            return;
+
+        GUI.Label(new Rect(0, 0, Screen.width, Screen.height), "WorldLoaded: " + _dawnClient.WorldLoaded);
+        GUI.Label(new Rect(0, 20, Screen.width, Screen.height), "#walls: " + _debugInfoNrOfWalls);
+        GUI.Label(new Rect(100, 20, Screen.width, Screen.height), "#boxes: " + _debugInfoNrOfBoxes);
+        GUI.Label(new Rect(0, 40, Screen.width, Screen.height), "#predators: " + _debugInfoNrOfPredators);
+        GUI.Label(new Rect(100, 40, Screen.width, Screen.height), "#predators2: " + _debugInfoNrOfPredators2);
     }
 
-
+    
     private Dictionary<int, Transform> _entities = new Dictionary<int, Transform>();
 
     private Transform GetTemplate(EntityType entityType)
@@ -140,10 +140,6 @@ public class DawnEntityManager : MonoBehaviour
     private void EntityToNode(DawnClientEntity entity, HashSet<int> currentEntities)
     {
         Transform entityTransform = null;
-        //float initialAngle = -Math.HALF_PI;
-
-        //float angle = entity.Angle; // +initialAngle;
-        //Vector2 position = new Vector2(entity.PlaceX, entity.PlaceY);
 
         if (_entities.TryGetValue(entity.Id, out entityTransform))
         {
@@ -181,6 +177,12 @@ public class DawnEntityManager : MonoBehaviour
             {
                 body.renderer.material.color = GetFamilyMaterial(entity);
             }
+        }
+
+        var creatureScript = newObj.GetComponent("CreatureScript") as CreatureScript;
+        if (creatureScript != null)
+        {
+            creatureScript.Entity = entity;
         }
 
         return newObj;
