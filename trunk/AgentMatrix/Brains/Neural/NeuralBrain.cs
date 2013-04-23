@@ -107,11 +107,6 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             _eyeSeeEnemy.Add(_forwardEye, _forwardEye.WeightedDistanceToFirstVisible(filtered));
             _eyeSeeEnemy.Add(_leftEye, _leftEye.WeightedDistanceToFirstVisible(filtered));
             _eyeSeeEnemy.Add(_rightEye, _rightEye.WeightedDistanceToFirstVisible(filtered));
-
-            if (ISeeAnEnemy())
-            {
-                var dummy = 0;
-            }
         }
 
         private void SeeTreasures()
