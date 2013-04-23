@@ -26,6 +26,7 @@ public class DawnEntityManager : MonoBehaviour
 
     private DawnClient.DawnClient _dawnClient;
 
+    private bool _connectError;
     private int _debugLoadingCounter;
     private string _debugInfoNrOfWalls;
     private string _debugInfoNrOfBoxes;
@@ -44,7 +45,7 @@ public class DawnEntityManager : MonoBehaviour
             _dawnClient.RequestAvatarCreationOnServer();
         };
 
-        _dawnClient.Connect();
+        _connectError = !_dawnClient.Connect();
 	}
 	
 	// Update is called once per frame
@@ -92,6 +93,12 @@ public class DawnEntityManager : MonoBehaviour
     {
         if (!Application.isEditor)  // or check the app debug flag
             return;
+
+        if (_connectError)
+        {
+            GUI.Label(new Rect(0, 0, Screen.width, Screen.height), "Connect Error!");
+            return;
+        }
 
         if (!_dawnClient.WorldLoaded)
         {
