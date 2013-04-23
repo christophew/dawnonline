@@ -50,10 +50,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PerformanceMonitoring\PerformanceMonitoring.csproj">
-      <Project>{C529958B-927A-4DCB-834C-5765F831F04A}</Project>
-      <Name>PerformanceMonitoring</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SharedConstants\SharedConstants.csproj">
       <Project>{EBD77164-CE60-4180-8613-974FA39850E8}</Project>
       <Name>SharedConstants</Name>
