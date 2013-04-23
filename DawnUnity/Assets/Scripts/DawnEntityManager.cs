@@ -23,6 +23,8 @@ public class DawnEntityManager : MonoBehaviour
     public Transform RocketTemplate;
     public Transform DefaultTemplate;
 
+    public Transform ExplosionTemplate;
+
 
     private DawnClient.DawnClient _dawnClient;
 
@@ -82,9 +84,12 @@ public class DawnEntityManager : MonoBehaviour
         {
             if (!currentEntities.Contains(entity.Key))
             {
-                _entities.Remove(entity.Key);
+                var position = entity.Value.position;
+                CreateExplosion(position);
 
+                _entities.Remove(entity.Key);
                 Destroy(entity.Value.gameObject);
+
             }
         }
 	}
@@ -175,6 +180,12 @@ public class DawnEntityManager : MonoBehaviour
         }
     }
 
+    private Transform CreateExplosion(Vector3 position)
+    {
+        Transform newObj = (Transform)Instantiate(ExplosionTemplate, position, transform.rotation);
+
+        return newObj;
+    }
 
     private Transform SpawnObject(DawnClientEntity entity, Transform template)
     {
@@ -182,6 +193,7 @@ public class DawnEntityManager : MonoBehaviour
         Vector3 position = new Vector3(entity.PlaceX, 0, -entity.PlaceY);
 
         //Quaternion rotation = Quaternion.A;
+        //Quaternion angle = Quaternion.AngleAxis((float) RadianToDegree(entity.Angle), new Vector3(0, 1, 0));
         Transform newObj = (Transform)Instantiate(template, position, transform.rotation);
         newObj.eulerAngles = new Vector3(0, (float)RadianToDegree(entity.Angle), 0);
 
@@ -237,12 +249,10 @@ public class DawnEntityManager : MonoBehaviour
         Color color;
         if (!_familyColorMapper.TryGetValue(entity.SpawnPointId, out color))
         {
-            //var skipColor = _randomize.Next(3);
-            var skipColor = -1;
             color = new Color(
-                skipColor == 0 ? 0 : Random.Range(0f, 255f) / 255f,
-                skipColor == 1 ? 0 : Random.Range(0f, 255f) / 255f,
-                skipColor == 2 ? 0 : Random.Range(0f, 255f) / 255f);
+                Random.Range(0f, 255f)/255f,
+                Random.Range(0f, 255f)/255f,
+                Random.Range(0f, 255f)/255f);
 
             _familyColorMapper.Add(entity.SpawnPointId, color);
         }

@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using ExitGames.Client.Photon;
 using ExitGames.Client.Photon.Lite;
-using PerformanceMonitoring;
 using SharedConstants;
 
 namespace DawnClient
@@ -107,8 +106,6 @@ namespace DawnClient
             if (InstanceId == 0)
                 return;
 
-            Monitoring.Register_SendCommandsToServer(InstanceId);
-
 
             // Send avatar command
             if (_avatarId != 0)
@@ -135,10 +132,6 @@ namespace DawnClient
 
         public void Update()
         {
-            // I'm lazy... don't start monitoring before client connected (will give errors in instance counters
-            if (InstanceId != 0)
-                Monitoring.Register_Update(InstanceId);
-
             //DebugUpdate();
             //Console.WriteLine("ByteCountCurrentDispatch: " + _peer.ByteCountCurrentDispatch);
 
@@ -288,8 +281,6 @@ namespace DawnClient
                         if (!WorldLoaded)
                             return;
                         
-                        Monitoring.Register_ReceiveBulkPositionUpdate(InstanceId);
-
                         // Position update: compressed
                         var entities = eventData.Parameters.Select(kvp => DawnClientEntity.CreatePositionUpdate((Hashtable) kvp.Value)).ToList();
                         DawnWorld.UpdateEntities(entities, false);
@@ -301,8 +292,6 @@ namespace DawnClient
                     {
                         if (!WorldLoaded)
                             return;
-
-                        Monitoring.Register_ReceiveBulkStatusUpdate(InstanceId);
 
                         // Position update: compressed
                         var entities = eventData.Parameters.Select(kvp => DawnClientEntity.CreateStatusUpdate((Hashtable)kvp.Value)).ToList();
@@ -316,8 +305,6 @@ namespace DawnClient
                         if (!WorldLoaded)
                             return;
 
-                        Monitoring.Register_ReceiveBulkStatusUpdate(InstanceId);
-
                         // Position update: compressed
                         var entities = eventData.Parameters.Select(kvp => DawnClientEntity.CreateAddedEntity((Hashtable)kvp.Value)).ToList();
                         DawnWorld.UpdateEntities(entities, true);
@@ -327,8 +314,6 @@ namespace DawnClient
                     }
                 case (byte)EventCode.Destroyed:
                     {
-                        Monitoring.Register_ReceiveDestroyedCounter(InstanceId);
-
                         // Killed
                         var killedIds = (int[]) eventData.Parameters[0];
                         DawnWorld.RemoveEntities(killedIds);

@@ -351,7 +351,10 @@ namespace DawnOnline.Simulation
         {
             foreach (var creature in GetCreatures())
             {
-                creature.CharacterSheet.Damage.Increase(ageImpact);
+                if (creature.Specy != EntityType.Avatar)
+                {
+                    creature.CharacterSheet.Damage.Increase(ageImpact);
+                }
             }
         }
 
