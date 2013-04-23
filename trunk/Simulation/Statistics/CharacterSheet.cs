@@ -5,10 +5,11 @@ using System.Text;
 
 namespace DawnOnline.Simulation.Statistics
 {
-    public class CharacterSheet : ICloneable
+    public class CharacterSheet
     {
         public double WalkingDistance { get; internal set; }
         public double RunningDistance { get { return WalkingDistance * 2.0; } }
+        public bool IsRooted { get; internal set; }
         public double TurningAngle { get; internal set; }
         public double VisionDistance { get; internal set; }
         public double FatigueCost { get; internal set; }
@@ -81,6 +82,7 @@ namespace DawnOnline.Simulation.Statistics
 
             newCharacterSheet.WalkingDistance = WalkingDistance;
             newCharacterSheet.TurningAngle = TurningAngle;
+            newCharacterSheet.IsRooted = IsRooted;
             newCharacterSheet.VisionDistance = VisionDistance;
             newCharacterSheet.FatigueCost = FatigueCost;
             newCharacterSheet.FatigueRecovery = FatigueRecovery;
@@ -103,14 +105,5 @@ namespace DawnOnline.Simulation.Statistics
 
             return newCharacterSheet;
         }
-
-        #region ICloneable Members
-
-        public object Clone()
-        {
-            return this.MemberwiseClone();
-        }
-
-        #endregion
     }
 }

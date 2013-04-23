@@ -19,8 +19,9 @@ namespace DawnOnline.AgentMatrix.Repository
             if (_singleton != null)
                 return _singleton;
 
-            InitDir(EntityType.SpawnPoint1);
-            InitDir(EntityType.SpawnPoint2);
+            InitDir(EntityType.PredatorSpawnPoint);
+            InitDir(EntityType.PredatorSpawnPoint2);
+            InitDir(EntityType.RabbitSpawnPoint);
 
             _singleton = new CreatureRepository();
             _singleton.Load();
@@ -42,6 +43,7 @@ namespace DawnOnline.AgentMatrix.Repository
 
         private readonly List<CreatureRepositoryEntry> _repository = new List<CreatureRepositoryEntry>();
         private readonly List<CreatureRepositoryEntry> _repository2 = new List<CreatureRepositoryEntry>();
+        private readonly List<CreatureRepositoryEntry> _repositoryRabbit = new List<CreatureRepositoryEntry>();
 
         public void Add(ICreature creature)
         {
@@ -54,7 +56,7 @@ namespace DawnOnline.AgentMatrix.Repository
 
         public List<ICreature> GetSortedRelevantSpawnpoints(EntityType spawnPointType)
         {
-            Debug.Assert(spawnPointType == EntityType.SpawnPoint1 || spawnPointType == EntityType.SpawnPoint2);
+            Debug.Assert(spawnPointType == EntityType.PredatorSpawnPoint || spawnPointType == EntityType.PredatorSpawnPoint2 || spawnPointType == EntityType.RabbitSpawnPoint);
 
             var repository = GetRepository(spawnPointType);
 
@@ -79,28 +81,33 @@ namespace DawnOnline.AgentMatrix.Repository
 
         private static string GetPath(EntityType entityType)
         {
-            if (entityType == EntityType.SpawnPoint1)
-                return _path + @"\SpawnPoint1\";
-            if (entityType == EntityType.SpawnPoint2)
-                return _path + @"\SpawnPoint2\";
+            if (entityType == EntityType.PredatorSpawnPoint)
+                return _path + @"\PredatorSpawnPoint\";
+            if (entityType == EntityType.PredatorSpawnPoint2)
+                return _path + @"\PredatorSpawnPoint2\";
+            if (entityType == EntityType.RabbitSpawnPoint)
+                return _path + @"\RabbitSpawnPoint\";
 
             throw new NotSupportedException();
         }
 
         private List<CreatureRepositoryEntry> GetRepository(EntityType entityType)
         {
-            if (entityType == EntityType.SpawnPoint1)
+            if (entityType == EntityType.PredatorSpawnPoint)
                 return _repository;
-            if (entityType == EntityType.SpawnPoint2)
+            if (entityType == EntityType.PredatorSpawnPoint2)
                 return _repository2;
+            if (entityType == EntityType.RabbitSpawnPoint)
+                return _repositoryRabbit;
 
             throw new NotSupportedException();
         }
 
         public void Save()
         {
-            Save(EntityType.SpawnPoint1);
-            Save(EntityType.SpawnPoint2);
+            Save(EntityType.PredatorSpawnPoint);
+            Save(EntityType.PredatorSpawnPoint2);
+            Save(EntityType.RabbitSpawnPoint);
         }
 
         private void Save(EntityType entityType)
@@ -116,8 +123,9 @@ namespace DawnOnline.AgentMatrix.Repository
 
         public void Load()
         {
-            Load(EntityType.SpawnPoint1);
-            Load(EntityType.SpawnPoint2);
+            Load(EntityType.PredatorSpawnPoint);
+            Load(EntityType.PredatorSpawnPoint2);
+            Load(EntityType.RabbitSpawnPoint);
         }
 
         private void Load(EntityType entityType)

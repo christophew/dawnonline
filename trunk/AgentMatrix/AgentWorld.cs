@@ -383,8 +383,9 @@ namespace DawnOnline.AgentMatrix
 
         internal void RepopulateWorld(List<int> myCreatureIds)
         {
-            RepopulateWorld(myCreatureIds, EntityType.SpawnPoint1);
-            RepopulateWorld(myCreatureIds, EntityType.SpawnPoint2);
+            RepopulateWorld(myCreatureIds, EntityType.PredatorSpawnPoint);
+            RepopulateWorld(myCreatureIds, EntityType.PredatorSpawnPoint2);
+            RepopulateWorld(myCreatureIds, EntityType.RabbitSpawnPoint);
         }
 
         private void RepopulateWorld(List<int> myCreatureIds, EntityType spawnpointType)

@@ -53,6 +53,7 @@
      <Compile Include="Assets\Scripts\SetColor.cs" />
      <None Include="Assets\Standard Assets\Projectors\Guidelines.txt" />
      <None Include="Assets\Standard Assets\Projectors\Sources\Shaders\Projector Multiply.shader" />
+     <None Include="Assets\Libs\_autofilled by after build task of DawnClient.txt" />
      <None Include="Assets\Standard Assets\Projectors\Sources\Shaders\Projector Light.shader" />
  <Reference Include="DawnClient">
  <HintPath>Assets\Libs\DawnClient.dll</HintPath>

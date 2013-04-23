@@ -1,0 +1,1 @@
+Would be better in the before build of the DawnUnity project, but the project file is constantly regenarated by Unity.

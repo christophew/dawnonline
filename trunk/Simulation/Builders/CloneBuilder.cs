@@ -27,10 +27,11 @@ namespace DawnOnline.Simulation.Builders
             return entityType == EntityType.Avatar ||
                    entityType == EntityType.Predator ||
                    entityType == EntityType.Predator2 ||
-                   entityType == EntityType.SpawnPoint1 ||
-                   entityType == EntityType.SpawnPoint2 ||
+                   entityType == EntityType.PredatorSpawnPoint ||
+                   entityType == EntityType.PredatorSpawnPoint2 ||
                    entityType == EntityType.Plant ||
                    entityType == EntityType.Rabbit ||
+                   entityType == EntityType.RabbitSpawnPoint ||
                    entityType == EntityType.Turret;
         }
 

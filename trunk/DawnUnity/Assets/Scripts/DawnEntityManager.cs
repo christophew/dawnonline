@@ -18,9 +18,12 @@ public class DawnEntityManager : MonoBehaviour
     public Transform Predator2Template;
     public Transform SpawnPoint1Template;
     public Transform SpawnPoint2Template;
+    public Transform RabbitTemplate;
+    public Transform RabbitSpawnPointTemplate;
     public Transform TreasureTemplate;
     public Transform BulletTemplate;
     public Transform RocketTemplate;
+    public Transform PlantTemplate;
     public Transform DefaultTemplate;
 
     public Transform ExplosionTemplate;
@@ -34,6 +37,7 @@ public class DawnEntityManager : MonoBehaviour
     private string _debugInfoNrOfBoxes;
     private string _debugInfoNrOfPredators;
     private string _debugInfoNrOfPredators2;
+    private string _debugInfoNrOfRabbits;
 
 
 	// Use this for initialization
@@ -66,6 +70,7 @@ public class DawnEntityManager : MonoBehaviour
         _debugInfoNrOfBoxes = _dawnClient.DawnWorld.GetEntities().Where(e => e.Specy == EntityType.Box).Count().ToString();
         _debugInfoNrOfPredators = _dawnClient.DawnWorld.GetEntities().Where(e => e.Specy == EntityType.Predator).Count().ToString();
         _debugInfoNrOfPredators2 = _dawnClient.DawnWorld.GetEntities().Where(e => e.Specy == EntityType.Predator2).Count().ToString();
+        _debugInfoNrOfRabbits = _dawnClient.DawnWorld.GetEntities().Where(e => e.Specy == EntityType.Rabbit).Count().ToString();
 
 
         // Update nodes & create new nodes
@@ -115,6 +120,7 @@ public class DawnEntityManager : MonoBehaviour
         GUI.Label(new Rect(0, 10, Screen.width, Screen.height), "#boxes: " + _debugInfoNrOfBoxes);
         GUI.Label(new Rect(0, 20, Screen.width, Screen.height), "#predators: " + _debugInfoNrOfPredators);
         GUI.Label(new Rect(0, 30, Screen.width, Screen.height), "#predators2: " + _debugInfoNrOfPredators2);
+        GUI.Label(new Rect(0, 40, Screen.width, Screen.height), "#rabbits: " + _debugInfoNrOfRabbits);
     }
 
     
@@ -140,10 +146,16 @@ public class DawnEntityManager : MonoBehaviour
             case EntityType.Predator2:
                 template = Predator2Template;
                 break;
-            case EntityType.SpawnPoint1:
+            case EntityType.PredatorSpawnPoint:
                 template = SpawnPoint1Template;
                 break;
-            case EntityType.SpawnPoint2:
+            case EntityType.Rabbit:
+                template = RabbitTemplate;
+                break;
+            case EntityType.RabbitSpawnPoint:
+                template = RabbitSpawnPointTemplate;
+                break;
+            case EntityType.PredatorSpawnPoint2:
                 template = SpawnPoint2Template;
                 break;
             case EntityType.Treasure:
@@ -154,6 +166,9 @@ public class DawnEntityManager : MonoBehaviour
                 break;
             case EntityType.Rocket:
                 template = RocketTemplate;
+                break;
+            case EntityType.Plant:
+                template = PlantTemplate;
                 break;
         }
 

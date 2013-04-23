@@ -39,10 +39,12 @@ namespace DawnOnline.Simulation.Builders
                     return CreateRabbit(brain);
                 case EntityType.Turret:
                     return CreateTurret(brain);
-                case EntityType.SpawnPoint1:
+                case EntityType.PredatorSpawnPoint:
                     return CreateSpawnPoint(brain);
-                case EntityType.SpawnPoint2:
+                case EntityType.PredatorSpawnPoint2:
                     return CreateSpawnPoint2(brain);
+                case EntityType.RabbitSpawnPoint:
+                    return CreateRabbitSpawnPoint(brain);
             }
 
             throw new NotSupportedException();
@@ -54,11 +56,12 @@ namespace DawnOnline.Simulation.Builders
             critter.Brain = brain;
 
             critter.Specy = EntityType.Predator;
-            critter.FoodSpecies = new List<EntityType> { EntityType.Predator2, EntityType.SpawnPoint2 };
+            critter.FoodSpecies = new List<EntityType> { EntityType.Predator2, EntityType.PredatorSpawnPoint2, EntityType.Rabbit, EntityType.RabbitSpawnPoint };
 
             critter.CharacterSheet.WalkingDistance = 30 * _velocityMultiplier;
             critter.CharacterSheet.TurningAngle = 1.5 * _turnMultiplier;
             critter.CharacterSheet.MeleeDamage = 10;
+            critter.CharacterSheet.MeleeRange = 2.0;
             critter.CharacterSheet.RangeDamage = 0;
             critter.CharacterSheet.UseAutoAttack = true;
 
@@ -71,7 +74,7 @@ namespace DawnOnline.Simulation.Builders
             critter.Brain = brain;
 
             critter.Specy = EntityType.Predator2;
-            critter.FoodSpecies = new List<EntityType> { EntityType.Predator, EntityType.SpawnPoint1 };
+            critter.FoodSpecies = new List<EntityType> { EntityType.Predator, EntityType.PredatorSpawnPoint, EntityType.Rabbit, EntityType.RabbitSpawnPoint };
 
             critter.CharacterSheet.WalkingDistance = 20 * _velocityMultiplier;
             critter.CharacterSheet.TurningAngle = 1.0 * _turnMultiplier;
@@ -94,16 +97,19 @@ namespace DawnOnline.Simulation.Builders
             critter.FoodSpecies = new List<EntityType> { EntityType.Plant };
 
             //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(100, 300);
-            critter.CharacterSheet.WalkingDistance = 15 * _velocityMultiplier;
-            critter.CharacterSheet.TurningAngle = 1.5 * _turnMultiplier;
-            critter.CharacterSheet.FoodValue = 500;
+            critter.CharacterSheet.WalkingDistance = 35 * _velocityMultiplier;
+            critter.CharacterSheet.TurningAngle = 2 * _turnMultiplier;
+            critter.CharacterSheet.MeleeDamage = 10;
+            critter.CharacterSheet.MeleeRange = 1.5;
+            critter.CharacterSheet.UseAutoAttack = true;
+            critter.CharacterSheet.FoodValue = 10;
 
             return critter;
         }
 
         public static ICreature CreatePlant(IBrain brain)
         {
-            var critter = new Creature(1.2);
+            var critter = new Creature(0.5);
             critter.Brain = brain;
 
             critter.Specy = EntityType.Plant;
@@ -112,7 +118,8 @@ namespace DawnOnline.Simulation.Builders
             //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(50, 200);
             critter.CharacterSheet.WalkingDistance = 0;
             critter.CharacterSheet.TurningAngle = 0;
-            critter.CharacterSheet.FoodValue = 200;
+            critter.CharacterSheet.FoodValue = 5;
+            critter.CharacterSheet.IsRooted = true;
 
             return critter;
         }
@@ -165,7 +172,7 @@ namespace DawnOnline.Simulation.Builders
         {
             var spawnPoint = new Creature(1.0);
 
-            spawnPoint.Specy = EntityType.SpawnPoint1;
+            spawnPoint.Specy = EntityType.PredatorSpawnPoint;
             spawnPoint.Brain = brain;
             spawnPoint.IsSpawnPoint = true;
 
@@ -183,7 +190,7 @@ namespace DawnOnline.Simulation.Builders
         {
             var spawnPoint = new Creature(2.0);
 
-            spawnPoint.Specy = EntityType.SpawnPoint2;
+            spawnPoint.Specy = EntityType.PredatorSpawnPoint2;
             spawnPoint.Brain = brain;
             spawnPoint.IsSpawnPoint = true;
 
@@ -192,6 +199,24 @@ namespace DawnOnline.Simulation.Builders
 
             spawnPoint.CharacterSheet.FatigueRecovery = 25;
             spawnPoint.CharacterSheet.Armour = 5;
+            //spawnPoint.CharacterSheet.Armour = 100;
+
+            return spawnPoint;
+        }
+
+        public static ICreature CreateRabbitSpawnPoint(IBrain brain)
+        {
+            var spawnPoint = new Creature(0.5);
+
+            spawnPoint.Specy = EntityType.RabbitSpawnPoint;
+            spawnPoint.Brain = brain;
+            spawnPoint.IsSpawnPoint = true;
+
+            // Make the spawnPoint part of the family
+            spawnPoint.SpawnPoint = spawnPoint;
+
+            spawnPoint.CharacterSheet.FatigueRecovery = 25;
+            spawnPoint.CharacterSheet.Armour = 3;
             //spawnPoint.CharacterSheet.Armour = 100;
 
             return spawnPoint;
