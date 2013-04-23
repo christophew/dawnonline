@@ -11,6 +11,7 @@ using Random = UnityEngine.Random;
 
 public class DawnEntityManager : MonoBehaviour
 {
+    public Transform AvatarTemplate;
     public Transform WallTemplate;
     public Transform BoxTemplate;
     public Transform PredatorTemplate;
@@ -25,12 +26,12 @@ public class DawnEntityManager : MonoBehaviour
 
     private DawnClient.DawnClient _dawnClient;
 
+    private int _debugLoadingCounter;
     private string _debugInfoNrOfWalls;
     private string _debugInfoNrOfBoxes;
     private string _debugInfoNrOfPredators;
     private string _debugInfoNrOfPredators2;
 
-    private
 
 	// Use this for initialization
 	void Start () {
@@ -38,6 +39,11 @@ public class DawnEntityManager : MonoBehaviour
         Application.runInBackground = true; //without this Photon will loose connection if not focussed
 
 	    _dawnClient = new DawnClient.DawnClient();
+        _dawnClient.WorldLoadedEvent += delegate
+        {
+            _dawnClient.RequestAvatarCreationOnServer();
+        };
+
         _dawnClient.Connect();
 	}
 	
@@ -46,6 +52,7 @@ public class DawnEntityManager : MonoBehaviour
 	{
         if (!_dawnClient.WorldLoaded)
         {
+            _debugLoadingCounter++;
             _dawnClient.Update();
             return;
         }
@@ -85,11 +92,16 @@ public class DawnEntityManager : MonoBehaviour
         if (!Application.isEditor)  // or check the app debug flag
             return;
 
-        GUI.Label(new Rect(0, 0, Screen.width, Screen.height), "WorldLoaded: " + _dawnClient.WorldLoaded);
-        GUI.Label(new Rect(0, 20, Screen.width, Screen.height), "#walls: " + _debugInfoNrOfWalls);
-        GUI.Label(new Rect(100, 20, Screen.width, Screen.height), "#boxes: " + _debugInfoNrOfBoxes);
-        GUI.Label(new Rect(0, 40, Screen.width, Screen.height), "#predators: " + _debugInfoNrOfPredators);
-        GUI.Label(new Rect(100, 40, Screen.width, Screen.height), "#predators2: " + _debugInfoNrOfPredators2);
+        if (!_dawnClient.WorldLoaded)
+        {
+            GUI.Label(new Rect(0, 0, Screen.width, Screen.height), "WorldLoading: " + _debugLoadingCounter);
+            return;
+        }
+
+        GUI.Label(new Rect(0, 0, Screen.width, Screen.height), "#walls: " + _debugInfoNrOfWalls);
+        GUI.Label(new Rect(0, 10, Screen.width, Screen.height), "#boxes: " + _debugInfoNrOfBoxes);
+        GUI.Label(new Rect(0, 20, Screen.width, Screen.height), "#predators: " + _debugInfoNrOfPredators);
+        GUI.Label(new Rect(0, 30, Screen.width, Screen.height), "#predators2: " + _debugInfoNrOfPredators2);
     }
 
     
@@ -100,6 +112,9 @@ public class DawnEntityManager : MonoBehaviour
         Transform template = null;
         switch (entityType)
         {
+            case EntityType.Avatar:
+                template = AvatarTemplate;
+                break;
             case EntityType.Wall:
                 template = WallTemplate;
                 break;
@@ -143,10 +158,11 @@ public class DawnEntityManager : MonoBehaviour
 
         if (_entities.TryGetValue(entity.Id, out entityTransform))
         {
-            entityTransform.position = new Vector3(entity.PlaceX, 0, entity.PlaceY);
+            // Invert z-axis = convert left-handed to right-handed orientation
+            entityTransform.position = new Vector3(entity.PlaceX, 0, -entity.PlaceY);
 
             // Why do we need a negative angle?
-            entityTransform.eulerAngles = new Vector3(0, (float)RadianToDegree(-entity.Angle), 0);
+            entityTransform.eulerAngles = new Vector3(0, (float)RadianToDegree(entity.Angle), 0);
         }
         else
         {
@@ -164,7 +180,9 @@ public class DawnEntityManager : MonoBehaviour
 
     private Transform SpawnObject(DawnClientEntity entity, Transform template)
     {
-        Vector3 position = new Vector3(entity.PlaceX, 0, entity.PlaceY);
+        // Invert z-axis = convert left-handed to right-handed orientation
+        Vector3 position = new Vector3(entity.PlaceX, 0, -entity.PlaceY);
+
         //Quaternion rotation = Quaternion.A;
         Transform newObj = (Transform)Instantiate(template, position, transform.rotation);
         newObj.eulerAngles = new Vector3(0, (float)RadianToDegree(entity.Angle), 0);
@@ -179,10 +197,24 @@ public class DawnEntityManager : MonoBehaviour
             }
         }
 
-        var creatureScript = newObj.GetComponent("CreatureScript") as CreatureScript;
-        if (creatureScript != null)
+        // Creature
         {
-            creatureScript.Entity = entity;
+            var creatureScript = newObj.GetComponent("CreatureScript") as CreatureScript;
+            if (creatureScript != null)
+            {
+                creatureScript.Entity = entity;
+            }
+        }
+
+        // Avatar
+        if (entity.Specy == EntityType.Avatar)
+        {
+            var avatarControlScript = newObj.GetComponent("AvatarControlScript") as AvatarControlScript;
+            if (avatarControlScript != null)
+            {
+                avatarControlScript.DawnClient = _dawnClient;
+                avatarControlScript.Avatar = entity;
+            }
         }
 
         return newObj;

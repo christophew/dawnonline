@@ -33,6 +33,9 @@ public class CreatureScript : MonoBehaviour
         if (Entity == null)
             return;
 
+        if (Camera.main == null)
+            return;
+
         var screenPos = Camera.main.WorldToScreenPoint(transform.position);
         var labelRect = new Rect(screenPos.x, Screen.height - screenPos.y, Screen.width, Screen.height);
 

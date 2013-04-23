@@ -27,6 +27,8 @@ namespace DawnOnline.Simulation.Builders
         {
             switch (specy)
             {
+                case EntityType.Avatar:
+                    return CreateAvatar();
                 case EntityType.Plant:
                     return CreatePlant(brain);
                 case EntityType.Predator:
@@ -52,7 +54,7 @@ namespace DawnOnline.Simulation.Builders
             critter.Brain = brain;
 
             critter.Specy = EntityType.Predator;
-            critter.FoodSpecies = new List<EntityType> { EntityType.Avatar, EntityType.Predator2, EntityType.SpawnPoint2 };
+            critter.FoodSpecies = new List<EntityType> { EntityType.Predator2, EntityType.SpawnPoint2 };
 
             critter.CharacterSheet.WalkingDistance = 30 * _velocityMultiplier;
             critter.CharacterSheet.TurningAngle = 1.5 * _turnMultiplier;
@@ -69,7 +71,7 @@ namespace DawnOnline.Simulation.Builders
             critter.Brain = brain;
 
             critter.Specy = EntityType.Predator2;
-            critter.FoodSpecies = new List<EntityType> { EntityType.Avatar, EntityType.Predator, EntityType.SpawnPoint1 };
+            critter.FoodSpecies = new List<EntityType> { EntityType.Predator, EntityType.SpawnPoint1 };
 
             critter.CharacterSheet.WalkingDistance = 20 * _velocityMultiplier;
             critter.CharacterSheet.TurningAngle = 1.0 * _turnMultiplier;

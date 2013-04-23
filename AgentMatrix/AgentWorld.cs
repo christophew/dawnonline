@@ -79,10 +79,6 @@ namespace DawnOnline.AgentMatrix
             // Add + update
             foreach (var entity in entities)
             {
-                // TODO
-                if (entity.Specy == EntityType.Avatar)
-                    continue;
-
                 // Entities
                 var position = new Vector2(entity.PlaceX, entity.PlaceY);
                 IEntity myEntity = GetOrCreateWorldEntity(entity, position);
