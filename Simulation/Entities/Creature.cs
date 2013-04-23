@@ -116,7 +116,7 @@ namespace DawnOnline.Simulation.Entities
         {
             var bodyRadius = _place.Form.BoundingCircleRadius;
             _place.Fixture = BodyFactory.CreateCircle(Environment.GetWorld().FarSeerWorld, (float)bodyRadius, 1.0f).FixtureList[0];
-            _place.Fixture.Body.BodyType = BodyType.Dynamic;
+            _place.Fixture.Body.BodyType = this.CharacterSheet.IsRooted ? BodyType.Static : BodyType.Dynamic;
             _place.Fixture.Body.Mass = 5;
             //_place.Fixture.Friction = 0.1f;
             _place.Fixture.Body.LinearDamping = 2.5f;
@@ -572,6 +572,7 @@ namespace DawnOnline.Simulation.Entities
 
             foreach (Creature current in creaturesToAttack)
             {
+                // Don't attack my family, everything else is game
                 if (this.SpawnPoint != null &&
                     this.SpawnPoint == current.SpawnPoint)
                     continue;

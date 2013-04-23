@@ -17,10 +17,12 @@ namespace DawnOnline.AgentMatrix
         {
             switch (specy)
             {
-                case EntityType.SpawnPoint1:
+                case EntityType.PredatorSpawnPoint:
                     return CreateSpawnPoint();
-                case EntityType.SpawnPoint2:
+                case EntityType.PredatorSpawnPoint2:
                     return CreateSpawnPoint2();
+                case EntityType.RabbitSpawnPoint:
+                    return CreateRabbitSpawnPoint();
             }
 
             throw new NotSupportedException();
@@ -48,6 +50,20 @@ namespace DawnOnline.AgentMatrix
 
             var spawnPointBrain = new SpawnPointBrain(prototype);
             var newSpawnPoint = CreatureBuilder.CreateSpawnPoint2(spawnPointBrain);
+
+            CreatureRepository.GetRepository().Add(newSpawnPoint);
+
+            return newSpawnPoint;
+        }
+
+        public static ICreature CreateRabbitSpawnPoint()
+        {
+            var prototypeBrain = new NeuralBrain();
+            prototypeBrain.PredefineBehaviour();
+            var prototype = CreatureBuilder.CreateRabbit(prototypeBrain);
+
+            var spawnPointBrain = new SpawnPointBrain(prototype);
+            var newSpawnPoint = CreatureBuilder.CreateRabbitSpawnPoint(spawnPointBrain);
 
             CreatureRepository.GetRepository().Add(newSpawnPoint);
 

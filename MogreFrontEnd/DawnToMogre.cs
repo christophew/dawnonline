@@ -238,11 +238,17 @@ namespace MogreFrontEnd
                     case EntityType.Rocket:
                         node = CreateRocketNode(entity);
                         break;
-                    case EntityType.SpawnPoint1:
+                    case EntityType.PredatorSpawnPoint:
                         node = CreateSpawnPointNode(entity);
                         break;
-                    case EntityType.SpawnPoint2:
+                    case EntityType.PredatorSpawnPoint2:
                         node = CreateSpawnPoint2Node(entity);
+                        break;
+                    case EntityType.Rabbit:
+                        node = CreatePredatorNode(entity);
+                        break;
+                    case EntityType.RabbitSpawnPoint:
+                        node = CreateSpawnPointNode(entity);
                         break;
                     default:
                         throw new NotSupportedException();

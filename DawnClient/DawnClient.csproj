@@ -63,4 +63,13 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="AfterBuild">
+    <ItemGroup>
+      <_CustomFiles Include="bin\debug\*.dll" />
+    </ItemGroup>
+      <Copy
+            SourceFiles="@(_CustomFiles)"
+            DestinationFiles="@(_CustomFiles->'..\DawnUnity\Assets\Libs\%(Filename)%(Extension)')" 
+            SkipUnchangedFiles="true" />
+  </Target>
 </Project>

@@ -23,7 +23,7 @@ namespace DawnClient
         public int Score { get; private set; }
 
         // Maybe we should return this property from the server as well?
-        public bool IsSpawnPoint { get { return Specy == EntityType.SpawnPoint1 || Specy == EntityType.SpawnPoint2; } }
+        public bool IsSpawnPoint { get { return Specy == EntityType.PredatorSpawnPoint || Specy == EntityType.PredatorSpawnPoint2 || Specy == EntityType.RabbitSpawnPoint; } }
 
         enum UpdateMode
         {

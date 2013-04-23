@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using DawnOnline.Simulation;
+using DawnOnline.Simulation.Brains;
 using DawnOnline.Simulation.Builders;
 using DawnOnline.Simulation.Entities;
 using System.Linq;
@@ -23,6 +24,7 @@ namespace DawnGame
 
         //private int _nrOfSpawnPoints = 0;
         private int _nrOfTreasures = 0;
+        private int _nrOfPlants = 75;
         private int _nrOfWalls = 300;
         private int _maxWallLength = 10;
         private int _nrOfBoxes = 0;
@@ -217,12 +219,25 @@ namespace DawnGame
             _environment.ApplyActions(timeDelta);
 
             // Make sure we always have enough Treasure
-            var obstacles = _environment.GetObstacles();
-            if (obstacles.Where(o => o.Specy == EntityType.Treasure).Count() < _nrOfTreasures)
             {
-                var position = new Vector2(_randomize.Next((int)MaxX / _grid) * _grid, _randomize.Next((int)MaxY / _grid) * _grid);
-                var box = ObstacleBuilder.CreateTreasure();
-                _environment.AddObstacle(box, position);
+                var obstacles = _environment.GetObstacles();
+                if (obstacles.Where(o => o.Specy == EntityType.Treasure).Count() < _nrOfTreasures)
+                {
+                    var position = new Vector2(_randomize.Next((int)MaxX / _grid) * _grid, _randomize.Next((int)MaxY / _grid) * _grid);
+                    var box = ObstacleBuilder.CreateTreasure();
+                    _environment.AddObstacle(box, position);
+                }
+            }
+
+            // Make sure we always have enough Plants
+            {
+                var plants = _environment.GetCreatures(EntityType.Plant);
+                if (plants.Count() < _nrOfPlants)
+                {
+                    var position = new Vector2(_randomize.Next((int)MaxX), _randomize.Next((int)MaxY));
+                    var plant = CreatureBuilder.CreatePlant(new DummyBrain());
+                    _environment.AddCreature(plant, position, 0);
+                }
             }
         }
 
