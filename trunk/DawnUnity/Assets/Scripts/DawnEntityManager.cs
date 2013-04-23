@@ -74,6 +74,7 @@ public class DawnEntityManager : MonoBehaviour
             EntityToNode(current, currentEntities);
         }
 
+        // TODO: move to EntityScript
         // Remove destroyed entities
         var entitiesCopy = _entities.ToList();
         foreach (var entity in entitiesCopy)
@@ -154,17 +155,7 @@ public class DawnEntityManager : MonoBehaviour
 
     private void EntityToNode(DawnClientEntity entity, HashSet<int> currentEntities)
     {
-        Transform entityTransform = null;
-
-        if (_entities.TryGetValue(entity.Id, out entityTransform))
-        {
-            // Invert z-axis = convert left-handed to right-handed orientation
-            entityTransform.position = new Vector3(entity.PlaceX, 0, -entity.PlaceY);
-
-            // Why do we need a negative angle?
-            entityTransform.eulerAngles = new Vector3(0, (float)RadianToDegree(entity.Angle), 0);
-        }
-        else
+        if (!_entities.ContainsKey(entity.Id))
         {
             var template = GetTemplate(entity.Specy);
             var node = SpawnObject(entity, template);
@@ -197,6 +188,15 @@ public class DawnEntityManager : MonoBehaviour
             }
         }
 
+        // Entity
+        {
+            var entityScript = newObj.GetComponent("EntityScript") as EntityScript;
+            if (entityScript != null)
+            {
+                entityScript.Entity = entity;
+            }
+        }
+
         // Creature
         {
             var creatureScript = newObj.GetComponent("CreatureScript") as CreatureScript;
@@ -209,7 +209,7 @@ public class DawnEntityManager : MonoBehaviour
         // Avatar
         if (entity.Specy == EntityType.Avatar)
         {
-            var avatarControlScript = newObj.GetComponent("AvatarControlScript") as AvatarControlScript;
+            var avatarControlScript = newObj.GetComponent("AvatarScript") as AvatarScript;
             if (avatarControlScript != null)
             {
                 avatarControlScript.DawnClient = _dawnClient;

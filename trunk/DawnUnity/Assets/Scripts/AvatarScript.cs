@@ -3,7 +3,7 @@ using SharedConstants;
 using UnityEngine;
 using System.Collections;
 
-public class AvatarControlScript : MonoBehaviour {
+public class AvatarScript : MonoBehaviour {
 
     public DawnClient.DawnClient DawnClient;
     public DawnClientEntity Avatar; 
