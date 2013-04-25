@@ -21,17 +21,19 @@ namespace DawnPhotonApp
 
         public Hashtable CreatePhotonPacket()
         {
+            var creature = _entity as ICreature;
+
             var dawnEntity = new Hashtable();
             dawnEntity[0] = _entity.Id;
-            dawnEntity[1] = (byte)_entity.Specy;
-            dawnEntity[2] = _entity.Place.Position.X;
-            dawnEntity[3] = _entity.Place.Position.Y;
-            dawnEntity[4] = _entity.Place.Angle;
+            dawnEntity[1] = (byte)_entity.EntityType;
+            dawnEntity[2] = (byte)(creature != null ? creature.CreatureType : 0);
+            dawnEntity[3] = _entity.Place.Position.X;
+            dawnEntity[4] = _entity.Place.Position.Y;
+            dawnEntity[5] = _entity.Place.Angle;
 
-            var creature = _entity as ICreature;
             if (creature != null && creature.SpawnPoint != null)
             {
-                dawnEntity[5] = creature.SpawnPoint.Id;
+                dawnEntity[6] = creature.SpawnPoint.Id;
             }
 
             return dawnEntity;

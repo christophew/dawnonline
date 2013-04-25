@@ -80,7 +80,7 @@ namespace DawnOnline.AgentMatrix
             foreach (var entity in entities)
             {
                 // Ignore bullets & rockets
-                if (entity.Specy == EntityType.Bullet || entity.Specy == EntityType.Rocket)
+                if (entity.EntityType == EntityTypeEnum.Bullet || entity.EntityType == EntityTypeEnum.Rocket)
                     continue;
 
                 // Entities
@@ -124,7 +124,7 @@ namespace DawnOnline.AgentMatrix
             else
             {
                 // We already have this entity
-                myEntity = FindWorldEntity(entity.Specy, entity.Id);
+                myEntity = FindWorldEntity(entity.EntityType, entity.Id);
                 Debug.Assert(myEntity != null);
             }
             return myEntity;
@@ -179,7 +179,8 @@ namespace DawnOnline.AgentMatrix
                 // Request creation on server
                 // TODO: dawnClient.RequestCreatureCreationOnServer => this is a direct server request!! Should be a posponed command.
                 Console.WriteLine("CreateNewCreaturesOnServer: " + creature.Id);
-                dawnClient.RequestCreatureCreationOnServer(creature.Specy, creature.Place.Position.X, creature.Place.Position.Y, creature.Place.Angle, spawnPointServerId, creature.Id);
+                dawnClient.RequestCreatureCreationOnServer(
+                    creature.EntityType, creature.CreatureType, creature.Place.Position.X, creature.Place.Position.Y, creature.Place.Angle, spawnPointServerId, creature.Id);
             }
         }
 
@@ -329,7 +330,7 @@ namespace DawnOnline.AgentMatrix
             }
         }
 
-        private IEntity FindWorldEntity(EntityType specy, int id)
+        private IEntity FindWorldEntity(EntityTypeEnum specy, int id)
         {
             if (CloneBuilder.IsObstacle(specy))
                 return _staticEnvironment.GetObstacles().FirstOrDefault(e => e.Id == id);
@@ -341,15 +342,15 @@ namespace DawnOnline.AgentMatrix
 
         private IEntity CreateWorldEntity(DawnClientEntity clientEntity, Vector2 position)
         {
-            if (CloneBuilder.IsObstacle(clientEntity.Specy))
+            if (CloneBuilder.IsObstacle(clientEntity.EntityType))
             {
-                var entity = CloneBuilder.CreateObstacle(clientEntity.Id, clientEntity.Specy, WorldConstants.WallHeight, WorldConstants.WallWide);
+                var entity = CloneBuilder.CreateObstacle(clientEntity.Id, clientEntity.EntityType, WorldConstants.WallHeight, WorldConstants.WallWide);
                 if (_staticEnvironment.AddObstacle(entity, position))
                     return entity;
                 //throw new NotSupportedException("Should not happen!"); 
                 return null;
             }
-            if (CloneBuilder.IsCreature(clientEntity.Specy))
+            if (CloneBuilder.IsCreature(clientEntity.EntityType))
             {
                 ICreature spawnPoint = null;
 
@@ -366,7 +367,7 @@ namespace DawnOnline.AgentMatrix
                     spawnPoint = _staticEnvironment.GetCreatures().FirstOrDefault(c => c.Id == clientEntity.SpawnPointId);
                 }
 
-                var entity = CloneBuilder.CreateCreature(clientEntity.Specy, spawnPoint, clientEntity.Id);
+                var entity = CloneBuilder.CreateCreature(clientEntity.EntityType, clientEntity.CreatureType, spawnPoint, clientEntity.Id);
                 if (_staticEnvironment.AddCreature(entity, position, clientEntity.Angle))
                     return entity;
                 //throw new NotSupportedException("Should not happen!"); 
@@ -383,12 +384,12 @@ namespace DawnOnline.AgentMatrix
 
         internal void RepopulateWorld(List<int> myCreatureIds)
         {
-            RepopulateWorld(myCreatureIds, EntityType.PredatorSpawnPoint);
-            RepopulateWorld(myCreatureIds, EntityType.PredatorSpawnPoint2);
-            RepopulateWorld(myCreatureIds, EntityType.RabbitSpawnPoint);
+            RepopulateWorld(myCreatureIds, CreatureTypeEnum.Predator);
+            RepopulateWorld(myCreatureIds, CreatureTypeEnum.Predator2);
+            RepopulateWorld(myCreatureIds, CreatureTypeEnum.Rabbit);
         }
 
-        private void RepopulateWorld(List<int> myCreatureIds, EntityType spawnpointType)
+        private void RepopulateWorld(List<int> myCreatureIds, CreatureTypeEnum spawnpointType)
         {
             // Make sure we always have enough spawnpoints
             //var spawnPoints = _staticEnvironment.GetCreatures(EntityType.SpawnPoint);
@@ -406,7 +407,7 @@ namespace DawnOnline.AgentMatrix
                 if (spawnPoints.Count == 0)
                 {
                     // Everybody is dead... create a new eve
-                    bestspawnPoint = AgentCreatureBuilder.CreateCreature(spawnpointType);
+                    bestspawnPoint = AgentCreatureBuilder.CreateSpawnPoint(spawnpointType);
                     crossoverMate = bestspawnPoint;
                 }
                 else

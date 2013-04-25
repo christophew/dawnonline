@@ -18,7 +18,7 @@ namespace DawnOnline.Simulation
         public bool Attack { get; internal set; }
         public bool HasAttacked { get; internal set; }
         public bool HasFired { get; internal set; }
-        public EntityType BuildEntityOfType { get; internal set; }
+        public EntityTypeEnum BuildEntityOfType { get; internal set; }
         public bool Rest { get; internal set; }
 
         public bool RegisterSpawn { get; internal set; }
@@ -45,7 +45,7 @@ namespace DawnOnline.Simulation
             ForwardMotion = Vector2.Zero;
             HasAttacked = false;
             HasFired = false;
-            BuildEntityOfType = EntityType.Unknown;
+            BuildEntityOfType = EntityTypeEnum.Unknown;
             Rest = false;
             RegisterSpawn = false; // Needs to be reset on the AgentMatrix, but should be reset on usage on the Server
             Attack = false;

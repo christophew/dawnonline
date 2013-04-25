@@ -202,53 +202,70 @@ namespace MogreFrontEnd
                 SceneNode node = null;
                 SceneNode indicatorNode = null;
 
-                switch (entity.Specy)
+                switch (entity.EntityType)
                 {
-                    case EntityType.Avatar:
-                        node = CreateAvatorNode(entity);
-                        indicatorNode = AttachIndicator(node);
+                    case EntityTypeEnum.Creature:
+                        switch (entity.CreatureType)
+                        {
+                            case CreatureTypeEnum.Avatar:
+                                node = CreateAvatorNode(entity);
+                                indicatorNode = AttachIndicator(node);
+                                break;
+                            case CreatureTypeEnum.Predator:
+                                node = CreatePredatorNode(entity);
+                                indicatorNode = AttachIndicator(node);
+                                break;
+                            case CreatureTypeEnum.Predator2:
+                                node = CreatePredator2Node(entity);
+                                indicatorNode = AttachIndicator(node);
+                                break;
+                            case CreatureTypeEnum.Turret:
+                                node = CreateDummyNode(entity);
+                                indicatorNode = AttachIndicator(node);
+                                break;
+                            case CreatureTypeEnum.Rabbit:
+                                node = CreatePredatorNode(entity);
+                                indicatorNode = AttachIndicator(node);
+                                break;
+                            default:
+                                throw new NotSupportedException();
+                        }
                         break;
-                    case EntityType.Predator:
-                        node = CreatePredatorNode(entity);
-                        indicatorNode = AttachIndicator(node);
-                        break;
-                    case EntityType.Predator2:
-                        node = CreatePredator2Node(entity);
-                        indicatorNode = AttachIndicator(node);
-                        break;
-                    case EntityType.Turret:
-                        node = CreateDummyNode(entity);
-                         indicatorNode = AttachIndicator(node);
-                       break;
-                    case EntityType.Box:
+
+                    case EntityTypeEnum.Box:
                         node = CreateBoxNode(entity);
                         break;
-                    case EntityType.Wall:
+                    case EntityTypeEnum.Wall:
                         node = CreateWallNode(entity);
                         break;
-                    case EntityType.Treasure:
+                    case EntityTypeEnum.Treasure:
                         node = CreateTreasureNode(entity);
                         break;
-                    case EntityType.PredatorFactory:
+                    case EntityTypeEnum.PredatorFactory:
                         node = CreateDummyNode(entity);
                         break;
-                    case EntityType.Bullet:
+                    case EntityTypeEnum.Bullet:
                         node = CreateBulletNode(entity);
                         break;
-                    case EntityType.Rocket:
+                    case EntityTypeEnum.Rocket:
                         node = CreateRocketNode(entity);
                         break;
-                    case EntityType.PredatorSpawnPoint:
-                        node = CreateSpawnPointNode(entity);
-                        break;
-                    case EntityType.PredatorSpawnPoint2:
-                        node = CreateSpawnPoint2Node(entity);
-                        break;
-                    case EntityType.Rabbit:
-                        node = CreatePredatorNode(entity);
-                        break;
-                    case EntityType.RabbitSpawnPoint:
-                        node = CreateSpawnPointNode(entity);
+
+                    case EntityTypeEnum.SpawnPoint:
+                        switch (entity.CreatureType)
+                        {
+                            case CreatureTypeEnum.Predator:
+                                node = CreateSpawnPointNode(entity);
+                                break;
+                            case CreatureTypeEnum.Predator2:
+                                node = CreateSpawnPoint2Node(entity);
+                                break;
+                            case CreatureTypeEnum.Rabbit:
+                                node = CreateSpawnPointNode(entity);
+                                break;
+                            default:
+                                throw new NotSupportedException();
+                        }
                         break;
                     default:
                         throw new NotSupportedException();
@@ -262,7 +279,7 @@ namespace MogreFrontEnd
 
             // Attach FP-camera when possible
             // Cannot be done on creation (we are not always sure about our avatarId)
-            if (entity.Specy == EntityType.Avatar)
+            if (entity.CreatureType == CreatureTypeEnum.Avatar)
             {
                 // Check if camera is already attached
                 if (_fpCamera != null && !_fpCamera.IsAttached)

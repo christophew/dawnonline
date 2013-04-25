@@ -10,6 +10,8 @@ namespace DawnOnline.Simulation.Entities
 {
     public interface ICreature : IEntity
     {
+        CreatureTypeEnum CreatureType { get; }
+
         bool Alive { get; }
         bool IsTired { get; }
         CharacterSheet CharacterSheet { get; }
@@ -17,11 +19,11 @@ namespace DawnOnline.Simulation.Entities
         bool IsSpawnPoint { get; }
 
         // TODO: add to CharacterSheet? 
-        List<EntityType> FoodSpecies { get; }
+        List<CreatureTypeEnum> FoodSpecies { get; }
 
         // TEMP PUBLIC
         Environment MyEnvironment { get; }
-        ICreature FindCreatureToAttack(List<EntityType> ofTypes);
+        ICreature FindCreatureToAttack(List<CreatureTypeEnum> ofTypes);
         void SetSpawnPoint(ICreature spawnPoint);
         IBrain Brain { get; }
 
@@ -53,7 +55,7 @@ namespace DawnOnline.Simulation.Entities
         void Fire();
         void FireRocket();
 
-        void BuildEntity(EntityType entityType);
+        void BuildEntity(EntityTypeEnum entityType);
 
         void Rest();
         void RegisterSpawn();

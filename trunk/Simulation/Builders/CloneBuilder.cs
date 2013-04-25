@@ -15,45 +15,38 @@ namespace DawnOnline.Simulation.Builders
     /// </summary>
     public static class CloneBuilder
     {
-        public static bool IsObstacle(EntityType entityType)
+        public static bool IsObstacle(EntityTypeEnum entityType)
         {
-            return entityType == EntityType.Wall ||
-                   entityType == EntityType.Box ||
-                   entityType == EntityType.Treasure;
+            return entityType == EntityTypeEnum.Wall ||
+                   entityType == EntityTypeEnum.Box ||
+                   entityType == EntityTypeEnum.Treasure; // TODO: treasure = Creature->Food?
         }
 
-        public static bool IsCreature(EntityType entityType)
+        public static bool IsCreature(EntityTypeEnum entityType)
         {
-            return entityType == EntityType.Avatar ||
-                   entityType == EntityType.Predator ||
-                   entityType == EntityType.Predator2 ||
-                   entityType == EntityType.PredatorSpawnPoint ||
-                   entityType == EntityType.PredatorSpawnPoint2 ||
-                   entityType == EntityType.Plant ||
-                   entityType == EntityType.Rabbit ||
-                   entityType == EntityType.RabbitSpawnPoint ||
-                   entityType == EntityType.Turret;
+            return entityType == EntityTypeEnum.Creature ||
+                   entityType == EntityTypeEnum.SpawnPoint;
         }
 
-        public static IEntity CreateObstacle(int id, EntityType entityType, double height, double wide)
+        public static IEntity CreateObstacle(int id, EntityTypeEnum entityType, double height, double wide)
         {
             switch (entityType)
             {
-                case EntityType.Box:
+                case EntityTypeEnum.Box:
                     {
                         var obstacle = ObstacleBuilder.CreateObstacleBox(WorldConstants.WallHeight, WorldConstants.WallWide) as Obstacle;
                         Debug.Assert(obstacle != null);
                         obstacle.Id = id;
                         return obstacle;
                     }
-                case EntityType.Wall:
+                case EntityTypeEnum.Wall:
                     {
                         var obstacle = ObstacleBuilder.CreateWall(WorldConstants.WallHeight, WorldConstants.WallWide) as Obstacle;
                         Debug.Assert(obstacle != null);
                         obstacle.Id = id;
                         return obstacle;
                     }
-                case EntityType.Treasure:
+                case EntityTypeEnum.Treasure:
                     {
                         var obstacle = ObstacleBuilder.CreateTreasure(false) as Obstacle;
                         Debug.Assert(obstacle != null);
@@ -65,9 +58,9 @@ namespace DawnOnline.Simulation.Builders
             }
         }
 
-        public static ICreature CreateCreature(EntityType entityType, ICreature spawnPoint, int id)
+        public static ICreature CreateCreature(EntityTypeEnum entityType, CreatureTypeEnum creatureType, ICreature spawnPoint, int id)
         {
-            var creature = CreatureBuilder.CreateCreature(entityType, new DummyBrain()) as Creature;
+            var creature = CreatureBuilder.CreateCreature(entityType, creatureType, new DummyBrain()) as Creature;
             Debug.Assert(creature != null);
             creature.Id = id;
 

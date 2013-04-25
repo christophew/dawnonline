@@ -13,10 +13,10 @@ namespace DawnOnline.Simulation.Senses
         double WeightedDistanceToFirstVisible(List<IEntity> sortedEntities, bool useLineOfSight = true);
 
         bool SeesCreature(ICreature creature);
-        bool SeesACreature(List<EntityType> species, IEntity spawnPointToExclude);
-        bool SeesACreature(List<EntityType> species);
-        bool SeesACreature(EntityType specy);
+        bool SeesACreature(List<CreatureTypeEnum> species, IEntity spawnPointToExclude);
+        bool SeesACreature(List<CreatureTypeEnum> species);
+        bool SeesACreature(CreatureTypeEnum specy);
 
-        bool SeesAnObstacle(EntityType entityType);
+        bool SeesAnObstacle(EntityTypeEnum entityType);
     }
 }

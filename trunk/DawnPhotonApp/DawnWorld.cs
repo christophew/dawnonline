@@ -44,11 +44,11 @@ namespace DawnGame
             BuildWorld2();
 
 
-            //AddCreatures(EntityType.Rabbit, 300);
-            //AddCreatures(EntityType.Plant, 300);
-            //AddCreatures(EntityType.Predator, 300);
-            //AddCreatures(EntityType.Turret, 30);
-            //AddSpawnPoints(EntityType.Predator, _nrOfSpawnPoints);
+            //AddCreatures(EntityTypeEnum.Rabbit, 300);
+            //AddCreatures(EntityTypeEnum.Plant, 300);
+            //AddCreatures(EntityTypeEnum.Predator, 300);
+            //AddCreatures(EntityTypeEnum.Turret, 30);
+            //AddSpawnPoints(EntityTypeEnum.Predator, _nrOfSpawnPoints);
         }
 
         public ICreature AddAvatar()
@@ -65,7 +65,7 @@ namespace DawnGame
 
         public ICreature GetAvatar(int id)
         {
-            var avatar = _environment.GetCreatures(EntityType.Avatar).FirstOrDefault(a => a.Id == id);
+            var avatar = _environment.GetCreatures(CreatureTypeEnum.Avatar).FirstOrDefault(a => a.Id == id);
             return avatar;
         }
 
@@ -176,21 +176,21 @@ namespace DawnGame
 
         //    // + SpawnPoints
         //    var offset = 125;
-        //    _environment.AddCreature(CreatureBuilder.CreateSpawnPoint(EntityType.Predator), new Vector2(position.X + offset, position.Y), 0, false);
-        //    _environment.AddCreature(CreatureBuilder.CreateSpawnPoint(EntityType.Predator), new Vector2(position.X - offset, position.Y), 0, false);
-        //    _environment.AddCreature(CreatureBuilder.CreateSpawnPoint(EntityType.Predator), new Vector2(position.X, position.Y - offset), 0, false);
-        //    _environment.AddCreature(CreatureBuilder.CreateSpawnPoint(EntityType.Predator), new Vector2(position.X, position.Y - offset), 0, false);
+        //    _environment.AddCreature(CreatureBuilder.CreateSpawnPoint(EntityTypeEnum.Predator), new Vector2(position.X + offset, position.Y), 0, false);
+        //    _environment.AddCreature(CreatureBuilder.CreateSpawnPoint(EntityTypeEnum.Predator), new Vector2(position.X - offset, position.Y), 0, false);
+        //    _environment.AddCreature(CreatureBuilder.CreateSpawnPoint(EntityTypeEnum.Predator), new Vector2(position.X, position.Y - offset), 0, false);
+        //    _environment.AddCreature(CreatureBuilder.CreateSpawnPoint(EntityTypeEnum.Predator), new Vector2(position.X, position.Y - offset), 0, false);
 
         //    // + turrets
-        //    _environment.AddCreature(CreatureBuilder.CreateTurret(EntityType.Avatar), new Vector2(position.X + offset, position.Y + offset), 0, false);
-        //    _environment.AddCreature(CreatureBuilder.CreateTurret(EntityType.Avatar), new Vector2(position.X - offset, position.Y + offset), 0, false);
-        //    _environment.AddCreature(CreatureBuilder.CreateTurret(EntityType.Avatar), new Vector2(position.X - offset, position.Y - offset), 0, false);
-        //    _environment.AddCreature(CreatureBuilder.CreateTurret(EntityType.Avatar), new Vector2(position.X + offset, position.Y - offset), 0, false);
+        //    _environment.AddCreature(CreatureBuilder.CreateTurret(EntityTypeEnum.Avatar), new Vector2(position.X + offset, position.Y + offset), 0, false);
+        //    _environment.AddCreature(CreatureBuilder.CreateTurret(EntityTypeEnum.Avatar), new Vector2(position.X - offset, position.Y + offset), 0, false);
+        //    _environment.AddCreature(CreatureBuilder.CreateTurret(EntityTypeEnum.Avatar), new Vector2(position.X - offset, position.Y - offset), 0, false);
+        //    _environment.AddCreature(CreatureBuilder.CreateTurret(EntityTypeEnum.Avatar), new Vector2(position.X + offset, position.Y - offset), 0, false);
 
         //    return true;
         //}
 
-        public IEntity AddCreature(EntityType specy, Vector2 position, float angle, int spawnPointId, int id)
+        public IEntity AddCreature(EntityTypeEnum entityType, CreatureTypeEnum creatureType, Vector2 position, float angle, int spawnPointId, int id)
         {
             // Vector(0,0) = position undefined
             if (position.X == 0 && position.Y == 0)
@@ -205,7 +205,7 @@ namespace DawnGame
                 spawnPoint = _environment.GetCreatures().FirstOrDefault(c => c.Id == spawnPointId);
             }
 
-            var newCreature = CloneBuilder.CreateCreature(specy, spawnPoint, id);
+            var newCreature = CloneBuilder.CreateCreature(entityType, creatureType, spawnPoint, id);
             if (_environment.AddCreature(newCreature, position, angle, false))
             {
                 return newCreature;
@@ -221,7 +221,7 @@ namespace DawnGame
             // Make sure we always have enough Treasure
             {
                 var obstacles = _environment.GetObstacles();
-                if (obstacles.Where(o => o.Specy == EntityType.Treasure).Count() < _nrOfTreasures)
+                if (obstacles.Where(o => o.EntityType == EntityTypeEnum.Treasure).Count() < _nrOfTreasures)
                 {
                     var position = new Vector2(_randomize.Next((int)MaxX / _grid) * _grid, _randomize.Next((int)MaxY / _grid) * _grid);
                     var box = ObstacleBuilder.CreateTreasure();
@@ -231,7 +231,7 @@ namespace DawnGame
 
             // Make sure we always have enough Plants
             {
-                var plants = _environment.GetCreatures(EntityType.Plant);
+                var plants = _environment.GetCreatures(CreatureTypeEnum.Plant);
                 if (plants.Count() < _nrOfPlants)
                 {
                     var position = new Vector2(_randomize.Next((int)MaxX), _randomize.Next((int)MaxY));
@@ -280,10 +280,10 @@ namespace DawnGame
                 if (!current.Alive)
                     continue;
 
-                if (current.Specy == EntityType.Plant) nrOfPlants++;
-                if (current.Specy == EntityType.Rabbit) nrOfRabbits++;
-                if (current.Specy == EntityType.Predator) nrOfPredators++;
-                if (current.Specy == EntityType.Turret) nrOfTurrets++;
+                if (current.CreatureType == CreatureTypeEnum.Plant) nrOfPlants++;
+                if (current.CreatureType == CreatureTypeEnum.Rabbit) nrOfRabbits++;
+                if (current.CreatureType == CreatureTypeEnum.Predator) nrOfPredators++;
+                if (current.CreatureType == CreatureTypeEnum.Turret) nrOfTurrets++;
             }
 
             //return string.Format("Plant: {0}; Rabbits: {1}; Predators:{2}", nrOfPlants, nrOfRabbits, nrOfPredators);

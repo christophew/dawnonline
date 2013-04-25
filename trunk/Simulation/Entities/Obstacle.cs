@@ -15,7 +15,7 @@ namespace DawnOnline.Simulation.Entities
             internal set { _id = value; }
         }
 
-        public EntityType Specy { get; internal set; }
+        public EntityTypeEnum EntityType { get; internal set; }
         public Placement Place { get; internal set; }
 
         internal Obstacle()

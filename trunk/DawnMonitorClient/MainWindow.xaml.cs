@@ -42,7 +42,7 @@ namespace DawnMonitorClient
         {
             _dawnClient.SendCommandsToServer();
 
-            EntityTable.ItemsSource = _dawnClient.DawnWorld.GetEntities().Where(e => e.Specy != EntityType.Wall && e.Specy != EntityType.Box && e.Specy != EntityType.Treasure).ToList();
+            EntityTable.ItemsSource = _dawnClient.DawnWorld.GetEntities().Where(e => e.EntityType != EntityTypeEnum.Wall && e.EntityType != EntityTypeEnum.Box && e.EntityType != EntityTypeEnum.Treasure).ToList();
         }
 
         public void DispatcherTimerSetup()

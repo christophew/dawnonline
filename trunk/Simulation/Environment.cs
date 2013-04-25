@@ -27,7 +27,7 @@ namespace DawnOnline.Simulation
         internal World FarSeerWorld { get; private set; }
 
         List<ICreature> _creatures = new List<ICreature>();
-        Dictionary<EntityType, List<ICreature>> _creaturesPerSpecy = new Dictionary<EntityType, List<ICreature>>();
+        Dictionary<CreatureTypeEnum, List<ICreature>> _creaturesPerSpecy = new Dictionary<CreatureTypeEnum, List<ICreature>>();
         List<IEntity> _obstacles = new List<IEntity>();
         List<IEntity> _bullets = new List<IEntity>();
         List<IExplosion> _explosions = new List<IExplosion>();
@@ -64,12 +64,12 @@ namespace DawnOnline.Simulation
 
             _creatures.Add(creature);
 
-            if (!_creaturesPerSpecy.ContainsKey(myCreature.Specy))
+            if (!_creaturesPerSpecy.ContainsKey(myCreature.CreatureType))
             {
-                _creaturesPerSpecy.Add(myCreature.Specy, new List<ICreature>());
+                _creaturesPerSpecy.Add(myCreature.CreatureType, new List<ICreature>());
             }
 
-            _creaturesPerSpecy[myCreature.Specy].Add(myCreature);
+            _creaturesPerSpecy[myCreature.CreatureType].Add(myCreature);
 
             return true;
         }
@@ -119,7 +119,7 @@ namespace DawnOnline.Simulation
         {
             creature.Alive = false;
             _creatures.Remove(creature);
-            _creaturesPerSpecy[creature.Specy].Remove(creature);
+            _creaturesPerSpecy[creature.CreatureType].Remove(creature);
 
             FarSeerWorld.RemoveBody(creature.Place.Fixture.Body);
         }
@@ -139,7 +139,7 @@ namespace DawnOnline.Simulation
             return _creatures;
         }
 
-        public IList<ICreature> GetCreatures(List<EntityType> species)
+        public IList<ICreature> GetCreatures(List<CreatureTypeEnum> species)
         {
             var result = new List<ICreature>();
             foreach (var specy in species)
@@ -149,7 +149,7 @@ namespace DawnOnline.Simulation
             return result;
         }
 
-        public IList<ICreature> GetCreatures(EntityType specy)
+        public IList<ICreature> GetCreatures(CreatureTypeEnum specy)
         {
             if (!_creaturesPerSpecy.ContainsKey(specy))
             {
@@ -303,7 +303,7 @@ namespace DawnOnline.Simulation
             return GetCreaturesInRange(position, radius, GetCreatures());
         }
 
-        internal IList<ICreature> GetCreaturesInRange(Vector2 position, double radius, List<EntityType> species)
+        internal IList<ICreature> GetCreaturesInRange(Vector2 position, double radius, List<CreatureTypeEnum> species)
         {
             return GetCreaturesInRange(position, radius, GetCreatures(species));
         }
@@ -351,7 +351,7 @@ namespace DawnOnline.Simulation
         {
             foreach (var creature in GetCreatures())
             {
-                if (creature.Specy != EntityType.Avatar)
+                if (creature.CreatureType != CreatureTypeEnum.Avatar)
                 {
                     creature.CharacterSheet.Damage.Increase(ageImpact);
                 }
@@ -369,7 +369,7 @@ namespace DawnOnline.Simulation
                     break;
 
                 var creature = GetCreatures()[Globals.Radomizer.Next(GetCreatures().Count)] as Creature;
-                if (creature.Specy == EntityType.Avatar)
+                if (creature.CreatureType == CreatureTypeEnum.Avatar)
                     continue;
 
                 KillCreature(creature);
@@ -387,7 +387,7 @@ namespace DawnOnline.Simulation
                     break;
 
                 var creature = GetCreatures()[Globals.Radomizer.Next(GetCreatures().Count)] as Creature;
-                if (creature.Specy == EntityType.Avatar)
+                if (creature.CreatureType == CreatureTypeEnum.Avatar)
                     continue;
 
                 creature.CharacterSheet.Damage.Increase(33);
@@ -405,7 +405,7 @@ namespace DawnOnline.Simulation
                     break;
 
                 var creature = GetCreatures()[Globals.Radomizer.Next(GetCreatures().Count)] as Creature;
-                if (creature.Specy == EntityType.Avatar)
+                if (creature.CreatureType == CreatureTypeEnum.Avatar)
                     continue;
 
                 KillCreature(creature);
