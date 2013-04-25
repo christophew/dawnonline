@@ -200,7 +200,7 @@ namespace DawnClient
             return commandData;
         }
 
-        public void RequestCreatureCreationOnServer(EntityType entityType, float x, float y, float angle, int spawnPointId, int clientId)
+        public void RequestCreatureCreationOnServer(EntityTypeEnum entityType, CreatureTypeEnum creatureType, float x, float y, float angle, int spawnPointId, int clientId)
         {
             // OPTIMIZE TO BULK OPERATION
 
@@ -211,11 +211,12 @@ namespace DawnClient
 
             var creatureData = new Hashtable();
             creatureData.Add(0, entityType);
-            creatureData.Add(1, x);
-            creatureData.Add(2, y);
-            creatureData.Add(3, angle);
-            creatureData.Add(4, spawnPointId);
-            creatureData.Add(5, clientId);
+            creatureData.Add(1, creatureType);
+            creatureData.Add(2, x);
+            creatureData.Add(3, y);
+            creatureData.Add(4, angle);
+            creatureData.Add(5, spawnPointId);
+            creatureData.Add(6, clientId);
 
             var eData = new Dictionary<byte, object>();
             eData[0] = creatureData;

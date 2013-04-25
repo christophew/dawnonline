@@ -34,7 +34,7 @@ namespace DawnOnline.Simulation.Builders
             placement.Fixture.Body.AngularDamping = 2f;
             placement.Fixture.Body.Mass = 300f;
 
-            var obstacle = new Obstacle { Place = placement, Specy = EntityType.Box };
+            var obstacle = new Obstacle { Place = placement, EntityType = EntityTypeEnum.Box };
             return obstacle;
         }
 
@@ -60,7 +60,7 @@ namespace DawnOnline.Simulation.Builders
             placement.Fixture.Body.AngularDamping = 1f;
             placement.Fixture.Body.Mass = 1000f;
 
-            var obstacle = new Obstacle { Place = placement, Specy = EntityType.Wall };
+            var obstacle = new Obstacle { Place = placement, EntityType = EntityTypeEnum.Wall };
             return obstacle;
         }
 
@@ -92,7 +92,7 @@ namespace DawnOnline.Simulation.Builders
                 placement.Fixture.OnCollision += Collectable.OnCollision;
 
             treasure.Place = placement;
-            treasure.Specy = EntityType.Treasure;
+            treasure.EntityType = EntityTypeEnum.Treasure;
             placement.Fixture.UserData = treasure;
 
             return treasure;
@@ -124,7 +124,7 @@ namespace DawnOnline.Simulation.Builders
             placement.Fixture.Body.BodyType = BodyType.Static;
 
             factory.Place = placement;
-            factory.Specy = EntityType.PredatorFactory;
+            factory.EntityType = EntityTypeEnum.PredatorFactory;
             placement.Fixture.UserData = factory;
 
             return factory;

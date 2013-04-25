@@ -16,6 +16,8 @@ namespace DawnOnline.Simulation.Entities
 {
     internal class Creature : ICreature
     {
+        public CreatureTypeEnum CreatureType { get; internal set; }
+
         private int _id = Globals.GenerateUniqueId();
         public int Id
         {
@@ -28,8 +30,8 @@ namespace DawnOnline.Simulation.Entities
         private CharacterSheet _characterSheet = new CharacterSheet();
         private IBrain _brain;
 
-        public EntityType Specy { get; internal set; }
-        public List<EntityType> FoodSpecies { get; internal set; }
+        public EntityTypeEnum EntityType { get; internal set; }
+        public List<CreatureTypeEnum> FoodSpecies { get; internal set; }
         //public int Age { get; private set; }
 
         public Placement Place { get { return _place; } }
@@ -51,7 +53,7 @@ namespace DawnOnline.Simulation.Entities
         }
 
         // Is this the correct place?
-        public bool IsSpawnPoint { get; internal set; }
+        public bool IsSpawnPoint { get { return EntityType == EntityTypeEnum.SpawnPoint; } }
 
         
         public Environment MyEnvironment { get; internal set; }
@@ -141,13 +143,13 @@ namespace DawnOnline.Simulation.Entities
         {
             var newCreature = new Creature(_place.Form.BoundingCircleRadius);
             newCreature._characterSheet = CharacterSheet.Replicate();
-            newCreature.IsSpawnPoint = IsSpawnPoint;
 
             //newCreature.Place.Fixture.Body.BodyType = _place.Fixture.Body.BodyType;
 
-            newCreature.Specy = Specy;
+            newCreature.EntityType = EntityType;
+            newCreature.CreatureType = CreatureType;
             if (FoodSpecies != null)
-                newCreature.FoodSpecies = new List<EntityType>(FoodSpecies);
+                newCreature.FoodSpecies = new List<CreatureTypeEnum>(FoodSpecies);
 
             newCreature.SpawnPoint = IsSpawnPoint ? newCreature : SpawnPoint;
 
@@ -349,7 +351,7 @@ namespace DawnOnline.Simulation.Entities
             }
 
             // Build
-            if (_actionQueue.BuildEntityOfType != EntityType.Unknown)
+            if (_actionQueue.BuildEntityOfType != EntityTypeEnum.Unknown)
             {
                 DoBuildEntity(_actionQueue.BuildEntityOfType);
             }
@@ -560,7 +562,7 @@ namespace DawnOnline.Simulation.Entities
             Brain.ClearState();
         }
 
-        public ICreature FindCreatureToAttack(List<EntityType> ofTypes)
+        public ICreature FindCreatureToAttack(List<CreatureTypeEnum> ofTypes)
         {
             var attackMiddle = new Vector2(
                 (float)(Place.Position.X + Math.Cos(Place.Angle) * CharacterSheet.MeleeRange),
@@ -638,7 +640,7 @@ namespace DawnOnline.Simulation.Entities
             this.MyActionQueue.Damage += bullet.Damage * rangeMinusDistance * rangeMinusDistance / bullet.Range / bullet.Range;
         }
 
-        public void BuildEntity(EntityType entityType)
+        public void BuildEntity(EntityTypeEnum entityType)
         {
             if ((DateTime.Now - _actionQueue.LastBuildTime).TotalSeconds > CharacterSheet.BuildCoolDown)
             {
@@ -646,7 +648,7 @@ namespace DawnOnline.Simulation.Entities
             }
         }
 
-        public void DoBuildEntity(EntityType entityType)
+        public void DoBuildEntity(EntityTypeEnum entityType)
         {
             // TODO: inject the prototype into the Creature
 

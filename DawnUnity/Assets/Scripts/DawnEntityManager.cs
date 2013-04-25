@@ -66,11 +66,11 @@ public class DawnEntityManager : MonoBehaviour
 
         _dawnClient.SendCommandsToServer();
 
-	    _debugInfoNrOfWalls = _dawnClient.DawnWorld.GetEntities().Where(e => e.Specy == EntityType.Wall).Count().ToString();
-        _debugInfoNrOfBoxes = _dawnClient.DawnWorld.GetEntities().Where(e => e.Specy == EntityType.Box).Count().ToString();
-        _debugInfoNrOfPredators = _dawnClient.DawnWorld.GetEntities().Where(e => e.Specy == EntityType.Predator).Count().ToString();
-        _debugInfoNrOfPredators2 = _dawnClient.DawnWorld.GetEntities().Where(e => e.Specy == EntityType.Predator2).Count().ToString();
-        _debugInfoNrOfRabbits = _dawnClient.DawnWorld.GetEntities().Where(e => e.Specy == EntityType.Rabbit).Count().ToString();
+	    _debugInfoNrOfWalls = _dawnClient.DawnWorld.GetEntities().Where(e => e.EntityType == EntityTypeEnum.Wall).Count().ToString();
+        _debugInfoNrOfBoxes = _dawnClient.DawnWorld.GetEntities().Where(e => e.EntityType == EntityTypeEnum.Box).Count().ToString();
+        _debugInfoNrOfPredators = _dawnClient.DawnWorld.GetEntities().Where(e => e.CreatureType == CreatureTypeEnum.Predator).Count().ToString();
+        _debugInfoNrOfPredators2 = _dawnClient.DawnWorld.GetEntities().Where(e => e.CreatureType == CreatureTypeEnum.Predator2).Count().ToString();
+        _debugInfoNrOfRabbits = _dawnClient.DawnWorld.GetEntities().Where(e => e.CreatureType == CreatureTypeEnum.Rabbit).Count().ToString();
 
 
         // Update nodes & create new nodes
@@ -126,49 +126,60 @@ public class DawnEntityManager : MonoBehaviour
     
     private Dictionary<int, Transform> _entities = new Dictionary<int, Transform>();
 
-    private Transform GetTemplate(EntityType entityType)
+    private Transform GetTemplate(EntityTypeEnum entityType, CreatureTypeEnum creatureType)
     {
         Transform template = null;
         switch (entityType)
         {
-            case EntityType.Avatar:
-                template = AvatarTemplate;
-                break;
-            case EntityType.Wall:
+            case EntityTypeEnum.Wall:
                 template = WallTemplate;
                 break;
-            case EntityType.Box:
-                template = BoxTemplate;
-                break;
-            case EntityType.Predator:
-                template = PredatorTemplate;
-                break;
-            case EntityType.Predator2:
-                template = Predator2Template;
-                break;
-            case EntityType.PredatorSpawnPoint:
-                template = SpawnPoint1Template;
-                break;
-            case EntityType.Rabbit:
-                template = RabbitTemplate;
-                break;
-            case EntityType.RabbitSpawnPoint:
-                template = RabbitSpawnPointTemplate;
-                break;
-            case EntityType.PredatorSpawnPoint2:
-                template = SpawnPoint2Template;
-                break;
-            case EntityType.Treasure:
+            case EntityTypeEnum.Treasure:
                 template = TreasureTemplate;
                 break;
-            case EntityType.Bullet:
+            case EntityTypeEnum.Bullet:
                 template = BulletTemplate;
                 break;
-            case EntityType.Rocket:
+            case EntityTypeEnum.Rocket:
                 template = RocketTemplate;
                 break;
-            case EntityType.Plant:
-                template = PlantTemplate;
+            case EntityTypeEnum.Box:
+                template = BoxTemplate;
+                break;
+
+            case EntityTypeEnum.Creature:
+                switch (creatureType)
+                {
+                    case CreatureTypeEnum.Avatar:
+                        template = AvatarTemplate;
+                        break;
+                    case CreatureTypeEnum.Predator:
+                        template = PredatorTemplate;
+                        break;
+                    case CreatureTypeEnum.Predator2:
+                        template = Predator2Template;
+                        break;
+                    case CreatureTypeEnum.Rabbit:
+                        template = RabbitTemplate;
+                        break;
+                    case CreatureTypeEnum.Plant:
+                        template = PlantTemplate;
+                        break;
+                }
+                break;
+            case EntityTypeEnum.SpawnPoint:
+                switch (creatureType)
+                {
+                    case CreatureTypeEnum.Predator:
+                        template = SpawnPoint1Template;
+                        break;
+                    case CreatureTypeEnum.Rabbit:
+                        template = RabbitSpawnPointTemplate;
+                        break;
+                    case CreatureTypeEnum.Predator2:
+                        template = SpawnPoint2Template;
+                        break;
+                }
                 break;
         }
 
@@ -184,7 +195,7 @@ public class DawnEntityManager : MonoBehaviour
     {
         if (!_entities.ContainsKey(entity.Id))
         {
-            var template = GetTemplate(entity.Specy);
+            var template = GetTemplate(entity.EntityType, entity.CreatureType);
             var node = SpawnObject(entity, template);
             _entities.Add(entity.Id, node);
         }
@@ -241,7 +252,7 @@ public class DawnEntityManager : MonoBehaviour
         }
 
         // Avatar
-        if (entity.Specy == EntityType.Avatar)
+        if (entity.CreatureType == CreatureTypeEnum.Avatar)
         {
             var avatarControlScript = newObj.GetComponent("AvatarScript") as AvatarScript;
             if (avatarControlScript != null)

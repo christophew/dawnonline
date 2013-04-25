@@ -102,7 +102,7 @@ namespace DawnOnline.AgentMatrix.Brains
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.Write((int)PrototypeCreature.Specy);
+            writer.Write((int)PrototypeCreature.EntityType);
             writer.Write(_maxSpawnCooldown);
 
             var neuralBrain = PrototypeCreature.Brain as NeuralBrain;
@@ -113,8 +113,8 @@ namespace DawnOnline.AgentMatrix.Brains
 
         public void Deserialize(BinaryReader reader)
         {
-            var spawnType = (EntityType) reader.ReadInt32();
-            Debug.Assert(spawnType == PrototypeCreature.Specy, "Validate");
+            var spawnType = (EntityTypeEnum) reader.ReadInt32();
+            Debug.Assert(spawnType == PrototypeCreature.EntityType, "Validate");
             var maxSpawnCooldown = reader.ReadDouble();
             Debug.Assert(maxSpawnCooldown == _maxSpawnCooldown, "Validate");
 

@@ -12,16 +12,16 @@ namespace DawnOnline.AgentMatrix.Brains
         protected override void NeutralState(TimeSpan timeDelta)
         {
             // Forage
-            if (_forwardEye.SeesAnObstacle(EntityType.Treasure))
+            if (_forwardEye.SeesAnObstacle(EntityTypeEnum.Treasure))
             {
                 MyCreature.RunForward();
             }
-            if (_leftEye.SeesAnObstacle(EntityType.Treasure))
+            if (_leftEye.SeesAnObstacle(EntityTypeEnum.Treasure))
             {
                 MyCreature.TurnLeft();
                 return;
             }
-            if (_rightEye.SeesAnObstacle(EntityType.Treasure))
+            if (_rightEye.SeesAnObstacle(EntityTypeEnum.Treasure))
             {
                 MyCreature.TurnRight();
                 return;

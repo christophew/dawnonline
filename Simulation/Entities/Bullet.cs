@@ -13,7 +13,7 @@ namespace DawnOnline.Simulation.Entities
         public int Id { get { return _id; } }
 
         public Placement Place { get; internal set; }
-        public EntityType Specy { get; internal set; }
+        public EntityTypeEnum EntityType { get; internal set; }
 
         public double Damage { get; internal set; }
         public bool Explodes { get; internal set; }

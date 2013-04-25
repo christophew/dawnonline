@@ -63,7 +63,6 @@
     <Compile Include="ApplyCreatureCommand.cs" />
     <Compile Include="DawnWorld.cs" />
     <Compile Include="EntityAdded.cs" />
-    <Compile Include="EntityLoad.cs" />
     <Compile Include="IEntityPhotonPacket.cs" />
     <Compile Include="EntityPosition.cs" />
     <Compile Include="EntityStatus.cs" />

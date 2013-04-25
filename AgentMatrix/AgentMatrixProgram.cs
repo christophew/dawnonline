@@ -122,22 +122,22 @@ namespace DawnOnline.AgentMatrix
         private static void WriteDebugInfo(AgentWorld agentWorld)
         {
             var allEntities = _dawnClient.DawnWorld.GetEntities();
-            var predators = allEntities.Count(e => e.Specy == EntityType.Predator);
-            var boxes = allEntities.Count(e => e.Specy == EntityType.Box);
-            var walls = allEntities.Count(e => e.Specy == EntityType.Wall);
+            var predators = allEntities.Count(e => e.CreatureType == CreatureTypeEnum.Predator);
+            var predators2 = allEntities.Count(e => e.CreatureType == CreatureTypeEnum.Predator2);
+            var rabbits = allEntities.Count(e => e.CreatureType == CreatureTypeEnum.Rabbit);
+            var boxes = allEntities.Count(e => e.EntityType == EntityTypeEnum.Box);
+            var walls = allEntities.Count(e => e.EntityType == EntityTypeEnum.Wall);
             var spawnpoints = allEntities.Count(e => e.IsSpawnPoint);
 
                     
-            Console.WriteLine("> boxes : " + boxes);
-            Console.WriteLine("> boxes2: " + agentWorld.GetEntities().Count(e => e.Specy == EntityType.Box));
-            Console.WriteLine("> walls : " + walls);
-            Console.WriteLine("> walls2: " + agentWorld.GetEntities().Count(e => e.Specy == EntityType.Wall));
+            Console.WriteLine("> boxes : " + boxes + " / " + agentWorld.GetEntities().Count(e => e.EntityType == EntityTypeEnum.Box));
+            Console.WriteLine("> walls : " + walls + " / " + agentWorld.GetEntities().Count(e => e.EntityType == EntityTypeEnum.Wall));
 
-            Console.WriteLine("> Predators : " + predators);
-            Console.WriteLine("> Predators2: " + agentWorld.GetCreatures().Count(e => e.Specy == EntityType.Predator));
+            Console.WriteLine("> Predators : " + predators + " / " + agentWorld.GetCreatures().Count(e => e.CreatureType == CreatureTypeEnum.Predator));
+            Console.WriteLine("> Predators : " + predators2 + " / " + agentWorld.GetCreatures().Count(e => e.CreatureType == CreatureTypeEnum.Predator2));
+            Console.WriteLine("> Predators : " + rabbits + " / " + agentWorld.GetCreatures().Count(e => e.CreatureType == CreatureTypeEnum.Rabbit));
 
-            Console.WriteLine("> SpawnPoints : " + spawnpoints);
-            Console.WriteLine("> SpawnPoints2: " + agentWorld.GetCreatures().Count(e => e.IsSpawnPoint));
+            Console.WriteLine("> SpawnPoints : " + spawnpoints + " / " + agentWorld.GetCreatures().Count(e => e.IsSpawnPoint));
 
             Console.WriteLine("> SpawnPoints Replicated: " + agentWorld.NrOfSpawnPointsReplicated);
 

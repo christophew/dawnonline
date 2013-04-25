@@ -33,9 +33,9 @@ namespace DawnOnline.AgentMatrix.Repository
             Creature = creature;
         }
 
-        public CreatureRepositoryEntry(EntityType entityType, string fileName)
+        public CreatureRepositoryEntry(CreatureTypeEnum creatureType, string fileName)
         {
-            Load(entityType, fileName);
+            Load(creatureType, fileName);
         }
 
         public void Save(string path)
@@ -64,7 +64,7 @@ namespace DawnOnline.AgentMatrix.Repository
             {
                 using (var writer = new BinaryWriter(stream))
                 {
-                    writer.Write((int)Creature.Specy);
+                    writer.Write((int)Creature.EntityType);
                     writer.Write(Creature.CharacterSheet.Score);
                     writer.Write(Creature.CharacterSheet.Generation);
 
@@ -78,18 +78,18 @@ namespace DawnOnline.AgentMatrix.Repository
             IsSaved = true;
         }
 
-        private void Load(EntityType entityType, string fileName)
+        private void Load(CreatureTypeEnum creatureType, string fileName)
         {
             var stream = new FileStream(fileName, FileMode.Open);
 
             using (var reader = new BinaryReader(stream))
             {
                 // Initialize SpawnPoint
-                var newSpawnPoint = AgentCreatureBuilder.CreateCreature(entityType);
+                var newSpawnPoint = AgentCreatureBuilder.CreateSpawnPoint(creatureType);
 
                 // Restore SpawnPoint
-                var specy = (EntityType)reader.ReadInt32();
-                Debug.Assert(specy == entityType, "Validation");
+                var specy = (CreatureTypeEnum)reader.ReadInt32();
+                Debug.Assert(specy == creatureType, "Validation");
                 var savedScore = reader.ReadDouble();
                 var savedGeneration = reader.ReadInt32();
                 newSpawnPoint.CharacterSheet.Restore(savedScore, savedGeneration);

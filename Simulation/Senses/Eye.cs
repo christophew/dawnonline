@@ -57,28 +57,28 @@ namespace DawnOnline.Simulation.Senses
             return HasLineOfSight(myCreature, null);
         }
 
-        public bool SeesACreature(List<EntityType> species, IEntity spawnPointToExclude)
+        public bool SeesACreature(List<CreatureTypeEnum> species, IEntity spawnPointToExclude)
         {
             return species.Any(specy => HasLineOfSight(specy, spawnPointToExclude));
         }
 
-        public  bool SeesACreature(List<EntityType> species)
+        public bool SeesACreature(List<CreatureTypeEnum> species)
         {
             return species.Any(specy => HasLineOfSight(specy, null));
         }
 
-        public bool SeesACreature(EntityType specy)
+        public bool SeesACreature(CreatureTypeEnum specy)
         {
             return HasLineOfSight(specy, null);
         }
 
-        public bool SeesAnObstacle(EntityType entityType)
+        public bool SeesAnObstacle(EntityTypeEnum entityType)
         {
-            var obstacles = CreatureEnvironment.GetObstacles().Where(o => o.Specy == entityType);
+            var obstacles = CreatureEnvironment.GetObstacles().Where(o => o.EntityType == entityType);
 
             foreach (var obstacle in obstacles)
             {
-                if (obstacle.Specy != entityType)
+                if (obstacle.EntityType != entityType)
                     continue;
                 if (_OutOfRange(obstacle))
                     continue;
@@ -90,9 +90,9 @@ namespace DawnOnline.Simulation.Senses
             return false;
         }
 
-        private bool HasLineOfSight(EntityType specy, IEntity spawnPointToExclude)
+        private bool HasLineOfSight(CreatureTypeEnum specy, IEntity spawnPointToExclude)
         {
-            if (specy == EntityType.Unknown)
+            if (specy == CreatureTypeEnum.Unknown)
                 return false;
 
             var creatures = CreatureEnvironment.GetCreatures(specy);

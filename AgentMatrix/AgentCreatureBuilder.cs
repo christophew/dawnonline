@@ -13,15 +13,15 @@ namespace DawnOnline.AgentMatrix
 {
     static class AgentCreatureBuilder
     {
-        public static ICreature CreateCreature(EntityType specy)
+        public static ICreature CreateSpawnPoint(CreatureTypeEnum specy)
         {
             switch (specy)
             {
-                case EntityType.PredatorSpawnPoint:
+                case CreatureTypeEnum.Predator:
                     return CreateSpawnPoint();
-                case EntityType.PredatorSpawnPoint2:
+                case CreatureTypeEnum.Predator2:
                     return CreateSpawnPoint2();
-                case EntityType.RabbitSpawnPoint:
+                case CreatureTypeEnum.Rabbit:
                     return CreateRabbitSpawnPoint();
             }
 

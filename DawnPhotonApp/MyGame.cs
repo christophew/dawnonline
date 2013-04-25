@@ -89,7 +89,7 @@ namespace MyApplication
 
                     foreach (var entity in _dawnWorldInstance.Environment.GetCreatures())
                     {
-                        if (entity.Specy == EntityType.Avatar)
+                        if (entity.CreatureType == CreatureTypeEnum.Avatar)
                             currentEntities.Add(entity.Id, CreateEntityPosition(entity));
                     }
 
@@ -381,7 +381,7 @@ namespace MyApplication
 
                 case MyOperationCodes.LoadWorld:
                     {
-                        //var slowObjects = _dawnWorldInstance.Environment.GetObstacles().Where(o => o.Specy == EntityType.Wall).ToList();
+                        //var slowObjects = _dawnWorldInstance.Environment.GetObstacles().Where(o => o.Specy == EntityTypeEnum.Wall).ToList();
 
                         // Load ALL objects & creatures on LoadWorld => this allows us to use BulkAddEntity
                         var slowObjects = _dawnWorldInstance.Environment.GetObstacles().ToList();
@@ -420,13 +420,14 @@ namespace MyApplication
             var parameters = (Hashtable)operationRequest.Parameters[0];
 
             // Add to world
-            var entityType = (EntityType)parameters[0];
-            var position = new Vector2((float) parameters[1], (float) parameters[2]);
-            var angle = (float) parameters[3];
-            var spawnPoint = (int) parameters[4];
-            var clientId = (int)parameters[5]; // client referenceId of created creature
+            var entityType = (EntityTypeEnum)parameters[0];
+            var creatureType = (CreatureTypeEnum)parameters[1];
+            var position = new Vector2((float) parameters[2], (float) parameters[3]);
+            var angle = (float) parameters[4];
+            var spawnPoint = (int) parameters[5];
+            var clientId = (int)parameters[6]; // client referenceId of created creature
 
-            var newCreature = _dawnWorldInstance.AddCreature(entityType, position, angle, spawnPoint, clientId);
+            var newCreature = _dawnWorldInstance.AddCreature(entityType, creatureType, position, angle, spawnPoint, clientId);
             Debug.Assert(newCreature != null);
 
             // Send response

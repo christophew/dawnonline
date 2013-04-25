@@ -38,12 +38,12 @@ namespace DawnClientConsole
 
                         // Test
                         var allEntities = _dawnClient.DawnWorld.GetEntities();
-                        var predators = allEntities.Count(e => e.Specy == EntityType.Predator || e.Specy == EntityType.Predator2);
-                        var boxes = allEntities.Count(e => e.Specy == EntityType.Box);
-                        var walls = allEntities.Count(e => e.Specy == EntityType.Wall);
+                        var predators = allEntities.Count(e => e.EntityType == EntityTypeEnum.Creature);
+                        var boxes = allEntities.Count(e => e.EntityType == EntityTypeEnum.Box);
+                        var walls = allEntities.Count(e => e.EntityType == EntityTypeEnum.Wall);
                         var spawnpoints = allEntities.Count(e => e.IsSpawnPoint);
 
-                        var myInfo = string.Format("Total: {0}, Walls: {1}, Boxes: {2}, Predators: {3}, SpawnPoints: {4}",
+                        var myInfo = string.Format("Total: {0}, Walls: {1}, Boxes: {2}, Creatures: {3}, SpawnPoints: {4}",
                                                    allEntities.Count, walls, boxes, predators, spawnpoints);
 
                         Console.WriteLine(_dawnClient.DawnWorld.WorldInformation + " --> " + myInfo);

@@ -42,7 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AvatarCommand.cs" />
-    <Compile Include="DawnClientEntity.cs" />
+    <Compile Include="CreatureTypeEnum.cs" />
+    <Compile Include="EntityTypeEnum.cs" />
     <Compile Include="PhotonAppEnums.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimulationConstants.cs" />

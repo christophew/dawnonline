@@ -49,7 +49,7 @@ namespace DawnPhotonApp
             Debug.Assert(_entity.Id == myPrevious._entity.Id);
 
             // Small opt: remove walls & boxes => there status can't change
-            if (_entity.Specy == EntityType.Wall || _entity.Specy == EntityType.Box)
+            if (_entity.EntityType == EntityTypeEnum.Wall || _entity.EntityType == EntityTypeEnum.Box)
                 return false;
 
             // TODO: better checks

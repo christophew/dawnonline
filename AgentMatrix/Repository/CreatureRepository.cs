@@ -19,9 +19,9 @@ namespace DawnOnline.AgentMatrix.Repository
             if (_singleton != null)
                 return _singleton;
 
-            InitDir(EntityType.PredatorSpawnPoint);
-            InitDir(EntityType.PredatorSpawnPoint2);
-            InitDir(EntityType.RabbitSpawnPoint);
+            InitDir(CreatureTypeEnum.Predator);
+            InitDir(CreatureTypeEnum.Predator2);
+            InitDir(CreatureTypeEnum.Rabbit);
 
             _singleton = new CreatureRepository();
             _singleton.Load();
@@ -33,11 +33,11 @@ namespace DawnOnline.AgentMatrix.Repository
             return CreateOrGetSingleton();
         }
 
-        private static void InitDir(EntityType entityType)
+        private static void InitDir(CreatureTypeEnum creatureType)
         {
-            if (!Directory.Exists(GetPath(entityType)))
+            if (!Directory.Exists(GetPath(creatureType)))
             {
-                Directory.CreateDirectory(GetPath(entityType));
+                Directory.CreateDirectory(GetPath(creatureType));
             }
         }
 
@@ -49,21 +49,21 @@ namespace DawnOnline.AgentMatrix.Repository
         {
             Debug.Assert(!(creature.Brain is DummyBrain), "We are only interested in real creatures, created in this AgentMatrix");
 
-            var repository = GetRepository(creature.Specy);
+            var repository = GetRepository(creature.CreatureType);
 
             repository.Add(new CreatureRepositoryEntry(creature));
         }
 
-        public List<ICreature> GetSortedRelevantSpawnpoints(EntityType spawnPointType)
+        public List<ICreature> GetSortedRelevantSpawnpoints(CreatureTypeEnum spawnPointType)
         {
-            Debug.Assert(spawnPointType == EntityType.PredatorSpawnPoint || spawnPointType == EntityType.PredatorSpawnPoint2 || spawnPointType == EntityType.RabbitSpawnPoint);
+            Debug.Assert(spawnPointType == CreatureTypeEnum.Predator || spawnPointType == CreatureTypeEnum.Predator2 || spawnPointType == CreatureTypeEnum.Rabbit);
 
             var repository = GetRepository(spawnPointType);
 
             //var list = _repository
             //    .Where(entry => entry.Alive && (entry.Creature.Specy == spawnPointType));
             var list = repository
-                .Where(entry => entry.Creature.Specy == spawnPointType);
+                .Where(entry => entry.Creature.CreatureType == spawnPointType);
 
             // Take youngest
             var sortedOnGeneration = list
@@ -79,25 +79,25 @@ namespace DawnOnline.AgentMatrix.Repository
             return sorted;
         }
 
-        private static string GetPath(EntityType entityType)
+        private static string GetPath(CreatureTypeEnum creatureType)
         {
-            if (entityType == EntityType.PredatorSpawnPoint)
+            if (creatureType == CreatureTypeEnum.Predator)
                 return _path + @"\PredatorSpawnPoint\";
-            if (entityType == EntityType.PredatorSpawnPoint2)
+            if (creatureType == CreatureTypeEnum.Predator2)
                 return _path + @"\PredatorSpawnPoint2\";
-            if (entityType == EntityType.RabbitSpawnPoint)
+            if (creatureType == CreatureTypeEnum.Rabbit)
                 return _path + @"\RabbitSpawnPoint\";
 
             throw new NotSupportedException();
         }
 
-        private List<CreatureRepositoryEntry> GetRepository(EntityType entityType)
+        private List<CreatureRepositoryEntry> GetRepository(CreatureTypeEnum creatureType)
         {
-            if (entityType == EntityType.PredatorSpawnPoint)
+            if (creatureType == CreatureTypeEnum.Predator)
                 return _repository;
-            if (entityType == EntityType.PredatorSpawnPoint2)
+            if (creatureType == CreatureTypeEnum.Predator2)
                 return _repository2;
-            if (entityType == EntityType.RabbitSpawnPoint)
+            if (creatureType == CreatureTypeEnum.Rabbit)
                 return _repositoryRabbit;
 
             throw new NotSupportedException();
@@ -105,15 +105,15 @@ namespace DawnOnline.AgentMatrix.Repository
 
         public void Save()
         {
-            Save(EntityType.PredatorSpawnPoint);
-            Save(EntityType.PredatorSpawnPoint2);
-            Save(EntityType.RabbitSpawnPoint);
+            Save(CreatureTypeEnum.Predator);
+            Save(CreatureTypeEnum.Predator2);
+            Save(CreatureTypeEnum.Rabbit);
         }
 
-        private void Save(EntityType entityType)
+        private void Save(CreatureTypeEnum creatureType)
         {
-            var path = GetPath(entityType);
-            var repository = GetRepository(entityType);
+            var path = GetPath(creatureType);
+            var repository = GetRepository(creatureType);
 
             foreach (var entry in repository)
             {
@@ -123,21 +123,21 @@ namespace DawnOnline.AgentMatrix.Repository
 
         public void Load()
         {
-            Load(EntityType.PredatorSpawnPoint);
-            Load(EntityType.PredatorSpawnPoint2);
-            Load(EntityType.RabbitSpawnPoint);
+            Load(CreatureTypeEnum.Predator);
+            Load(CreatureTypeEnum.Predator2);
+            Load(CreatureTypeEnum.Rabbit);
         }
 
-        private void Load(EntityType entityType)
+        private void Load(CreatureTypeEnum creatureType)
         {
-            var path = GetPath(entityType);
-            var repository = GetRepository(entityType);
+            var path = GetPath(creatureType);
+            var repository = GetRepository(creatureType);
 
             var fileNames = Directory.EnumerateFiles(path);
 
             foreach (var fileName in fileNames)
             {
-                var loadedEntry = new CreatureRepositoryEntry(entityType, fileName);
+                var loadedEntry = new CreatureRepositoryEntry(creatureType, fileName);
 
                 // TODO: currently this is handled in c'tor CreatureRepositoryEntry
                 // => needs to change
