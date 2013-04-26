@@ -218,13 +218,13 @@ namespace DawnGame
         {
             _environment.ApplyActions(timeDelta);
 
-            // Make sure we always have enough Treasure
+            // Make sure we always have enough Food => especially plant food
             {
                 var obstacles = _environment.GetObstacles();
                 if (obstacles.Where(o => o.EntityType == EntityTypeEnum.Treasure).Count() < _nrOfTreasures)
                 {
                     var position = new Vector2(_randomize.Next((int)MaxX / _grid) * _grid, _randomize.Next((int)MaxY / _grid) * _grid);
-                    var box = ObstacleBuilder.CreateTreasure();
+                    var box = ObstacleBuilder.CreateTreasure(CreatureTypeEnum.Plant);
                     _environment.AddObstacle(box, position);
                 }
             }

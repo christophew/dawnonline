@@ -133,9 +133,9 @@ namespace DawnOnline.AgentMatrix
             Console.WriteLine("> boxes : " + boxes + " / " + agentWorld.GetEntities().Count(e => e.EntityType == EntityTypeEnum.Box));
             Console.WriteLine("> walls : " + walls + " / " + agentWorld.GetEntities().Count(e => e.EntityType == EntityTypeEnum.Wall));
 
-            Console.WriteLine("> Predators : " + predators + " / " + agentWorld.GetCreatures().Count(e => e.CreatureType == CreatureTypeEnum.Predator));
-            Console.WriteLine("> Predators : " + predators2 + " / " + agentWorld.GetCreatures().Count(e => e.CreatureType == CreatureTypeEnum.Predator2));
-            Console.WriteLine("> Predators : " + rabbits + " / " + agentWorld.GetCreatures().Count(e => e.CreatureType == CreatureTypeEnum.Rabbit));
+            Console.WriteLine("> Predators  : " + predators + " / " + agentWorld.GetCreatures().Count(e => e.CreatureType == CreatureTypeEnum.Predator));
+            Console.WriteLine("> Predators2 : " + predators2 + " / " + agentWorld.GetCreatures().Count(e => e.CreatureType == CreatureTypeEnum.Predator2));
+            Console.WriteLine("> Rabbit     : " + rabbits + " / " + agentWorld.GetCreatures().Count(e => e.CreatureType == CreatureTypeEnum.Rabbit));
 
             Console.WriteLine("> SpawnPoints : " + spawnpoints + " / " + agentWorld.GetCreatures().Count(e => e.IsSpawnPoint));
 

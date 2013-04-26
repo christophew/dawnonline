@@ -11,6 +11,7 @@ namespace DawnOnline.Simulation.Entities
     {
         int Id { get; }
         EntityTypeEnum EntityType { get; }
+        CreatureTypeEnum CreatureType { get; }
         Placement Place { get; }
     }
 }
