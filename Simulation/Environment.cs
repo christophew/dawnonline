@@ -219,9 +219,17 @@ namespace DawnOnline.Simulation
                 if (!current.Alive)
                     continue;
 
-                current.ApplyActionQueue(timeDelta);
-                //current.ClearActionQueue();
+                current.Update(timeDelta);
             }
+
+            // Update obstacles
+            var obstacles = new List<IEntity>(GetObstacles());
+            foreach (var current in obstacles)
+            {
+                current.Update(timeDelta);
+            }
+
+
 
             // Update explosions
             var remainingExplosions = new List<IExplosion>();

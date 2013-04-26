@@ -269,7 +269,12 @@ namespace DawnOnline.Simulation.Entities
             return MyActionQueue.Damage > 0;
         }
 
-        public void ApplyActionQueue(double timeDelta)
+        public void Update(double timeDelta)
+        {
+            ApplyActionQueue(timeDelta);
+        }
+
+        private void ApplyActionQueue(double timeDelta)
         {
             // toSeconds is NOT needed for farseer updates => uses timeDelta in own update
             double toSeconds = timeDelta / 1000.0;
@@ -464,11 +469,11 @@ namespace DawnOnline.Simulation.Entities
             _actionQueue.FatigueCost += CharacterSheet.FatigueCost * 2;
         }
 
-        internal void TryToEat(Collectable collectable)
+        internal bool TryToEat(Food collectable)
         {
             // Check if we can eat it
             if (FoodSpecies == null || !FoodSpecies.Contains(collectable.CreatureType))
-                return;
+                return false;
 
 
             // TODO: score!
@@ -488,6 +493,8 @@ namespace DawnOnline.Simulation.Entities
 
             //    spawnPointCreature.Rest();
             //}
+
+            return true;
         }
 
         public void Turn(double percent)

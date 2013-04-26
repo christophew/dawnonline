@@ -28,7 +28,7 @@ namespace DawnOnline.Simulation.Entities
 
         ActionQueue MyActionQueue { get; }
 
-        void ApplyActionQueue(double timeDelta);
+        //void ApplyActionQueue(double timeDelta);
         void ClearActionQueue();
         bool CanAttack();
 

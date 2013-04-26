@@ -66,7 +66,7 @@ namespace DawnOnline.Simulation.Builders
 
         public static IEntity CreateTreasure(CreatureTypeEnum creatureType, bool bindCollision = true)
         {
-            var treasure = new Collectable();
+            var treasure = new Food();
 
             float radius = 0.5f;
 
@@ -89,7 +89,7 @@ namespace DawnOnline.Simulation.Builders
             placement.Fixture.Body.Mass = 1f;
 
             if (bindCollision)
-                placement.Fixture.OnCollision += Collectable.OnCollision;
+                placement.Fixture.OnCollision += Food.OnCollision;
 
             treasure.Place = placement;
             treasure.EntityType = EntityTypeEnum.Treasure;

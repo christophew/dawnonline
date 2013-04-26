@@ -27,6 +27,8 @@ namespace DawnOnline.Simulation.Entities
         // State
         public bool Destroyed { get; internal set; }
 
+        public void Update(double timeDelta)
+        {}
 
         public static bool OnCollision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
         {
