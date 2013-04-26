@@ -33,7 +33,7 @@ namespace DawnOnline.Simulation.Builders
                         case CreatureTypeEnum.Avatar:
                             return CreateAvatar();
                         case CreatureTypeEnum.Plant:
-                            return CreatePlant(brain);
+                            return CreatePlant();
                         case CreatureTypeEnum.Predator:
                             return CreatePredator(brain);
                         case CreatureTypeEnum.Predator2:
@@ -120,10 +120,10 @@ namespace DawnOnline.Simulation.Builders
             return critter;
         }
 
-        public static ICreature CreatePlant(IBrain brain)
+        public static ICreature CreatePlant()
         {
             var critter = new Creature(0.5);
-            critter.Brain = brain;
+            critter.Brain = new DummyBrain();
 
             critter.EntityType = EntityTypeEnum.Creature;
             critter.CreatureType = CreatureTypeEnum.Plant;

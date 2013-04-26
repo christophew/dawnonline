@@ -13,5 +13,7 @@ namespace DawnOnline.Simulation.Entities
         EntityTypeEnum EntityType { get; }
         CreatureTypeEnum CreatureType { get; }
         Placement Place { get; }
+
+        void Update(double timeDelta);
     }
 }

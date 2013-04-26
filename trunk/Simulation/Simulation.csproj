@@ -85,7 +85,7 @@
     <Compile Include="Collision\IPolygon.cs" />
     <Compile Include="Collision\Polygon.cs" />
     <Compile Include="Collision\Vector.cs" />
-    <Compile Include="Entities\Collectable.cs" />
+    <Compile Include="Entities\Food.cs" />
     <Compile Include="Entities\Creature.cs" />
     <Compile Include="Entities\ExplosionEffect.cs" />
     <Compile Include="Entities\ICreature.cs" />

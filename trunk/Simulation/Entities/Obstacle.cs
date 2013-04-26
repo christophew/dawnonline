@@ -24,5 +24,8 @@ namespace DawnOnline.Simulation.Entities
         {
             Place = new Placement();
         }
+
+        public virtual void Update(double timeDelta)
+        { }
     }
 }
