@@ -23,12 +23,10 @@ namespace DawnOnline.Simulation.Entities
                 return false;
 
             var creature = fixtureB.UserData as Creature;
-            //if ((creature != null) && (creature.Specy == EntityType.Avatar))
-            // Everybody can take
             if (creature != null)
             {
                 collectable.Taken = true;
-                creature.Take(collectable);
+                creature.TryToEat(collectable);
             }
 
             return true;

@@ -285,7 +285,7 @@ namespace DawnOnline.Simulation.Entities
                 MyEnvironment.KillCreature(this);
 
                 // Add treasure where creature is killed
-                var treasure = ObstacleBuilder.CreateTreasure();
+                var treasure = ObstacleBuilder.CreateTreasure(CreatureType);
                 MyEnvironment.AddObstacle(treasure, position);
 
                 return;
@@ -464,8 +464,13 @@ namespace DawnOnline.Simulation.Entities
             _actionQueue.FatigueCost += CharacterSheet.FatigueCost * 2;
         }
 
-        internal void Take(Collectable collectable)
+        internal void TryToEat(Collectable collectable)
         {
+            // Check if we can eat it
+            if (FoodSpecies == null || !FoodSpecies.Contains(collectable.CreatureType))
+                return;
+
+
             // TODO: score!
             Environment.GetWorld().RemoveObstacle(collectable);
 

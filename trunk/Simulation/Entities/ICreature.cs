@@ -10,8 +10,6 @@ namespace DawnOnline.Simulation.Entities
 {
     public interface ICreature : IEntity
     {
-        CreatureTypeEnum CreatureType { get; }
-
         bool Alive { get; }
         bool IsTired { get; }
         CharacterSheet CharacterSheet { get; }

@@ -28,7 +28,7 @@ namespace DawnOnline.Simulation.Builders
                    entityType == EntityTypeEnum.SpawnPoint;
         }
 
-        public static IEntity CreateObstacle(int id, EntityTypeEnum entityType, double height, double wide)
+        public static IEntity CreateObstacle(int id, EntityTypeEnum entityType, CreatureTypeEnum creatureType, double height, double wide)
         {
             switch (entityType)
             {
@@ -48,7 +48,7 @@ namespace DawnOnline.Simulation.Builders
                     }
                 case EntityTypeEnum.Treasure:
                     {
-                        var obstacle = ObstacleBuilder.CreateTreasure(false) as Obstacle;
+                        var obstacle = ObstacleBuilder.CreateTreasure(creatureType, false) as Obstacle;
                         Debug.Assert(obstacle != null);
                         obstacle.Id = id;
                         return obstacle;

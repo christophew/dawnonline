@@ -14,6 +14,7 @@ namespace DawnOnline.Simulation.Entities
 
         public Placement Place { get; internal set; }
         public EntityTypeEnum EntityType { get; internal set; }
+        public CreatureTypeEnum CreatureType { get; internal set; }
 
         public double Damage { get; internal set; }
         public bool Explodes { get; internal set; }

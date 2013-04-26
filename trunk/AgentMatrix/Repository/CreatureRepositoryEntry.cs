@@ -65,6 +65,7 @@ namespace DawnOnline.AgentMatrix.Repository
                 using (var writer = new BinaryWriter(stream))
                 {
                     writer.Write((int)Creature.EntityType);
+                    writer.Write((int)Creature.CreatureType);
                     writer.Write(Creature.CharacterSheet.Score);
                     writer.Write(Creature.CharacterSheet.Generation);
 
@@ -88,8 +89,10 @@ namespace DawnOnline.AgentMatrix.Repository
                 var newSpawnPoint = AgentCreatureBuilder.CreateSpawnPoint(creatureType);
 
                 // Restore SpawnPoint
-                var specy = (CreatureTypeEnum)reader.ReadInt32();
-                Debug.Assert(specy == creatureType, "Validation");
+                var loadedEntityType = (EntityTypeEnum)reader.ReadInt32();
+                Debug.Assert(loadedEntityType == newSpawnPoint.EntityType, "Validation");
+                var loadedCreatureType = (CreatureTypeEnum)reader.ReadInt32();
+                Debug.Assert(loadedCreatureType == newSpawnPoint.CreatureType, "Validation");
                 var savedScore = reader.ReadDouble();
                 var savedGeneration = reader.ReadInt32();
                 newSpawnPoint.CharacterSheet.Restore(savedScore, savedGeneration);

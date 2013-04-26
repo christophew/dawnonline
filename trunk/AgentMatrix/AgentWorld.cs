@@ -344,7 +344,7 @@ namespace DawnOnline.AgentMatrix
         {
             if (CloneBuilder.IsObstacle(clientEntity.EntityType))
             {
-                var entity = CloneBuilder.CreateObstacle(clientEntity.Id, clientEntity.EntityType, WorldConstants.WallHeight, WorldConstants.WallWide);
+                var entity = CloneBuilder.CreateObstacle(clientEntity.Id, clientEntity.EntityType, clientEntity.CreatureType, WorldConstants.WallHeight, WorldConstants.WallWide);
                 if (_staticEnvironment.AddObstacle(entity, position))
                     return entity;
                 //throw new NotSupportedException("Should not happen!"); 
