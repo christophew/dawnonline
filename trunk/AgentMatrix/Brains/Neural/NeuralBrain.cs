@@ -35,18 +35,20 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
         private Dictionary<IEye, double> _smellMySpawnPoint = new Dictionary<IEye, double>();
 
 
-        private const int _nrOfInputNodes = 19; // 3x eye x4, bumper, nose, 2x random, health, stamina, resources
+        private const int _nrOfInputNodes = 25; // 3x eye x6, bumper, nose, 2x random, health, stamina, resources
         private const int _seePreyIndex = 0;
         private const int _seeFoodIndex = 3;
         private const int _seeWallsIndex = 6;
         private const int _seeMySpawnPointIndex = 9;
-        private const int _forwardBumperIndex = 12;
-        private const int _smellMySpawnPointIndex = 13;
-        private const int _random1Index = 14;
-        private const int _random2Index = 15;
-        private const int _damageMonitorIndex = 16;
-        private const int _fatigueMonitorIndex = 17;
-        private const int _resourceMonitorIndex = 18;
+        private const int _seeDangersIndex = 12;
+        private const int _seeFamilyIndex = 15;
+        private const int _forwardBumperIndex = 18;
+        private const int _smellMySpawnPointIndex = _forwardBumperIndex + 1;
+        private const int _random1Index = _smellMySpawnPointIndex + 1;
+        private const int _random2Index = _random1Index + 1;
+        private const int _damageMonitorIndex = _random2Index + 1;
+        private const int _fatigueMonitorIndex = _damageMonitorIndex + 1;
+        private const int _resourceMonitorIndex = _fatigueMonitorIndex + 1;
 
         private const int _left = 0;
         private const int _forward = 1;
@@ -228,10 +230,14 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             network.LayerNodes[2].OutGoingEdges[2].Initialize(1); // AdrenalineMode
 
 
-            // > ISeeEnemy
+            // > ISeePrey
             network.ReinforcementInputNodes[_seePreyIndex + _left].OutGoingEdges[2].Initialize(.3);
             network.ReinforcementInputNodes[_seePreyIndex + _forward].OutGoingEdges[2].Initialize(1);
             network.ReinforcementInputNodes[_seePreyIndex + _right].OutGoingEdges[2].Initialize(.3);
+            // > ISeeDanger
+            network.ReinforcementInputNodes[_seeDangersIndex + _left].OutGoingEdges[2].Initialize(.3);
+            network.ReinforcementInputNodes[_seeDangersIndex + _forward].OutGoingEdges[2].Initialize(1);
+            network.ReinforcementInputNodes[_seeDangersIndex + _right].OutGoingEdges[2].Initialize(.3);
             // > ISeeTreasure
             network.InputNodes[_seeFoodIndex + _forward].OutGoingEdges[0].Initialize(1);
             // > ISeeMySpawnPoint
@@ -265,10 +271,18 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             var network = new NeuralNetwork(inputNodes, inputNodes * 2, outputNodes + inputNodes, inputNodes);
 
             // Eyes
-            // > ISeeEnemy
+            // > ISeePrey => attack prey
             network.InputNodes[_seePreyIndex + _left].OutGoingEdges[0].Initialize(1.5);
             network.InputNodes[_seePreyIndex + _forward].OutGoingEdges[1].Initialize(1.5);
             network.InputNodes[_seePreyIndex + _right].OutGoingEdges[2].Initialize(1.5);
+            // > ISeeDanger => run from danger
+            //network.InputNodes[_seeDangersIndex + _left].OutGoingEdges[0].Initialize(-1.0);
+            //network.InputNodes[_seeDangersIndex + _forward].OutGoingEdges[1].Initialize(-1.0);
+            //network.InputNodes[_seeDangersIndex + _right].OutGoingEdges[2].Initialize(-1.0);
+            // > ISeeFamily => seek help
+            network.InputNodes[_seeFamilyIndex + _left].OutGoingEdges[0].Initialize(0.5);
+            network.InputNodes[_seeFamilyIndex + _forward].OutGoingEdges[1].Initialize(1);
+            network.InputNodes[_seeFamilyIndex + _right].OutGoingEdges[2].Initialize(0.5);
 
             network.LayerNodes[0].OutGoingEdges[0].Initialize(-1.5);
             network.LayerNodes[1].OutGoingEdges[1].Initialize(1.5);
@@ -334,6 +348,10 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             network.InputNodes[_seeMySpawnPointIndex + _left].OutGoingEdges[0].Initialize(1);
             network.InputNodes[_seeMySpawnPointIndex + _forward].OutGoingEdges[1].Initialize(1);
             network.InputNodes[_seeMySpawnPointIndex + _right].OutGoingEdges[2].Initialize(1);
+            // > ISeeFamily
+            //network.InputNodes[_seeFamilyIndex + _left].OutGoingEdges[0].Initialize(0.3);
+            //network.InputNodes[_seeFamilyIndex + _forward].OutGoingEdges[1].Initialize(0.3);
+            //network.InputNodes[_seeFamilyIndex + _right].OutGoingEdges[2].Initialize(0.3);
 
             network.LayerNodes[0].OutGoingEdges[0].Initialize(-2);
             network.LayerNodes[1].OutGoingEdges[1].Initialize(2);
@@ -458,6 +476,18 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
                 network.InputNodes[_seeMySpawnPointIndex + _left].CurrentValue = _eyeSeeMySpawnPoint[_leftEye];
                 network.InputNodes[_seeMySpawnPointIndex + _forward].CurrentValue = _eyeSeeMySpawnPoint[_forwardEye];
                 network.InputNodes[_seeMySpawnPointIndex + _right].CurrentValue = _eyeSeeMySpawnPoint[_rightEye];
+            }
+            // seeDangers
+            {
+                network.InputNodes[_seeDangersIndex + _left].CurrentValue = _eyeSeeDangers[_leftEye];
+                network.InputNodes[_seeDangersIndex + _forward].CurrentValue = _eyeSeeDangers[_forwardEye];
+                network.InputNodes[_seeDangersIndex + _right].CurrentValue = _eyeSeeDangers[_rightEye];
+            }
+            // seeFamily
+            {
+                network.InputNodes[_seeFamilyIndex + _left].CurrentValue = _eyeSeeFamily[_leftEye];
+                network.InputNodes[_seeFamilyIndex + _forward].CurrentValue = _eyeSeeFamily[_forwardEye];
+                network.InputNodes[_seeFamilyIndex + _right].CurrentValue = _eyeSeeFamily[_rightEye];
             }
             network.InputNodes[_forwardBumperIndex].CurrentValue = _forwardBumper.Hit ? 100 : 0;
             network.InputNodes[_smellMySpawnPointIndex].CurrentValue = _smellMySpawnPoint[_nose];
