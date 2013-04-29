@@ -232,12 +232,12 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
 
             // > ISeePrey
             network.ReinforcementInputNodes[_seePreyIndex + _left].OutGoingEdges[2].Initialize(.3);
-            network.ReinforcementInputNodes[_seePreyIndex + _forward].OutGoingEdges[2].Initialize(1);
+            network.InputNodes[_seePreyIndex + _forward].OutGoingEdges[2].Initialize(1);
             network.ReinforcementInputNodes[_seePreyIndex + _right].OutGoingEdges[2].Initialize(.3);
             // > ISeeDanger
-            network.ReinforcementInputNodes[_seeDangersIndex + _left].OutGoingEdges[2].Initialize(.3);
-            network.ReinforcementInputNodes[_seeDangersIndex + _forward].OutGoingEdges[2].Initialize(1);
-            network.ReinforcementInputNodes[_seeDangersIndex + _right].OutGoingEdges[2].Initialize(.3);
+            //network.ReinforcementInputNodes[_seeDangersIndex + _left].OutGoingEdges[2].Initialize(.3);
+            //network.ReinforcementInputNodes[_seeDangersIndex + _forward].OutGoingEdges[2].Initialize(1);
+            //network.ReinforcementInputNodes[_seeDangersIndex + _right].OutGoingEdges[2].Initialize(.3);
             // > ISeeTreasure
             network.InputNodes[_seeFoodIndex + _forward].OutGoingEdges[0].Initialize(1);
             // > ISeeMySpawnPoint
@@ -276,13 +276,13 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             network.InputNodes[_seePreyIndex + _forward].OutGoingEdges[1].Initialize(1.5);
             network.InputNodes[_seePreyIndex + _right].OutGoingEdges[2].Initialize(1.5);
             // > ISeeDanger => run from danger
-            //network.InputNodes[_seeDangersIndex + _left].OutGoingEdges[0].Initialize(-1.0);
+            network.InputNodes[_seeDangersIndex + _left].OutGoingEdges[0].Initialize(-0.5);
             //network.InputNodes[_seeDangersIndex + _forward].OutGoingEdges[1].Initialize(-1.0);
-            //network.InputNodes[_seeDangersIndex + _right].OutGoingEdges[2].Initialize(-1.0);
+            network.InputNodes[_seeDangersIndex + _right].OutGoingEdges[2].Initialize(-0.5);
             // > ISeeFamily => seek help
-            network.InputNodes[_seeFamilyIndex + _left].OutGoingEdges[0].Initialize(0.5);
-            network.InputNodes[_seeFamilyIndex + _forward].OutGoingEdges[1].Initialize(1);
-            network.InputNodes[_seeFamilyIndex + _right].OutGoingEdges[2].Initialize(0.5);
+            //network.InputNodes[_seeFamilyIndex + _left].OutGoingEdges[0].Initialize(0.5);
+            //network.InputNodes[_seeFamilyIndex + _forward].OutGoingEdges[1].Initialize(1);
+            //network.InputNodes[_seeFamilyIndex + _right].OutGoingEdges[2].Initialize(0.5);
 
             network.LayerNodes[0].OutGoingEdges[0].Initialize(-1.5);
             network.LayerNodes[1].OutGoingEdges[1].Initialize(1.5);
@@ -310,6 +310,12 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             network.InputNodes[_seeFoodIndex + _left].OutGoingEdges[0].Initialize(1);
             network.InputNodes[_seeFoodIndex + _forward].OutGoingEdges[1].Initialize(1);
             network.InputNodes[_seeFoodIndex + _right].OutGoingEdges[2].Initialize(1);
+
+            // > ISeeDanger => run from danger
+            network.InputNodes[_seeDangersIndex + _left].OutGoingEdges[0].Initialize(-0.5);
+            //network.InputNodes[_seeDangersIndex + _forward].OutGoingEdges[1].Initialize(-0.5);
+            network.InputNodes[_seeDangersIndex + _right].OutGoingEdges[2].Initialize(-0.5);
+
 
             network.LayerNodes[0].OutGoingEdges[0].Initialize(-1);
             network.LayerNodes[1].OutGoingEdges[1].Initialize(1);
@@ -349,9 +355,9 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             network.InputNodes[_seeMySpawnPointIndex + _forward].OutGoingEdges[1].Initialize(1);
             network.InputNodes[_seeMySpawnPointIndex + _right].OutGoingEdges[2].Initialize(1);
             // > ISeeFamily
-            //network.InputNodes[_seeFamilyIndex + _left].OutGoingEdges[0].Initialize(0.3);
-            //network.InputNodes[_seeFamilyIndex + _forward].OutGoingEdges[1].Initialize(0.3);
-            //network.InputNodes[_seeFamilyIndex + _right].OutGoingEdges[2].Initialize(0.3);
+            network.InputNodes[_seeFamilyIndex + _left].OutGoingEdges[0].Initialize(0.3);
+            network.InputNodes[_seeFamilyIndex + _forward].OutGoingEdges[1].Initialize(0.3);
+            network.InputNodes[_seeFamilyIndex + _right].OutGoingEdges[2].Initialize(0.3);
 
             network.LayerNodes[0].OutGoingEdges[0].Initialize(-2);
             network.LayerNodes[1].OutGoingEdges[1].Initialize(2);

@@ -142,6 +142,8 @@ namespace DawnOnline.Simulation.Builders
         {
             var avatar = new Creature(1.5);
 
+            avatar.FoodSpecies = new List<CreatureTypeEnum> { CreatureTypeEnum.Rabbit, CreatureTypeEnum.Predator, CreatureTypeEnum.Predator2 };
+            
             avatar.EntityType = EntityTypeEnum.Creature;
             avatar.CreatureType = CreatureTypeEnum.Avatar;
             avatar.CharacterSheet.WalkingDistance = 30 * _velocityMultiplier;
