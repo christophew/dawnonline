@@ -2,20 +2,19 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A2BA7EC7-CBC5-4FC7-B14A-71F6501EF8D3}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{B7A42E2F-1536-47ED-B60C-7E814B7B1F66}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DawnClientConsole</RootNamespace>
-    <AssemblyName>DawnClientConsole</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <RootNamespace>DawnClientForUnity</RootNamespace>
+    <AssemblyName>DawnClientForUnity</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,8 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -34,26 +32,29 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Photon3DotNet">
-      <HintPath>..\Lib\PhotonLibs\Debug\Photon3DotNet.dll</HintPath>
+    <Reference Include="Photon3Unity3D">
+      <HintPath>..\Lib\PhotonLibs\Debug\Photon3Unity3D.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="..\DawnClient\DawnClient.cs">
+      <Link>DawnClient.cs</Link>
+    </Compile>
+    <Compile Include="..\DawnClient\DawnClientEntity.cs">
+      <Link>DawnClientEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\DawnClient\DawnClientWorld.cs">
+      <Link>DawnClientWorld.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DawnClient\DawnClient.csproj">
-      <Project>{4471FB48-DF80-44F5-B2A0-65BC98B2C2F3}</Project>
-      <Name>DawnClient</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SharedConstants\SharedConstants.csproj">
       <Project>{EBD77164-CE60-4180-8613-974FA39850E8}</Project>
       <Name>SharedConstants</Name>
@@ -67,4 +68,11 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+	<Target Name="AfterBuild">
+    <ItemGroup>
+      <_CustomFiles Include="bin\debug\*.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_CustomFiles)" DestinationFiles="@(_CustomFiles->'..\DawnUnity\Assets\Libs\%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
+
 </Project>

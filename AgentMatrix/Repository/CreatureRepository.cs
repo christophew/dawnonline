@@ -12,6 +12,7 @@ namespace DawnOnline.AgentMatrix.Repository
     class CreatureRepository
     {
         private const string _path = @".\CreatureRepository\";
+        private const int _maxNrOfCreaturesPerType = 100;
 
         private static CreatureRepository _singleton;
         private static CreatureRepository CreateOrGetSingleton()
@@ -68,7 +69,7 @@ namespace DawnOnline.AgentMatrix.Repository
             // Take youngest
             var sortedOnGeneration = list
                 .OrderByDescending(entry => entry.Creature.CharacterSheet.Generation)
-                .Take(100);
+                .Take(_maxNrOfCreaturesPerType);
 
             // Sort on best score
             var sorted = sortedOnGeneration
@@ -133,15 +134,23 @@ namespace DawnOnline.AgentMatrix.Repository
             var path = GetPath(creatureType);
             var repository = GetRepository(creatureType);
 
-            var fileNames = Directory.EnumerateFiles(path);
+            var directory = new DirectoryInfo(path);
+            var fileInfos = (from f in directory.GetFiles()
+                             orderby f.LastWriteTime descending
+                             select f);
 
-            foreach (var fileName in fileNames)
+            var counter = 0;
+            foreach (var info in fileInfos)
             {
-                var loadedEntry = new CreatureRepositoryEntry(creatureType, fileName);
+                var loadedEntry = new CreatureRepositoryEntry(creatureType, info.FullName);
 
                 // TODO: currently this is handled in c'tor CreatureRepositoryEntry
                 // => needs to change
                 //repository.Add(loadedEntry);
+
+                // We don't need more then 100 of 1 type
+                if (counter++ > _maxNrOfCreaturesPerType)
+                    break;
             }
         }
     }
