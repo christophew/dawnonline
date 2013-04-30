@@ -36,9 +36,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
-    <Reference Include="Photon3Unity3D, Version=3.2.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\PhotonLibs\Release\Photon3Unity3D.dll</HintPath>
+    <Reference Include="Photon3DotNet">
+      <HintPath>..\Lib\PhotonLibs\Debug\Photon3DotNet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

@@ -36,9 +36,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Photon3Unity3D, Version=3.2.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\PhotonLibs\Release\Photon3Unity3D.dll</HintPath>
+    <Reference Include="Photon3DotNet">
+      <HintPath>..\Lib\PhotonLibs\Debug\Photon3DotNet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

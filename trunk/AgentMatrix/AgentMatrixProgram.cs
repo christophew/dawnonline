@@ -28,6 +28,36 @@ namespace DawnOnline.AgentMatrix
             }
         }
 
+        private static void CreateDawnClient()
+        {
+            Debug.Assert(_dawnClient == null);
+            _dawnClient = new DawnClient.DawnClient();
+
+            // Add eventhandler
+            _dawnClient.WorldLoadedEvent += delegate
+            {
+                // Initialize agent world
+                GetAgentWorld(_dawnClient.InstanceId);
+
+                // Load Repository
+                Console.WriteLine("Load Repository");
+                _dawnClient.IsMessageQueueRunning = false;
+                CreatureRepository.GetRepository();
+                _dawnClient.IsMessageQueueRunning = true;
+
+                // Initial Population
+                //Console.WriteLine("Initial Population");
+                //for (int i = 0; i < 5; i++)
+                //{
+                //    _agentWorld.AddCreature(AgentCreatureBuilder.CreateRabbitSpawnPoint());
+                //    _agentWorld.AddCreature(AgentCreatureBuilder.CreateSpawnPoint());
+                //    _agentWorld.AddCreature(AgentCreatureBuilder.CreateSpawnPoint2());
+                //}
+            };
+
+            _dawnClient.EntityDestroyed += OnEntityDestroyedOnServer;
+        }
+
         private static AgentWorld _agentWorld;
         private static AgentWorld GetAgentWorld(int instanceId)
         {
@@ -36,26 +66,12 @@ namespace DawnOnline.AgentMatrix
 
             _agentWorld = new AgentWorld(instanceId);
 
-            // Initial population
-            _dawnClient.WorldLoadedEvent += delegate
-                                                {
-                                                    for (int i = 0; i < 5; i++)
-                                                    {
-                                                        _agentWorld.AddCreature(AgentCreatureBuilder.CreateSpawnPoint());
-                                                        _agentWorld.AddCreature(AgentCreatureBuilder.CreateSpawnPoint2());
-                                                    }
-                                                };
             return _agentWorld;
         }
 
         static void Main(string[] args)
         {
-             _dawnClient = new DawnClient.DawnClient();
-
-            // Add eventhandler
-            //_dawnClient.WorldLoadedEvent += delegate { _dawnClient.RequestCreatureCreationOnServer(EntityType.Predator, 100); };
-
-            _dawnClient.EntityDestroyed += OnEntityDestroyedOnServer;
+            CreateDawnClient();
 
             var stopWatch = new Stopwatch();
 

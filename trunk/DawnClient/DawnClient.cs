@@ -460,5 +460,61 @@ namespace DawnClient
             //Console.WriteLine("ByteCountCurrentDispatch: " + _peer.TrafficStatsIncoming.);
 
         }
+
+
+        #region PUN code
+
+        private bool m_isMessageQueueRunning = true;
+
+        /// <summary>
+        /// Can be used to pause dispatch of incoming evtents (RPCs, Instantiates and anything else incoming).
+        /// This can be useful if you first want to load a level, then go on receiving data of PhotonViews and RPCs.
+        /// The client will go on receiving and sending acknowledgements for incoming packages and your RPCs/Events.
+        /// This adds "lag" and can cause issues when the pause is longer, as all incoming messages are just queued.
+        /// </summary>
+        public bool IsMessageQueueRunning
+        {
+            get
+            {
+                return m_isMessageQueueRunning;
+            }
+
+            set
+            {
+                if (value == m_isMessageQueueRunning)
+                {
+                    return;
+                }
+
+                _peer.IsSendingOnlyAcks = !value;
+                m_isMessageQueueRunning = value;
+                if (!value)
+                {
+                    StartThread(); // Background loading thread: keeps connection alive
+                }
+            }
+        }
+
+        private void StartThread()
+        {
+            System.Threading.Thread sendThread = new System.Threading.Thread(new System.Threading.ThreadStart(MyThread));
+            sendThread.Start();
+        }
+
+        // keeps connection alive while loading
+        private void MyThread()
+        {
+            while (_peer != null && _peer.IsSendingOnlyAcks)
+            {
+                // Send all acks
+                while (_peer.SendAcksOnly())
+                { }
+
+
+                System.Threading.Thread.Sleep(50);
+            }
+        }
+
+        #endregion
     }
 }

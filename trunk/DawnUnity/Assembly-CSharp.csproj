@@ -55,14 +55,14 @@
      <None Include="Assets\Standard Assets\Projectors\Sources\Shaders\Projector Multiply.shader" />
      <None Include="Assets\Libs\_autofilled by after build task of DawnClient.txt" />
      <None Include="Assets\Standard Assets\Projectors\Sources\Shaders\Projector Light.shader" />
- <Reference Include="DawnClient">
- <HintPath>Assets\Libs\DawnClient.dll</HintPath>
- </Reference>
  <Reference Include="Photon3Unity3D">
  <HintPath>Assets\Libs\Photon3Unity3D.dll</HintPath>
  </Reference>
  <Reference Include="SharedConstants">
  <HintPath>Assets\Libs\SharedConstants.dll</HintPath>
+ </Reference>
+ <Reference Include="DawnClientForUnity">
+ <HintPath>Assets\Libs\DawnClientForUnity.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
