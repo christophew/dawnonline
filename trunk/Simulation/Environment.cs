@@ -39,12 +39,7 @@ namespace DawnOnline.Simulation
             FarSeerWorld = new World(Vector2.Zero);
         }
 
-        public bool AddCreature(ICreature creature, Vector2 origin, double angle)
-        {
-            return AddCreature(creature, origin, angle, true);
-        }
-
-        public bool AddCreature(ICreature creature, Vector2 origin, double angle, bool checkIntersect)
+        public bool AddCreature(ICreature creature, Vector2 origin, double angle, bool checkIntersect = true)
         {
             var myCreature = creature as Creature;
             Debug.Assert(myCreature != null);
@@ -159,13 +154,13 @@ namespace DawnOnline.Simulation
             return _creaturesPerSpecy[specy];
         }
 
-        public bool AddObstacle(IEntity obstacle, Vector2 origin)
+        public bool AddObstacle(IEntity obstacle, Vector2 origin, double angle = 0.0, bool checkIntersect = true)
         {
-            obstacle.Place.OffsetPosition(origin, 0.0);
+            obstacle.Place.OffsetPosition(origin, angle);
 
 
             // TODO: Collisioncheck using Farseer
-            if (IntersectsWithObstacles(obstacle.Place))
+            if (checkIntersect && IntersectsWithObstacles(obstacle.Place))
             {
                 FarSeerWorld.RemoveBody(obstacle.Place.Fixture.Body);
                 return false;

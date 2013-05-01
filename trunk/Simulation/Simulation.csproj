@@ -92,6 +92,7 @@
     <Compile Include="Entities\IEntity.cs" />
     <Compile Include="Entities\IExplosion.cs" />
     <Compile Include="Entities\Obstacle.cs" />
+    <Compile Include="Entities\Plant.cs" />
     <Compile Include="Entities\Structure.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="Globals.cs" />

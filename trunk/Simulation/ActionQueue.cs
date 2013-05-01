@@ -36,6 +36,7 @@ namespace DawnOnline.Simulation
         internal DateTime LastBuildTime { get; set; }
         internal DateTime LastRestTime { get; set; }
         internal DateTime LastRegenTime { get; set; }
+        internal DateTime LastAutoResourceGainTime { get; set; }
 
         internal void ClearForRound()
         {

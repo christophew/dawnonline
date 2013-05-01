@@ -42,6 +42,12 @@ namespace DawnOnline.Simulation.Statistics
         public double FatigueRegen { get; internal set; }
         public double HealthRegen { get; internal set; }
 
+
+        // Plant specific
+        public double AutoResourceGatherCoolDown { get; internal set; }
+        public double AutoResourceGatherValue { get; internal set; }
+
+
         // Prototype Persistency layer
         public void Restore(double score, int generation)
         {
@@ -94,11 +100,13 @@ namespace DawnOnline.Simulation.Statistics
             newCharacterSheet.BuildCoolDown = BuildCoolDown;
             newCharacterSheet.RestCoolDown = RestCoolDown;
             newCharacterSheet.RegenCoolDown = RegenCoolDown;
+            newCharacterSheet.AutoResourceGatherCoolDown = AutoResourceGatherCoolDown;
 
             newCharacterSheet.FoodValue = FoodValue;
 
             newCharacterSheet.FatigueRegen = FatigueRegen;
             newCharacterSheet.HealthRegen = HealthRegen;
+            newCharacterSheet.AutoResourceGatherValue = AutoResourceGatherValue;
 
             // Increase generation
             newCharacterSheet.Generation = Generation + 1;

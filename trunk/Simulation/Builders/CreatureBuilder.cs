@@ -122,7 +122,7 @@ namespace DawnOnline.Simulation.Builders
 
         public static ICreature CreatePlant()
         {
-            var critter = new Creature(0.5);
+            var critter = new Plant(0.5);
             critter.Brain = new DummyBrain();
 
             critter.EntityType = EntityTypeEnum.Creature;
@@ -132,8 +132,12 @@ namespace DawnOnline.Simulation.Builders
             //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(50, 200);
             critter.CharacterSheet.WalkingDistance = 0;
             critter.CharacterSheet.TurningAngle = 0;
-            critter.CharacterSheet.FoodValue = 5;
+            critter.CharacterSheet.FoodValue = 10;
             critter.CharacterSheet.IsRooted = true;
+
+            critter.CharacterSheet.AutoResourceGatherValue = 1;
+            critter.CharacterSheet.AutoResourceGatherCoolDown = 5;
+
 
             return critter;
         }
