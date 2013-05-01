@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using DawnOnline.Simulation.Builders;
 using FarseerPhysics.Dynamics;
+using SharedConstants;
 
 namespace DawnOnline.Simulation.Entities
 {
@@ -28,8 +29,18 @@ namespace DawnOnline.Simulation.Entities
             environment.RemoveObstacle(this);
 
             // Grow plant
-            var plant = CreatureBuilder.CreatePlant();
-            environment.AddCreature(plant, position, 0);
+            // Experiment: Conditional Grow plant = when we have enough room
+            if (EnoughResourcesAvailable())
+            {
+                var plant = CreatureBuilder.CreatePlant();
+                environment.AddCreature(plant, position, 0);
+            }
+        }
+
+        private bool EnoughResourcesAvailable()
+        {
+            // TEMP
+            return Globals.Radomizer.Next(10) == 0;
         }
 
         public static bool OnCollision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)

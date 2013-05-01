@@ -38,6 +38,7 @@ public class DawnEntityManager : MonoBehaviour
     private string _debugInfoNrOfPredators;
     private string _debugInfoNrOfPredators2;
     private string _debugInfoNrOfRabbits;
+    private string _debugInfoNrOfPlants;
 
 
 	// Use this for initialization
@@ -71,6 +72,7 @@ public class DawnEntityManager : MonoBehaviour
         _debugInfoNrOfPredators = _dawnClient.DawnWorld.GetEntities().Where(e => e.CreatureType == CreatureTypeEnum.Predator).Count().ToString();
         _debugInfoNrOfPredators2 = _dawnClient.DawnWorld.GetEntities().Where(e => e.CreatureType == CreatureTypeEnum.Predator2).Count().ToString();
         _debugInfoNrOfRabbits = _dawnClient.DawnWorld.GetEntities().Where(e => e.CreatureType == CreatureTypeEnum.Rabbit).Count().ToString();
+        _debugInfoNrOfPlants = _dawnClient.DawnWorld.GetEntities().Where(e => e.CreatureType == CreatureTypeEnum.Plant).Count().ToString();
 
 
         // Update nodes & create new nodes
@@ -121,6 +123,7 @@ public class DawnEntityManager : MonoBehaviour
         GUI.Label(new Rect(0, 20, Screen.width, Screen.height), "#predators: " + _debugInfoNrOfPredators);
         GUI.Label(new Rect(0, 30, Screen.width, Screen.height), "#predators2: " + _debugInfoNrOfPredators2);
         GUI.Label(new Rect(0, 40, Screen.width, Screen.height), "#rabbits: " + _debugInfoNrOfRabbits);
+        GUI.Label(new Rect(0, 50, Screen.width, Screen.height), "#plants: " + _debugInfoNrOfPlants);
     }
 
     

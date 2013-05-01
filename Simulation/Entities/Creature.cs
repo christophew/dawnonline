@@ -26,7 +26,7 @@ namespace DawnOnline.Simulation.Entities
         }
 
         private Placement _place = new Placement();
-        private ActionQueue _actionQueue = new ActionQueue();
+        protected ActionQueue _actionQueue = new ActionQueue();
         private CharacterSheet _characterSheet = new CharacterSheet();
         private IBrain _brain;
 
@@ -269,12 +269,12 @@ namespace DawnOnline.Simulation.Entities
             return MyActionQueue.Damage > 0;
         }
 
-        public void Update(double timeDelta)
+        public virtual void Update(double timeDelta)
         {
             ApplyActionQueue(timeDelta);
         }
 
-        private void ApplyActionQueue(double timeDelta)
+        protected void ApplyActionQueue(double timeDelta)
         {
             // toSeconds is NOT needed for farseer updates => uses timeDelta in own update
             double toSeconds = timeDelta / 1000.0;
@@ -300,7 +300,6 @@ namespace DawnOnline.Simulation.Entities
             // Move
             _place.Fixture.Body.ApplyForce(_actionQueue.ForwardMotion + _actionQueue.StrafeMotion);
             _place.Fixture.Body.AngularVelocity = (float)(_actionQueue.TurnMotion);
-            //_place.Fixture.Body.ApplyAngularImpulse((float)(_actionQueue.TurnMotion) * 5000);
 
             // Fatigue
             CharacterSheet.Fatigue.Increase((int)(_actionQueue.FatigueCost * toSeconds));
@@ -322,7 +321,6 @@ namespace DawnOnline.Simulation.Entities
                         bullet, 
                         _place.Fixture.Body.Position + bulletAngleVector * (float)_place.Form.BoundingCircleRadius * 2.0f,
                         _place.Angle);
-                    //bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 30);
                     bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 10);
                 }
 
@@ -385,7 +383,7 @@ namespace DawnOnline.Simulation.Entities
                 MyEnvironment.AddSound(sound);
             }
 
-            // AutoRegen
+            // Auto monitor adjusts
             DoRegen();
         }
 
