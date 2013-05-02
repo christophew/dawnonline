@@ -57,8 +57,13 @@ namespace DawnClient
             {
                 foreach (int id in ids)
                 {
-                    _entities.Remove(id);
-                    _removed.Add(id);
+                    DawnClientEntity existingEntity;
+                    if (_entities.TryGetValue(id, out existingEntity))
+                    {
+                        existingEntity.Kill();
+                        _entities.Remove(id);
+                        _removed.Add(id);
+                    }
                 }
             }
         }

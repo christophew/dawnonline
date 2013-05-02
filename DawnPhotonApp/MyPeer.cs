@@ -79,6 +79,9 @@ namespace MyApplication
                 case (byte)MyOperationCodes.BulkEntityCommand:
                 case (byte)MyOperationCodes.AvatarCommand:
                 case (byte)MyOperationCodes.LoadWorld:
+                case (byte)MyOperationCodes.LoadWorldProperties:
+                case (byte)MyOperationCodes.LoadWorldEntities:
+                case (byte)MyOperationCodes.LoadWorldDone:
                 case (byte)MyOperationCodes.AddEntity:
                 case (byte)MyOperationCodes.AddAvatar:
                     {

@@ -33,6 +33,7 @@ public class DawnEntityManager : MonoBehaviour
 
     private bool _connectError;
     private int _debugLoadingCounter;
+    private int _debugLoadingCounter2;
     private string _debugInfoNrOfWalls;
     private string _debugInfoNrOfBoxes;
     private string _debugInfoNrOfPredators;
@@ -40,6 +41,7 @@ public class DawnEntityManager : MonoBehaviour
     private string _debugInfoNrOfRabbits;
     private string _debugInfoNrOfPlants;
 
+    //private bool _initialEntitiesCreated = false;
 
 	// Use this for initialization
 	void Start () {
@@ -58,13 +60,16 @@ public class DawnEntityManager : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-        if (!_dawnClient.WorldLoaded)
+        //if (!_dawnClient.WorldLoaded)
+        if (_dawnClient.InstanceId == 0)
         {
             _debugLoadingCounter++;
             _dawnClient.Update();
+            //_dawnClient.SendCommandsToServer();
             return;
         }
 
+	    _debugLoadingCounter2++;
         _dawnClient.SendCommandsToServer();
 
 	    _debugInfoNrOfWalls = _dawnClient.DawnWorld.GetEntities().Where(e => e.EntityType == EntityTypeEnum.Wall).Count().ToString();
@@ -74,6 +79,8 @@ public class DawnEntityManager : MonoBehaviour
         _debugInfoNrOfRabbits = _dawnClient.DawnWorld.GetEntities().Where(e => e.CreatureType == CreatureTypeEnum.Rabbit).Count().ToString();
         _debugInfoNrOfPlants = _dawnClient.DawnWorld.GetEntities().Where(e => e.CreatureType == CreatureTypeEnum.Plant).Count().ToString();
 
+        // Disable MessageQueue for first big 
+        _dawnClient.IsMessageQueueRunning = false;
 
         // Update nodes & create new nodes
         var currentEntities = new HashSet<int>();
@@ -99,6 +106,9 @@ public class DawnEntityManager : MonoBehaviour
 
             }
         }
+
+        _dawnClient.IsMessageQueueRunning = true;
+        //_initialEntitiesCreated = true;
 	}
 
     void OnGUI()
@@ -112,18 +122,19 @@ public class DawnEntityManager : MonoBehaviour
             return;
         }
 
-        if (!_dawnClient.WorldLoaded)
+        //if (!_dawnClient.WorldLoaded)
         {
-            GUI.Label(new Rect(0, 0, Screen.width, Screen.height), "WorldLoading: " + _debugLoadingCounter);
-            return;
+            GUI.Label(new Rect(0, 0, Screen.width, Screen.height), "WorldLoading: " + _debugLoadingCounter + "/" + _debugLoadingCounter2);
+            //return;
         }
 
-        GUI.Label(new Rect(0, 0, Screen.width, Screen.height), "#walls: " + _debugInfoNrOfWalls);
-        GUI.Label(new Rect(0, 10, Screen.width, Screen.height), "#boxes: " + _debugInfoNrOfBoxes);
-        GUI.Label(new Rect(0, 20, Screen.width, Screen.height), "#predators: " + _debugInfoNrOfPredators);
-        GUI.Label(new Rect(0, 30, Screen.width, Screen.height), "#predators2: " + _debugInfoNrOfPredators2);
-        GUI.Label(new Rect(0, 40, Screen.width, Screen.height), "#rabbits: " + _debugInfoNrOfRabbits);
-        GUI.Label(new Rect(0, 50, Screen.width, Screen.height), "#plants: " + _debugInfoNrOfPlants);
+        var start = 10;
+        GUI.Label(new Rect(0, start + 0, Screen.width, Screen.height), "#walls: " + _debugInfoNrOfWalls);
+        GUI.Label(new Rect(0, start + 10, Screen.width, Screen.height), "#boxes: " + _debugInfoNrOfBoxes);
+        GUI.Label(new Rect(0, start + 20, Screen.width, Screen.height), "#predators: " + _debugInfoNrOfPredators);
+        GUI.Label(new Rect(0, start + 30, Screen.width, Screen.height), "#predators2: " + _debugInfoNrOfPredators2);
+        GUI.Label(new Rect(0, start + 40, Screen.width, Screen.height), "#rabbits: " + _debugInfoNrOfRabbits);
+        GUI.Label(new Rect(0, start + 50, Screen.width, Screen.height), "#plants: " + _debugInfoNrOfPlants);
     }
 
     

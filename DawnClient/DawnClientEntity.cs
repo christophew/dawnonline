@@ -22,6 +22,7 @@ namespace DawnClient
         public int FatiguePercent { get; private set; }
         public int ResourcePercent { get; private set; }
         public int Score { get; private set; }
+        public bool IsDead { get; private set; }
 
         public bool IsSpawnPoint { get { return EntityType == EntityTypeEnum.SpawnPoint; } }
 
@@ -34,6 +35,11 @@ namespace DawnClient
 
         internal DawnClientEntity()
         {}
+
+        public void Kill()
+        {
+            IsDead = true;
+        }
 
         public static DawnClientEntity CreatePositionUpdate(Hashtable eventData)
         {

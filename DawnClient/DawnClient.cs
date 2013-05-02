@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -375,17 +376,46 @@ namespace DawnClient
                         break;
                     }
                     // Return from LoadWorld
+                //case (byte)MyOperationCodes.LoadWorld:
+                //    {
+                //        // Get static world objects
+                //        var entityParam = (Hashtable[])operationResponse.Parameters[0];
+                //        var staticEntities = entityParam.Select(DawnClientEntity.CreateAddedEntity).ToList();
+                //        Console.WriteLine(" ->Starting entities: " + staticEntities.Count);
+                //        DawnWorld.UpdateEntities(staticEntities, true);
+
+                //        _instanceId = (int) operationResponse.Parameters[1];
+                //        Debug.Assert(_instanceId < 1000, "Convention! => needed for Unique id generation");
+
+                //        var worldWasLoaded = WorldLoaded;
+                //        WorldLoaded = true;
+
+                //        // Fire our event, only first time when LoadWorld is triggered
+                //        if (!worldWasLoaded && (this.WorldLoadedEvent != null))
+                //            this.WorldLoadedEvent(this, new EventArgs());
+
+
+                //        break;
+                //    }
                 case (byte)MyOperationCodes.LoadWorld:
                     {
+                        _instanceId = (int) operationResponse.Parameters[0];
+                        Debug.Assert(_instanceId < 1000, "Convention! => needed for Unique id generation");
+
+                        break;
+                    }
+                case (byte)MyOperationCodes.LoadWorldEntities:
+                    {
                         // Get static world objects
-                        var entityParam = (Hashtable[])operationResponse.Parameters[0];
+                        var entityParam = (Hashtable[]) operationResponse.Parameters[0];
                         var staticEntities = entityParam.Select(DawnClientEntity.CreateAddedEntity).ToList();
                         Console.WriteLine(" ->Starting entities: " + staticEntities.Count);
                         DawnWorld.UpdateEntities(staticEntities, true);
 
-                        _instanceId = (int) operationResponse.Parameters[1];
-                        Debug.Assert(_instanceId < 1000, "Convention! => needed for Unique id generation");
-
+                        break;
+                    }
+                case (byte)MyOperationCodes.LoadWorldDone:
+                    {
                         WorldLoaded = true;
 
                         // Fire our event
@@ -425,18 +455,22 @@ namespace DawnClient
                 case StatusCode.Disconnect:
                     Console.WriteLine("Disconnect");
                     Debug.Assert(false, "Disconnect");
+                    throw new ApplicationException("Disconnect");
                     break;
                 case StatusCode.DisconnectByServer:
                     Console.WriteLine("DisconnectByServer");
                     Debug.Assert(false, "DisconnectByServer");
+                    throw new ApplicationException("DisconnectByServer");
                    break;
                 case StatusCode.DisconnectByServerLogic:
                    Console.WriteLine("DisconnectByServerLogic");
                    Debug.Assert(false, "DisconnectByServerLogic");
-                   break;
+                   throw new ApplicationException("DisconnectByServerLogic");
+                  break;
                 default:
                     break;
             }
+
         }
 
         private void DebugUpdate()
