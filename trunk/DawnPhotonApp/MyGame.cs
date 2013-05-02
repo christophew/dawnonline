@@ -379,23 +379,76 @@ namespace MyApplication
                         break;
                     }
 
+                //case MyOperationCodes.LoadWorld:
+                //    {
+                //        //var slowObjects = _dawnWorldInstance.Environment.GetObstacles().Where(o => o.Specy == EntityTypeEnum.Wall).ToList();
+
+                //        // Load ALL objects & creatures on LoadWorld => this allows us to use BulkAddEntity
+                //        var slowObjects = _dawnWorldInstance.Environment.GetObstacles().ToList();
+                //        var slowCreatures = _dawnWorldInstance.Environment.GetCreatures();
+                //        slowObjects.AddRange(slowCreatures);
+
+                //        var slowObjectsParam = slowObjects.Select(e => CreateStaticEntity(e).CreatePhotonPacket()).ToArray();
+
+                //        // Send response
+                //        var eData = new Dictionary<byte, object>();
+                //        eData[0] = slowObjectsParam;
+                //        eData[1] = CreateNewClientInstanceId();
+                //        var response = new OperationResponse((byte)MyOperationCodes.LoadWorld, eData);
+                //        peer.SendOperationResponse(response, new SendParameters { Unreliable = false, ChannelId = 1 });
+
+                //        break;
+                //    }
+
                 case MyOperationCodes.LoadWorld:
                     {
-                        //var slowObjects = _dawnWorldInstance.Environment.GetObstacles().Where(o => o.Specy == EntityTypeEnum.Wall).ToList();
+                        // LoadWorldProperties
+                        {
+                            var eData = new Dictionary<byte, object>();
+                            eData[0] = CreateNewClientInstanceId();
+                            var response = new OperationResponse((byte)MyOperationCodes.LoadWorld, eData);
+                            peer.SendOperationResponse(response, new SendParameters {Unreliable = false, ChannelId = 1});
+                        }
 
-                        // Load ALL objects & creatures on LoadWorld => this allows us to use BulkAddEntity
-                        var slowObjects = _dawnWorldInstance.Environment.GetObstacles().ToList();
-                        var slowCreatures = _dawnWorldInstance.Environment.GetCreatures();
-                        slowObjects.AddRange(slowCreatures);
+                        // LoadWorldEntities
+                        {
+                            // Load ALL objects & creatures on LoadWorld => this allows us to use BulkAddEntity
+                            var slowObjects = _dawnWorldInstance.Environment.GetObstacles().ToList();
+                            var slowCreatures = _dawnWorldInstance.Environment.GetCreatures();
+                            slowObjects.AddRange(slowCreatures);
 
-                        var slowObjectsParam = slowObjects.Select(e => CreateStaticEntity(e).CreatePhotonPacket()).ToArray();
+                            var slowObjectsParam = slowObjects.Select(e => CreateStaticEntity(e).CreatePhotonPacket()).ToArray();
 
-                        // Send response
-                        var eData = new Dictionary<byte, object>();
-                        eData[0] = slowObjectsParam;
-                        eData[1] = CreateNewClientInstanceId();
-                        var response = new OperationResponse((byte)MyOperationCodes.LoadWorld, eData);
-                        peer.SendOperationResponse(response, new SendParameters { Unreliable = false, ChannelId = 1 });
+                            var currentParams = new List<Hashtable>();
+                            foreach (var entityParam in slowObjectsParam)
+                            {
+                                currentParams.Add(entityParam);
+                                if (currentParams.Count < 10)
+                                    continue;
+
+                                // Send response
+                                var eData = new Dictionary<byte, object>();
+                                eData[0] = currentParams.ToArray();
+                                var response = new OperationResponse((byte) MyOperationCodes.LoadWorldEntities, eData);
+                                peer.SendOperationResponse(response, new SendParameters {Unreliable = false, ChannelId = 1});
+                                currentParams.Clear();
+                            }
+
+                            if (currentParams.Count > 0)
+                            {
+                                // Send response
+                                var eData = new Dictionary<byte, object>();
+                                eData[0] = currentParams.ToArray();
+                                var response = new OperationResponse((byte)MyOperationCodes.LoadWorldEntities, eData);
+                                peer.SendOperationResponse(response, new SendParameters { Unreliable = false, ChannelId = 1 });
+                            }
+                        }
+
+                        // LoadWorldDone
+                        {
+                            var response = new OperationResponse((byte)MyOperationCodes.LoadWorldDone, null);
+                            peer.SendOperationResponse(response, new SendParameters { Unreliable = false, ChannelId = 1 });
+                        }
 
                         break;
                     }
