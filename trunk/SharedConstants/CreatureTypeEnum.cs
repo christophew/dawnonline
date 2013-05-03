@@ -13,6 +13,7 @@ namespace SharedConstants
         Predator2 = 3,
         Rabbit = 4,
         Plant = 5,
+        Plant2 = 7,
         Turret = 6,
     }
 }

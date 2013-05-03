@@ -32,7 +32,8 @@ namespace DawnOnline.Simulation.Entities
             // Experiment: Conditional Grow plant = when we have enough room
             if (EnoughResourcesAvailable())
             {
-                var plant = CreatureBuilder.CreatePlant();
+                // TODO: make this generic
+                var plant = this.CreatureType == CreatureTypeEnum.Plant2 ?  CreatureBuilder.CreatePlant2() : CreatureBuilder.CreatePlant();
                 environment.AddCreature(plant, position, 0);
             }
         }

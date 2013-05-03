@@ -24,7 +24,8 @@ namespace DawnGame
 
         //private int _nrOfSpawnPoints = 0;
         //private int _nrOfTreasures = 0;
-        private int _nrOfPlants = 50;
+        private int _nrOfPlants = 40;
+        private int _nrOfPlants2 = 10;
         private int _nrOfWalls = 300;
         private int _maxWallLength = 10;
         private int _nrOfBoxes = 0;
@@ -236,6 +237,16 @@ namespace DawnGame
                 {
                     var position = new Vector2(_randomize.Next((int)MaxX), _randomize.Next((int)MaxY));
                     var plant = CreatureBuilder.CreatePlant();
+                    _environment.AddCreature(plant, position, 0);
+                }
+            }
+            // Make sure we always have enough Plants2
+            {
+                var plants = _environment.GetCreatures(CreatureTypeEnum.Plant2);
+                if (plants.Count() < _nrOfPlants2)
+                {
+                    var position = new Vector2(_randomize.Next((int)MaxX), _randomize.Next((int)MaxY));
+                    var plant = CreatureBuilder.CreatePlant2();
                     _environment.AddCreature(plant, position, 0);
                 }
             }

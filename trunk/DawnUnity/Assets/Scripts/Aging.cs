@@ -18,6 +18,8 @@ public class Aging : MonoBehaviour
 	{
         //var increase = new Vector3(0, GetAgeInSeconds() * 0.01f, 0);
         //transform.localScale += increase;
+        var newScale = new Vector3(transform.localScale.x, transform.localScale.y + GetAgeInSeconds() * 0.00001f, transform.localScale.z);
+        transform.localScale = newScale;
 	}
 
     private float GetAgeInSeconds()
