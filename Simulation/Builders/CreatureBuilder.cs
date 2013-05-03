@@ -34,6 +34,8 @@ namespace DawnOnline.Simulation.Builders
                             return CreateAvatar();
                         case CreatureTypeEnum.Plant:
                             return CreatePlant();
+                        case CreatureTypeEnum.Plant2:
+                            return CreatePlant2();
                         case CreatureTypeEnum.Predator:
                             return CreatePredator(brain);
                         case CreatureTypeEnum.Predator2:
@@ -107,7 +109,7 @@ namespace DawnOnline.Simulation.Builders
 
             critter.EntityType = EntityTypeEnum.Creature;
             critter.CreatureType = CreatureTypeEnum.Rabbit;
-            critter.FoodSpecies = new List<CreatureTypeEnum> { CreatureTypeEnum.Plant };
+            critter.FoodSpecies = new List<CreatureTypeEnum> { CreatureTypeEnum.Plant, CreatureTypeEnum.Plant2 };
 
             //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(100, 300);
             critter.CharacterSheet.WalkingDistance = 35 * _velocityMultiplier;
@@ -133,6 +135,28 @@ namespace DawnOnline.Simulation.Builders
             critter.CharacterSheet.WalkingDistance = 0;
             critter.CharacterSheet.TurningAngle = 0;
             critter.CharacterSheet.FoodValue = 10;
+            critter.CharacterSheet.IsRooted = true;
+
+            critter.CharacterSheet.AutoResourceGatherValue = 1;
+            critter.CharacterSheet.AutoResourceGatherCoolDown = 5;
+
+
+            return critter;
+        }
+
+        public static ICreature CreatePlant2()
+        {
+            var critter = new Plant(0.25);
+            critter.Brain = new DummyBrain();
+
+            critter.EntityType = EntityTypeEnum.Creature;
+            critter.CreatureType = CreatureTypeEnum.Plant2;
+            //critter.FoodSpecy = CreatureType.Predator; // instead: killing creatures can produce plants
+
+            //critter.CharacterSheet.MaxAge = Globals.Radomizer.Next(50, 200);
+            critter.CharacterSheet.WalkingDistance = 0;
+            critter.CharacterSheet.TurningAngle = 0;
+            critter.CharacterSheet.FoodValue = 20;
             critter.CharacterSheet.IsRooted = true;
 
             critter.CharacterSheet.AutoResourceGatherValue = 1;

@@ -24,6 +24,7 @@ public class DawnEntityManager : MonoBehaviour
     public Transform BulletTemplate;
     public Transform RocketTemplate;
     public Transform PlantTemplate;
+    public Transform Plant2Template;
     public Transform DefaultTemplate;
 
     public Transform ExplosionTemplate;
@@ -40,6 +41,7 @@ public class DawnEntityManager : MonoBehaviour
     private string _debugInfoNrOfPredators2;
     private string _debugInfoNrOfRabbits;
     private string _debugInfoNrOfPlants;
+    private string _debugInfoNrOfPlants2;
 
     //private bool _initialEntitiesCreated = false;
 
@@ -78,6 +80,7 @@ public class DawnEntityManager : MonoBehaviour
         _debugInfoNrOfPredators2 = _dawnClient.DawnWorld.GetEntities().Where(e => e.CreatureType == CreatureTypeEnum.Predator2).Count().ToString();
         _debugInfoNrOfRabbits = _dawnClient.DawnWorld.GetEntities().Where(e => e.CreatureType == CreatureTypeEnum.Rabbit).Count().ToString();
         _debugInfoNrOfPlants = _dawnClient.DawnWorld.GetEntities().Where(e => e.CreatureType == CreatureTypeEnum.Plant).Count().ToString();
+        _debugInfoNrOfPlants2 = _dawnClient.DawnWorld.GetEntities().Where(e => e.CreatureType == CreatureTypeEnum.Plant2).Count().ToString();
 
         // Disable MessageQueue for first big 
         _dawnClient.IsMessageQueueRunning = false;
@@ -135,6 +138,7 @@ public class DawnEntityManager : MonoBehaviour
         GUI.Label(new Rect(0, start + 30, Screen.width, Screen.height), "#predators2: " + _debugInfoNrOfPredators2);
         GUI.Label(new Rect(0, start + 40, Screen.width, Screen.height), "#rabbits: " + _debugInfoNrOfRabbits);
         GUI.Label(new Rect(0, start + 50, Screen.width, Screen.height), "#plants: " + _debugInfoNrOfPlants);
+        GUI.Label(new Rect(0, start + 60, Screen.width, Screen.height), "#plants2: " + _debugInfoNrOfPlants2);
     }
 
     
@@ -178,6 +182,9 @@ public class DawnEntityManager : MonoBehaviour
                         break;
                     case CreatureTypeEnum.Plant:
                         template = PlantTemplate;
+                        break;
+                    case CreatureTypeEnum.Plant2:
+                        template = Plant2Template;
                         break;
                 }
                 break;

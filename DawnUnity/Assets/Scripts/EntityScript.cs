@@ -19,6 +19,9 @@ public class EntityScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        if (Entity == null)
+            return;
+
         // Invert z-axis = convert left-handed to right-handed orientation
         //transform.position = new Vector3(Entity.PlaceX, 0, -Entity.PlaceY);
         //transform.eulerAngles = new Vector3(0, (float)RadianToDegree(Entity.Angle), 0);
