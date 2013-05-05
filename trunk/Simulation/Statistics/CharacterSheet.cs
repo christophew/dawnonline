@@ -27,7 +27,7 @@ namespace DawnOnline.Simulation.Statistics
         public double RestCoolDown { get; internal set; }
         public double RegenCoolDown { get; internal set; }
 
-        internal double FoodValue { get; set; }
+        internal int FoodValue { get; set; }
 
         // Personal during livetime
         public double Score { get; internal set; }
@@ -45,7 +45,7 @@ namespace DawnOnline.Simulation.Statistics
 
         // Plant specific
         public double AutoResourceGatherCoolDown { get; internal set; }
-        public double AutoResourceGatherValue { get; internal set; }
+        public int AutoResourceGatherValue { get; internal set; }
 
 
         // Prototype Persistency layer

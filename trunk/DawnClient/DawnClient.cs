@@ -274,7 +274,8 @@ namespace DawnClient
                 case (byte)EventCode.WorldInfo:
                     {
                         // World information
-                        DawnWorld.WorldInformation = (string) eventData.Parameters[0];
+                        //DawnWorld.WorldInformation = (string) eventData.Parameters[0];
+                        DawnWorld.ResourcesInGround = (int)eventData.Parameters[0];
 
                         break;
                     }

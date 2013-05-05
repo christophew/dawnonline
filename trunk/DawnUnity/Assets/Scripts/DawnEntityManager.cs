@@ -139,6 +139,7 @@ public class DawnEntityManager : MonoBehaviour
         GUI.Label(new Rect(0, start + 40, Screen.width, Screen.height), "#rabbits: " + _debugInfoNrOfRabbits);
         GUI.Label(new Rect(0, start + 50, Screen.width, Screen.height), "#plants: " + _debugInfoNrOfPlants);
         GUI.Label(new Rect(0, start + 60, Screen.width, Screen.height), "#plants2: " + _debugInfoNrOfPlants2);
+        GUI.Label(new Rect(0, start + 70, Screen.width, Screen.height), "#resources: " + _dawnClient.DawnWorld.ResourcesInGround);
     }
 
     

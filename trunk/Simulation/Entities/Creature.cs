@@ -290,7 +290,7 @@ namespace DawnOnline.Simulation.Entities
                 MyEnvironment.KillCreature(this);
 
                 // Add treasure where creature is killed
-                var treasure = ObstacleBuilder.CreateTreasure(CreatureType);
+                var treasure = ObstacleBuilder.CreateTreasure(CreatureType, this.CharacterSheet.FoodValue); // Add the gathered resources to the FoodValue as well?
                 MyEnvironment.AddObstacle(treasure, position);
 
                 return;

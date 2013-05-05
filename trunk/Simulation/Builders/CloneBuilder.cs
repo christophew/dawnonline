@@ -48,7 +48,8 @@ namespace DawnOnline.Simulation.Builders
                     }
                 case EntityTypeEnum.Treasure:
                     {
-                        var obstacle = ObstacleBuilder.CreateTreasure(creatureType, false) as Obstacle;
+                        // We don't care for FoodValue & collision on clones (only relevent on server)
+                        var obstacle = ObstacleBuilder.CreateTreasure(creatureType, 0 , false) as Obstacle;
                         Debug.Assert(obstacle != null);
                         obstacle.Id = id;
                         return obstacle;

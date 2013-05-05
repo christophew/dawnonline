@@ -33,10 +33,17 @@ namespace DawnOnline.Simulation
         List<IExplosion> _explosions = new List<IExplosion>();
         Dictionary<Sound.SoundTypeEnum, List<Sound>> _soundsPerType = new Dictionary<Sound.SoundTypeEnum, List<Sound>>();
 
+        public int ResourcesInGround { get; internal set; }
+
 
         private Environment()
         {
             FarSeerWorld = new World(Vector2.Zero);
+        }
+
+        public void AddResourcesInGround(int amount)
+        {
+            ResourcesInGround += amount;
         }
 
         public bool AddCreature(ICreature creature, Vector2 origin, double angle, bool checkIntersect = true)
@@ -352,6 +359,8 @@ namespace DawnOnline.Simulation
 
         public void ApplyAging(int ageImpact)
         {
+            // TODO: this is a bit too simple
+
             foreach (var creature in GetCreatures())
             {
                 if (creature.CreatureType != CreatureTypeEnum.Avatar)
@@ -359,6 +368,22 @@ namespace DawnOnline.Simulation
                     creature.CharacterSheet.Damage.Increase(ageImpact);
                 }
             }
+        }
+
+        public int GatherResources(int maxRourcesToGather)
+        {
+            // TODO: some real logic?
+            var extractedRources = Globals.Radomizer.Next(maxRourcesToGather + 1);
+
+            if (extractedRources > ResourcesInGround)
+            {
+                var old = ResourcesInGround;
+                ResourcesInGround = 0;
+                return old;
+            }
+
+            ResourcesInGround -= extractedRources;
+            return extractedRources;
         }
 
         public void WrathOfGod(int nrKilled)
