@@ -14,6 +14,8 @@ namespace DawnClient
         private Dictionary<int, DawnClientEntity> _entities = new Dictionary<int, DawnClientEntity>();
         private HashSet<int> _removed = new HashSet<int>();
 
+        public int ResourcesInGround { get; internal set; }
+
 
         internal void UpdateEntity(DawnClientEntity entity)
         {

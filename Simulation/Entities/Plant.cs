@@ -24,7 +24,7 @@ namespace DawnOnline.Simulation.Entities
                 //var direction = new Vector3()
 
                 // Add treasure where creature is killed
-                var treasure = ObstacleBuilder.CreateTreasure(CreatureType);
+                var treasure = ObstacleBuilder.CreateTreasure(CreatureType, CharacterSheet.FoodValue);
                 var angle = Globals.Radomizer.NextDouble()*MathHelper.TwoPi;
                 MyEnvironment.AddObstacle(treasure, position, angle);
 
@@ -47,7 +47,9 @@ namespace DawnOnline.Simulation.Entities
             if ((DateTime.Now - _actionQueue.LastAutoResourceGainTime).TotalSeconds < CharacterSheet.AutoResourceGatherCoolDown)
                 return;
 
-            CharacterSheet.Resource.Increase((int)CharacterSheet.AutoResourceGatherValue);
+            var resourcesGathered = MyEnvironment.GatherResources(CharacterSheet.AutoResourceGatherValue);
+            CharacterSheet.Resource.Increase(resourcesGathered);
+
             _actionQueue.LastAutoResourceGainTime = DateTime.Now;
         }
     }

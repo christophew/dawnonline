@@ -64,7 +64,7 @@ namespace DawnOnline.Simulation.Builders
             return obstacle;
         }
 
-        public static IEntity CreateTreasure(CreatureTypeEnum creatureType, bool bindCollision = true)
+        public static IEntity CreateTreasure(CreatureTypeEnum creatureType, int foodValue, bool bindCollision = true)
         {
             var treasure = new Food();
 
@@ -94,6 +94,8 @@ namespace DawnOnline.Simulation.Builders
             treasure.Place = placement;
             treasure.EntityType = EntityTypeEnum.Treasure;
             treasure.CreatureType = creatureType;
+            treasure.FoodValue = foodValue;
+
             placement.Fixture.UserData = treasure;
 
             return treasure;

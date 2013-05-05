@@ -11,6 +11,8 @@ namespace DawnOnline.Simulation.Entities
 {
     internal class Food : Obstacle
     {
+        internal int FoodValue { get; set; }
+
         private DateTime _creationTime = DateTime.Now;
         private double _timeToLive = 5000;
 
@@ -18,6 +20,8 @@ namespace DawnOnline.Simulation.Entities
 
         public override void Update(double timeDelta)
         {
+            Debug.Assert(Globals.GetInstanceId() == 0, "Should be executed on server");
+
             if ((DateTime.Now - _creationTime).TotalMilliseconds < _timeToLive)
                 return;
 
@@ -29,16 +33,21 @@ namespace DawnOnline.Simulation.Entities
             environment.RemoveObstacle(this);
 
             // Grow plant
-            // Experiment: Conditional Grow plant = when we have enough room
-            if (EnoughResourcesAvailable())
+            // Experiment: Conditional Grow plant 
+            if (ShouldSpawn())
             {
                 // TODO: make this generic
                 var plant = this.CreatureType == CreatureTypeEnum.Plant2 ?  CreatureBuilder.CreatePlant2() : CreatureBuilder.CreatePlant();
                 environment.AddCreature(plant, position, 0);
             }
+            else
+            {
+                // release resources
+                environment.ResourcesInGround += FoodValue;
+            }
         }
 
-        private bool EnoughResourcesAvailable()
+        private bool ShouldSpawn()
         {
             // TEMP
             return Globals.Radomizer.Next(10) == 0;

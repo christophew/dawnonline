@@ -144,13 +144,14 @@ namespace MyApplication
             // Broadcast changes
             {
                 // 101 = WorldInformation
-                //{
-                //    var data = new Dictionary<byte, object>();
-                //    data[0] = _dawnWorldInstance.GetWorldInformation();
-                //    var eData = new EventData((byte)EventCode.WorldInfo, data);
-                //    var sendParameters = new SendParameters { Unreliable = true };
-                //    this.PublishEvent(eData, this.Actors, sendParameters);
-                //}
+                {
+                    var data = new Dictionary<byte, object>();
+                    //data[0] = _dawnWorldInstance.GetWorldInformation();
+                    data[0] = (int)_dawnWorldInstance.Environment.ResourcesInGround;
+                    var eData = new EventData((byte)EventCode.WorldInfo, data);
+                    var sendParameters = new SendParameters { Unreliable = true };
+                    this.PublishEvent(eData, this.Actors, sendParameters);
+                }
 
 
                 var currentEntities = GetAllRelevantEntities();
