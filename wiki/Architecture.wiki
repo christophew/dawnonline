@@ -37,3 +37,7 @@ The agent controllers (AgentMatrix nodes) are perfectly scalable. Just deploy mo
 The socket server itself is capable of handling a lot more messages then currently required, but is in itself also available in a load balanced mode.
 
 The first expected performance bottleneck is probably the physics engine. This problem will be handled when it is encountered.
+
+== AgentMatrix ==
+
+An AgentMatrix represents the AI controller of a collection of agents. It uses timeslicing to guarantee a stable response time, and bulk message transport to optimize the network load. 
