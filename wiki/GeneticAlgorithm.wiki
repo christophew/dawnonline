@@ -1,6 +1,6 @@
 #summary How the brain learns his tricks.
 
-= Introduction =
+= The metaphor =
 
 All creatures belonging to the same family are equal. They posses the same neural networks in their brain. Therefor, it is not the creatures themselves that evolve, it is the SpawnPoint that evolves.
 
@@ -25,6 +25,8 @@ Each AgentMatrix can control a fixed amount of SpawnPoints. When 1 SpawnPoint is
 
 Which are the best SpawnPoints in the population?
 
+The driving force of the ecosystem is the foodchain. Enemies need to be killed for their resources, receives need to be gathered and delivered to the SpawnPoints.
 
+One single criteria satisfies this driving force: *the amount of resources delivered to the SpawnPoint*.
 
-
+This criteria is out fitness function.
