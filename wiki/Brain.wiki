@@ -36,7 +36,7 @@ This results into 25 input nodes (and an equal amount of reinforcement nodes).
 
 The hidden layer consists of an equal amount of nodes as the input layer (= 2x the input nodes).
 
-== Output layer ==
+== Output layer for the behaviour modes ==
 
 We only have 2 ouput nodes:
  * Turn
@@ -46,7 +46,12 @@ But, the output layer also contains the 25 reinforcement output nodes.
 
 = 27 output nodes
 
+== Output layer for the behaviour controller ==
 
+The behaviour controller uses the same amount of input & hidden nodes.
+But, it uses 3 specific ouput nodes:
+ * ForageWeight
+ * DeliverWeight
+ * AttackWeight
 
-
-
+... of course, again combined with the 25 reinforcement nodes.
