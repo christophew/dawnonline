@@ -15,7 +15,7 @@ https://docs.google.com/drawings/d/1fHKhwBHa2Fk8tQwUc3xjB0KFyz63aYjOf399IMKT9Qg/
 The behaviour mode networks are all have an identical topology.
 The behaviour controller slightly differences: it has the same amount of input nodes, but 3 specific output nodes, each favouring a different behaviour.
 
-Note that 'forage', 'attack' & 'deliver' are arbitrary names that are only valid for the initial brain. As the brain is free to evolve in whatever possible way, the purpose of each behaviour will also change over time.
+*Note that 'forage', 'attack' & 'deliver' are arbitrary names that are only valid for the initial brain. As the brain is free to evolve in whatever possible way, the purpose of each behaviour will also change over time.*
 
 
 = Neural network =
