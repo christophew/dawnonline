@@ -1,4 +1,4 @@
-# How the ecosystem works
+#How the ecosystem works
 
 = Introduction =
 
