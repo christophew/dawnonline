@@ -38,3 +38,4 @@ An agent has a number of input sensors to their disposal:
 The most useful member function for the neural agents is: *WeightedDistanceToFirstVisible* 
 It will return the distance to the first visible entity of a specific type in the visual reach of the sensor. The result is weigthed so it can easily be used as input for a neural network.
 
+https://docs.google.com/drawings/d/1fmpAWc9vAEhYBsAKkaPDsrW2Y57f178gT_KHmNQ2h0U/pub?w=683&h=269&nonsense=dummy.jpg
