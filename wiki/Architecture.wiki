@@ -19,3 +19,21 @@ The coherence between the different technical components:
 = Overview =
 
 https://docs.google.com/drawings/d/1XGgyeVJcLfCcG-q7bQSUm6C6E9LnM1F1Y7mVxayyRbk/pub?w=920&h=645&nonsense=dummy.png
+
+== Deployment ==
+
+Each node in the overview above can be deployed on a separate machine.
+
+It is advised to place the front-end on a different machine than the Server and AgentMatrixes. 
+
+== Connectivity ==
+
+The nodes communicate using Photon Socket Server technology. 
+
+== Scalability ==
+
+The agent controllers (AgentMatrix nodes) are perfectly scalable. Just deploy more instances on different machines.
+
+The socket server itself is capable of handling a lot more messages then currently required, but is in itself also available in a load balanced mode.
+
+The first expected performance bottleneck is probably the physics engine. This problem will be handled when it is encountered.
