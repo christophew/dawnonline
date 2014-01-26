@@ -8,3 +8,13 @@ The brain consists of a collection of neural networks:
 
 
 = Brain design =
+
+https://docs.google.com/drawings/d/1fHKhwBHa2Fk8tQwUc3xjB0KFyz63aYjOf399IMKT9Qg/pub?w=739&h=294&nonsense=dummy.jpg
+
+
+The behaviour mode networks are all have an identical topology.
+The behaviour controller slightly differences: it has the same amount of input nodes, but 3 specific output nodes, each favouring a different behaviour.
+
+= Neural network =
+
+The neural network used is a 3 layer feedforward network with a large number of reinforcement nodes (see: http://en.wikipedia.org/wiki/Artificial_neural_network#Reinforcement_learning).
