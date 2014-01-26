@@ -43,5 +43,3 @@ A family consists of 1 SpawnPoint & all creatures created by this SpawnPoint.
  * A plant will extract its necessary resources from the environment itself.
  * If a plant has extracted enough resources from the environment, a 'seed'-resource can be generated
 
-
-
