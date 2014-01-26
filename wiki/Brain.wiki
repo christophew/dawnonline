@@ -1,0 +1,10 @@
+#summary The brain of the agents.
+
+= Introduction =
+
+The brain consists of a collection of neural networks:
+ * a nr of behaviour neural networks
+ * a behaviour controller who decides which behaviour is active
+
+
+= Brain design =
