@@ -1,0 +1,13 @@
+#How the ecosystem works
+
+= Introduction =
+
+The coherence between the different ecosystem entities:
+ * spawn point
+ * creature
+ * resources
+
+
+= Details =
+
+TODO
