@@ -3,5 +3,5 @@
 The brain of the creatures (aka agents) is defined by:
  * Input Sensors: [InputSensors]
  * Output controls: [OutputControls]
- * Behaviour modes
+ * Brain: [Brain]
  * Genetic algorithm
