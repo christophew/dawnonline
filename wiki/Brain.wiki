@@ -18,3 +18,17 @@ The behaviour controller slightly differences: it has the same amount of input n
 = Neural network =
 
 The neural network used is a 3 layer feedforward network with a large number of reinforcement nodes (see: http://en.wikipedia.org/wiki/Artificial_neural_network#Reinforcement_learning).
+
+== Input nodes ==
+
+In the current setup, each agent has 3 eye sensors, 1 nose, 1 bumper, 3 monitors (health, stamina & resources gathered) and 2 random generators.
+
+The eye sensors are configured to look for:
+ * Prey: do I see something I can kill?
+ * Resources: do I see something I can gather?
+ * Walls: do I see a wall?
+ * Family: do I see a member of my family?
+ * SpawnPoint: do I see my SpawnPoint?
+
+This results into 25 input nodes.
+
