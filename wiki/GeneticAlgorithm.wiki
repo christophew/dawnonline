@@ -1,0 +1,30 @@
+#summary How the brain learns his tricks.
+
+= Introduction =
+
+All creatures belonging to the same family are equal. They posses the same neural networks in their brain. Therefor, it is not the creatures themselves that evolve, it is the SpawnPoint that evolves.
+
+Again we take the metaphor of a bee hive. The bees won't evolve, it will be the queen that evolves.
+
+Topics:
+ * Replication
+ * Fitness function
+ * Mutation
+ * Cross-over
+ * Repository
+
+
+= Replication =
+
+When do we add a new SpawnPoint to the environment?
+
+Each AgentMatrix can control a fixed amount of SpawnPoints. When 1 SpawnPoint is destroyed, there is room for a new one.
+
+
+= Fitness function =
+
+Which are the best SpawnPoints in the population?
+
+
+
+
