@@ -1,0 +1,21 @@
+#summary The general solution architecture
+
+= Introduction =
+
+The coherence between the different technical components:
+ * DawnServer: 
+  * the authoritative server
+  * the the socket server app
+ * User clients:
+  * UnityClient
+  * MogreClient
+  * ConsoleClient
+  * MonitoringClient
+  * ...
+ * AgentMatrix: 
+  * the AI controller for a collection of SpawnPoint & Creatures
+
+
+= Overview =
+
+https://docs.google.com/drawings/d/1XGgyeVJcLfCcG-q7bQSUm6C6E9LnM1F1Y7mVxayyRbk/pub?w=920&h=645&nonsense=dummy.png
