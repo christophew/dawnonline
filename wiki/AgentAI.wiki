@@ -1,0 +1,40 @@
+#summary The AI system for the agents.
+
+= Introduction =
+
+The brain of the creatures (aka agents) is defined by:
+ * Input Sensors
+ * Output controls
+ * Behaviour modes
+ * Genetic algorithm
+
+
+= Input sensors =
+
+How does an agent perceive the environment?
+
+An agent has a number of input sensors to their disposal:
+ * IEye: visual recognition sensor
+ * IBumper: collision detection sensor
+
+== IEye ==
+
+{{{
+    public interface IEye
+    {
+        double DistanceToFirstVisible(List<IEntity> sortedEntities, bool useLineOfSight = true);
+        double WeightedDistanceToFirstVisible(List<IEntity> sortedEntities, bool useLineOfSight = true);
+
+        bool SeesCreature(ICreature creature);
+        bool SeesACreature(List<CreatureTypeEnum> species, IEntity spawnPointToExclude);
+        bool SeesACreature(List<CreatureTypeEnum> species);
+        bool SeesACreature(CreatureTypeEnum specy);
+
+        bool SeesAnObstacle(EntityTypeEnum entityType);
+    }
+
+}}}
+
+The most useful member function for the neural agents is: *WeightedDistanceToFirstVisible* 
+It will return the distance to the first visible entity of a specific type in the visual reach of the sensor. The result is weigthed so it can easily be used as input for a neural network.
+
