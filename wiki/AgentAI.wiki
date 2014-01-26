@@ -48,6 +48,34 @@ By slightly changing the use of an IEye, it can also be used as a nose to retrie
 
 = by ignoring the line-of-sight rules
 
-{{{ var distance = _nose.WeightedDistanceToFirstVisible(spawnpoint, false); }}}
+{{{ 
+var distance = _nose.WeightedDistanceToFirstVisible(spawnpoint, false);
+}}}
 
 https://docs.google.com/drawings/d/1BtDsL1CRyrIrriEvKdgIPUgGzEopYm385SBInroqjxc/pub?w=318&h=338&nonsense=dummy.jpg
+
+== IBumper ==
+
+{{{
+    public interface IBumper
+    {
+        bool Hit { get; }
+
+        void Clear();
+    }
+}}}
+
+A bumper works in cooperation with the underlying physics engine.
+We attach a special FarseerFixture in front of the creature to handle collision detection:
+
+{{{
+        internal Bumper(Creature creature, Vector2 offset)
+        {
+            _fixture = FixtureFactory.AttachCircle(_radius, 0, creature.Place.Fixture.Body, offset, this);
+            _fixture.IsSensor = true;
+            _fixture.OnCollision += OnCollision;
+        }
+
+}}}
+
+https://docs.google.com/drawings/d/1KFcjSdnQoIhgrKxXyD3GGiDxArtzC81dwA8I_lcaIH0/pub?w=437&h=273&nonsense=dummy.jpg
