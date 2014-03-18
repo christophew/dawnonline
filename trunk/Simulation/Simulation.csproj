@@ -130,9 +130,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Farseer Physics Engine 3.3.1 XNA\Farseer Physics XNA.csproj">
-      <Project>{DA87EB61-D672-4A20-B0E7-D3E488C69D4C}</Project>
-      <Name>Farseer Physics XNA</Name>
+    <ProjectReference Include="..\Farseer Physics Engine\Farseer Physics Engine.csproj">
+      <Project>{92791977-B816-40D8-92B4-94697D299997}</Project>
+      <Name>Farseer Physics Engine</Name>
     </ProjectReference>
     <ProjectReference Include="..\PerformanceMonitoring\PerformanceMonitoring.csproj">
       <Project>{C529958B-927A-4DCB-834C-5765F831F04A}</Project>
