@@ -6,8 +6,8 @@ using DawnOnline.Simulation.Builders;
 using DawnOnline.Simulation.Entities;
 using DawnOnline.Simulation.Senses;
 using DawnOnline.Simulation.Tools;
-using Microsoft.Xna.Framework;
 using System.Linq;
+using Microsoft.Xna.Framework;
 using SharedConstants;
 
 namespace DawnOnline.AgentMatrix.Brains

@@ -53,7 +53,6 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\nunit.framework.dll</HintPath>
@@ -131,9 +130,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Farseer Physics Engine 3.3.1 XNA\Farseer Physics XNA.csproj">
-      <Project>{DA87EB61-D672-4A20-B0E7-D3E488C69D4C}</Project>
-      <Name>Farseer Physics XNA</Name>
+    <ProjectReference Include="..\Farseer Physics Engine 3.5\Farseer Physics.csproj">
+      <Project>{A4610E4C-DD34-428B-BABB-779CA0B5993A}</Project>
+      <Name>Farseer Physics</Name>
     </ProjectReference>
     <ProjectReference Include="..\PerformanceMonitoring\PerformanceMonitoring.csproj">
       <Project>{C529958B-927A-4DCB-834C-5765F831F04A}</Project>

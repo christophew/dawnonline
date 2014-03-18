@@ -41,7 +41,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\PhotonServer32\lib\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Photon.SocketServer, Version=3.0.24.3243, Culture=neutral, PublicKeyToken=48c2fa3b6988090e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\PhotonServer32\lib\Photon.SocketServer.dll</HintPath>
@@ -81,6 +80,10 @@
     <None Include="log4net.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Farseer Physics Engine 3.5\Farseer Physics.csproj">
+      <Project>{A4610E4C-DD34-428B-BABB-779CA0B5993A}</Project>
+      <Name>Farseer Physics</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PerformanceMonitoring\PerformanceMonitoring.csproj">
       <Project>{C529958B-927A-4DCB-834C-5765F831F04A}</Project>
       <Name>PerformanceMonitoring</Name>
