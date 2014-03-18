@@ -209,6 +209,13 @@
     <Compile Include="Common\TextureTools\MSTerrain.cs" />
     <Compile Include="Common\TextureTools\TextureConverter.cs" />
     <Compile Include="Common\Vertices.cs" />
+    <Compile Include="Common\XnaClasses\Curve.cs" />
+    <Compile Include="Common\XnaClasses\CurveKey.cs" />
+    <Compile Include="Common\XnaClasses\CurveKeyCollection.cs" />
+    <Compile Include="Common\XnaClasses\MathHelper.cs" />
+    <Compile Include="Common\XnaClasses\Matrix.cs" />
+    <Compile Include="Common\XnaClasses\Vector2.cs" />
+    <Compile Include="Common\XnaClasses\Vector3.cs" />
     <Compile Include="Controllers\AbstractForceController.cs" />
     <Compile Include="Controllers\BuoyancyController.cs" />
     <Compile Include="Controllers\Controller.cs" />
