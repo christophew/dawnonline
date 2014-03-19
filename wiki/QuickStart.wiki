@@ -46,6 +46,8 @@ Possible causes:
 Prebuild 3D client.
 Start this after your server. Will give you an overview of first person view of the eco-system.
 
+Sometimes this client has problems connecting to the server. When you get a connection error, just try again.
+
 Keys:
  * use F1/F2 to switch view
  * use numeric keyboard to control camera in overhead view 
