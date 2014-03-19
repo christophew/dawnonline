@@ -32,11 +32,11 @@ Startup using the PhotonControl:
 Simple console app to monitor the dawnserver.
 Start the exe to test whether your server is up and running.
 
-If not... check the phtoton logfiles.
+If not... start cursing and ask for help.
 Possible causes:
-* could not find "dawnserver" (make sure it is in your host file)
-* port 5055 or port 9090 are not accessible or used by other apps
-* firewall settings, virus checkers, UAC policies, ...
+ * could not find "dawnserver" (make sure it is in your host file)
+ * port 5055 or port 9090 are not accessible or used by other apps
+ * firewall settings, virus checkers, UAC policies, ...
 
 == UnityClient ==
 
