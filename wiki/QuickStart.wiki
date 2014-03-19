@@ -32,6 +32,9 @@ Startup using the PhotonControl:
 Simple console app to monitor the dawnserver.
 Start the exe to test whether your server is up and running.
 
+After the necessary connection messages, you should start getting these kind lines:
+ --> Total: 592, Walls: 540, Boxes: 0, Creatures: 52, SpawnPoints: 0
+
 If not... start cursing and ask for help.
 Possible causes:
  * could not find "dawnserver" (make sure it is in your host file)
