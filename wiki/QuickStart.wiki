@@ -1,0 +1,66 @@
+#summary Quickly setup a release.
+
+= Introduction =
+
+Just get the thing running, without all the hassle of compiling, etc...
+
+= HostFile =
+
+
+
+
+= Release folder =
+
+I included a \Release folder with all files necessary to get up and running.
+
+
+== DawnServer == 
+
+The first thing to start.
+
+Contains the Photon server app.
+
+Startup using the PhotonControl:
+ # Start photon control: \Release\DawnServer\bin_win32\PhotonControl.exe
+ # Use the system tray menu to start the DawnServer: \Default\Start as application
+
+== DawnClientConsole ==
+
+Simple console app to monitor the dawnserver.
+Start the exe to test if your server is up and running.
+
+If not... check the phtoton logfiles.
+Possible causes:
+* could not find "dawnserver" (make sure it is in your host file)
+* port 5055 or port 9090 are not accessible or used by other apps
+* firewall settings, virus checkers, UAC policies, ...
+
+== UnityClient ==
+
+Prebuild 3D client.
+Start this after your server. Will give you an overview of first person view of the eco-system.
+
+Keys:
+ * use F1/F2 to switch view
+ * use numeric keyboard to control camera in overhead view 
+  * move: 4, 8, 6, 2
+  * zoom: 7, 9
+ * use cursor to move (best in first person view)
+
+== DawnAgentMatrix ==
+
+Now it's time to populate the eco-system.
+
+Start as many "AgentMatrix.exe" consoles as your machine can handle.
+Each will have 5 spawnpoints to control, and all it's spawned creatures.
+
+The population for the genetic algorithms is always autosaved/loaded. 
+= every time you start an AgentMatrix, the creatures will get better
+
+
+
+
+
+.... enjoy
+
+
