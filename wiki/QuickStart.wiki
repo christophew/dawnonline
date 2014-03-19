@@ -30,7 +30,7 @@ Startup using the PhotonControl:
 == DawnClientConsole ==
 
 Simple console app to monitor the dawnserver.
-Start the exe to test if your server is up and running.
+Start the exe to test whether your server is up and running.
 
 If not... check the phtoton logfiles.
 Possible causes:
