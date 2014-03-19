@@ -6,7 +6,10 @@ Just get the thing running, without all the hassle of compiling, etc...
 
 = HostFile =
 
+Add the location of the dawnserver to your hostfile.
 
+Hostfile example location: C:\Windows\System32\drivers\etc\hosts
+For a local server: 127.0.0.1 dawnserver
 
 
 = Release folder =
@@ -62,5 +65,3 @@ The population for the genetic algorithms is always autosaved/loaded.
 
 
 .... enjoy
-
-
