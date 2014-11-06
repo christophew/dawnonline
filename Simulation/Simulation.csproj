@@ -110,6 +110,7 @@
     <Compile Include="Sound.cs" />
     <Compile Include="Statistics\CharacterSheet.cs" />
     <Compile Include="Statistics\Monitor.cs" />
+    <Compile Include="Statistics\ScoreStatistics.cs" />
     <Compile Include="Tools\MathTools.cs" />
   </ItemGroup>
   <ItemGroup>

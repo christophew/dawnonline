@@ -40,7 +40,8 @@ public class CreatureScript : MonoBehaviour
         var labelRect = new Rect(screenPos.x, Screen.height - screenPos.y, Screen.width, Screen.height);
 
         //var label = string.Format("({0}, {1})", (int)transform.position.x, (int)transform.position.z);
-        var label = Entity.DamagePercent + "/" + Entity.ResourcePercent;
+        //var label = Entity.DamagePercent + "/" + Entity.ResourcePercent;
+        var label = Entity.Score == 0 ? null  : Entity.Score.ToString();
 
         GUI.Label(labelRect, label);
     }

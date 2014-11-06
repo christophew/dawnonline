@@ -11,7 +11,7 @@ using SharedConstants;
 namespace DawnOnline.Simulation.Builders
 {
     /// <summary>
-    /// Used to recreate a Simution world starting from another simution world
+    /// Used to recreate a Simulation world starting from another simulation world
     /// </summary>
     public static class CloneBuilder
     {
@@ -49,7 +49,7 @@ namespace DawnOnline.Simulation.Builders
                 case EntityTypeEnum.Treasure:
                     {
                         // We don't care for FoodValue & collision on clones (only relevent on server)
-                        var obstacle = ObstacleBuilder.CreateTreasure(creatureType, 0 , false) as Obstacle;
+                        var obstacle = ObstacleBuilder.CreateClientSideTreasure(creatureType) as Obstacle;
                         Debug.Assert(obstacle != null);
                         obstacle.Id = id;
                         return obstacle;
@@ -88,7 +88,7 @@ namespace DawnOnline.Simulation.Builders
             creature.CharacterSheet.Damage.PercentFilled = damagePercent;
             creature.CharacterSheet.Fatigue.PercentFilled = fatiguePercent;
             creature.CharacterSheet.Resource.PercentFilled = resourcePercent;
-            creature.CharacterSheet.Score = score;
+            creature.CharacterSheet.SetFixedScore(score);
         }
     }
 }

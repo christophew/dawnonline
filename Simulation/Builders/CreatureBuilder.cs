@@ -77,6 +77,7 @@ namespace DawnOnline.Simulation.Builders
             critter.CharacterSheet.MeleeRange = 2.0;
             critter.CharacterSheet.RangeDamage = 0;
             critter.CharacterSheet.UseAutoAttack = true;
+            critter.CharacterSheet.FoodValue = 15;
 
             return critter;
         }
@@ -96,6 +97,7 @@ namespace DawnOnline.Simulation.Builders
             critter.CharacterSheet.MeleeRange = 3;
             critter.CharacterSheet.RangeDamage = 0;
             critter.CharacterSheet.UseAutoAttack = true;
+            critter.CharacterSheet.FoodValue = 20;
 
             critter.CharacterSheet.Armour = 2;
 
@@ -228,6 +230,7 @@ namespace DawnOnline.Simulation.Builders
             spawnPoint.CharacterSheet.FatigueRecovery = 25;
             spawnPoint.CharacterSheet.Armour = 5;
             //spawnPoint.CharacterSheet.Armour = 100;
+            spawnPoint.CharacterSheet.FoodValue = 20;
 
             return spawnPoint;
         }
@@ -246,6 +249,7 @@ namespace DawnOnline.Simulation.Builders
             spawnPoint.CharacterSheet.FatigueRecovery = 25;
             spawnPoint.CharacterSheet.Armour = 5;
             //spawnPoint.CharacterSheet.Armour = 100;
+            spawnPoint.CharacterSheet.FoodValue = 30;
 
             return spawnPoint;
         }
@@ -264,6 +268,7 @@ namespace DawnOnline.Simulation.Builders
             spawnPoint.CharacterSheet.FatigueRecovery = 25;
             spawnPoint.CharacterSheet.Armour = 3;
             //spawnPoint.CharacterSheet.Armour = 100;
+            spawnPoint.CharacterSheet.FoodValue = 15;
 
             return spawnPoint;
         }

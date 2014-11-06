@@ -27,11 +27,35 @@ namespace DawnOnline.Simulation.Statistics
         public double RestCoolDown { get; internal set; }
         public double RegenCoolDown { get; internal set; }
 
-        internal int FoodValue { get; set; }
+        public int FoodValue { get; internal set; }
 
         // Personal during livetime
-        public double Score { get; internal set; }
         public int Generation { get; internal set; }
+
+        #region TEMP: NEEDS REDO
+        public double Score { get; internal set; }
+        private double _fixedScore;
+        private bool _isFixedScore = false;
+        public void UpdateScore()
+        {
+            if (_isFixedScore)
+            {
+                // TO VERIFY
+                throw new InvalidOperationException("VERIFY: Should this be possible? or should 'UpdateScore' not be called in this scenario");
+
+                Score = _fixedScore;
+                return;
+            }
+
+            // TODO: replace by delegate??
+            //Score = Statistics.ResourcesDelivered;
+        }
+        internal void SetFixedScore(double score)
+        {
+            _fixedScore = score;
+            _isFixedScore = true;
+        }
+        #endregion
 
         // Monitors
         public Monitor Fatigue { get; internal set; }
@@ -48,16 +72,20 @@ namespace DawnOnline.Simulation.Statistics
         public int AutoResourceGatherValue { get; internal set; }
 
 
+        public ScoreStatistics Statistics { get; private set; }
+
         // Prototype Persistency layer
         public void Restore(double score, int generation)
         {
-            Score = score;
             Generation = generation;
+            SetFixedScore(score);
         }
 
 
         internal CharacterSheet()
         {
+            Statistics = new ScoreStatistics();
+
             Fatigue = new Monitor();
             Damage = new Monitor();
             Resource = new Monitor();
