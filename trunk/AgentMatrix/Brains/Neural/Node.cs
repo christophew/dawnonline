@@ -6,6 +6,7 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
 {
     class Node
     {
+        // Bias
         private int _threshold = 0;
         internal int Threshold
         {
@@ -30,15 +31,31 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             get { return _currentValue; }
             set
             {
-                _currentValue = value;
+                // TODO: verify use of tanh instead of sigmoid
+
+
+                var scaledCurrent = ((double)value) / 25.0;         // [-100, 100] => [-4, 4]
+                var sigmoid = LogisticFunction(scaledCurrent);      // [-4, 4] => [0, 1] 
+                _currentValue = (sigmoid - 0.5) * 100.0 * 2.0;      // [0, 1] => [-0.5, 0.5] => [-1, 1] => [-100, 100]
+
+                // Validate (should no longer be possible)
+                if (_currentValue > 100)
+                    throw new InvalidOperationException("value outofbound: should no longer be possible");
+                if (_currentValue < -100)
+                    throw new InvalidOperationException("value outofbound: should no longer be possible");
 
                 // [-100, 100]
-                if (_currentValue > 100)
-                    _currentValue = 100;
-                if (_currentValue < -100)
-                    _currentValue = -100;
+                //if (_currentValue > 100)
+                //    _currentValue = 100;
+                //if (_currentValue < -100)
+                //    _currentValue = -100;
             }
         }
+
+        private static double LogisticFunction(double val)
+        {
+            return (1.0 / (1.0 + System.Math.Exp(-val)));
+        } 
 
         internal void Propagate()
         {
