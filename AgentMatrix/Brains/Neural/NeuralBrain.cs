@@ -80,7 +80,9 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
 
             var modeNetwork = ChoseCurrentMode();
 
+            // Clear history of other networks. Otherwise you would get out of context state when you switch back to those networks
             ClearReinforcementOtherModeNetworks(modeNetwork);
+
             RunNetwork(modeNetwork);
         }
 
