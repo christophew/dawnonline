@@ -279,7 +279,6 @@ namespace DawnGame
             }
         }
 
-
         private static DateTime _lastAgingApplied;
 
         public void UpdatePhysics(double timeDelta)

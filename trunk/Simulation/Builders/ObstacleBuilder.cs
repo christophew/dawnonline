@@ -64,7 +64,17 @@ namespace DawnOnline.Simulation.Builders
             return obstacle;
         }
 
-        public static IEntity CreateTreasure(CreatureTypeEnum creatureType, int foodValue, bool bindCollision = true)
+        public static IEntity CreateClientSideTreasure(CreatureTypeEnum creatureType)
+        {
+            return CreateTreasure(creatureType, 0, false);
+        }
+
+        public static IEntity CreateTreasure(CreatureTypeEnum creatureType, int foodValue)
+        {
+            return CreateTreasure(creatureType, foodValue, true);
+        }
+
+        private static IEntity CreateTreasure(CreatureTypeEnum creatureType, int foodValue, bool bindCollision)
         {
             var treasure = new Food();
 
@@ -95,6 +105,9 @@ namespace DawnOnline.Simulation.Builders
             treasure.EntityType = EntityTypeEnum.Treasure;
             treasure.CreatureType = creatureType;
             treasure.FoodValue = foodValue;
+
+            if (treasure.FoodValue == 0 && bindCollision == true)
+                throw new InvalidOperationException("No food value set for entity: " + creatureType);
 
             placement.Fixture.UserData = treasure;
 

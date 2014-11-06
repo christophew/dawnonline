@@ -235,7 +235,8 @@ namespace DawnOnline.Simulation.Entities
             CharacterSheet.Resource.Decrease(10);
 
             // Score
-            //CharacterSheet.Score += 15;
+            CharacterSheet.Statistics.NrOfSpawns++;
+
 
             // Reset actionQueue => register should only happen once
             _actionQueue.RegisterSpawn = false;
@@ -247,7 +248,13 @@ namespace DawnOnline.Simulation.Entities
             Debug.Assert(this.SpawnPoint == spawnPoint);
 
             // Score
+            // TODO refactor
             spawnPoint.CharacterSheet.Score += CharacterSheet.Resource.PercentFilled;
+
+            // Score
+            spawnPoint.CharacterSheet.Statistics.ResourcesDelivered += CharacterSheet.Resource.PercentFilled;
+            if (CharacterSheet.Resource.PercentFilled > 0.0)
+                spawnPoint.CharacterSheet.Statistics.NrOfTimesResourcesDelivered++;
 
             // Exchange resource
             spawnPoint.CharacterSheet.Resource.Increase((int)CharacterSheet.Resource.PercentFilled);
@@ -272,6 +279,9 @@ namespace DawnOnline.Simulation.Entities
         public virtual void Update(double timeDelta)
         {
             ApplyActionQueue(timeDelta);
+
+            // TO VERIFY: is this the correct place to update the score?
+            CharacterSheet.UpdateScore();
         }
 
         protected void ApplyActionQueue(double timeDelta)
@@ -279,13 +289,20 @@ namespace DawnOnline.Simulation.Entities
             // toSeconds is NOT needed for farseer updates => uses timeDelta in own update
             double toSeconds = timeDelta / 1000.0;
 
+            var spawnPointCreature = SpawnPoint as Creature;
+
             int resultingDamage = (int)Math.Max(_actionQueue.Damage - _characterSheet.Armour, 0);
             _characterSheet.Damage.Increase(resultingDamage);
             _actionQueue.Damage = 0;
+            if (spawnPointCreature != null)
+                spawnPointCreature.CharacterSheet.Statistics.DamageReceived += resultingDamage;
 
             if (_characterSheet.Damage.IsFilled)
             {
                 var position = this.Place.Position;
+
+                if (spawnPointCreature != null)
+                    spawnPointCreature.CharacterSheet.Statistics.NrOfOwnCreaturesKilled++;
 
                 MyEnvironment.KillCreature(this);
 
@@ -478,19 +495,19 @@ namespace DawnOnline.Simulation.Entities
             Environment.GetWorld().RemoveObstacle(collectable);
 
             // + health
-            _characterSheet.Damage.Decrease(10);
+            _characterSheet.Damage.Decrease(collectable.FoodValue);
 
             // + resource
-            _characterSheet.Resource.Increase(10);
+            _characterSheet.Resource.Increase(collectable.FoodValue);
 
-            // + spawnPoint energy
-            //if (SpawnPoint != null)
-            //{
-            //    var spawnPointCreature = SpawnPoint as Creature;
-            //    Debug.Assert(spawnPointCreature != null);
+            // score
+            if (SpawnPoint != null)
+            {
+                var spawnPointCreature = SpawnPoint as Creature;
+                Debug.Assert(spawnPointCreature != null);
 
-            //    spawnPointCreature.Rest();
-            //}
+                spawnPointCreature.CharacterSheet.Statistics.ResourcesGathered += collectable.FoodValue;
+            }
 
             return true;
         }
@@ -629,14 +646,16 @@ namespace DawnOnline.Simulation.Entities
 
             var target = FindCreatureToAttack(null);
             if (target != null)
+            {
                 target.MyActionQueue.Damage += _characterSheet.MeleeDamage;
 
-            // Score
-            //var spawnPoint = SpawnPoint as Creature;
-            //if (spawnPoint != null)
-            //{
-            //    spawnPoint.CharacterSheet.Score += 0.1;
-            //}
+                // Score
+                var spawnPoint = SpawnPoint as Creature;
+                if (spawnPoint != null)
+                {
+                    spawnPoint.CharacterSheet.Statistics.DamageDone += _characterSheet.MeleeDamage;
+                }
+            }
         }
 
         internal void TakeBulletDamage(Bullet bullet)
