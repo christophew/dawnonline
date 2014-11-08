@@ -48,7 +48,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AgentCreatureBuilder.cs" />
+    <Compile Include="Factories\AbstractBrainFactory.cs" />
+    <Compile Include="Factories\AgentCreatureBuilder.cs" />
     <Compile Include="AgentMatrixProgram.cs" />
     <Compile Include="AgentWorld.cs" />
     <Compile Include="Brains\AbstractBrain.cs" />
@@ -66,6 +67,8 @@
     <Compile Include="Brains\SpawnPointBrain.cs" />
     <Compile Include="Brains\TestBrain.cs" />
     <Compile Include="Brains\TurretBrain.cs" />
+    <Compile Include="Factories\HardcodedBrainFactory.cs" />
+    <Compile Include="Factories\NeuralBrainFactory.cs" />
     <Compile Include="Repository\CreatureRepository.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

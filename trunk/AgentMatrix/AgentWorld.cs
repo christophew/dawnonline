@@ -7,6 +7,7 @@ using System.Text;
 using DawnClient;
 using DawnOnline.AgentMatrix;
 using DawnOnline.AgentMatrix.Brains;
+using DawnOnline.AgentMatrix.Factories;
 using DawnOnline.AgentMatrix.Repository;
 using DawnOnline.Simulation;
 using DawnOnline.Simulation.Builders;
