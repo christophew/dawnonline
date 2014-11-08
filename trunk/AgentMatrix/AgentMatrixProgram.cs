@@ -72,7 +72,7 @@ namespace DawnOnline.AgentMatrix
 
         static void Main(string[] args)
         {
-            SetupFactories();
+            Setup(args[0]);
             CreateDawnClient();
 
             var stopWatch = new Stopwatch();
@@ -137,10 +137,20 @@ namespace DawnOnline.AgentMatrix
             _dawnClient.Disconnect(); //<- uncomment this line to see a faster disconnect/leave on the other clients.
         }
 
-        private static void SetupFactories()
+        private static void Setup(string brainType)
         {
-            //AgentCreatureBuilder.SetBrainFactory(new NeuralBrainFactory());
-            AgentCreatureBuilder.SetBrainFactory(new HardcodedBrainFactory());
+            if (string.Equals("neural", brainType, StringComparison.InvariantCultureIgnoreCase))
+            {
+                AgentCreatureBuilder.SetBrainFactory(new NeuralBrainFactory());
+                CreatureRepository.SetupRepository(brainType, true);              
+            }
+            else if (string.Equals("hardcoded", brainType, StringComparison.InvariantCultureIgnoreCase))
+            {
+                AgentCreatureBuilder.SetBrainFactory(new HardcodedBrainFactory());
+                CreatureRepository.SetupRepository(brainType, false);
+            }
+            else
+                throw new NotSupportedException();
         }
 
         private static void WriteDebugInfo(AgentWorld agentWorld)

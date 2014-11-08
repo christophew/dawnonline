@@ -11,30 +11,42 @@ namespace DawnOnline.AgentMatrix.Repository
 {
     class CreatureRepository
     {
-        private const string _path = @".\CreatureRepository\";
+        private const string _path = @".\CreatureRepository";
         private const int _maxNrOfCreaturesPerType = 100;
 
+        private string _repositoryId;
+        private bool _usePersistence = true;
+
         private static CreatureRepository _singleton;
-        private static CreatureRepository CreateOrGetSingleton()
+        public static CreatureRepository GetRepository()
         {
-            if (_singleton != null)
-                return _singleton;
-
-            InitDir(CreatureTypeEnum.Predator);
-            InitDir(CreatureTypeEnum.Predator2);
-            InitDir(CreatureTypeEnum.Rabbit);
-
-            _singleton = new CreatureRepository();
-            _singleton.Load();
+            if (_singleton == null)
+                throw new InvalidOperationException("Use SetupRepository");
             return _singleton;
         }
 
-        public static CreatureRepository GetRepository()
+        public static CreatureRepository SetupRepository(string repositoryId, bool usePersistence)
         {
-            return CreateOrGetSingleton();
+            if (_singleton != null)
+                throw new InvalidOperationException();
+
+            _singleton = new CreatureRepository();
+            _singleton._repositoryId = repositoryId;
+            _singleton._usePersistence = usePersistence;
+
+            if (_singleton._usePersistence)
+            {
+                _singleton.InitDir(CreatureTypeEnum.Predator);
+                _singleton.InitDir(CreatureTypeEnum.Predator2);
+                _singleton.InitDir(CreatureTypeEnum.Rabbit);
+
+                _singleton.Load();
+            }
+
+            return _singleton;
         }
 
-        private static void InitDir(CreatureTypeEnum creatureType)
+        private void InitDir(CreatureTypeEnum creatureType)
         {
             if (!Directory.Exists(GetPath(creatureType)))
             {
@@ -80,14 +92,14 @@ namespace DawnOnline.AgentMatrix.Repository
             return sorted;
         }
 
-        private static string GetPath(CreatureTypeEnum creatureType)
+        private string GetPath(CreatureTypeEnum creatureType)
         {
             if (creatureType == CreatureTypeEnum.Predator)
-                return _path + @"\PredatorSpawnPoint\";
+                return _path + @"\" + _repositoryId + @"\PredatorSpawnPoint\";
             if (creatureType == CreatureTypeEnum.Predator2)
-                return _path + @"\PredatorSpawnPoint2\";
+                return _path + @"\" + _repositoryId + @"\PredatorSpawnPoint2\";
             if (creatureType == CreatureTypeEnum.Rabbit)
-                return _path + @"\RabbitSpawnPoint\";
+                return _path + @"\" + _repositoryId + @"\RabbitSpawnPoint\";
 
             throw new NotSupportedException();
         }
@@ -106,6 +118,9 @@ namespace DawnOnline.AgentMatrix.Repository
 
         public void Save()
         {
+            if (!_usePersistence)
+                return;
+
             Save(CreatureTypeEnum.Predator);
             Save(CreatureTypeEnum.Predator2);
             Save(CreatureTypeEnum.Rabbit);
@@ -124,6 +139,9 @@ namespace DawnOnline.AgentMatrix.Repository
 
         public void Load()
         {
+            if (!_usePersistence)
+                return;
+
             Load(CreatureTypeEnum.Predator);
             Load(CreatureTypeEnum.Predator2);
             Load(CreatureTypeEnum.Rabbit);
