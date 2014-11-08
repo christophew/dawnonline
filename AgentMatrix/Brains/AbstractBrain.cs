@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using DawnOnline.Simulation.Brains;
@@ -25,6 +26,12 @@ namespace DawnOnline.AgentMatrix.Brains
         {}
 
         public virtual void ClearState()
+        {}
+
+        public virtual void Serialize(BinaryWriter writer)
+        {}
+
+        public virtual void Deserialize(BinaryReader reader)
         {}
 
         private bool _randomTurningLeft;

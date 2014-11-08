@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using DawnOnline.AgentMatrix.Brains;
 using DawnOnline.AgentMatrix.Brains.Neural;
+using DawnOnline.AgentMatrix.Factories;
 using DawnOnline.Simulation.Builders;
 using DawnOnline.Simulation.Entities;
 using SharedConstants;

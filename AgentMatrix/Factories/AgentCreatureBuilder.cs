@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using DawnOnline.AgentMatrix.Brains;
 using DawnOnline.AgentMatrix.Brains.Neural;
 using DawnOnline.AgentMatrix.Repository;
@@ -9,29 +6,33 @@ using DawnOnline.Simulation.Builders;
 using DawnOnline.Simulation.Entities;
 using SharedConstants;
 
-namespace DawnOnline.AgentMatrix
+namespace DawnOnline.AgentMatrix.Factories
 {
     static class AgentCreatureBuilder
     {
-        public static ICreature CreateSpawnPoint(CreatureTypeEnum specy)
-        {
-            switch (specy)
-            {
-                case CreatureTypeEnum.Predator:
-                    return CreateSpawnPoint();
-                case CreatureTypeEnum.Predator2:
-                    return CreateSpawnPoint2();
-                case CreatureTypeEnum.Rabbit:
-                    return CreateRabbitSpawnPoint();
-            }
+        private static AbstractBrainFactory _brainFactory;
 
-            throw new NotSupportedException();
+        public static void SetBrainFactory(AbstractBrainFactory brainFactory)
+        {
+            _brainFactory = brainFactory;
         }
 
-        public static ICreature CreateSpawnPoint()
+        public static ICreature CreateSpawnPoint(CreatureTypeEnum specy)
         {
-            var prototypeBrain = new NeuralBrain();
-            prototypeBrain.PredefineBehaviour();
+            if (_brainFactory == null)
+                throw new InvalidOperationException("BrainFactory not set");
+
+            var prototypeBrain = _brainFactory.CreateBrainFor(specy);
+            var prototype = CreatureBuilder.CreateCreature(EntityTypeEnum.Creature, specy, prototypeBrain);
+            var spawnPointBrain = _brainFactory.CreateSpawnPointBrain(prototype);
+            var spawnPoint = CreatureBuilder.CreateCreature(EntityTypeEnum.SpawnPoint, specy, spawnPointBrain);
+
+            return spawnPoint;
+        }
+
+        private static ICreature CreateSpawnPoint()
+        {
+            var prototypeBrain = _brainFactory.CreateBrainFor(CreatureTypeEnum.Predator);
             var prototype = CreatureBuilder.CreatePredator(prototypeBrain);
 
             var spawnPointBrain = new SpawnPointBrain(prototype);
@@ -42,10 +43,9 @@ namespace DawnOnline.AgentMatrix
             return newSpawnPoint;
         }
 
-        public static ICreature CreateSpawnPoint2()
+        private static ICreature CreateSpawnPoint2()
         {
-            var prototypeBrain = new NeuralBrain();
-            prototypeBrain.PredefineBehaviour();
+            var prototypeBrain = _brainFactory.CreateBrainFor(CreatureTypeEnum.Predator2);
             var prototype = CreatureBuilder.CreatePredator2(prototypeBrain);
 
             var spawnPointBrain = new SpawnPointBrain(prototype);
@@ -56,10 +56,9 @@ namespace DawnOnline.AgentMatrix
             return newSpawnPoint;
         }
 
-        public static ICreature CreateRabbitSpawnPoint()
+        private static ICreature CreateRabbitSpawnPoint()
         {
-            var prototypeBrain = new NeuralBrain();
-            prototypeBrain.PredefineBehaviour();
+            var prototypeBrain = _brainFactory.CreateBrainFor(CreatureTypeEnum.Rabbit);
             var prototype = CreatureBuilder.CreateRabbit(prototypeBrain);
 
             var spawnPointBrain = new SpawnPointBrain(prototype);

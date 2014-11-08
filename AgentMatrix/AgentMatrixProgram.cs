@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using DawnClient;
+using DawnOnline.AgentMatrix.Factories;
 using DawnOnline.AgentMatrix.Repository;
 using SharedConstants;
 
@@ -71,6 +72,7 @@ namespace DawnOnline.AgentMatrix
 
         static void Main(string[] args)
         {
+            SetupFactories();
             CreateDawnClient();
 
             var stopWatch = new Stopwatch();
@@ -133,6 +135,12 @@ namespace DawnOnline.AgentMatrix
             }
 
             _dawnClient.Disconnect(); //<- uncomment this line to see a faster disconnect/leave on the other clients.
+        }
+
+        private static void SetupFactories()
+        {
+            //AgentCreatureBuilder.SetBrainFactory(new NeuralBrainFactory());
+            AgentCreatureBuilder.SetBrainFactory(new HardcodedBrainFactory());
         }
 
         private static void WriteDebugInfo(AgentWorld agentWorld)

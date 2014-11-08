@@ -100,28 +100,28 @@ namespace DawnOnline.AgentMatrix.Brains
             PrototypeCreature.Mutate();
         }
 
-        public void Serialize(BinaryWriter writer)
+        public override void Serialize(BinaryWriter writer)
         {
             writer.Write((int)PrototypeCreature.EntityType);
             writer.Write(_maxSpawnCooldown);
 
-            var neuralBrain = PrototypeCreature.Brain as NeuralBrain;
-            Debug.Assert(neuralBrain != null, "TODO");
+            var brain = PrototypeCreature.Brain as AbstractBrain;
+            Debug.Assert(brain != null, "TODO");
 
-            neuralBrain.Serialize(writer);
+            brain.Serialize(writer);
         }
 
-        public void Deserialize(BinaryReader reader)
+        public override void Deserialize(BinaryReader reader)
         {
             var spawnType = (EntityTypeEnum) reader.ReadInt32();
             Debug.Assert(spawnType == PrototypeCreature.EntityType, "Validate");
             var maxSpawnCooldown = reader.ReadDouble();
             Debug.Assert(maxSpawnCooldown == _maxSpawnCooldown, "Validate");
 
-            var neuralBrain = PrototypeCreature.Brain as NeuralBrain;
-            Debug.Assert(neuralBrain != null, "TODO");
+            var brain = PrototypeCreature.Brain as AbstractBrain;
+            Debug.Assert(brain != null, "TODO");
 
-            neuralBrain.Deserialize(reader);
+            brain.Deserialize(reader);
         }
     }
 }
