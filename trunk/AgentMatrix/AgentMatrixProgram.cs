@@ -8,6 +8,7 @@ using System.Threading;
 using DawnClient;
 using DawnOnline.AgentMatrix.Factories;
 using DawnOnline.AgentMatrix.Repository;
+using DawnOnline.Simulation.Builders;
 using SharedConstants;
 
 namespace DawnOnline.AgentMatrix
@@ -139,6 +140,8 @@ namespace DawnOnline.AgentMatrix
 
         private static void Setup(string brainType)
         {
+            CreatureBuilder.SetClientServerMode(CreatureBuilder.ClientServerMode.Client);
+
             if (string.Equals("neural", brainType, StringComparison.InvariantCultureIgnoreCase))
             {
                 AgentCreatureBuilder.SetBrainFactory(new NeuralBrainFactory());

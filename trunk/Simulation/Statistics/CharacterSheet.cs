@@ -70,6 +70,8 @@ namespace DawnOnline.Simulation.Statistics
         // Plant specific
         public double AutoResourceGatherCoolDown { get; internal set; }
         public int AutoResourceGatherValue { get; internal set; }
+        public bool CanAutoResourceGather { get; internal set; }
+        public bool CanSpawnSeed { get; internal set; }
 
 
         public ScoreStatistics Statistics { get; private set; }
@@ -135,6 +137,9 @@ namespace DawnOnline.Simulation.Statistics
             newCharacterSheet.FatigueRegen = FatigueRegen;
             newCharacterSheet.HealthRegen = HealthRegen;
             newCharacterSheet.AutoResourceGatherValue = AutoResourceGatherValue;
+
+            newCharacterSheet.CanAutoResourceGather = CanAutoResourceGather;
+            newCharacterSheet.CanSpawnSeed = CanSpawnSeed;
 
             // Increase generation
             newCharacterSheet.Generation = Generation + 1;
