@@ -48,12 +48,18 @@ namespace DawnOnline.Simulation.Statistics
             }
 
             // TODO: replace by delegate??
-            //Score = Statistics.ResourcesDelivered;
+            Score = Statistics.ResourcesDelivered;
+            double damageScore = (Statistics.DamageDone - Statistics.DamageReceived) / 100.0;
+            Score += (int)damageScore;
+
+            if (Score < 0.0)
+                Score = 0.0;
         }
         internal void SetFixedScore(double score)
         {
             _fixedScore = score;
             _isFixedScore = true;
+            Score = _fixedScore;
         }
         #endregion
 

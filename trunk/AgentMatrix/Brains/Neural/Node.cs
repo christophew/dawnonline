@@ -34,21 +34,23 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
                 // TODO: verify use of tanh instead of sigmoid
 
 
-                var scaledCurrent = ((double)value) / 25.0;         // [-100, 100] => [-4, 4]
-                var sigmoid = LogisticFunction(scaledCurrent);      // [-4, 4] => [0, 1] 
-                _currentValue = (sigmoid - 0.5) * 100.0 * 2.0;      // [0, 1] => [-0.5, 0.5] => [-1, 1] => [-100, 100]
+                //var scaledCurrent = ((double)value) / 25.0;         // [-100, 100] => [-4, 4]
+                //var sigmoid = LogisticFunction(scaledCurrent);      // [-4, 4] => [0, 1] 
+                //_currentValue = (sigmoid - 0.5) * 100.0 * 2.0;      // [0, 1] => [-0.5, 0.5] => [-1, 1] => [-100, 100]
 
-                // Validate (should no longer be possible)
-                if (_currentValue > 100)
-                    throw new InvalidOperationException("value outofbound: should no longer be possible");
-                if (_currentValue < -100)
-                    throw new InvalidOperationException("value outofbound: should no longer be possible");
-
-                // [-100, 100]
+                //// Validate (should no longer be possible)
                 //if (_currentValue > 100)
-                //    _currentValue = 100;
+                //    throw new InvalidOperationException("value outofbound: should no longer be possible");
                 //if (_currentValue < -100)
-                //    _currentValue = -100;
+                //    throw new InvalidOperationException("value outofbound: should no longer be possible");
+
+
+                _currentValue = value;
+                // [-100, 100]
+                if (_currentValue > 100)
+                    _currentValue = 100;
+                if (_currentValue < -100)
+                    _currentValue = -100;
             }
         }
 

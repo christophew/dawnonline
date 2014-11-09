@@ -9,6 +9,7 @@ using DawnClient;
 using DawnOnline.AgentMatrix.Factories;
 using DawnOnline.AgentMatrix.Repository;
 using DawnOnline.Simulation.Builders;
+using DawnOnline.Simulation.Entities;
 using SharedConstants;
 
 namespace DawnOnline.AgentMatrix
@@ -38,13 +39,14 @@ namespace DawnOnline.AgentMatrix
             // Add eventhandler
             _dawnClient.WorldLoadedEvent += delegate
             {
-                // Initialize agent world
-                GetAgentWorld(_dawnClient.InstanceId);
-
-                // Load Repository
-                Console.WriteLine("Load Repository");
                 _dawnClient.IsMessageQueueRunning = false;
-                CreatureRepository.GetRepository();
+
+                // Initialize agent world
+                _agentWorld = new AgentWorld(_dawnClient.InstanceId);
+
+                // Lazy setup, because we first need the instanceId from the server
+                Setup(_brainTypeArg);
+
                 _dawnClient.IsMessageQueueRunning = true;
 
                 // Initial Population
@@ -63,17 +65,18 @@ namespace DawnOnline.AgentMatrix
         private static AgentWorld _agentWorld;
         private static AgentWorld GetAgentWorld(int instanceId)
         {
-            if (_agentWorld != null)
-                return _agentWorld;
-
-            _agentWorld = new AgentWorld(instanceId);
+            if (_agentWorld == null)
+                throw new InvalidOperationException("Agent world not yet created: is done on WorldLoadedEvent");
 
             return _agentWorld;
         }
 
+        private static string _brainTypeArg;
+
         static void Main(string[] args)
         {
-            Setup(args[0]);
+            _brainTypeArg = args[0];
+
             CreateDawnClient();
 
             var stopWatch = new Stopwatch();
@@ -117,7 +120,8 @@ namespace DawnOnline.AgentMatrix
                         CreatureRepository.GetRepository().Save();
 
                         // Test
-                        WriteDebugInfo(agentWorld);
+                        //WriteDebugInfo(agentWorld);
+                        WriteFitness();
 
 
                         // Create stable cycles
@@ -180,5 +184,20 @@ namespace DawnOnline.AgentMatrix
 
             Console.WriteLine("> Creatures created: " + _dawnClient.CreatedCreatureIds.Count + " - " + string.Join(", ", _dawnClient.CreatedCreatureIds));
         }
+
+        private static void WriteFitness()
+        {
+            double score = 0.0;
+
+            var allEntities = _dawnClient.DawnWorld.GetEntities();
+
+            foreach (var result in allEntities)
+            {
+                score += result.Score;
+            }
+
+            Console.WriteLine("Score: " + score);
+        }
+
     }
 }

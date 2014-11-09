@@ -36,7 +36,7 @@ namespace DawnOnline.Simulation.Entities
             ApplyActionQueue(timeDelta);
 
             // TO VERIFY: is this the correct place to update the score?
-            //CharacterSheet.UpdateScore();
+            CharacterSheet.UpdateScore();
         }
 
         protected void ApplyActionQueue(double timeDelta)
@@ -291,7 +291,7 @@ namespace DawnOnline.Simulation.Entities
 
             // Score
             // TODO refactor
-            spawnPoint.CharacterSheet.Score += CharacterSheet.Resource.PercentFilled;
+            //spawnPoint.CharacterSheet.Score += CharacterSheet.Resource.PercentFilled;
 
             // Score
             spawnPoint.CharacterSheet.Statistics.ResourcesDelivered += CharacterSheet.Resource.PercentFilled;
