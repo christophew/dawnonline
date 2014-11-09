@@ -28,6 +28,7 @@ namespace DawnOnline.Simulation
 
 
         internal Fixture Fixture { get; set; }
+        internal double Radius { get; set; }
 
         internal void OffsetPosition(Vector2 position, double angle)
         {

@@ -14,7 +14,7 @@ using SharedConstants;
 
 namespace DawnOnline.Simulation.Entities
 {
-    internal class Creature : ICreature
+    internal abstract class Creature : ICreature
     {
         public CreatureTypeEnum CreatureType { get; internal set; }
 
@@ -25,9 +25,9 @@ namespace DawnOnline.Simulation.Entities
             set { _id = value; }
         }
 
-        private Placement _place = new Placement();
+        protected Placement _place = new Placement();
         protected ActionQueue _actionQueue = new ActionQueue();
-        private CharacterSheet _characterSheet = new CharacterSheet();
+        protected CharacterSheet _characterSheet = new CharacterSheet();
         private IBrain _brain;
 
         public EntityTypeEnum EntityType { get; internal set; }
@@ -83,35 +83,12 @@ namespace DawnOnline.Simulation.Entities
 
         private bool _alive = true;
 
-        public static bool DeliverOnCollision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
-        {
-            // Should only be triggered on the server
-            Debug.Assert(Globals.GetInstanceId() == 0, "Should only be triggered on the server");
-
-
-            var spawnPoint = fixtureA.UserData as Creature;
-            Debug.Assert(spawnPoint != null);
-            Debug.Assert((spawnPoint.IsSpawnPoint), "Should be bound to a SpawnPoint");
-
-            var deliveryCreature = fixtureB.UserData as Creature;
-            if (deliveryCreature == null)
-                return true;
-
-            // Only deliver to my own spawnPoint
-            if (deliveryCreature.SpawnPoint != spawnPoint)
-                return true;
-
-
-            deliveryCreature.DoDeliverResources(spawnPoint);
-
-
-            return true;
-        }
 
 
         internal Creature(double bodyRadius)
         {
             _place.Form = SimulationFactory.CreateCircle(bodyRadius);
+            _place.Radius = bodyRadius;
         }
 
         internal void AddToPhysicsEngine()
@@ -131,17 +108,15 @@ namespace DawnOnline.Simulation.Entities
                 _brain.InitializeSenses();
             }
 
-            // TODO: some better checks
-            // TODO: a better place todo this => should be in the CreatureBuilder, but we only have a Fixture after we add it to the Engine
-            if ((Globals.GetInstanceId() == 0) && IsSpawnPoint)
-            {
-                _place.Fixture.OnCollision += Creature.DeliverOnCollision;
-            }
+
+            // TODO: I really don't like these kind of override constructions
+            PrepareCollision();
         }
 
         public ICreature Replicate(ICreature mate)
         {
-            var newCreature = new Creature(_place.Form.BoundingCircleRadius);
+            //var newCreature = new Creature(_place.Form.BoundingCircleRadius);
+            var newCreature = CreateCreature(_place.Form.BoundingCircleRadius);
             newCreature._characterSheet = CharacterSheet.Replicate();
 
             //newCreature.Place.Fixture.Body.BodyType = _place.Fixture.Body.BodyType;
@@ -167,16 +142,6 @@ namespace DawnOnline.Simulation.Entities
             Brain.Mutate();
         }
 
-        //public ICreature Replicate()
-        //{
-        //    Debug.Assert(Specy == EntityType.SpawnPoint, "Not implemented for anything else!!");
-
-        //    var newCreature = CreatureBuilder.CreateSpawnPoint(EntityType.Predator) as Creature;
-        //    newCreature.Brain = this.Brain.Replicate();
-        //    newCreature.Brain.InitializeSenses();
-        //    return newCreature;
-        //}
-
         public bool IsTired
         {
             get
@@ -198,68 +163,11 @@ namespace DawnOnline.Simulation.Entities
             _actionQueue.Rest = true;
         }
 
-        private void DoRest()
-        {
-            if ((DateTime.Now - _actionQueue.LastRestTime).TotalSeconds < CharacterSheet.RestCoolDown)
-                return;
-            CharacterSheet.Fatigue.Decrease((int)CharacterSheet.FatigueRecovery);
-            _actionQueue.LastRestTime = DateTime.Now;
-        }
-
-        private void DoRegen()
-        {
-            if ((DateTime.Now - _actionQueue.LastRegenTime).TotalSeconds < CharacterSheet.RegenCoolDown)
-                return;
-            CharacterSheet.Fatigue.Decrease((int)CharacterSheet.FatigueRegen);
-            CharacterSheet.Damage.Decrease((int)CharacterSheet.HealthRegen);
-            _actionQueue.LastRegenTime = DateTime.Now;
-        }
-
         public void RegisterSpawn()
         {
             _actionQueue.RegisterSpawn = true;
         }
 
-        private void DoSpawn()
-        {
-            // TODO: check against LastSpawnTime
-
-            // Security
-            if (!IsSpawnPoint)
-                throw new InvalidOperationException();
-
-            // Fatigue
-            CharacterSheet.Fatigue.Increase(30);
-
-            // Resource
-            CharacterSheet.Resource.Decrease(10);
-
-            // Score
-            CharacterSheet.Statistics.NrOfSpawns++;
-
-
-            // Reset actionQueue => register should only happen once
-            _actionQueue.RegisterSpawn = false;
-        }
-
-        private void DoDeliverResources(Creature spawnPoint)
-        {
-            // Only deliver to my own spawnPoint
-            Debug.Assert(this.SpawnPoint == spawnPoint);
-
-            // Score
-            // TODO refactor
-            spawnPoint.CharacterSheet.Score += CharacterSheet.Resource.PercentFilled;
-
-            // Score
-            spawnPoint.CharacterSheet.Statistics.ResourcesDelivered += CharacterSheet.Resource.PercentFilled;
-            if (CharacterSheet.Resource.PercentFilled > 0.0)
-                spawnPoint.CharacterSheet.Statistics.NrOfTimesResourcesDelivered++;
-
-            // Exchange resource
-            spawnPoint.CharacterSheet.Resource.Increase((int)CharacterSheet.Resource.PercentFilled);
-            CharacterSheet.Resource.Clear();
-        }
 
         public void ClearActionQueue()
         {
@@ -276,213 +184,7 @@ namespace DawnOnline.Simulation.Entities
             return MyActionQueue.Damage > 0;
         }
 
-        public virtual void Update(double timeDelta)
-        {
-            ApplyActionQueue(timeDelta);
 
-            // TO VERIFY: is this the correct place to update the score?
-            CharacterSheet.UpdateScore();
-        }
-
-        protected void ApplyActionQueue(double timeDelta)
-        {
-            // toSeconds is NOT needed for farseer updates => uses timeDelta in own update
-            double toSeconds = timeDelta / 1000.0;
-
-            var spawnPointCreature = SpawnPoint as Creature;
-
-            int resultingDamage = (int)Math.Max(_actionQueue.Damage - _characterSheet.Armour, 0);
-            _characterSheet.Damage.Increase(resultingDamage);
-            _actionQueue.Damage = 0;
-            if (spawnPointCreature != null)
-                spawnPointCreature.CharacterSheet.Statistics.DamageReceived += resultingDamage;
-
-            if (_characterSheet.Damage.IsFilled)
-            {
-                var position = this.Place.Position;
-
-                if (spawnPointCreature != null)
-                    spawnPointCreature.CharacterSheet.Statistics.NrOfOwnCreaturesKilled++;
-
-                MyEnvironment.KillCreature(this);
-
-                // Add treasure where creature is killed
-                var treasure = ObstacleBuilder.CreateTreasure(CreatureType, this.CharacterSheet.FoodValue); // Add the gathered resources to the FoodValue as well?
-                MyEnvironment.AddObstacle(treasure, position);
-
-                return;
-            }
-
-
-            // Move
-            _place.Fixture.Body.ApplyForce(_actionQueue.ForwardMotion + _actionQueue.StrafeMotion);
-            _place.Fixture.Body.AngularVelocity = (float)(_actionQueue.TurnMotion);
-
-            // Fatigue
-            CharacterSheet.Fatigue.Increase((int)(_actionQueue.FatigueCost * toSeconds));
-
-            // Attack
-            if (_actionQueue.Attack || CharacterSheet.UseAutoAttack)
-            {
-                ApplyAttack();
-            }
-
-            // Fire
-            if (_actionQueue.Fire)
-            {
-                var bulletAngleVector = new Vector2((float)Math.Cos(_place.Angle), (float)Math.Sin(_place.Angle));
-                var bullet = BulletBuilder.CreateBullet(CharacterSheet.RangeDamage);
-                //bullet.Launch(bulletAngleVector);
-                {
-                    MyEnvironment.AddBullet(
-                        bullet, 
-                        _place.Fixture.Body.Position + bulletAngleVector * (float)_place.Form.BoundingCircleRadius * 2.0f,
-                        _place.Angle);
-                    bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 10);
-                }
-
-                _actionQueue.HasFired = true;
-                _actionQueue.Fire = false;
-            }
-
-            // Fire rocket
-            if (_actionQueue.FireRocket)
-            {
-                var bulletAngleVector = new Vector2((float)Math.Cos(_place.Angle), (float)Math.Sin(_place.Angle));
-                var bullet = BulletBuilder.CreateRocket(CharacterSheet.RangeDamage);
-                //bullet.Launch(bulletAngleVector);
-                {
-                    MyEnvironment.AddBullet(
-                        bullet, 
-                        _place.Fixture.Body.Position + bulletAngleVector * (float)_place.Form.BoundingCircleRadius * 2.0f,
-                        _place.Angle);
-                    //bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 20);
-                    bullet.Place.Fixture.Body.ApplyLinearImpulse(bulletAngleVector * 5);
-                }
-
-                _actionQueue.HasFired = true;
-                _actionQueue.FireRocket = false;
-            }
-
-
-            if (_actionQueue.HasAttacked || _actionQueue.HasFired)
-            {
-                _actionQueue.LastAttackTime = DateTime.Now;
-            }
-
-            // Build
-            if (_actionQueue.BuildEntityOfType != EntityTypeEnum.Unknown)
-            {
-                DoBuildEntity(_actionQueue.BuildEntityOfType);
-            }
-
-            // Rest
-            if (_actionQueue.Rest)
-            {
-                DoRest();
-            }
-
-            // Spawn
-            if (_actionQueue.RegisterSpawn)
-            {
-                DoSpawn();
-            }
-
-            // Speak
-            if (_actionQueue.SpeachVolumeA > 0)
-            {
-                var sound = SoundBuilder.CreateSoundForCreature(this, Sound.SoundTypeEnum.A, _actionQueue.SpeachVolumeA);
-                MyEnvironment.AddSound(sound);
-            }
-            if (_actionQueue.SpeachVolumeB > 0)
-            {
-                var sound = SoundBuilder.CreateSoundForCreature(this, Sound.SoundTypeEnum.B, _actionQueue.SpeachVolumeB);
-                MyEnvironment.AddSound(sound);
-            }
-
-            // Auto monitor adjusts
-            DoRegen();
-        }
-
-        public void WalkForward()
-        {
-            Debug.Assert(MyEnvironment != null);
-
-            // TEMP
-            _actionQueue.ForwardThrustPercent += 0.3;
-
-            _actionQueue.ForwardMotion += new Vector2((float)(Math.Cos(_place.Angle) * CharacterSheet.WalkingDistance),
-                                                      (float) (Math.Sin(_place.Angle)*CharacterSheet.WalkingDistance));
-            _actionQueue.FatigueCost = 0;
-        }
-
-        public void WalkBackward()
-        {
-            Debug.Assert(MyEnvironment != null);
-
-            // TEMP
-            _actionQueue.ForwardThrustPercent -= 0.3;
-
-            _actionQueue.ForwardMotion += new Vector2((float)(Math.Cos(_place.Angle) * CharacterSheet.WalkingDistance),
-                                                      (float) (Math.Sin(_place.Angle)*CharacterSheet.WalkingDistance))*-0.5f;
-            _actionQueue.FatigueCost = 0;
-        }
-
-        public void RunForward()
-        {
-            Debug.Assert(MyEnvironment != null);
-
-            if (IsTired)
-            {
-                WalkForward();
-                return;
-            }
-
-            // TEMP
-            _actionQueue.ForwardThrustPercent += 1.0;
-
-            _actionQueue.ForwardMotion += new Vector2((float)(Math.Cos(_place.Angle) * CharacterSheet.RunningDistance),
-                                                      (float) (Math.Sin(_place.Angle)*CharacterSheet.RunningDistance));
-
-            //_actionQueue.FatigueCost += CharacterSheet.FatigueCost;
-        }
-
-        public void RunBackward()
-        {
-            Debug.Assert(MyEnvironment != null);
-
-            if (IsTired)
-            {
-                WalkBackward();
-                return;
-            }
-
-            // TEMP
-            _actionQueue.ForwardThrustPercent -= 1.0;
-
-            _actionQueue.ForwardMotion += new Vector2((float)(Math.Cos(_place.Angle) * CharacterSheet.RunningDistance),
-                                                      (float) (Math.Sin(_place.Angle)*CharacterSheet.RunningDistance))*-1f;
-
-            //_actionQueue.FatigueCost += CharacterSheet.FatigueCost;
-        }
-
-        public void Fire()
-        {
-            if (!CanAttack())
-                return;
-
-            _actionQueue.Fire = true;
-            _actionQueue.FatigueCost += CharacterSheet.FatigueCost;
-        }
-
-        public void FireRocket()
-        {
-            if (!CanAttack())
-                return;
-
-            _actionQueue.FireRocket = true;
-            _actionQueue.FatigueCost += CharacterSheet.FatigueCost * 2;
-        }
 
         internal bool TryToEat(Food collectable)
         {
@@ -512,6 +214,59 @@ namespace DawnOnline.Simulation.Entities
             return true;
         }
 
+        public ICreature FindCreatureToAttack(List<CreatureTypeEnum> ofTypes)
+        {
+            var attackMiddle = new Vector2(
+                (float)(Place.Position.X + Math.Cos(Place.Angle) * CharacterSheet.MeleeRange),
+                (float)(Place.Position.Y + Math.Sin(Place.Angle) * CharacterSheet.MeleeRange));
+
+            var creaturesToAttack = ofTypes == null ?  
+                MyEnvironment.GetCreaturesInRange(attackMiddle, CharacterSheet.MeleeRange) : 
+                MyEnvironment.GetCreaturesInRange(attackMiddle, CharacterSheet.MeleeRange, ofTypes);
+
+            foreach (var current in creaturesToAttack)
+            {
+                // Don't attack my family, everything else is game
+                if (this.SpawnPoint != null &&
+                    this.SpawnPoint == current.SpawnPoint)
+                    continue;
+
+                if (!current.Equals(this))
+                    return current;
+            }
+            return null;
+        }
+
+
+        public bool CanAttack()
+        {
+            if (!Alive)
+                return false;
+            return ((DateTime.Now - _actionQueue.LastAttackTime).TotalSeconds > CharacterSheet.AttackCoolDown);
+        }
+
+        public void Attack()
+        {
+            _actionQueue.Attack = true;
+
+            //if (!CanAttack())
+            //    return;
+
+            //var creatureToAttack = FindCreatureToAttack(null);
+            //if (creatureToAttack == null)
+            //    return;
+
+            //Attack(creatureToAttack);
+        }
+
+
+
+
+
+
+
+        // TODO: SPLIT ACTIONQUEUE? (client/server queue's have different meaning & operations)
+
         public void Turn(double percent)
         {
             // TEMP
@@ -523,12 +278,92 @@ namespace DawnOnline.Simulation.Entities
         public void Thrust(double percent)
         {
             // TEMP
-            _actionQueue.ForwardThrustPercent += percent; 
+            _actionQueue.ForwardThrustPercent += percent;
 
             _actionQueue.ForwardMotion += new Vector2((float)(Math.Cos(_place.Angle) * CharacterSheet.RunningDistance),
                                                       (float)(Math.Sin(_place.Angle) * CharacterSheet.RunningDistance)) * (float)percent;
 
             // TODO: fatigue cost
+        }
+
+        public void WalkForward()
+        {
+            Debug.Assert(MyEnvironment != null);
+
+            // TEMP
+            _actionQueue.ForwardThrustPercent += 0.3;
+
+            _actionQueue.ForwardMotion += new Vector2((float)(Math.Cos(_place.Angle) * CharacterSheet.WalkingDistance),
+                                                      (float)(Math.Sin(_place.Angle) * CharacterSheet.WalkingDistance));
+            _actionQueue.FatigueCost = 0;
+        }
+
+        public void WalkBackward()
+        {
+            Debug.Assert(MyEnvironment != null);
+
+            // TEMP
+            _actionQueue.ForwardThrustPercent -= 0.3;
+
+            _actionQueue.ForwardMotion += new Vector2((float)(Math.Cos(_place.Angle) * CharacterSheet.WalkingDistance),
+                                                      (float)(Math.Sin(_place.Angle) * CharacterSheet.WalkingDistance)) * -0.5f;
+            _actionQueue.FatigueCost = 0;
+        }
+
+        public void RunForward()
+        {
+            Debug.Assert(MyEnvironment != null);
+
+            if (IsTired)
+            {
+                WalkForward();
+                return;
+            }
+
+            // TEMP
+            _actionQueue.ForwardThrustPercent += 1.0;
+
+            _actionQueue.ForwardMotion += new Vector2((float)(Math.Cos(_place.Angle) * CharacterSheet.RunningDistance),
+                                                      (float)(Math.Sin(_place.Angle) * CharacterSheet.RunningDistance));
+
+            //_actionQueue.FatigueCost += CharacterSheet.FatigueCost;
+        }
+
+        public void RunBackward()
+        {
+            Debug.Assert(MyEnvironment != null);
+
+            if (IsTired)
+            {
+                WalkBackward();
+                return;
+            }
+
+            // TEMP
+            _actionQueue.ForwardThrustPercent -= 1.0;
+
+            _actionQueue.ForwardMotion += new Vector2((float)(Math.Cos(_place.Angle) * CharacterSheet.RunningDistance),
+                                                      (float)(Math.Sin(_place.Angle) * CharacterSheet.RunningDistance)) * -1f;
+
+            //_actionQueue.FatigueCost += CharacterSheet.FatigueCost;
+        }
+
+        public void Fire()
+        {
+            if (!CanAttack())
+                return;
+
+            _actionQueue.Fire = true;
+            _actionQueue.FatigueCost += CharacterSheet.FatigueCost;
+        }
+
+        public void FireRocket()
+        {
+            if (!CanAttack())
+                return;
+
+            _actionQueue.FireRocket = true;
+            _actionQueue.FatigueCost += CharacterSheet.FatigueCost * 2;
         }
 
         public void TurnLeft()
@@ -575,125 +410,12 @@ namespace DawnOnline.Simulation.Entities
                                                (float)(Math.Sin(_place.Angle + MathHelper.PiOver2) * CharacterSheet.WalkingDistance / 2f));
         }
 
-        public void Think(TimeSpan timeDelta)
-        {
-            Debug.Assert(Alive);
-
-            if (!HasBrain)
-                return;
-
-            // Clear action queue: the brain will select new actions
-            ClearActionQueue();
-
-            Brain.DoSomething(timeDelta);
-            Brain.ClearState();
-        }
-
-        public ICreature FindCreatureToAttack(List<CreatureTypeEnum> ofTypes)
-        {
-            var attackMiddle = new Vector2(
-                (float)(Place.Position.X + Math.Cos(Place.Angle) * CharacterSheet.MeleeRange),
-                (float)(Place.Position.Y + Math.Sin(Place.Angle) * CharacterSheet.MeleeRange));
-
-            var creaturesToAttack = ofTypes == null ?  
-                MyEnvironment.GetCreaturesInRange(attackMiddle, CharacterSheet.MeleeRange) : 
-                MyEnvironment.GetCreaturesInRange(attackMiddle, CharacterSheet.MeleeRange, ofTypes);
-
-            foreach (Creature current in creaturesToAttack)
-            {
-                // Don't attack my family, everything else is game
-                if (this.SpawnPoint != null &&
-                    this.SpawnPoint == current.SpawnPoint)
-                    continue;
-
-                if (!current.Equals(this))
-                    return current;
-            }
-            return null;
-        }
-
-
-        public bool CanAttack()
-        {
-            if (!Alive)
-                return false;
-            return ((DateTime.Now - _actionQueue.LastAttackTime).TotalSeconds > CharacterSheet.AttackCoolDown);
-        }
-
-        public void Attack()
-        {
-            _actionQueue.Attack = true;
-
-            //if (!CanAttack())
-            //    return;
-
-            //var creatureToAttack = FindCreatureToAttack(null);
-            //if (creatureToAttack == null)
-            //    return;
-
-            //Attack(creatureToAttack);
-        }
-
-        private void ApplyAttack()
-        {
-            if (!CanAttack())
-                return;
-
-            Debug.Assert(Alive);
-
-            _actionQueue.HasAttacked = true;
-            _actionQueue.FatigueCost += CharacterSheet.FatigueCost;
-
-            var target = FindCreatureToAttack(null);
-            if (target != null)
-            {
-                target.MyActionQueue.Damage += _characterSheet.MeleeDamage;
-
-                // Score
-                var spawnPoint = SpawnPoint as Creature;
-                if (spawnPoint != null)
-                {
-                    spawnPoint.CharacterSheet.Statistics.DamageDone += _characterSheet.MeleeDamage;
-                }
-            }
-        }
-
-        internal void TakeBulletDamage(Bullet bullet)
-        {
-            this.MyActionQueue.Damage += bullet.Damage;
-        }
-
-        internal void TakeExplosionDamage(Bullet bullet, double distance)
-        {
-            var rangeMinusDistance = Math.Max(Math.Abs(bullet.Range - distance), 0);
-            this.MyActionQueue.Damage += bullet.Damage * rangeMinusDistance * rangeMinusDistance / bullet.Range / bullet.Range;
-        }
-
         public void BuildEntity(EntityTypeEnum entityType)
         {
             if ((DateTime.Now - _actionQueue.LastBuildTime).TotalSeconds > CharacterSheet.BuildCoolDown)
             {
                 _actionQueue.BuildEntityOfType = entityType;
             }
-        }
-
-        public void DoBuildEntity(EntityTypeEnum entityType)
-        {
-            // TODO: inject the prototype into the Creature
-
-            //if (entityType == EntityType.Unknown)
-            //{
-            //    return;
-            //}
-            //if (entityType == EntityType.Turret)
-            //{
-            //    var turret = CreatureBuilder.CreateTurret(EntityType.Predator);
-            //    MyEnvironment.AddCreature(turret, Place.Position, Place.Angle);
-            //    _actionQueue.LastBuildTime = DateTime.Now;
-            //    return;
-            //}
-
-            throw new NotSupportedException();
         }
 
         public void SayA(double volume)
@@ -705,5 +427,44 @@ namespace DawnOnline.Simulation.Entities
         {
             _actionQueue.SpeachVolumeB += volume;
         }
+
+
+
+        #region abstracts
+
+        internal abstract Creature CreateCreature(double radius);
+
+        #endregion
+
+        #region Server only
+
+        protected virtual void PrepareCollision()
+        { }
+
+        public virtual void Update(double timeDelta)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal virtual void TakeBulletDamage(Bullet bullet)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal virtual void TakeExplosionDamage(Bullet bullet, double distance)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Client only
+
+        public virtual void Think(TimeSpan timeDelta)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }

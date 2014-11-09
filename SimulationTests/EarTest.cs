@@ -18,7 +18,7 @@ namespace SimulationTests
         {
             var environment = DawnOnline.Simulation.Environment.GetWorld();
 
-            var creature = new Creature(1);
+            var creature = new CreatureOnClient(1);
             environment.AddCreature(creature, Vector2.Zero, 0);
             var ear = new Ear(creature, Vector2.Zero);
 
@@ -53,7 +53,7 @@ namespace SimulationTests
         {
             var environment = DawnOnline.Simulation.Environment.GetWorld();
 
-            var creature = new Creature(1);
+            var creature = new CreatureOnClient(1);
             environment.AddCreature(creature, Vector2.Zero, 0);
             var ear = new Ear(creature, Vector2.Zero);
 

@@ -43,6 +43,9 @@ namespace DawnGame
 
         public DawnWorld()
         {
+            CreatureBuilder.SetClientServerMode(CreatureBuilder.ClientServerMode.Server);
+
+
             BuildWorld();
 
 

@@ -25,12 +25,12 @@ namespace SimulationTests
         {
             var environment = DawnOnline.Simulation.Environment.GetWorld();
 
-            var creature = new Creature(1);
+            var creature = new CreatureOnClient(1);
             environment.AddCreature(creature, Vector2.Zero, 0);
 
             var eye = SensorBuilder.CreateEye(creature, 0, Math.PI/4.0, 100);
 
-            var creatureToSee = new Creature(1);
+            var creatureToSee = new CreatureOnClient(1);
             environment.AddCreature(creatureToSee, new Vector2(0, 0), 0);
             var creatureList = new List<IEntity>() {creatureToSee};
 
@@ -65,12 +65,12 @@ namespace SimulationTests
         {
             var environment = DawnOnline.Simulation.Environment.GetWorld();
 
-            var creature = new Creature(1);
+            var creature = new CreatureOnClient(1);
             environment.AddCreature(creature, Vector2.Zero, Math.PI / 4.0);
 
             var eye = SensorBuilder.CreateEye(creature, 0, Math.PI/4.0, 100);
 
-            var creatureToSee = new Creature(1);
+            var creatureToSee = new CreatureOnClient(1);
             environment.AddCreature(creatureToSee, new Vector2(0, 0), 0);
             var creatureList = new List<IEntity>() { creatureToSee };
 

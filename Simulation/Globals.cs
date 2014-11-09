@@ -24,6 +24,12 @@ namespace DawnOnline.Simulation
             return _instanceId;
         }
 
+        public static bool IsServerInstance()
+        {
+            // TO VERIFY: WHY?
+            return _instanceId == 0;
+        }
+
         private static int _currentIdCounter = 1;
         public static int GenerateUniqueId()
         {

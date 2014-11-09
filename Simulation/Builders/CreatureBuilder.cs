@@ -15,6 +15,33 @@ namespace DawnOnline.Simulation.Builders
         //private const double _turnMultiplier = 20000;
         private const double _turnMultiplier = 2;
 
+
+        public enum ClientServerMode
+        {
+            Unknown,
+            Client,
+            Server
+        };
+
+
+        private static ClientServerMode _clientServerMode = ClientServerMode.Unknown;
+
+        public static void SetClientServerMode(ClientServerMode mode)
+        {
+            _clientServerMode = mode;
+        }
+
+        // Creature FactoryMethod => could become abstract factory
+        private static Creature NewCreature(double bodyRadius)
+        {
+            if (_clientServerMode == ClientServerMode.Client)
+                return new CreatureOnClient(bodyRadius);
+            if (_clientServerMode == ClientServerMode.Server)
+                return new CreatureOnServer(bodyRadius);
+
+            throw new InvalidOperationException("ClientServerMode not set");
+        }
+
         public static ICreature CreateCreature(EntityTypeEnum entityType, CreatureTypeEnum creatureType, IEntity spawnPoint, IBrain brain)
         {
             var creature = CreateCreature(entityType, creatureType, brain) as Creature;
@@ -64,7 +91,7 @@ namespace DawnOnline.Simulation.Builders
         
         public static ICreature CreatePredator(IBrain brain)
         {
-            var critter = new Creature(1.5);
+            var critter = NewCreature(1.5);
             critter.Brain = brain;
 
             critter.EntityType = EntityTypeEnum.Creature;
@@ -84,7 +111,7 @@ namespace DawnOnline.Simulation.Builders
 
         public static ICreature CreatePredator2(IBrain brain)
         {
-            var critter = new Creature(2.5);
+            var critter = NewCreature(2.5);
             critter.Brain = brain;
 
             critter.EntityType = EntityTypeEnum.Creature;
@@ -106,7 +133,7 @@ namespace DawnOnline.Simulation.Builders
 
         public static ICreature CreateRabbit(IBrain brain)
         {
-            var critter = new Creature(1);
+            var critter = NewCreature(1);
             critter.Brain = brain;
 
             critter.EntityType = EntityTypeEnum.Creature;
@@ -126,7 +153,7 @@ namespace DawnOnline.Simulation.Builders
 
         public static ICreature CreatePlant()
         {
-            var critter = new Plant(0.5);
+            var critter = NewCreature(0.5);
             critter.Brain = new DummyBrain();
 
             critter.EntityType = EntityTypeEnum.Creature;
@@ -139,6 +166,8 @@ namespace DawnOnline.Simulation.Builders
             critter.CharacterSheet.FoodValue = 10;
             critter.CharacterSheet.IsRooted = true;
 
+            critter.CharacterSheet.CanSpawnSeed = true;
+            critter.CharacterSheet.CanAutoResourceGather = true;
             critter.CharacterSheet.AutoResourceGatherValue = 1;
             critter.CharacterSheet.AutoResourceGatherCoolDown = 5;
 
@@ -148,7 +177,7 @@ namespace DawnOnline.Simulation.Builders
 
         public static ICreature CreatePlant2()
         {
-            var critter = new Plant(0.25);
+            var critter = NewCreature(0.25);
             critter.Brain = new DummyBrain();
 
             critter.EntityType = EntityTypeEnum.Creature;
@@ -161,6 +190,8 @@ namespace DawnOnline.Simulation.Builders
             critter.CharacterSheet.FoodValue = 20;
             critter.CharacterSheet.IsRooted = true;
 
+            critter.CharacterSheet.CanSpawnSeed = true;
+            critter.CharacterSheet.CanAutoResourceGather = true;
             critter.CharacterSheet.AutoResourceGatherValue = 1;
             critter.CharacterSheet.AutoResourceGatherCoolDown = 5;
 
@@ -170,7 +201,7 @@ namespace DawnOnline.Simulation.Builders
 
         public static ICreature CreateAvatar()
         {
-            var avatar = new Creature(1.5);
+            var avatar = NewCreature(1.5);
 
             avatar.FoodSpecies = new List<CreatureTypeEnum> { CreatureTypeEnum.Rabbit, CreatureTypeEnum.Predator, CreatureTypeEnum.Predator2 };
             
@@ -192,7 +223,7 @@ namespace DawnOnline.Simulation.Builders
 
         public static ICreature CreateTurret(CreatureTypeEnum enemy, IBrain brain)
         {
-            var critter = new Creature(1.5);
+            var critter = NewCreature(1.5);
 
             critter.EntityType = EntityTypeEnum.Creature;
             critter.CreatureType = CreatureTypeEnum.Turret;
@@ -218,7 +249,7 @@ namespace DawnOnline.Simulation.Builders
 
         public static ICreature CreateSpawnPoint(IBrain brain)
         {
-            var spawnPoint = new Creature(1.0);
+            var spawnPoint = NewCreature(1.0);
 
             spawnPoint.EntityType = EntityTypeEnum.SpawnPoint;
             spawnPoint.CreatureType = CreatureTypeEnum.Predator;
@@ -237,7 +268,7 @@ namespace DawnOnline.Simulation.Builders
 
         public static ICreature CreateSpawnPoint2(IBrain brain)
         {
-            var spawnPoint = new Creature(2.0);
+            var spawnPoint = NewCreature(2.0);
 
             spawnPoint.EntityType = EntityTypeEnum.SpawnPoint;
             spawnPoint.CreatureType = CreatureTypeEnum.Predator2;
@@ -256,7 +287,7 @@ namespace DawnOnline.Simulation.Builders
 
         public static ICreature CreateRabbitSpawnPoint(IBrain brain)
         {
-            var spawnPoint = new Creature(0.5);
+            var spawnPoint = NewCreature(0.5);
 
             spawnPoint.EntityType = EntityTypeEnum.SpawnPoint;
             spawnPoint.CreatureType = CreatureTypeEnum.Rabbit;
