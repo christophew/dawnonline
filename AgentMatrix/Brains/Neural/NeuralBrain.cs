@@ -463,47 +463,47 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
         {
             // seePrey
             {
-                network.InputNodes[_seePreyIndex + _left].CurrentValue = _eyeSeePrey[_leftEye];
-                network.InputNodes[_seePreyIndex + _forward].CurrentValue = _eyeSeePrey[_forwardEye];
-                network.InputNodes[_seePreyIndex + _right].CurrentValue = _eyeSeePrey[_rightEye];
+                network.InputNodes[_seePreyIndex + _left].SetValue(_eyeSeePrey[_leftEye]);
+                network.InputNodes[_seePreyIndex + _forward].SetValue(_eyeSeePrey[_forwardEye]);
+                network.InputNodes[_seePreyIndex + _right].SetValue(_eyeSeePrey[_rightEye]);
             }
             // seeFood
             {
-                network.InputNodes[_seeFoodIndex + _left].CurrentValue = _eyeSeeFood[_leftEye];
-                network.InputNodes[_seeFoodIndex + _forward].CurrentValue = _eyeSeeFood[_forwardEye];
-                network.InputNodes[_seeFoodIndex + _right].CurrentValue = _eyeSeeFood[_rightEye];
+                network.InputNodes[_seeFoodIndex + _left].SetValue(_eyeSeeFood[_leftEye]);
+                network.InputNodes[_seeFoodIndex + _forward].SetValue(_eyeSeeFood[_forwardEye]);
+                network.InputNodes[_seeFoodIndex + _right].SetValue(_eyeSeeFood[_rightEye]);
             }
             // seeWalls
             {
-                network.InputNodes[_seeWallsIndex + _left].CurrentValue = _eyeSeeWalls[_leftEye];
-                network.InputNodes[_seeWallsIndex + _forward].CurrentValue = _eyeSeeWalls[_forwardEye];
-                network.InputNodes[_seeWallsIndex + _right].CurrentValue = _eyeSeeWalls[_rightEye];
+                network.InputNodes[_seeWallsIndex + _left].SetValue(_eyeSeeWalls[_leftEye]);
+                network.InputNodes[_seeWallsIndex + _forward].SetValue(_eyeSeeWalls[_forwardEye]);
+                network.InputNodes[_seeWallsIndex + _right].SetValue(_eyeSeeWalls[_rightEye]);
             }
             // seeMySpawnPoint
             {
-                network.InputNodes[_seeMySpawnPointIndex + _left].CurrentValue = _eyeSeeMySpawnPoint[_leftEye];
-                network.InputNodes[_seeMySpawnPointIndex + _forward].CurrentValue = _eyeSeeMySpawnPoint[_forwardEye];
-                network.InputNodes[_seeMySpawnPointIndex + _right].CurrentValue = _eyeSeeMySpawnPoint[_rightEye];
+                network.InputNodes[_seeMySpawnPointIndex + _left].SetValue(_eyeSeeMySpawnPoint[_leftEye]);
+                network.InputNodes[_seeMySpawnPointIndex + _forward].SetValue(_eyeSeeMySpawnPoint[_forwardEye]);
+                network.InputNodes[_seeMySpawnPointIndex + _right].SetValue(_eyeSeeMySpawnPoint[_rightEye]);
             }
             // seeDangers
             {
-                network.InputNodes[_seeDangersIndex + _left].CurrentValue = _eyeSeeDangers[_leftEye];
-                network.InputNodes[_seeDangersIndex + _forward].CurrentValue = _eyeSeeDangers[_forwardEye];
-                network.InputNodes[_seeDangersIndex + _right].CurrentValue = _eyeSeeDangers[_rightEye];
+                network.InputNodes[_seeDangersIndex + _left].SetValue(_eyeSeeDangers[_leftEye]);
+                network.InputNodes[_seeDangersIndex + _forward].SetValue(_eyeSeeDangers[_forwardEye]);
+                network.InputNodes[_seeDangersIndex + _right].SetValue(_eyeSeeDangers[_rightEye]);
             }
             // seeFamily
             {
-                network.InputNodes[_seeFamilyIndex + _left].CurrentValue = _eyeSeeFamily[_leftEye];
-                network.InputNodes[_seeFamilyIndex + _forward].CurrentValue = _eyeSeeFamily[_forwardEye];
-                network.InputNodes[_seeFamilyIndex + _right].CurrentValue = _eyeSeeFamily[_rightEye];
+                network.InputNodes[_seeFamilyIndex + _left].SetValue(_eyeSeeFamily[_leftEye]);
+                network.InputNodes[_seeFamilyIndex + _forward].SetValue(_eyeSeeFamily[_forwardEye]);
+                network.InputNodes[_seeFamilyIndex + _right].SetValue(_eyeSeeFamily[_rightEye]);
             }
-            network.InputNodes[_forwardBumperIndex].CurrentValue = _forwardBumper.Hit ? 100 : 0;
-            network.InputNodes[_smellMySpawnPointIndex].CurrentValue = _smellMySpawnPoint[_nose];
-            network.InputNodes[_random1Index].CurrentValue = Globals.Radomizer.Next(50);
-            network.InputNodes[_random2Index].CurrentValue = Globals.Radomizer.Next(50);
-            network.InputNodes[_damageMonitorIndex].CurrentValue = this.MyCreature.CharacterSheet.Damage.PercentFilled;
-            network.InputNodes[_fatigueMonitorIndex].CurrentValue = this.MyCreature.CharacterSheet.Fatigue.PercentFilled;
-            network.InputNodes[_resourceMonitorIndex].CurrentValue = this.MyCreature.CharacterSheet.Resource.PercentFilled;
+            network.InputNodes[_forwardBumperIndex].SetValue(_forwardBumper.Hit ? 100 : 0);
+            network.InputNodes[_smellMySpawnPointIndex].SetValue(_smellMySpawnPoint[_nose]);
+            network.InputNodes[_random1Index].SetValue(Globals.Radomizer.Next(50));
+            network.InputNodes[_random2Index].SetValue(Globals.Radomizer.Next(50));
+            network.InputNodes[_damageMonitorIndex].SetValue(this.MyCreature.CharacterSheet.Damage.PercentFilled);
+            network.InputNodes[_fatigueMonitorIndex].SetValue(this.MyCreature.CharacterSheet.Fatigue.PercentFilled);
+            network.InputNodes[_resourceMonitorIndex].SetValue(this.MyCreature.CharacterSheet.Resource.PercentFilled);
         }
 
         private void RunNetwork(NeuralNetwork network)
@@ -514,8 +514,8 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             network.Propagate();
 
             // Feed output to creature
-            MyCreature.Turn(network.OutputNodes[0].CurrentValue / 100);
-            MyCreature.Thrust(network.OutputNodes[1].CurrentValue / 100);
+            MyCreature.Turn(network.OutputNodes[0].GetValue() / 100);
+            MyCreature.Thrust(network.OutputNodes[1].GetValue() / 100);
 
             // Speak
             //MyCreature.SayA(network.OutputNodes[2].CurrentValue);
@@ -537,9 +537,9 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             // Process
             _modeChoserNetwork.Propagate();
 
-            var forageWeight = _modeChoserNetwork.OutputNodes[0].CurrentValue;
-            var deliverWeight = _modeChoserNetwork.OutputNodes[1].CurrentValue;
-            var adrenalineWeight = _modeChoserNetwork.OutputNodes[2].CurrentValue;
+            var forageWeight = _modeChoserNetwork.OutputNodes[0].GetValue();
+            var deliverWeight = _modeChoserNetwork.OutputNodes[1].GetValue();
+            var adrenalineWeight = _modeChoserNetwork.OutputNodes[2].GetValue();
 
             if ((forageWeight >= deliverWeight) && (forageWeight >= adrenalineWeight)) return _foragerModeNetwork;
             if ((deliverWeight >= forageWeight) && (deliverWeight >= adrenalineWeight)) return _deliverModeNetwork;

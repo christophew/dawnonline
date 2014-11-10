@@ -79,15 +79,15 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
 
             foreach (var inputNode in _inputNodes)
             {
-                inputNode.CurrentValue = 0;
+                inputNode.ClearValue();
             }
             foreach (var layerNode in _layerNodes)
             {
-                layerNode.CurrentValue = 0;
+                layerNode.ClearValue();
             }
             foreach (var outputNode in _outputNodes)
             {
-                outputNode.CurrentValue = 0;
+                outputNode.ClearValue();
             }
         }
 
@@ -97,7 +97,7 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
 
             foreach (var node in _reinforcementInputNodes)
             {
-                node.CurrentValue = 0;
+                node.ClearValue();
             }
         }
 

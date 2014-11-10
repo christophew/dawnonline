@@ -11,8 +11,12 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
 
         internal void Reinforce()
         {
-            if (Math.Abs(CurrentValue) >= Threshold)
-                CurrentValue = NodeToReinforce.CurrentValue;
+            // TO VERIFY: this threshpmd check was pretty useless => threshold of receiving node was checked, instead of sending node
+            // => do we need a threshold check here?
+            //if (Math.Abs(CurrentValue) >= Threshold)
+
+
+            SetValue(NodeToReinforce.GetValue());
         }
     }
 }
