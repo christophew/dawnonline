@@ -36,7 +36,7 @@ namespace SimulationTests
         {
             foreach (var outGoingEdge in inputNode.OutGoingEdges)
             {
-                outGoingEdge.Multiplier = 1;
+                outGoingEdge.Initialize(1);
             }
         }
 
@@ -45,17 +45,17 @@ namespace SimulationTests
         {
             var neuralNetwork = new NeuralNetwork(4, 3, 2);
 
-            neuralNetwork.InputNodes[0].CurrentValue = 10;
-            neuralNetwork.InputNodes[0].OutGoingEdges[0].Multiplier = 1;
-            neuralNetwork.LayerNodes[0].OutGoingEdges[0].Multiplier = 1;
+            neuralNetwork.InputNodes[0].SetValue(10);
+            neuralNetwork.InputNodes[0].OutGoingEdges[0].Initialize(1);
+            neuralNetwork.LayerNodes[0].OutGoingEdges[0].Initialize(1);
             neuralNetwork.Propagate();
 
-            Assert.AreEqual(10, neuralNetwork.LayerNodes[0].CurrentValue);
-            Assert.AreEqual(0, neuralNetwork.LayerNodes[1].CurrentValue);
-            Assert.AreEqual(0, neuralNetwork.LayerNodes[2].CurrentValue);
+            Assert.AreEqual(10, neuralNetwork.LayerNodes[0].GetValue());
+            Assert.AreEqual(0, neuralNetwork.LayerNodes[1].GetValue());
+            Assert.AreEqual(0, neuralNetwork.LayerNodes[2].GetValue());
 
-            Assert.AreEqual(10, neuralNetwork.OutputNodes[0].CurrentValue);
-            Assert.AreEqual(0, neuralNetwork.OutputNodes[1].CurrentValue);
+            Assert.AreEqual(10, neuralNetwork.OutputNodes[0].GetValue());
+            Assert.AreEqual(0, neuralNetwork.OutputNodes[1].GetValue());
         }
 
         [TestMethod]
@@ -63,30 +63,30 @@ namespace SimulationTests
         {
             var neuralNetwork = new NeuralNetwork(4, 3, 2);
 
-            neuralNetwork.InputNodes[0].CurrentValue = 10;
-            neuralNetwork.InputNodes[0].OutGoingEdges[0].Multiplier = 1;
-            neuralNetwork.LayerNodes[0].OutGoingEdges[0].Multiplier = 1;
+            neuralNetwork.InputNodes[0].SetValue(10);
+            neuralNetwork.InputNodes[0].OutGoingEdges[0].Initialize(1);
+            neuralNetwork.LayerNodes[0].OutGoingEdges[0].Initialize(1);
             neuralNetwork.InputNodes[0].Threshold = 11;
             neuralNetwork.Propagate();
 
-            Assert.AreEqual(0, neuralNetwork.LayerNodes[0].CurrentValue);
-            Assert.AreEqual(0, neuralNetwork.LayerNodes[1].CurrentValue);
-            Assert.AreEqual(0, neuralNetwork.LayerNodes[2].CurrentValue);
+            Assert.AreEqual(0, neuralNetwork.LayerNodes[0].GetValue());
+            Assert.AreEqual(0, neuralNetwork.LayerNodes[1].GetValue());
+            Assert.AreEqual(0, neuralNetwork.LayerNodes[2].GetValue());
 
-            Assert.AreEqual(0, neuralNetwork.OutputNodes[0].CurrentValue);
-            Assert.AreEqual(0, neuralNetwork.OutputNodes[1].CurrentValue);
+            Assert.AreEqual(0, neuralNetwork.OutputNodes[0].GetValue());
+            Assert.AreEqual(0, neuralNetwork.OutputNodes[1].GetValue());
 
             neuralNetwork.ClearInput();
-            neuralNetwork.InputNodes[0].CurrentValue = 10;
+            neuralNetwork.InputNodes[0].SetValue(10);
             neuralNetwork.InputNodes[0].Threshold = 10;
             neuralNetwork.Propagate();
 
-            Assert.AreEqual(10, neuralNetwork.LayerNodes[0].CurrentValue);
-            Assert.AreEqual(0, neuralNetwork.LayerNodes[1].CurrentValue);
-            Assert.AreEqual(0, neuralNetwork.LayerNodes[2].CurrentValue);
+            Assert.AreEqual(10, neuralNetwork.LayerNodes[0].GetValue());
+            Assert.AreEqual(0, neuralNetwork.LayerNodes[1].GetValue());
+            Assert.AreEqual(0, neuralNetwork.LayerNodes[2].GetValue());
 
-            Assert.AreEqual(10, neuralNetwork.OutputNodes[0].CurrentValue);
-            Assert.AreEqual(0, neuralNetwork.OutputNodes[1].CurrentValue);
+            Assert.AreEqual(10, neuralNetwork.OutputNodes[0].GetValue());
+            Assert.AreEqual(0, neuralNetwork.OutputNodes[1].GetValue());
         }
 
         [TestMethod]
@@ -95,15 +95,15 @@ namespace SimulationTests
             var neuralNetwork = new NeuralNetwork(4, 3, 2);
 
             InitEdgesTo1(neuralNetwork);
-            neuralNetwork.InputNodes[0].CurrentValue = 10;
+            neuralNetwork.InputNodes[0].SetValue(10);
             neuralNetwork.Propagate();
 
-            Assert.AreEqual(10, neuralNetwork.LayerNodes[0].CurrentValue);
-            Assert.AreEqual(10, neuralNetwork.LayerNodes[1].CurrentValue);
-            Assert.AreEqual(10, neuralNetwork.LayerNodes[2].CurrentValue);
+            Assert.AreEqual(10, neuralNetwork.LayerNodes[0].GetValue());
+            Assert.AreEqual(10, neuralNetwork.LayerNodes[1].GetValue());
+            Assert.AreEqual(10, neuralNetwork.LayerNodes[2].GetValue());
 
-            Assert.AreEqual(30, neuralNetwork.OutputNodes[0].CurrentValue);
-            Assert.AreEqual(30, neuralNetwork.OutputNodes[1].CurrentValue);
+            Assert.AreEqual(30, neuralNetwork.OutputNodes[0].GetValue());
+            Assert.AreEqual(30, neuralNetwork.OutputNodes[1].GetValue());
         }
 
         [TestMethod]
@@ -112,16 +112,16 @@ namespace SimulationTests
             var neuralNetwork = new NeuralNetwork(4, 3, 2);
 
             InitEdgesTo1(neuralNetwork);
-            neuralNetwork.InputNodes[0].CurrentValue = 10;
-            neuralNetwork.InputNodes[0].OutGoingEdges[0].Multiplier = 2;
+            neuralNetwork.InputNodes[0].SetValue(10);
+            neuralNetwork.InputNodes[0].OutGoingEdges[0].Initialize(2);
             neuralNetwork.Propagate();
 
-            Assert.AreEqual(20, neuralNetwork.LayerNodes[0].CurrentValue);
-            Assert.AreEqual(10, neuralNetwork.LayerNodes[1].CurrentValue);
-            Assert.AreEqual(10, neuralNetwork.LayerNodes[2].CurrentValue);
+            Assert.AreEqual(20, neuralNetwork.LayerNodes[0].GetValue());
+            Assert.AreEqual(10, neuralNetwork.LayerNodes[1].GetValue());
+            Assert.AreEqual(10, neuralNetwork.LayerNodes[2].GetValue());
 
-            Assert.AreEqual(40, neuralNetwork.OutputNodes[0].CurrentValue);
-            Assert.AreEqual(40, neuralNetwork.OutputNodes[1].CurrentValue);
+            Assert.AreEqual(40, neuralNetwork.OutputNodes[0].GetValue());
+            Assert.AreEqual(40, neuralNetwork.OutputNodes[1].GetValue());
         }
 
         [TestMethod]
@@ -129,21 +129,21 @@ namespace SimulationTests
         {
             var neuralNetwork = new NeuralNetwork(4, 3, 2);
 
-            neuralNetwork.InputNodes[0].CurrentValue = 10;
+            neuralNetwork.InputNodes[0].SetValue(10);
             neuralNetwork.Propagate();
             neuralNetwork.ClearInput();
 
             foreach (var inputNode in neuralNetwork.InputNodes)
             {
-                Assert.AreEqual(0, inputNode.CurrentValue);
+                Assert.AreEqual(0, inputNode.GetValue());
             }
             foreach (var layerNode in neuralNetwork.LayerNodes)
             {
-                Assert.AreEqual(0, layerNode.CurrentValue);
+                Assert.AreEqual(0, layerNode.GetValue());
             }
             foreach (var outputNode in neuralNetwork.OutputNodes)
             {
-                Assert.AreEqual(0, outputNode.CurrentValue);
+                Assert.AreEqual(0, outputNode.GetValue());
             }
         }
 
@@ -152,9 +152,9 @@ namespace SimulationTests
         {
             var neuralNetwork = new NeuralNetwork(4, 3, 2);
 
-            neuralNetwork.InputNodes[0].CurrentValue = 10;
-            neuralNetwork.InputNodes[0].OutGoingEdges[0].Multiplier = 1;
-            neuralNetwork.LayerNodes[0].OutGoingEdges[0].Multiplier = 1;
+            neuralNetwork.InputNodes[0].SetValue(10);
+            neuralNetwork.InputNodes[0].OutGoingEdges[0].Initialize(1);
+            neuralNetwork.LayerNodes[0].OutGoingEdges[0].Initialize(1);
             var replicated = neuralNetwork.Replicate();
 
             Assert.AreEqual(1, replicated.InputNodes[0].OutGoingEdges[0].Multiplier);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.Remoting.Messaging;
 
 namespace DawnOnline.AgentMatrix.Brains.Neural
 {
@@ -26,32 +27,56 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
         internal Edge[] OutGoingEdges { get; set; }
 
         private double _currentValue = 0.0;
-        internal double CurrentValue
+
+        internal void SetValue(double value)
         {
-            get { return _currentValue; }
-            set
-            {
-                // TODO: verify use of tanh instead of sigmoid
+            _currentValue = value;
+        }
 
+        internal void AddValue(double delta)
+        {
+            _currentValue += delta;
+        }
 
-                //var scaledCurrent = ((double)value) / 25.0;         // [-100, 100] => [-4, 4]
-                //var sigmoid = LogisticFunction(scaledCurrent);      // [-4, 4] => [0, 1] 
-                //_currentValue = (sigmoid - 0.5) * 100.0 * 2.0;      // [0, 1] => [-0.5, 0.5] => [-1, 1] => [-100, 100]
+        internal void ClearValue()
+        {
+            _currentValue = 0.0;
+        }
 
-                //// Validate (should no longer be possible)
-                //if (_currentValue > 100)
-                //    throw new InvalidOperationException("value outofbound: should no longer be possible");
-                //if (_currentValue < -100)
-                //    throw new InvalidOperationException("value outofbound: should no longer be possible");
+        internal double GetValue()
+        {
+            // TODO: verify use of tanh instead of sigmoid
 
+            return GetLinearValue();
+            //return GetSigmoidValue();
+        }
 
-                _currentValue = value;
-                // [-100, 100]
-                if (_currentValue > 100)
-                    _currentValue = 100;
-                if (_currentValue < -100)
-                    _currentValue = -100;
-            }
+        private double GetLinearValue()
+        {
+            var normalizedValue = _currentValue;
+
+            // [-100, 100]
+            if (normalizedValue > 100)
+                normalizedValue = 100;
+            if (normalizedValue < -100)
+                normalizedValue = -100;
+
+            return normalizedValue;
+        }
+
+        private double GetSigmoidValue()
+        {
+            var scaledCurrent = ((double)_currentValue) / 25.0;         // [-100, 100] => [-1, 1]
+            var sigmoid = LogisticFunction(scaledCurrent);              // [-1, 1] => [0, 1] 
+            var result = (sigmoid - 0.5) * 100.0 * 2.0;              // [0, 1] => [-0.5, 0.5] => [-1, 1] => [-100, 100]
+
+            // Validate (should no longer be possible)
+            if (result > 100)
+                throw new InvalidOperationException("value outofbound: should no longer be possible");
+            if (result < -100)
+                throw new InvalidOperationException("value outofbound: should no longer be possible");
+
+            return result;
         }
 
         private static double LogisticFunction(double val)
@@ -61,14 +86,16 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
 
         internal void Propagate()
         {
-            if (Math.Abs(CurrentValue) < Threshold)
+            var currentValue = GetValue();
+
+            if (Math.Abs(currentValue) < Threshold)
                 return;
 
             foreach (var edge in OutGoingEdges)
             {
                 if (edge.Enabled)
                 {
-                    edge.ToNode.CurrentValue += CurrentValue * edge.Multiplier;
+                    edge.ToNode.AddValue(currentValue * edge.Multiplier);
                 }
             }
         }
