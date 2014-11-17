@@ -16,6 +16,8 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
 {
     internal class NeuralBrain : AbstractBrain
     {
+        private static int _standardError = 20;
+
         private IEye _forwardEye;
         private IEye _leftEye;
         private IEye _rightEye;
@@ -511,7 +513,7 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             FillInputNodes(network);
 
             // Process
-            network.Propagate();
+            network.FuzzyPropagate(_standardError);
 
             // Feed output to creature
             MyCreature.Turn(network.OutputNodes[0].GetValue() / 100);
@@ -535,7 +537,7 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             FillInputNodes(_modeChoserNetwork);
 
             // Process
-            _modeChoserNetwork.Propagate();
+            _modeChoserNetwork.FuzzyPropagate(_standardError);
 
             var forageWeight = _modeChoserNetwork.OutputNodes[0].GetValue();
             var deliverWeight = _modeChoserNetwork.OutputNodes[1].GetValue();

@@ -100,7 +100,7 @@ namespace DawnOnline.Simulation.Builders
 
             critter.CharacterSheet.WalkingDistance = 30 * _velocityMultiplier;
             critter.CharacterSheet.TurningAngle = 1.5 * _turnMultiplier;
-            critter.CharacterSheet.MeleeDamage = 10;
+            critter.CharacterSheet.MeleeDamage = 15;
             critter.CharacterSheet.MeleeRange = 2.0;
             critter.CharacterSheet.RangeDamage = 0;
             critter.CharacterSheet.UseAutoAttack = true;
@@ -120,7 +120,7 @@ namespace DawnOnline.Simulation.Builders
 
             critter.CharacterSheet.WalkingDistance = 20 * _velocityMultiplier;
             critter.CharacterSheet.TurningAngle = 1.0 * _turnMultiplier;
-            critter.CharacterSheet.MeleeDamage = 20;
+            critter.CharacterSheet.MeleeDamage = 10;
             critter.CharacterSheet.MeleeRange = 3;
             critter.CharacterSheet.RangeDamage = 0;
             critter.CharacterSheet.UseAutoAttack = true;

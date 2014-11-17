@@ -96,9 +96,16 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             return (1.0 / (1.0 + System.Math.Exp(-val)));
         } 
 
-        internal void Propagate()
+        internal void Propagate(int error)
         {
             var currentValue = GetValue();
+
+            // For fuzzy network
+            if (error != 0)
+            {
+                var fault = Globals.Radomizer.Next(error);
+                currentValue += fault - error/2;
+            }
 
             if (Math.Abs(currentValue) < Threshold)
                 return;
