@@ -101,19 +101,29 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
             }
         }
 
+        internal void FuzzyPropagate(int error)
+        {
+            _Propagate(error);
+        }
+
         internal void Propagate()
+        {
+            _Propagate(0);
+        }
+
+        private void _Propagate(int error)
         {
             foreach (var inputNode in _inputNodes)
             {
-                inputNode.Propagate();
+                inputNode.Propagate(error);
             }
             foreach (var reinforcementNode in _reinforcementInputNodes)
             {
-                reinforcementNode.Propagate();
+                reinforcementNode.Propagate(error);
             }
             foreach (var layerNode in _layerNodes)
             {
-                layerNode.Propagate();
+                layerNode.Propagate(error);
             }
 
             // Reinforcement
