@@ -74,13 +74,13 @@ public class DawnEntityManager : MonoBehaviour
 	    _debugLoadingCounter2++;
         _dawnClient.SendCommandsToServer();
 
-	    _debugInfoNrOfWalls = _dawnClient.DawnWorld.GetEntities().Where(e => e.EntityType == EntityTypeEnum.Wall).Count().ToString();
-        _debugInfoNrOfBoxes = _dawnClient.DawnWorld.GetEntities().Where(e => e.EntityType == EntityTypeEnum.Box).Count().ToString();
-        _debugInfoNrOfPredators = _dawnClient.DawnWorld.GetEntities().Where(e => e.CreatureType == CreatureTypeEnum.Predator).Count().ToString();
-        _debugInfoNrOfPredators2 = _dawnClient.DawnWorld.GetEntities().Where(e => e.CreatureType == CreatureTypeEnum.Predator2).Count().ToString();
-        _debugInfoNrOfRabbits = _dawnClient.DawnWorld.GetEntities().Where(e => e.CreatureType == CreatureTypeEnum.Rabbit).Count().ToString();
-        _debugInfoNrOfPlants = _dawnClient.DawnWorld.GetEntities().Where(e => e.CreatureType == CreatureTypeEnum.Plant).Count().ToString();
-        _debugInfoNrOfPlants2 = _dawnClient.DawnWorld.GetEntities().Where(e => e.CreatureType == CreatureTypeEnum.Plant2).Count().ToString();
+	    _debugInfoNrOfWalls = _dawnClient.DawnWorld.GetEntities().Count(e => e.EntityType == EntityTypeEnum.Wall).ToString();
+        _debugInfoNrOfBoxes = _dawnClient.DawnWorld.GetEntities().Count(e => e.EntityType == EntityTypeEnum.Box).ToString();
+        _debugInfoNrOfPredators = _dawnClient.DawnWorld.GetEntities().Count(e => e.CreatureType == CreatureTypeEnum.Predator).ToString();
+        _debugInfoNrOfPredators2 = _dawnClient.DawnWorld.GetEntities().Count(e => e.CreatureType == CreatureTypeEnum.Predator2).ToString();
+        _debugInfoNrOfRabbits = _dawnClient.DawnWorld.GetEntities().Count(e => e.CreatureType == CreatureTypeEnum.Rabbit).ToString();
+        _debugInfoNrOfPlants = _dawnClient.DawnWorld.GetEntities().Count(e => e.CreatureType == CreatureTypeEnum.Plant).ToString();
+        _debugInfoNrOfPlants2 = _dawnClient.DawnWorld.GetEntities().Count(e => e.CreatureType == CreatureTypeEnum.Plant2).ToString();
 
         // Disable MessageQueue for first big 
         _dawnClient.IsMessageQueueRunning = false;
@@ -251,7 +251,7 @@ public class DawnEntityManager : MonoBehaviour
             var body = newObj.FindChild("Body");
             if (body != null && body.renderer != null)
             {
-                body.renderer.material.color = GetFamilyMaterial(entity);
+                body.renderer.material.color = GetFamilyMaterial("body" + entity.SpawnPointId);
             }
         }
 
@@ -287,22 +287,19 @@ public class DawnEntityManager : MonoBehaviour
         return newObj;
     }
 
-    private static Dictionary<int, Color> _familyColorMapper = new Dictionary<int, Color>();
+    private static Dictionary<string, Color> _familyColorMapper = new Dictionary<string, Color>();
 
-    private static Color GetFamilyMaterial(DawnClientEntity entity)
+    private Color GetFamilyMaterial(string materialId)
     {
-        if (entity.SpawnPointId == 0)
-            return Color.white;
-
         Color color;
-        if (!_familyColorMapper.TryGetValue(entity.SpawnPointId, out color))
+        if (!_familyColorMapper.TryGetValue(materialId, out color))
         {
             color = new Color(
                 Random.Range(0f, 255f)/255f,
                 Random.Range(0f, 255f)/255f,
                 Random.Range(0f, 255f)/255f);
 
-            _familyColorMapper.Add(entity.SpawnPointId, color);
+            _familyColorMapper.Add(materialId, color);
         }
 
         return color;

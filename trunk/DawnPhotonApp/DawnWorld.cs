@@ -29,7 +29,7 @@ namespace DawnGame
         private int _nrOfSeedWalls = 10;
         private int _nrOfWalls = 300;
         private int _maxWallLength = 10;
-        private int _nrOfBoxes = 0;
+        private int _nrOfBoxes = 100;
         private int _stablePopulationSize = 500;
 
         private int _nrOfSpawnPointsReplicated = 0;
@@ -133,6 +133,16 @@ namespace DawnGame
                     myObstacles.Add(newObstacle);
                     i++;
                 }
+            }
+
+            // Boxes
+            for (int i = 0; i < _nrOfBoxes; )
+            {
+                var position = new Vector2(_randomize.Next((int)MaxX / _grid) * _grid, _randomize.Next((int)MaxY / _grid) * _grid);
+                var box = ObstacleBuilder.CreateObstacleBox(WorldConstants.WallHeight, WorldConstants.WallWide);
+
+                if (_environment.AddObstacle(box, position))
+                    i++;
             }
         }
 
