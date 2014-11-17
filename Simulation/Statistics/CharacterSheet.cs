@@ -43,7 +43,7 @@ namespace DawnOnline.Simulation.Statistics
                 // TO VERIFY
                 throw new InvalidOperationException("VERIFY: Should this be possible? or should 'UpdateScore' not be called in this scenario");
 
-                Score = _fixedScore;
+                //Score = _fixedScore;
                 return;
             }
 

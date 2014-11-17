@@ -151,6 +151,12 @@ namespace DawnOnline.AgentMatrix
                 AgentCreatureBuilder.SetBrainFactory(new NeuralBrainFactory());
                 CreatureRepository.SetupRepository(brainType, true);              
             }
+            else if (string.Equals("neural-sigmoid", brainType, StringComparison.InvariantCultureIgnoreCase))
+            {
+                NeuralConfiguration.UseSigmoidNodes();
+                AgentCreatureBuilder.SetBrainFactory(new NeuralBrainFactory());
+                CreatureRepository.SetupRepository(brainType, true);              
+            }
             else if (string.Equals("hardcoded", brainType, StringComparison.InvariantCultureIgnoreCase))
             {
                 AgentCreatureBuilder.SetBrainFactory(new HardcodedBrainFactory());
@@ -191,9 +197,10 @@ namespace DawnOnline.AgentMatrix
 
             var allEntities = _dawnClient.DawnWorld.GetEntities();
 
-            foreach (var result in allEntities)
+            foreach (var entity in allEntities)
             {
-                score += result.Score;
+                if (_dawnClient.IsMyEntity(entity))
+                    score += entity.Score;
             }
 
             Console.WriteLine("Score: " + score);

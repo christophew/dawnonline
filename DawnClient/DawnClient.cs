@@ -551,5 +551,10 @@ namespace DawnClient
         }
 
         #endregion
+
+        public bool IsMyEntity(DawnClientEntity entity)
+        {
+            return (entity.InstanceId == InstanceId);
+        }
     }
 }

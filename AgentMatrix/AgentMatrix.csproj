@@ -68,6 +68,7 @@
     <Compile Include="Brains\TurretBrain.cs" />
     <Compile Include="Factories\HardcodedBrainFactory.cs" />
     <Compile Include="Factories\NeuralBrainFactory.cs" />
+    <Compile Include="Factories\NeuralConfiguration.cs" />
     <Compile Include="Repository\CreatureRepository.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

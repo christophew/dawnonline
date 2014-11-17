@@ -26,6 +26,8 @@ namespace DawnClient
 
         public bool IsSpawnPoint { get { return EntityType == EntityTypeEnum.SpawnPoint; } }
 
+        public int InstanceId { get { return Id % 1000; } } // Check Globals.GenerateUniqueId for logic
+
         enum UpdateMode
         {
             PositionUpdate, StatusUpdate, InitialLoad

@@ -2,11 +2,19 @@
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Remoting.Messaging;
+using DawnOnline.AgentMatrix.Factories;
 
 namespace DawnOnline.AgentMatrix.Brains.Neural
 {
     class Node
     {
+        internal enum NodeTypeEnum
+        {
+            Unknown,
+            Linear,
+            Signoid
+        }
+
         // Bias
         private int _threshold = 0;
         internal int Threshold
@@ -47,8 +55,12 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
         {
             // TODO: verify use of tanh instead of sigmoid
 
-            return GetLinearValue();
-            //return GetSigmoidValue();
+            if (NeuralConfiguration.NodeType == NodeTypeEnum.Linear)
+                return GetLinearValue();
+            if (NeuralConfiguration.NodeType == NodeTypeEnum.Signoid)
+                return GetSigmoidValue();
+
+            throw new NotImplementedException();
         }
 
         private double GetLinearValue()
