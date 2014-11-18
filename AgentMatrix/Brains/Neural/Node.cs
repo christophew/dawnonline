@@ -12,7 +12,7 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
         {
             Unknown,
             Linear,
-            Signoid
+            Sigmoid,
         }
 
         // Bias
@@ -53,11 +53,9 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
 
         internal double GetValue()
         {
-            // TODO: verify use of tanh instead of sigmoid
-
             if (NeuralConfiguration.NodeType == NodeTypeEnum.Linear)
                 return GetLinearValue();
-            if (NeuralConfiguration.NodeType == NodeTypeEnum.Signoid)
+            if (NeuralConfiguration.NodeType == NodeTypeEnum.Sigmoid)
                 return GetSigmoidValue();
 
             throw new NotImplementedException();
@@ -78,9 +76,9 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
 
         private double GetSigmoidValue()
         {
-            var scaledCurrent = ((double)_currentValue) / 25.0;         // [-100, 100] => [-1, 1]
-            var sigmoid = LogisticFunction(scaledCurrent);              // [-1, 1] => [0, 1] 
-            var result = (sigmoid - 0.5) * 100.0 * 2.0;              // [0, 1] => [-0.5, 0.5] => [-1, 1] => [-100, 100]
+            var scaledCurrent = ((double)_currentValue) / NeuralConfiguration.SigmoidScale;         // [-100, 100] => input
+            var sigmoid = LogisticFunction(scaledCurrent);                                          // input => [0, 1] 
+            var result = (sigmoid - 0.5) * 2.0 * 100.0;                         // [0, 1] => [-0.5, 0.5] => [-1, 1] => [-100, 100]
 
             // Validate (should no longer be possible)
             if (result > 100)
@@ -93,7 +91,7 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
 
         private static double LogisticFunction(double val)
         {
-            return (1.0 / (1.0 + System.Math.Exp(-val)));
+            return (1.0 / (1.0 + Math.Exp(-(val * NeuralConfiguration.SigmoidSlope))));
         } 
 
         internal void Propagate(int error)
