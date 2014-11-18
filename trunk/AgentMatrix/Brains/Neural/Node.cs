@@ -105,6 +105,8 @@ namespace DawnOnline.AgentMatrix.Brains.Neural
                 currentValue += fault - error/2;
             }
 
+            // Use Abs threshold to handle possible negative values => otherwise we would favour the positive values
+            // TO VERIFY: threshold or bias? (bias would be deducted from value instead)
             if (Math.Abs(currentValue) < Threshold)
                 return;
 
