@@ -20,7 +20,9 @@ The behaviour controller slightly differences: it has the same amount of input n
 
 = Neural network =
 
-The neural network used is a 3 layer feedforward network with a large number of reinforcement nodes (see: http://en.wikipedia.org/wiki/Artificial_neural_network#Reinforcement_learning).
+Custom neural network:
+ * 3 layers: input, hidden, output
+ * A large part of the output nodes are only used as new input nodes for the next time-slice (to have a state flow)
 
 == Input layer ==
 
@@ -33,7 +35,7 @@ The eye sensors are configured to look for:
  * Family: do I see a member of my family?
  * SpawnPoint: do I see my SpawnPoint?
 
-This results into 25 input nodes (and an equal amount of reinforcement nodes).
+This results into 25 input nodes (and an equal amount of state nodes).
 
 == Hidden layer ==
 
@@ -45,7 +47,7 @@ We only have 2 ouput nodes:
  * Turn
  * Thrust
 
-But, the output layer also contains the 25 reinforcement output nodes.
+But, the output layer also contains the 25 state output nodes.
 
 = 27 output nodes
 
